@@ -27,16 +27,17 @@ if __name__ == '__main__':
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
-    gearynet_dta = DynameqNetwork()
+    gearynet_dta = dta.DynameqNetwork(dir=".", file_prefix="geary_")
+    gearynet_dta.write(dir = "test", file_prefix="geary_")
     
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
-    sanfrancisco_cube = CubeNetwork()
+    sanfrancisco_cube = dta.CubeNetwork(dir="sfnet")
     
     # Merge them together
     sanfrancisco_dta = gearynet_dta
     sanfrancisco_dta.merge(sanfrancisco_cube)
     
     # Write the result.  sanfrancisco_dta is a DynameqNetwork
-    sanfrancisco_dta.write(output_dir = ".", file_prefix="SanFrancisco_")
+    sanfrancisco_dta.write(dir = ".", file_prefix="SanFrancisco_")
     
