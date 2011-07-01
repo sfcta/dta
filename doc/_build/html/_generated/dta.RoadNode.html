@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.RoadNode &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="prev" title="dta.Node" href="dta.Node.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dta.Node.html" title="dta.Node"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-roadnode">
+<h1>dta.RoadNode<a class="headerlink" href="#dta-roadnode" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.RoadNode">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadNode</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Node.Node</span></tt></p>
+<p>A Node subclass that represents a road node in a network.</p>
+<dl class="method">
+<dt id="dta.RoadNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<blockquote>
+<div><ul class="simple">
+<li>id is a unique identifier (unique within the containing network), an integer</li>
+<li>x and y are coordinates (what units?)</li>
+<li>type is one of Node.GEOMETRY_TYPE_INTERSECTION or Node.GEOMETRY_TYPE_JUNCTION</li>
+<li>control is one of Node.CONTROL_TYPE_UNSIGNALIZED or Node.CONTROL_TYPE_SIGNALIZED</li>
+<li>label is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
+<li>level is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.RoadNode.__init__" title="dta.RoadNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED">
+<tt class="descname">CONTROL_TYPE_UNSIGNALIZED</tt><a class="headerlink" href="#dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Control types - how is this used?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATES">
+<tt class="descname">PRIORITY_TEMPLATES</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATES" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each control type, a list of available Capacity/Priority templates is provided.
+Choosing a template from the list will automatically provide follow-up time values with
+corresponding permitted capacity values in the movements table below, and define all movement
+priority relationships at the node with corresponding gap acceptance values.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATE_AWSC">
+<tt class="descname">PRIORITY_TEMPLATE_AWSC</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATE_AWSC" title="Permalink to this definition">¶</a></dt>
+<dd><p>All Way Stop Control - an intersection with a stop sign on every approach</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATE_MERGE">
+<tt class="descname">PRIORITY_TEMPLATE_MERGE</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATE_MERGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>An uncontrolled (unsignalized) junction at which a minor street must yield to the major street,
+which may or may not be explicitly marked with a Yield sign.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATE_NONE">
+<tt class="descname">PRIORITY_TEMPLATE_NONE</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATE_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>No template: either a signalized or unsignalized junction, where there is no yielding of any
+kind, and the permitted capacity is equal to the protected capacity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT">
+<tt class="descname">PRIORITY_TEMPLATE_ROUNDABOUT</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>A junction on a roundabout at which vehicles enter the roundabout. Vehicles entering the
+roundabout must yield to those already on the roundabout (by convention in most countries).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATE_SIGNALIZED">
+<tt class="descname">PRIORITY_TEMPLATE_SIGNALIZED</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATE_SIGNALIZED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any signalized intersection (three-leg, four-leg, etc.). For right-side driving, left-turn
+movements yield to opposing through traffic and right turns, and right turns yield to the
+conflicting through traffic (if applicable). For left-side driving, the rules are the same but reversed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.PRIORITY_TEMPLATE_TWSC">
+<tt class="descname">PRIORITY_TEMPLATE_TWSC</tt><a class="headerlink" href="#dta.RoadNode.PRIORITY_TEMPLATE_TWSC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two Way Stop Control - an intersection at which a minor street crosses a major street and
+only the minor street is stop-controlled</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.addIncomingLink">
+<tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addIncomingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that the given link ends in this node, and adds it to the list of
+incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.addOutgoingLink">
+<tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that the given link starts with this node, and adds it to the list of
+outgoing links.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.Node.html"
+                        title="previous chapter">dta.Node</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.RoadNode.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dta.Node.html" title="dta.Node"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

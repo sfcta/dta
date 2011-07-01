@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.Node &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.RoadNode" href="dta.RoadNode.html" />
+    <link rel="prev" title="dta.Network" href="dta.Network.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dta.RoadNode.html" title="dta.RoadNode"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.Network.html" title="dta.Network"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-node">
+<h1>dta.Node<a class="headerlink" href="#dta-node" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.Node">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Node</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class that represents a node in a network.</p>
+<dl class="method">
+<dt id="dta.Node.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<blockquote>
+<div><ul class="simple">
+<li>id is a unique identifier (unique within the containing network), an integer</li>
+<li>x and y are coordinates (what units?)</li>
+<li>type is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
+Node.GEOMETRY_TYPE_VIRTUAL</li>
+<li>label is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
+<li>level is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.Node.__init__" title="dta.Node.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dta.Node.addIncomingLink">
+<tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Node.addIncomingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that the given link ends in this node, and adds it to the list of
+incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Node.addOutgoingLink">
+<tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Node.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that the given link starts with this node, and adds it to the list of
+outgoing links.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.Network.html"
+                        title="previous chapter">dta.Network</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.RoadNode.html"
+                        title="next chapter">dta.RoadNode</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.Node.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dta.RoadNode.html" title="dta.RoadNode"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.Network.html" title="dta.Network"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
