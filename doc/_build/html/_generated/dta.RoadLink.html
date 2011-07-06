@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.RoadLink &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.VirtualLink" href="dta.VirtualLink.html" />
+    <link rel="prev" title="dta.Link" href="dta.Link.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dta.VirtualLink.html" title="dta.VirtualLink"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.Link.html" title="dta.Link"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-roadlink">
+<h1>dta.RoadLink<a class="headerlink" href="#dta-roadlink" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.RoadLink">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadLink</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.RoadLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
+<p>A RoadLink in a network.  Both nodes must be RoadNodes.</p>
+<dl class="method">
+<dt id="dta.RoadLink.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.RoadLink.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
+<li><em>nodeA</em>, <em>nodeB</em> are Nodes</li>
+<li><em>reverseAttachedId</em> is the id of the reverse link, if attached; pass None if not
+attached</li>
+<li><em>facilityType</em> is a non-negative integer indicating the category of facility such
+as a freeway, arterial, collector, etc.  A lower number indicates a facility of
+higher priority, that is, higher capacity and speed.</li>
+<li><em>length</em> is the link length</li>
+<li><em>freeflowSpeed</em> is in km/h or mi/h</li>
+<li><em>effectiveLengthFactor</em> is applied to the effective length of a vehicle while it is
+on the link.  May vary over time with LinkEvents</li>
+<li><em>responseTimeFactor</em> is the applied to the response time of the vehicle while it is
+on the link.  May vary over time with LinkEvents</li>
+<li><em>numLanes</em> is an integer</li>
+<li><em>roundAbout</em> is true/false or 1/0</li>
+<li><em>level</em> is an indicator to attribute vertical alignment/elevation</li>
+<li><em>label</em> is a link label</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.RoadLink.__init__" title="dta.RoadLink.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.addLanePermission" title="dta.RoadLink.addLanePermission"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.addLanePermission</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.euclideanLength" title="dta.RoadLink.euclideanLength"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.euclideanLength</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dta.RoadLink.addLanePermission">
+<tt class="descname">addLanePermission</tt><big>(</big><em>laneId</em>, <em>vehicleClassGroup</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addLanePermission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the lane permissions for the lane numbered by <em>laneId</em> (outside lane is lane 0, increases towards inside edge.)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.euclideanLength">
+<tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.euclideanLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the length based on simple Euclidean distance.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.Link.html"
+                        title="previous chapter">dta.Link</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.VirtualLink.html"
+                        title="next chapter">dta.VirtualLink</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.RoadLink.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dta.VirtualLink.html" title="dta.VirtualLink"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.Link.html" title="dta.Link"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

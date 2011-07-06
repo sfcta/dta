@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta classes &mdash; DTA Anyway v1.0 documentation</title>
+    <title>Network classes &mdash; DTA Anyway v1.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -44,8 +44,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="dta-classes">
-<h1>dta classes<a class="headerlink" href="#dta-classes" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="network-classes">
+<h1>Network classes<a class="headerlink" href="#network-classes" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="docutils">
 <colgroup>
 <col width="10%" />
@@ -55,11 +55,91 @@
 <tr><td><a class="reference internal" href="_generated/dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Network</span></tt></a></td>
 <td>Base class that represents a DTA Network.  Networks exist on a continuum between</td>
 </tr>
+<tr><td><a class="reference internal" href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-obj docutils literal"><span class="pre">dta.DynameqNetwork</span></tt></a></td>
+<td>A Dynameq DTA Network.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="scenario-classes">
+<h1>Scenario classes<a class="headerlink" href="#scenario-classes" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="_generated/dta.Scenario.html#dta.Scenario" title="dta.Scenario"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Scenario</span></tt></a></td>
+<td>Class that represents a DTA Scenario, and all that it entails.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.DynameqScenario.html#dta.DynameqScenario" title="dta.DynameqScenario"><tt class="xref py py-obj docutils literal"><span class="pre">dta.DynameqScenario</span></tt></a></td>
+<td>A Dynameq Scenario.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VehicleType</span></tt></a></td>
+<td>Class that represents a vehicle type.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VehicleClassGroup</span></tt></a></td>
+<td>Represents a group (or a set) of VehicleClasses, which are the classNames in <tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="node-classes">
+<h1>Node classes<a class="headerlink" href="#node-classes" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
 <tr><td><a class="reference internal" href="_generated/dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Node</span></tt></a></td>
 <td>Base class that represents a node in a network.</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">dta.RoadNode</span></tt></a></td>
 <td>A Node subclass that represents a road node in a network.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VirtualNode</span></tt></a></td>
+<td>A Node subclass that represents a virtual node in a network.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Centroid</span></tt></a></td>
+<td>A Node subclass that represents a centroid node in a network.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="link-classes">
+<h1>Link classes<a class="headerlink" href="#link-classes" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="_generated/dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Link</span></tt></a></td>
+<td>Base class that represents a link in a network.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-obj docutils literal"><span class="pre">dta.RoadLink</span></tt></a></td>
+<td>A RoadLink in a network.  Both nodes must be RoadNodes.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VirtualLink</span></tt></a></td>
+<td>A VirtualLink is a Link that connects a Centroid with a VirtualNode.</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Connector</span></tt></a></td>
+<td>A Connector is a Link that connects a RoadNode with a Centroid or a VirtualNode.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="misc">
+<h1>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="_generated/dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-obj docutils literal"><span class="pre">dta.DtaError</span></tt></a></td>
+<td>Base class for errors in the dta package.</td>
 </tr>
 </tbody>
 </table>
@@ -112,7 +192,10 @@
 44
 45
 46
-47</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+47
+48
+49
+50</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -145,7 +228,10 @@
     <span class="c"># The Geary network was created in an earlier Phase of work, so it already exists as</span>
     <span class="c"># a Dynameq DTA network.  Initialize it from the Dynameq text files.</span>
     <span class="n">gearynet_dta</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
-    <span class="n">gearynet_dta</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
+    <span class="n">gearynet_dta</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
+    
+    <span class="n">gearyscenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
+    <span class="n">gearyscenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
     <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     
     <span class="c"># The rest of San Francisco currently exists as a Cube network.  Initialize it from</span>
@@ -179,7 +265,19 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">dta classes</a><ul>
+<li><a class="reference internal" href="#">Network classes</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#scenario-classes">Scenario classes</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#node-classes">Node classes</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#link-classes">Link classes</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#misc">Misc</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#example-building-a-network-using-dta">Example: Building a network using dta</a></li>

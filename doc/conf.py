@@ -219,7 +219,7 @@ man_pages = [
 ]
 
 # --------------------------------------
-autodoc_default_flags = [ 'members', 'undoc-members', 'inherited-members', 'show-inheritance' ]
+autodoc_default_flags = [ 'members', 'undoc-members', 'private-members', 'inherited-members', 'show-inheritance' ]
 
 # autoclass_content = "both" # classes should include both the class' and the __init__ method's docstring
 

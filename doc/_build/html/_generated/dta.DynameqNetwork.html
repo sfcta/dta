@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.Network &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.DynameqNetwork &mdash; DTA Anyway v1.0 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.DynameqNetwork" href="dta.DynameqNetwork.html" />
-    <link rel="prev" title="dta.DtaError" href="dta.DtaError.html" /> 
+    <link rel="next" title="dta.Scenario" href="dta.Scenario.html" />
+    <link rel="prev" title="dta.Network" href="dta.Network.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,10 +34,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+          <a href="dta.Scenario.html" title="dta.Scenario"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="dta.DtaError.html" title="dta.DtaError"
+          <a href="dta.Network.html" title="dta.Network"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -48,21 +48,17 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="dta-network">
-<h1>dta.Network<a class="headerlink" href="#dta-network" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dta-dynameqnetwork">
+<h1>dta.DynameqNetwork<a class="headerlink" href="#dta-dynameqnetwork" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="dta.Network">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Network</tt><a class="headerlink" href="#dta.Network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Base class that represents a DTA Network.  Networks exist on a continuum between
-macro- and micro-simulation, and this network is meant to represent something
-&#8220;typical&#8221; for a mesosimulation.  Something to be aware of in case it becomes too complicated.</p>
-<p>Subclasses will be used to represent networks for different frameworks (Dynameq, Cube, etc)
-so this class should have no code to deal with any particular file formats.</p>
+<dt id="dta.DynameqNetwork">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">DynameqNetwork</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Network.Network</span></tt></p>
+<p>A Dynameq DTA Network.</p>
 <dl class="method">
-<dt id="dta.Network.__init__">
-<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor.  Initializes to an empty network.</p>
+<dt id="dta.DynameqNetwork.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.  Reads the network in the given <em>dir</em> with the given <em>file_prefix</em>.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -72,37 +68,57 @@ so this class should have no code to deal with any particular file formats.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.Network.__init__" title="dta.Network.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.__init__" title="dta.DynameqNetwork.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.addCentroid" title="dta.DynameqNetwork.addCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addCentroid</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.addLink" title="dta.DynameqNetwork.addLink"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.addNode" title="dta.DynameqNetwork.addNode"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.getNodeForId" title="dta.DynameqNetwork.getNodeForId"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.getNodeForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.write" title="dta.DynameqNetwork.write"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.write</span></tt></a></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dta.Network.addCentroid">
-<tt class="descname">addCentroid</tt><big>(</big><em>newCentroid</em><big>)</big><a class="headerlink" href="#dta.Network.addCentroid" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.DynameqNetwork.addCentroid">
+<tt class="descname">addCentroid</tt><big>(</big><em>newCentroid</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addCentroid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies that <em>newCentroid</em> is a Centroid and that the id is not already used;
 stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Network.addLink">
-<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.Network.addLink" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.DynameqNetwork.addLink">
+<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies that the <em>newLink</em> is a Link and that the id is not already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Network.addNode">
-<tt class="descname">addNode</tt><big>(</big><em>newNode</em><big>)</big><a class="headerlink" href="#dta.Network.addNode" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.DynameqNetwork.addNode">
+<tt class="descname">addNode</tt><big>(</big><em>newNode</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies that <em>newNode</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> or a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> and that the id is not
 already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Network.getNodeForId">
-<tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Network.getNodeForId" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.DynameqNetwork.getNodeForId">
+<tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNodeForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
 Returns None if not found.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.write">
+<tt class="descname">write</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -115,14 +131,14 @@ Returns None if not found.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="dta.DtaError.html"
-                        title="previous chapter">dta.DtaError</a></p>
+  <p class="topless"><a href="dta.Network.html"
+                        title="previous chapter">dta.Network</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="dta.DynameqNetwork.html"
-                        title="next chapter">dta.DynameqNetwork</a></p>
+  <p class="topless"><a href="dta.Scenario.html"
+                        title="next chapter">dta.Scenario</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../_sources/_generated/dta.Network.txt"
+    <li><a href="../_sources/_generated/dta.DynameqNetwork.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -149,10 +165,10 @@ Returns None if not found.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+          <a href="dta.Scenario.html" title="dta.Scenario"
              >next</a> |</li>
         <li class="right" >
-          <a href="dta.DtaError.html" title="dta.DtaError"
+          <a href="dta.Network.html" title="dta.Network"
              >previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>

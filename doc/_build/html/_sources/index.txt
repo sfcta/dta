@@ -6,17 +6,57 @@
    
    Run "make html" to generate
    the _generated/*.rst files and _build/* 
-   
-dta classes
-================
-   
+  
+
+Network classes
+===============
 .. autosummary::
    :nosignatures:
    :toctree: _generated
    
    dta.Network
+   dta.DynameqNetwork
+   
+Scenario classes
+================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+   
+   dta.Scenario
+   dta.DynameqScenario
+   dta.VehicleType
+   dta.VehicleClassGroup
+   
+Node classes
+================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+   
    dta.Node
    dta.RoadNode
+   dta.VirtualNode
+   dta.Centroid
+   
+Link classes
+================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+   
+   dta.Link
+   dta.RoadLink
+   dta.VirtualLink
+   dta.Connector
+   
+Misc
+================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+   
+   dta.DtaError
 
 Example: Building a network using dta
 ==========================================

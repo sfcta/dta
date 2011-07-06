@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.Scenario &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.DynameqScenario" href="dta.DynameqScenario.html" />
+    <link rel="prev" title="dta.DynameqNetwork" href="dta.DynameqNetwork.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dta.DynameqScenario.html" title="dta.DynameqScenario"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-scenario">
+<h1>dta.Scenario<a class="headerlink" href="#dta-scenario" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.Scenario">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Scenario</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Class that represents a DTA Scenario, and all that it entails.</p>
+<dl class="method">
+<dt id="dta.Scenario.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Scenario.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<p><em>startTime</em> and <em>endTime</em> are datetime.time instances.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.Scenario.__init__" title="dta.Scenario.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.addEvent" title="dta.Scenario.addEvent"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.addEvent</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.addVehicleClass" title="dta.Scenario.addVehicleClass"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.addVehicleClass</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.addVehicleClassGroup" title="dta.Scenario.addVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.addVehicleClassGroup</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.addVehicleType" title="dta.Scenario.addVehicleType"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.addVehicleType</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dta.Scenario.addEvent">
+<tt class="descname">addEvent</tt><big>(</big><em>eventTime</em>, <em>eventDescription</em><big>)</big><a class="headerlink" href="#dta.Scenario.addEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>eventTime</em> is a datetime.time instance and <em>description</em> is a string.</p>
+<p>Verifies that <em>eventTime</em> is in [startTime, endTime)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Scenario.addVehicleClass">
+<tt class="descname">addVehicleClass</tt><big>(</big><em>vehicleClassName</em><big>)</big><a class="headerlink" href="#dta.Scenario.addVehicleClass" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>vehicleClassName</em> is a string</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Scenario.addVehicleClassGroup">
+<tt class="descname">addVehicleClassGroup</tt><big>(</big><em>vehicleClassGroup</em><big>)</big><a class="headerlink" href="#dta.Scenario.addVehicleClassGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>vehicleClassGroup</em> is a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Scenario.addVehicleType">
+<tt class="descname">addVehicleType</tt><big>(</big><em>vehicleType</em><big>)</big><a class="headerlink" href="#dta.Scenario.addVehicleType" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>vehicleType</em> is a <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Scenario.events">
+<tt class="descname">events</tt><a class="headerlink" href="#dta.Scenario.events" title="Permalink to this definition">¶</a></dt>
+<dd><p>event time (datetime.time) -&gt; description string</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Scenario.vehicleClassGroups">
+<tt class="descname">vehicleClassGroups</tt><a class="headerlink" href="#dta.Scenario.vehicleClassGroups" title="Permalink to this definition">¶</a></dt>
+<dd><p>vehicle class group name (string) -&gt; <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Scenario.vehicleClassNames">
+<tt class="descname">vehicleClassNames</tt><a class="headerlink" href="#dta.Scenario.vehicleClassNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of Vehicle Class Names</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Scenario.vehicleTypes">
+<tt class="descname">vehicleTypes</tt><a class="headerlink" href="#dta.Scenario.vehicleTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vehicle Type Name (string) -&gt; <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.DynameqNetwork.html"
+                        title="previous chapter">dta.DynameqNetwork</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.DynameqScenario.html"
+                        title="next chapter">dta.DynameqScenario</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.Scenario.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dta.DynameqScenario.html" title="dta.DynameqScenario"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

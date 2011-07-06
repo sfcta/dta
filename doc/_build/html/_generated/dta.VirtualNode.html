@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.Node &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.VirtualNode &mdash; DTA Anyway v1.0 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.RoadNode" href="dta.RoadNode.html" />
-    <link rel="prev" title="dta.VehicleClassGroup" href="dta.VehicleClassGroup.html" /> 
+    <link rel="next" title="dta.Centroid" href="dta.Centroid.html" />
+    <link rel="prev" title="dta.RoadNode" href="dta.RoadNode.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,10 +34,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="dta.RoadNode.html" title="dta.RoadNode"
+          <a href="dta.Centroid.html" title="dta.Centroid"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="dta.VehicleClassGroup.html" title="dta.VehicleClassGroup"
+          <a href="dta.RoadNode.html" title="dta.RoadNode"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -48,23 +48,21 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="dta-node">
-<h1>dta.Node<a class="headerlink" href="#dta-node" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dta-virtualnode">
+<h1>dta.VirtualNode<a class="headerlink" href="#dta-virtualnode" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="dta.Node">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Node</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Base class that represents a node in a network.</p>
+<dt id="dta.VirtualNode">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VirtualNode</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.VirtualNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Node.Node</span></tt></p>
+<p>A Node subclass that represents a virtual node in a network.</p>
 <dl class="method">
-<dt id="dta.Node.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.VirtualNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <blockquote>
 <div><ul class="simple">
 <li>id is a unique identifier (unique within the containing network), an integer</li>
 <li>x and y are coordinates (what units?)</li>
-<li>type is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
-Node.GEOMETRY_TYPE_VIRTUAL</li>
 <li>label is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
 <li>level is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
 </ul>
@@ -78,41 +76,29 @@ Node.GEOMETRY_TYPE_VIRTUAL</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.Node.__init__" title="dta.Node.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.VirtualNode.__init__" title="dta.VirtualNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualNode.addIncomingLink" title="dta.VirtualNode.addIncomingLink"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.addIncomingLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualNode.addOutgoingLink" title="dta.VirtualNode.addOutgoingLink"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.addOutgoingLink</span></tt></a></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dta.Node.addIncomingLink">
-<tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Node.addIncomingLink" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.VirtualNode.addIncomingLink">
+<tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.addIncomingLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify that the given link ends in this node, and adds it to the list of
 incoming links.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Node.addOutgoingLink">
-<tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Node.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.VirtualNode.addOutgoingLink">
+<tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify that the given link starts with this node, and adds it to the list of
 outgoing links.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="dta.Node.id">
-<tt class="descname">id</tt><a class="headerlink" href="#dta.Node.id" title="Permalink to this definition">¶</a></dt>
-<dd><p>unique identifier (integer)</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="dta.Node.x">
-<tt class="descname">x</tt><a class="headerlink" href="#dta.Node.x" title="Permalink to this definition">¶</a></dt>
-<dd><p>x-coordinate</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="dta.Node.y">
-<tt class="descname">y</tt><a class="headerlink" href="#dta.Node.y" title="Permalink to this definition">¶</a></dt>
-<dd><p>y-coordinate</p>
 </dd></dl>
 
 </dd></dl>
@@ -126,14 +112,14 @@ outgoing links.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="dta.VehicleClassGroup.html"
-                        title="previous chapter">dta.VehicleClassGroup</a></p>
-  <h4>Next topic</h4>
   <p class="topless"><a href="dta.RoadNode.html"
-                        title="next chapter">dta.RoadNode</a></p>
+                        title="previous chapter">dta.RoadNode</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.Centroid.html"
+                        title="next chapter">dta.Centroid</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../_sources/_generated/dta.Node.txt"
+    <li><a href="../_sources/_generated/dta.VirtualNode.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -160,10 +146,10 @@ outgoing links.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="dta.RoadNode.html" title="dta.RoadNode"
+          <a href="dta.Centroid.html" title="dta.Centroid"
              >next</a> |</li>
         <li class="right" >
-          <a href="dta.VehicleClassGroup.html" title="dta.VehicleClassGroup"
+          <a href="dta.RoadNode.html" title="dta.RoadNode"
              >previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
