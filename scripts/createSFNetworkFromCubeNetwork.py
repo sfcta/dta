@@ -25,10 +25,17 @@ USAGE = """
  
 if __name__ == '__main__':
     
+    dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
+
+    
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
-    gearynet_dta = dta.DynameqNetwork(dir=".", file_prefix="geary_")
-    gearynet_dta.write(dir = "test", file_prefix="geary_")
+    gearynet_dta = dta.DynameqNetwork(dir=".", file_prefix="Base_Final")
+    gearynet_dta.write(dir="test", file_prefix="geary_")
+    
+    gearyscenario = dta.DynameqScenario(dir=".", file_prefix="Base_Final")
+    gearyscenario.write(dir="test", file_prefix="geary_")
+    exit(0)
     
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)

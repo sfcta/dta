@@ -23,8 +23,8 @@ class RoadNode(Node):
     
     """
     #: Control types - how is this used?
-    CONTROL_TYPE_UNSIGNALIZED       = 0
-    CONTROL_TYPE_SIGNALIZED         = 1
+    CONTROL_TYPE_UNSIGNALIZED       = 0  # the intersection is not signalized
+    CONTROL_TYPE_SIGNALIZED         = 1  # the intersection is signalized
     CONTROL_TYPES                   = [CONTROL_TYPE_UNSIGNALIZED,
                                        CONTROL_TYPE_SIGNALIZED]
     
@@ -64,17 +64,24 @@ class RoadNode(Node):
                                        PRIORITY_TEMPLATE_MERGE,
                                        PRIORITY_TEMPLATE_SIGNALIZED]
         
-    def __init__(self, id, x, y, control, priority, label=None, level=None):
+    def __init__(self, id, x, y, type, control, priority, label=None, level=None):
         """
         Constructor.
         
          * id is a unique identifier (unique within the containing network), an integer
          * x and y are coordinates (what units?)
+         * type is one of Node.GEOMETRY_TYPE_INTERSECTION or Node.GEOMETRY_TYPE_JUNCTION
          * control is one of Node.CONTROL_TYPE_UNSIGNALIZED or Node.CONTROL_TYPE_SIGNALIZED
          * label is a string, for readability.  If None passed, will default to "label [id]"
          * level is for vertical alignment.  More details TBD.  If None passed, will use default.  
         """
-        super(Node, self).__init__(id, x, y,label,level)
+        if type not in [Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION]:
+            raise DtaError("RoadNode initialized with invalid type: %d" % type)
+        
+        if control not in RoadNode.CONTROL_TYPES:
+            raise DtaError("RoadNode initailized with invalid control: %d" % control)
+        
+        Node.__init__(self, id, x, y, type, label, level)
 
-        self.control = control
-        self.priority = priority
+        self._control    = control
+        self._priority   = priority
