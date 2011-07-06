@@ -70,10 +70,10 @@ class Node(object):
             self._level = Node.DEFAULT_LEVEL
         
         # Dictionary of Link objects, with Link -> angle between the link and (x+1,y) -> (x,y).
-        self._incoming_links = {}
+        self._incomingLinks = {}
         
         # Dictionary of Link objects, with Link -> angle between the link and (x,y) -> (x+1,y).
-        self._outgoing_links = {}
+        self._outgoingLinks = {}
     
     def addIncomingLink(self, link):
         """
@@ -85,9 +85,12 @@ class Node(object):
         
         if link.nodeB != self:
             raise DtaError("Node.addIncomingLink called for link that doesn't end here: %s" % str(link))
-        
-        angle = math.acos( (self.x - link.nodeA.x) / link.euclideanLength() )
-        self._incoming_links[link] = angle
+
+        if link.euclideanLength() == 0:
+            angle = 0
+        else:
+            angle = math.acos( (self.x - link.nodeA.x) / link.euclideanLength() )
+        self._incomingLinks[link] = angle
     
     def addOutgoingLink(self, link):
         """
@@ -100,5 +103,8 @@ class Node(object):
         if link.nodeA != self:
             raise DtaError("Node.addOutgoingLink called for link that doesn't start here: %s" % str(link))
         
-        angle = math.acos( (link.nodeB.x - self.x) / link.euclideanLength() )
-        self._outgoing_links[link] = angle
+        if link.euclideanLength() == 0:
+            angle = 0
+        else:
+            angle = math.acos( (link.nodeB.x - self.x) / link.euclideanLength() )
+        self._outgoingLinks[link] = angle

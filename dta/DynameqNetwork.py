@@ -17,12 +17,14 @@ __license__     = """
 """
 import os
 from .Centroid import Centroid
+from .Connector import Connector
 from .DtaError import DtaError
 from .Logger import DtaLogger
 from .Network import Network
 from .Node import Node
 from .RoadLink import RoadLink
 from .RoadNode import RoadNode
+from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 
 class DynameqNetwork(Network):
@@ -36,27 +38,50 @@ class DynameqNetwork(Network):
     TRANSIT_FILE    = '%s_ptrn.dqt'
     PRIORITIES_FILE = '%s_prio.dqt'
     
-    def __init__(self, dir, file_prefix):
+    def __init__(self, dir, file_prefix, scenario):
         """
         Constructor.  Reads the network in the given *dir* with the given *file_prefix*.
         
+        Keeps a reference to the given dynameqScenario (a :py:class:`DynameqScenario` instance)
+        for :py:class:`VehicleClassGroup` lookups
+        
         """
-        Network.__init__(self)
+        Network.__init__(self, scenario)
         
         # base file processing
         basefile = os.path.join(dir, DynameqNetwork.BASE_FILE % file_prefix)
         if not os.path.exists(basefile):
             raise DtaError("Base network file %s does not exist" % basefile)
         
-        for node in self._readNodesFromBaseFile(basefile):
-            self.addNode(node)
+        for fields in self._readSectionFromFile(basefile, "NODES", "CENTROIDS"):
+            self.addNode(self._parseNodeFromFields(fields))
 
-        for centroid in self._readCentroidsFromBaseFile(basefile):
-            self.addCentroid(centroid)
+        for fields in self._readSectionFromFile(basefile, "CENTROIDS", "LINKS"):
+            self.addCentroid(self._parseCentroidFromFields(fields))
         
-        for link in self._readLinksFromBaseFile(basefile):
-            self.addLink(link)
-        
+        for fields in self._readSectionFromFile(basefile, "LINKS", "LANE_PERMS"):
+            self.addLink(self._parseLinkFromFields(fields))
+            
+        for fields in self._readSectionFromFile(basefile, "LANE_PERMS", "LINK_EVENTS"):
+            self._addLanePermissionFromFields(fields)
+            
+        for fields in self._readSectionFromFile(basefile, "LINK_EVENTS", "LANE_EVENTS"):
+            # TODO do LINK_EVENTS have to correspond to scenario events?
+            print fields
+            
+        for fields in self._readSectionFromFile(basefile, "LANE_EVENTS", "VIRTUAL_LINKS"):
+            # TODO do LANE_EVENTS have to correspond to scenario events?
+            print fields
+
+        for fields in self._readSectionFromFile(basefile, "VIRTUAL_LINKS", "MOVEMENTS"):
+            (vlink1, vlink2) = self._parseVirtualLinkFromFields(fields)
+            self.addVirtualLink(vlink1)
+            self.addVirtualLink(vlink2)
+        return
+            
+        for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
+            print fields            
+                    
     def __del__(self):
         pass
     
@@ -67,52 +92,66 @@ class DynameqNetwork(Network):
         self._writeNodesToBaseFile(basefile_object)
         self._writeCentroidsToBaseFile(basefile_object)
         self._writeLinksToBasefile(basefile_object)
+        self._writeLanePermissionsToBaseFile(basefile_object)
+        self._writeVirtualLinksToBaseFile(basefile_object)
         basefile_object.close()
 
-    def _readNodesFromBaseFile(self, basefile):
+    def _readSectionFromFile(self, filename, sectionName, nextSectionName):
         """
-        Generator function, yields RoadNode and VirtualNode instances to the caller
+        Generator function, yields fields (array of strings) from the given section of the given file.
         """
-        lines = open(basefile, "r")
-        curLine = lines.next().strip()
+        lines = open(filename, "r")
+        curLine = ""
         try:
-            while curLine !="NODES":
+            # find the section
+            while curLine != sectionName:
                 curLine = lines.next().strip()
         except StopIteration:
-            raise DtaError("Base network file %s: cannot locate the Node section" % basefile)
+            raise DtaError("DynameqNetwork _readSectionFromFile failed to find %s in %s" % 
+                           (sectionName,filename))
         
-        curLine = lines.next().strip()  # should be the header
-        curLine = lines.next().strip()  # should be the first record
-        
-        while not curLine == "CENTROIDS":
-            fields  = curLine.split()
-            id      = int(fields[0])
-            x       = float(fields[1])
-            y       = float(fields[2])
-            control = int(fields[3])
-            priority= int(fields[4])
-            type    = int(fields[5])
-            level   = int(fields[6])
-            label   = fields[7]
-            if label[0] == '"' and label[-1] ==  '"':
-                label = label[1:-1]
-
-            if type == Node.GEOMETRY_TYPE_INTERSECTION or \
-               type == Node.GEOMETRY_TYPE_JUNCTION:
-                yield RoadNode(id, x, y, type, control, priority, label, level)
-            elif type == Node.GEOMETRY_TYPE_VIRTUAL:
-                yield VirtualNode(id, x, y, label, level)
-            else:
-                raise DtaError("Found Node of unrecognized type %d in NODES section of %s" % (type, fullfile))
-                
+        # go past the section name
+        curLine = lines.next().strip()
+        # skip any comments
+        while curLine[0] == "*":
             curLine = lines.next().strip()
-
+        
+        # these are the ones we want
+        while not curLine == nextSectionName:
+            fields  = curLine.split()
+            yield fields
+            
+            curLine = lines.next().strip()
         lines.close()
         raise StopIteration
 
+    def _parseNodeFromFields(self, fields):
+        """
+        Interprets fields and returns a RoadNode or a VirtualNode
+        """
+        id      = int(fields[0])
+        x       = float(fields[1])
+        y       = float(fields[2])
+        control = int(fields[3])
+        priority= int(fields[4])
+        type    = int(fields[5])
+        level   = int(fields[6])
+        label   = fields[7]
+        if label[0] == '"' and label[-1] ==  '"':
+            label = label[1:-1]
+
+        if type == Node.GEOMETRY_TYPE_INTERSECTION or \
+           type == Node.GEOMETRY_TYPE_JUNCTION:
+            return RoadNode(id, x, y, type, control, priority, label, level)
+        
+        if type == Node.GEOMETRY_TYPE_VIRTUAL:
+            return VirtualNode(id, x, y, label, level)
+        
+        raise DtaError("DynameqNetwork _parseNodesFromBasefile: Found Node of unrecognized type %d" % type)
+
     def _writeNodesToBaseFile(self, basefile_object):
         """
-        Write version of _readNodesFromBaseFile().  *basefile_object* is the file object,
+        Write version of _parseNodesFromBaseFile().  *basefile_object* is the file object,
         ready for writing.
         """
         basefile_object.write("NODES\n")
@@ -144,38 +183,23 @@ class DynameqNetwork(Network):
                                    node._level,
                                    '"' + node._label + '"'))
 
-    def _readCentroidsFromBaseFile(self, basefile):
+    def _parseCentroidFromFields(self, fields):
         """
-        Generator function, yields Centroid instances to the caller
+        Interprets fields into a Centroid
         """
-        lines = open(basefile, "r")
-        curLine = lines.next().strip()
-        try:
-            while curLine !="CENTROIDS":
-                curLine = lines.next().strip()
-        except StopIteration:
-            raise DtaError("Base network file %s: cannot locate the Centroids section" % basefile)
-        curLine = lines.next().strip()  # should be the header
-        curLine = lines.next().strip()  # should be the first record
-        while not curLine =="LINKS":
-                  
-            fields  = curLine.split()
-            id      = int(fields[0])
-            x       = float(fields[1])
-            y       = float(fields[2])
-            level   = int(fields[3])
-            label   = fields[4]
-            if label[0] == '"' and label[-1] ==  '"':
-                label = label[1:-1]
-            
-            yield Centroid(id, x, y, label=label, level=level)
-            curLine = lines.next().strip()
-        lines.close()
-        raise StopIteration
+        id      = int(fields[0])
+        x       = float(fields[1])
+        y       = float(fields[2])
+        level   = int(fields[3])
+        label   = fields[4]
+        if label[0] == '"' and label[-1] ==  '"':
+            label = label[1:-1]
+        
+        return Centroid(id, x, y, label=label, level=level)
     
     def _writeCentroidsToBaseFile(self, basefile_object):
         """
-        Write version of _readCentroidsFromBaseFile().  *basefile_object* is the file object,
+        Write version of _parseCentroidsFromBaseFile().  *basefile_object* is the file object,
         ready for writing.
         """
         basefile_object.write("CENTROIDS\n")
@@ -194,69 +218,46 @@ class DynameqNetwork(Network):
                                    centroid._level,
                                    '"' + centroid._label + '"'))
 
-    def _readLinksFromBaseFile(self, basefile):
+    def _parseLinkFromFields(self, fields):
         """
-        Generator function, yields Link instances to the caller
-        """
-        line = open(basefile, "r")
-        curLine = line.next().strip()
-        try:
-            while curLine != "LINKS":
-                curLine = line.next().strip()
-        except StopIteration:
-            raise DtaError("Base network file %s: cannot locate the Links section" % basefile)
+        Interprets fields into a Connector or a RoadLink
+        """            
+        id      = int(fields[0])
+        startid = int(fields[1])
+        endid   = int(fields[2])
+        rev     = int(fields[3])
+        faci    = int(fields[4])
+        length  = float(fields[5])
+        fspeed  = float(fields[6])
+        lenfac  = float(fields[7])
+        resfac  = float(fields[8])
+        lanes   = int(fields[9])
+        rabout  = int(fields[10])
+        level   = int(fields[11])
+        label   = fields[12]
+        if label[0] == '"' and label[-1] ==  '"':
+            label = label[1:-1]
+            
+        nodeA = self.getNodeForId(startid)
+        nodeB = self.getNodeForId(endid)
         
-        curLine = line.next().strip()  # this is the header
-        curLine = line.next().strip()  # this is the first record
-        while curLine !="LANE_PERMS":
-            fields = curLine.split()
+        if (isinstance(nodeA, Centroid) or isinstance(nodeB, Centroid) or
+            isinstance(nodeA, VirtualNode) or isinstance(nodeB, VirtualNode)):
             
-            id      = int(fields[0])
-            startid = int(fields[1])
-            endid   = int(fields[2])
-            rev     = int(fields[3])
-            faci    = int(fields[4])
-            length  = float(fields[5])
-            fspeed  = float(fields[6])
-            lenfac  = float(fields[7])
-            resfac  = float(fields[8])
-            lanes   = int(fields[9])
-            rabout  = int(fields[10])
-            level   = int(fields[11])
-            label   = fields[12]
-            if label[0] == '"' and label[-1] ==  '"':
-                label = label[1:-1]
-                
-            nodeA = self.getNodeForId(startid)
-            nodeB = self.getNodeForId(endid)
-            
-            if nodeA == None:
-                raise DtaError("Base network file link read with unknown node A ID: %d" % startid)
-            if nodeB == None:
-                raise DtaError("Base network file link read with unknown node B ID: %d" % endid)
-            
-            if isinstance(nodeA, Centroid) or isinstance(nodeB, Centroid):
-                DtaLogger.debug("Connector has faci %d length %")
-                newLink = Connector(id, nodeA, nodeB, reverseAttachedLinkId=rev, 
-                                    facilityType=faci, length=length,
-                                    freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
-                                    responseTimeFactor=resfac, numLanes=lanes,
-                                    roundAbout=rabout, level=level, label=label)
-            
-            else:
-                # are these all RoadLinks?  What about VirtualLinks?
-                newLink = RoadLink(id, nodeA, nodeB, reverseAttachedLinkId=rev, 
-                                   facilityType=faci, length=length,
-                                   freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
-                               responseTimeFactor=resfac, numLanes=lanes,
-                               roundAbout=rabout, level=level, label=label)                    
-                
-            yield newLink
-                             
-            curLine = line.next().strip()
-        line.close()
-        raise StopIteration
-    
+            DtaLogger.debug("Connector has faci %d length %f" % (faci, length))
+            return Connector(id, nodeA, nodeB, reverseAttachedLinkId=rev, 
+                                facilityType=faci, length=length,
+                                freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
+                                responseTimeFactor=resfac, numLanes=lanes,
+                                roundAbout=rabout, level=level, label=label)
+        
+        # are these all RoadLinks?  What about VirtualLinks?
+        return RoadLink(id, nodeA, nodeB, reverseAttachedLinkId=rev, 
+                           facilityType=faci, length=length,
+                           freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
+                           responseTimeFactor=resfac, numLanes=lanes,
+                           roundAbout=rabout, level=level, label=label)                    
+
     def _writeLinksToBasefile(self, basefile_object):
         """
         Write version of _readLinksFromBaseFile().  *basefile_object* is the file object,
@@ -282,3 +283,69 @@ class DynameqNetwork(Network):
                                    link._roundAbout,
                                    link._level,
                                    '"' + link.label + '"'))
+    
+    def _addLanePermissionFromFields(self, fields):
+        """
+        Updates links by attaching permissions.
+        """            
+        linkId  = int(fields[0])
+        laneId  = int(fields[1])
+        perms   = fields[2]
+        
+        vehicleClassGroup = self._scenario.getVehicleClassGroup(perms)
+        link = self.getLinkForId(linkId)
+        link.addLanePermission(laneId, vehicleClassGroup)
+            
+    def _writeLanePermissionsToBaseFile(self, basefile_object):
+        """
+        Write version of _addLanePermissionsFromFields().  *basefile_object* is the file object,
+        ready for writing.        
+        """
+        basefile_object.write("LANE_PERMS\n")
+        basefile_object.write("*    link  id                perms\n")
+        for linkId in sorted(self._links.keys()):
+            if not isinstance(self._links[linkId], RoadLink): continue
+            for laneId in range(self._links[linkId]._numLanes):
+                basefile_object.write("%9d %3d %20s\n" % 
+                                      (linkId,
+                                       laneId,
+                                       self._links[linkId]._lanePermissions[laneId].name))
+    
+    def _parseVirtualLinkFromFields(self, fields):
+        """
+        Interprets fields into two VirtualLink (one in each direction)
+        """
+        centroidId  = int(fields[0])
+        linkId      = int(fields[1])
+        
+        centroid    = self._centroids[centroidId]
+        connector   = self._links[linkId]
+
+        if not isinstance(connector, Connector):
+            raise DtaError("Virtual link specified with non-Connector link: %s" % str(connector))
+        
+        return (VirtualLink(id=None,
+                            nodeA=centroid, 
+                            nodeB=(connector.nodeB if connector._fromRoadNode else connector.nodeA),
+                            label=None,
+                            connector=connector),
+                VirtualLink(id=None,
+                            nodeA=(connector.nodeB if connector._fromRoadNode else connector.nodeA),
+                            nodeB=centroid,
+                            label=None,
+                            connector=connector))
+        
+    def _writeVirtualLinksToBaseFile(self, basefile_object):
+        """
+        Write version of _parseVirtualLinkFromFields().  *basefile_object* is the file object,
+        ready for writing.
+        """
+        basefile_object.write("VIRTUAL_LINKS\n")
+        basefile_object.write("* centroid_id  link_id\n")
+        for virtualLink in self._virtualLinks:
+            # these are bidirectional so ignore those with NodeB as the centroid
+            if isinstance(virtualLink.nodeB, Centroid): continue
+            # nodeA is a centroid
+            basefile_object.write("%13d %8d\n" %
+                                  (virtualLink.nodeA.id,
+                                   virtualLink._connector.id))

@@ -17,13 +17,15 @@ __license__     = """
 """
 
 from .Centroid import Centroid
+from .Connector import Connector
 from .DtaError import DtaError
 from .Link import Link
 from .VirtualNode import VirtualNode
 
 class VirtualLink(Link):
     """
-    A VirtualLink is a Link that connects a Centroid with a VirtualNode.
+    A VirtualLink is a Link that connects a :py:class:`Centroid` with
+    a :py:class:`Connector`.
     
     """
     
@@ -38,13 +40,15 @@ class VirtualLink(Link):
     RABOUT          = 0
     LEVEL           = 0
         
-    def __init__(self, id, nodeA, nodeB, label):
+    def __init__(self, id, nodeA, nodeB, label, connector):
         """
-        Constructor. Verifies one node is a Centroid and the other node is a VirtualNode.
+        Constructor. Verifies one node is a :py:class:`Centroid` and the
+        other node is a :py:class:`VirtualNode`.
         
          * *id* is a unique identifier (unique within the containing network), an integer
-         * *nodeA*, *nodeB* are Nodes
+         * *nodeA*, *nodeB* are :py:class:`Node` instances
          * *label* is a string, or None 
+         * *connector* is a :py:class:`Connector` instance
         """
         
         if not isinstance(nodeA, Centroid) and not isinstance(nodeB, Centroid):
@@ -57,4 +61,8 @@ class VirtualLink(Link):
        
         Link.__init__(self, id, nodeA, nodeB, label)
 
+        if not isinstance(connector, Connector):
+            raise DtaError("Attempting to initialize a VirtualLink without a Connector: %s" % 
+                           str(connector))
+        self._connector = connector
        

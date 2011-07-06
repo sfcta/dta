@@ -81,6 +81,16 @@ class Scenario(object):
                            str(vehicleClassGroup))
             
         self.vehicleClassGroups[vehicleClassGroup.name] = vehicleClassGroup
+
+    def getVehicleClassGroup(self, vehicleClassGroupName):
+        """
+        Returns the relevant :py:class:`VehicleClassGroup` or throws a :py:class:`DtaError` if not
+        found.
+        """
+        if vehicleClassGroupName in self.vehicleClassGroups:
+            return self.vehicleClassGroups[vehicleClassGroupName]
+        
+        raise DtaError("Scenario VehicleClassGroup named %s not found" % vehicleClassGroupName)
         
     def addEvent(self, eventTime, eventDescription):
         """

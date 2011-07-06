@@ -63,7 +63,7 @@ class RoadLink(Link):
         self._roundAbout                = roundAbout
         self._level                     = level
 
-        self._lanePermissions           = {}  # lane id -> VehicleClassGroup reference
+        self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
     
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
@@ -72,7 +72,7 @@ class RoadLink(Link):
         if not isinstance(vehicleClassGroup, VehicleClassGroup):
             raise DtaError("RoadLink addLanePermission() called with invalid vehicleClassGroup %s" % str(vehicleClassGroup))
         
-        if laneId < 0 or laneId > self._numLanes:
+        if laneId < 0 or laneId >= self._numLanes:
             raise DtaError("RoadLink addLanePermission() called with invalid laneId %d; numLanes = %d" % 
                            (laneId, self._numLanes))
         

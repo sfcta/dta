@@ -52,7 +52,7 @@
 <h1>dta.Network<a class="headerlink" href="#dta-network" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Network">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Network</tt><a class="headerlink" href="#dta.Network" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Network</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.Network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Base class that represents a DTA Network.  Networks exist on a continuum between
 macro- and micro-simulation, and this network is meant to represent something
@@ -61,8 +61,9 @@ macro- and micro-simulation, and this network is meant to represent something
 so this class should have no code to deal with any particular file formats.</p>
 <dl class="method">
 <dt id="dta.Network.__init__">
-<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor.  Initializes to an empty network.</p>
+<tt class="descname">__init__</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.Network.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.  Initializes to an empty network, stores reference to given
+scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" title="dta.Scenario"><tt class="xref py py-class docutils literal"><span class="pre">Scenario</span></tt></a> instance).</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -98,10 +99,23 @@ already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Network.addVirtualLink">
+<tt class="descname">addVirtualLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.Network.addVirtualLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that <em>newLink</em> is a <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> and stores it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getLinkForId">
+<tt class="descname">getLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Network.getLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
+Raises DtaError if not found.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Network.getNodeForId">
 <tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Network.getNodeForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-Returns None if not found.</p>
+Raises DtaError if not found.</p>
 </dd></dl>
 
 </dd></dl>

@@ -195,7 +195,8 @@
 47
 48
 49
-50</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+50
+51</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -223,15 +224,16 @@
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     
     <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;dtaInfo.log&quot;</span><span class="p">,</span> <span class="s">&quot;dtaDebug.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
     
     <span class="c"># The Geary network was created in an earlier Phase of work, so it already exists as</span>
     <span class="c"># a Dynameq DTA network.  Initialize it from the Dynameq text files.</span>
-    <span class="n">gearynet_dta</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
-    <span class="n">gearynet_dta</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
-    
     <span class="n">gearyscenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
     <span class="n">gearyscenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
+    
+    <span class="n">gearynet_dta</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="n">gearyscenario</span><span class="p">)</span>
+    <span class="n">gearynet_dta</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
+    
+
     <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     
     <span class="c"># The rest of San Francisco currently exists as a Cube network.  Initialize it from</span>

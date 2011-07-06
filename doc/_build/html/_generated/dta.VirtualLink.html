@@ -52,18 +52,21 @@
 <h1>dta.VirtualLink<a class="headerlink" href="#dta-virtuallink" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.VirtualLink">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VirtualLink</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VirtualLink</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>label</em>, <em>connector</em><big>)</big><a class="headerlink" href="#dta.VirtualLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
-<p>A VirtualLink is a Link that connects a Centroid with a VirtualNode.</p>
+<p>A VirtualLink is a Link that connects a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> with
+a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</p>
 <dl class="method">
 <dt id="dta.VirtualLink.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor. Verifies one node is a Centroid and the other node is a VirtualNode.</p>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>label</em>, <em>connector</em><big>)</big><a class="headerlink" href="#dta.VirtualLink.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. Verifies one node is a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> and the
+other node is a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>.</p>
 <blockquote>
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
-<li><em>nodeA</em>, <em>nodeB</em> are Nodes</li>
+<li><em>nodeA</em>, <em>nodeB</em> are <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances</li>
 <li><em>label</em> is a string, or None</li>
+<li><em>connector</em> is a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instance</li>
 </ul>
 </div></blockquote>
 </dd></dl>

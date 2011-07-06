@@ -20,6 +20,7 @@ from .Centroid import Centroid
 from .DtaError import DtaError
 from .Link import Link
 from .RoadNode import RoadNode
+from .VehicleClassGroup import VehicleClassGroup
 from .VirtualNode import VirtualNode
 
 class Connector(Link):
@@ -46,12 +47,16 @@ class Connector(Link):
         Putting RoadLink attributes heres for now, re-examine this (like should they go into the Link?) 
         """
         
-        if not isinstance(nodeA, RoadNode) and not isinstance(nodeB, RoadNode):
+        if isinstance(nodeA, RoadNode):
+            self._fromRoadNode = True
+        elif isinstance(nodeB, RoadNode):
+            self._fromRoadNode = False
+        else:
             raise DtaError("Attempting to initialize a Connector without a RoadNode: %s - %s" % 
                            (str(nodeA), str(nodeB)))
 
         if (not isinstance(nodeA, Centroid) and not isinstance(nodeA, VirtualNode) and
-            not isinstance(nodeB, Centroid) and not isinstance(nodeB, virtualNode)):
+            not isinstance(nodeB, Centroid) and not isinstance(nodeB, VirtualNode)):
             raise DtaError("Attempting to initialize a Connector without a Centroid/VirtualNode: %s - %s" % 
                            (str(nodeA), str(nodeB)))
        
@@ -65,3 +70,18 @@ class Connector(Link):
         self._numLanes                  = numLanes
         self._roundAbout                = roundAbout
         self._level                     = level
+
+        self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
+
+    def addLanePermission(self, laneId, vehicleClassGroup):
+        """
+        Adds the lane permissions for the lane numbered by *laneId* (outside lane is lane 0, increases towards inside edge.)
+        """
+        if not isinstance(vehicleClassGroup, VehicleClassGroup):
+            raise DtaError("RoadLink addLanePermission() called with invalid vehicleClassGroup %s" % str(vehicleClassGroup))
+        
+        if laneId < 0 or laneId >= self._numLanes:
+            raise DtaError("RoadLink addLanePermission() called with invalid laneId %d; numLanes = %d" % 
+                           (laneId, self._numLanes))
+        
+        self._lanePermissions[laneId] = vehicleClassGroup

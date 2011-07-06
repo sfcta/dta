@@ -19,6 +19,8 @@ __license__     = """
 from .Centroid import Centroid
 from .Link import Link
 from .RoadNode import RoadNode
+from .Scenario import Scenario
+from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 
 class Network(object):
@@ -32,18 +34,27 @@ class Network(object):
     
     """
     
-    def __init__(self):
+    def __init__(self, scenario):
         """
-        Constructor.  Initializes to an empty network.
-        
+        Constructor.  Initializes to an empty network, stores reference to given
+        scenario (a :py:class:`Scenario` instance).
         """
         
         #: node id -> node; can be :py:class:`RoadNode`s or :py:class:`VirtualNode`s
         self._nodes     = {}
         #: node id -> :py:class:`Centroid` node
         self._centroids = {}
-        #: link id -> :py:class:`Link`
+        #: link id -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
         self._links     = {}
+        #: virtual links.  these have no id -- TODO: make one up?
+        self._virtualLinks = []
+        
+        #: the relevant :py:class:`Scenario` instance
+        if not isinstance(scenario, Scenario):
+            raise DtaError("Network __init__ received invalid scenario %s (not Scenario instance)" %
+                           str(scenario))
+            
+        self._scenario = scenario
         
     def __del__(self):
         pass
@@ -67,13 +78,14 @@ class Network(object):
     def getNodeForId(self, nodeId):
         """
         Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-        Returns None if not found.
+        Raises DtaError if not found.
         """
         if nodeId in self._nodes:
             return self._nodes[nodeId]
         if nodeId in self._centroids:
             return self._centroids[nodeId]
-        return None
+        
+        raise DtaError("Network getNodeForId: none found for id %d" % nodeId)
     
     def addCentroid(self, newCentroid):
         """
@@ -103,4 +115,23 @@ class Network(object):
             raise DtaError("Link with id %s already exists in the network" % newLink.id)
         
         self._links[newLink.id] = newLink
+
+    def addVirtualLink(self, newLink):
+        """
+        Verifies that *newLink* is a :py:class:`VirtualLink` and stores it
+        """
+        if not isinstance(newLink, VirtualLink):
+            raise DtaError("Network.addVirtualLink called on a non-VirtualLink: %s" % str(newLink))
         
+        self._virtualLinks.append(newLink)
+
+    def getLinkForId(self, linkId):
+        """
+        Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
+        Raises DtaError if not found.
+        """
+        if linkId in self._links:
+            return self._links[linkId]
+        
+        raise DtaError("Network getLinkForId: none found for id %d" % linkId)
+    
