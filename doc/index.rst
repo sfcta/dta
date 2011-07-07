@@ -57,6 +57,8 @@ Misc
    :toctree: _generated
    
    dta.DtaError
+   dta.DtaLogger
+   dta.Movement
 
 Example: Building a network using dta
 ==========================================

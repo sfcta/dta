@@ -1,0 +1,126 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.DtaLogger &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.Movement" href="dta.Movement.html" />
+    <link rel="prev" title="dta.DtaError" href="dta.DtaError.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dta.Movement.html" title="dta.Movement"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.DtaError.html" title="dta.DtaError"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-dtalogger">
+<h1>dta.DtaLogger<a class="headerlink" href="#dta-dtalogger" title="Permalink to this headline">¶</a></h1>
+<dl class="data">
+<dt id="dta.DtaLogger">
+<tt class="descclassname">dta.</tt><tt class="descname">DtaLogger</tt><a class="headerlink" href="#dta.DtaLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instances of the Logger class represent a single logging channel. A
+&#8220;logging channel&#8221; indicates an area of an application. Exactly how an
+&#8220;area&#8221; is defined is up to the application developer. Since an
+application can have any number of areas, logging channels are identified
+by a unique string. Application areas can be nested (e.g. an area
+of &#8220;input processing&#8221; might include sub-areas &#8220;read CSV files&#8221;, &#8220;read
+XLS files&#8221; and &#8220;read Gnumeric files&#8221;). To cater for this natural nesting,
+channel names are organized into a namespace hierarchy where levels are
+separated by periods, much like the Java or Python package namespace. So
+in the instance given above, channel names might be &#8220;input&#8221; for the upper
+level, and &#8220;input.csv&#8221;, &#8220;input.xls&#8221; and &#8220;input.gnu&#8221; for the sub-levels.
+There is no arbitrary limit to the depth of nesting.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.DtaError.html"
+                        title="previous chapter">dta.DtaError</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.Movement.html"
+                        title="next chapter">dta.Movement</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.DtaLogger.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dta.Movement.html" title="dta.Movement"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.DtaError.html" title="dta.DtaError"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
