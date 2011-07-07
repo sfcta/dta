@@ -40,29 +40,44 @@ class VirtualLink(Link):
     RABOUT          = 0
     LEVEL           = 0
         
-    def __init__(self, id, nodeA, nodeB, label, connector):
+    def __init__(self, id, startNode, endNode, label):
         """
         Constructor. Verifies one node is a :py:class:`Centroid` and the
         other node is a :py:class:`VirtualNode`.
         
          * *id* is a unique identifier (unique within the containing network), an integer
-         * *nodeA*, *nodeB* are :py:class:`Node` instances
+         * *startNode*, *endNode* are :py:class:`Node` instances
          * *label* is a string, or None 
-         * *connector* is a :py:class:`Connector` instance
         """
         
-        if not isinstance(nodeA, Centroid) and not isinstance(nodeB, Centroid):
+        if not isinstance(startNode, Centroid) and not isinstance(endNode, Centroid):
             raise DtaError("Attempting to initialize a VirtualLink without a Centroid: %s - %s" % 
-                           (str(nodeA), str(nodeB)))
+                           (str(startNode), str(endNode)))
 
-        if not isinstance(nodeA, VirtualNode) and not isinstance(nodeB, VirtualNode):
+        if not isinstance(startNode, VirtualNode) and not isinstance(endNode, VirtualNode):
             raise DtaError("Attempting to initialize a VirtualLink without a VirtualNode: %s - %s" % 
-                           (str(nodeA), str(nodeB)))
+                           (str(startNode), str(endNode)))
        
-        Link.__init__(self, id, nodeA, nodeB, label)
+        Link.__init__(self, id, startNode, endNode, label)
 
-        if not isinstance(connector, Connector):
-            raise DtaError("Attempting to initialize a VirtualLink without a Connector: %s" % 
-                           str(connector))
-        self._connector = connector
-       
+
+    def getAdjacentConnector(self):
+        """
+        A VirtualLink connects a :py:class:`Centroid` with a :py:class:`Connector`; this
+        returns the :py:class:`Connector` instance.
+        """
+        if isinstance(self._startNode, Centroid):
+            for link in self._endNode.iterOutgoingLinks():
+                if isinstance(link, Connector): return link
+
+            raise DtaError("VirtualLink getAdjacentConnector(): Connector not found for %d-%d from endNode: %s" % 
+                           (self._startNode.id, self._endNode.id,
+                            str(self._endNode._outgoingLinks)))
+                        
+        if isinstance(self._endNode, Centroid):
+            for link in self._startNode.iterIncomingLinks():
+                if isinstance(link, Connector): return link
+            
+            raise DtaError("VirtualLink getAdjacentConnector(): Connector not found for %d-%d from startNode: %s" % 
+                           (self._startNode.id, self._endNode.id,
+                            str(self._startNode._incomingLinks)))

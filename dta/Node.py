@@ -38,26 +38,22 @@ class Node(object):
                                        GEOMETRY_TYPE_JUNCTION,
                                        GEOMETRY_TYPE_VIRTUAL]
     
-    def __init__(self, id, x, y, type, label=None, level=None):
+    def __init__(self, id, x, y, geometryType, label=None, level=None):
         """
         Constructor.
         
-         * id is a unique identifier (unique within the containing network), an integer
-         * x and y are coordinates (what units?)
-         * type is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
+         * *id* is a unique identifier (unique within the containing network), an integer
+         * *x* and *y* are coordinates (what units?)
+         * *geometryType* is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
            Node.GEOMETRY_TYPE_VIRTUAL
-         * label is a string, for readability.  If None passed, will default to "label [id]"
-         * level is for vertical alignment.  More details TBD.  If None passed, will use default.  
+         * *label* is a string, for readability.  If None passed, will default to "label [id]"
+         * *level* is for vertical alignment.  More details TBD.  If None passed, will use default.  
         
         """
-        #: unique identifier (integer)
-        self.id      = id
-        #: x-coordinate
-        self.x       = x
-        #: y-coordinate
-        self.y       = y
-        #: one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or Node.GEOMETRY_TYPE_VIRTUAL
-        self._type   = type
+        self._id             = id   #: unique identifier (integer)
+        self._x              = x    #: x-coordinate
+        self._y              = y    #: y-coordinate
+        self._geometryType   = geometryType #: one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or Node.GEOMETRY_TYPE_VIRTUAL
         
         if label:
             self._label = label
@@ -69,11 +65,11 @@ class Node(object):
         else:
             self._level = Node.DEFAULT_LEVEL
         
-        # Dictionary of Link objects, with Link -> angle between the link and (x+1,y) -> (x,y).
-        self._incomingLinks = {}
+        #: List of incoming Link objects, in clockwise order starting from <1,0>
+        self._incomingLinks = []
         
-        # Dictionary of Link objects, with Link -> angle between the link and (x,y) -> (x+1,y).
-        self._outgoingLinks = {}
+        #: List of outgoing link objects, in clockwise order starting from <1,0>
+        self._outgoingLinks = []
     
     def addIncomingLink(self, link):
         """
@@ -83,14 +79,17 @@ class Node(object):
         #if not isinstance(link, Link):
         #    raise DtaError("Node.addIncomingLink called with an invalid link: %s" % str(link))
         
-        if link.nodeB != self:
+        if link.getEndNode() != self:
             raise DtaError("Node.addIncomingLink called for link that doesn't end here: %s" % str(link))
 
-        if link.euclideanLength() == 0:
-            angle = 0
-        else:
-            angle = math.acos( (self.x - link.nodeA.x) / link.euclideanLength() )
-        self._incomingLinks[link] = angle
+        angle = link.getReferenceAngle()
+        
+        position = 0
+        for i in range(len(self._incomingLinks)):
+            if self._incomingLinks[i].getReferenceAngle() > angle: break
+            position += 1
+            
+        self._incomingLinks.insert(position, link)
     
     def addOutgoingLink(self, link):
         """
@@ -100,11 +99,46 @@ class Node(object):
         #if not isinstance(link, Link):
         #    raise DtaError("Node.addOutgoingLink called with an invalid link: %s" % str(link))
         
-        if link.nodeA != self:
+        if link.getStartNode() != self:
             raise DtaError("Node.addOutgoingLink called for link that doesn't start here: %s" % str(link))
+
+        angle = link.getReferenceAngle()
         
-        if link.euclideanLength() == 0:
-            angle = 0
-        else:
-            angle = math.acos( (link.nodeB.x - self.x) / link.euclideanLength() )
-        self._outgoingLinks[link] = angle
+        position = 0
+        for i in range(len(self._outgoingLinks)):
+            if self._outgoingLinks[i].getReferenceAngle() > angle: break
+            position += 1
+            
+        self._outgoingLinks.insert(position, link)
+        # print self._outgoingLinks
+
+    def iterIncomingLinks(self):
+        """
+        Returns iterator for the incoming links.
+        """
+        return iter(self._incomingLinks)
+    
+    def iterOutgoingLinks(self):
+        """
+        Returns iterator for the outgoing links.
+        """
+        return iter(self._outgoingLinks)
+
+    def getId(self): 
+        """
+        Returns the integer id for this node.
+        """
+        return self._id
+    
+    def getX(self):
+        """
+        Returns the x-coordinate for this node.
+        """
+        return self._x
+    
+    def getY(self):
+        """
+        Returns the y-coordinate for this node.
+        """
+        return self._y
+            

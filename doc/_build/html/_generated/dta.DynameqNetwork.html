@@ -52,13 +52,13 @@
 <h1>dta.DynameqNetwork<a class="headerlink" href="#dta-dynameqnetwork" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.DynameqNetwork">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">DynameqNetwork</tt><big>(</big><em>dir</em>, <em>file_prefix</em>, <em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">DynameqNetwork</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Network.Network</span></tt></p>
 <p>A Dynameq DTA Network.</p>
 <dl class="method">
 <dt id="dta.DynameqNetwork.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>dir</em>, <em>file_prefix</em>, <em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor.  Reads the network in the given <em>dir</em> with the given <em>file_prefix</em>.</p>
+<tt class="descname">__init__</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.  Initializes to an empty network.</p>
 <p>Keeps a reference to the given dynameqScenario (a <a class="reference internal" href="dta.DynameqScenario.html#dta.DynameqScenario" title="dta.DynameqScenario"><tt class="xref py py-class docutils literal"><span class="pre">DynameqScenario</span></tt></a> instance)
 for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> lookups</p>
 </dd></dl>
@@ -73,7 +73,7 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.__init__" title="dta.DynameqNetwork.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.DynameqNetwork.addCentroid" title="dta.DynameqNetwork.addCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addCentroid</span></tt></a></td>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addCentroid</span></tt></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.addLink" title="dta.DynameqNetwork.addLink"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addLink</span></tt></a></td>
@@ -91,49 +91,64 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 </tbody>
 </table>
 <dl class="method">
-<dt id="dta.DynameqNetwork.addCentroid">
-<tt class="descname">addCentroid</tt><big>(</big><em>newCentroid</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addCentroid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that <em>newCentroid</em> is a Centroid and that the id is not already used;
-stores it.</p>
+<dt id="dta.DynameqNetwork.addLink">
+<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the <em>newLink</em> is a Link</li>
+<li>that the id is not already used</li>
+<li>the nodepair is not already used</li>
+</ul>
+</div></blockquote>
+<p>Stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.DynameqNetwork.addLink">
-<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that the <em>newLink</em> is a Link and that the id is not already used; stores it.</p>
+<dt id="dta.DynameqNetwork.addMovement">
+<tt class="descname">addMovement</tt><big>(</big><em>newMovement</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the movement by adding it to the movement&#8217;s incomingLink</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.addNode">
 <tt class="descname">addNode</tt><big>(</big><em>newNode</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that <em>newNode</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> or a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> and that the id is not
-already used; stores it.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.DynameqNetwork.addVirtualLink">
-<tt class="descname">addVirtualLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addVirtualLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that <em>newLink</em> is a <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> and stores it</p>
+<dd><p>Verifies that <em>newNode</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>, <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> or <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a>
+and that the id is not already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.getLinkForId">
 <tt class="descname">getLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-Raises DtaError if not found.</p>
+<dd><p>Accessor for link given the <em>linkId</em>.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getLinkForNodeIdPair">
+<tt class="descname">getLinkForNodeIdPair</tt><big>(</big><em>nodeAId</em>, <em>nodeBId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getLinkForNodeIdPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the link given the link nodes.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.getNodeForId">
 <tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNodeForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-Raises DtaError if not found.</p>
+<dd><p>Accessor for node given the <em>nodeId</em>.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.read">
+<tt class="descname">read</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the network in the given <em>dir</em> with the given <em>file_prefix</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.write">
 <tt class="descname">write</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.write" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Writes the network into the given <em>dir</em> with the given <em>file_prefix</em></p>
+</dd></dl>
 
 </dd></dl>
 

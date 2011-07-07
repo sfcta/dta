@@ -18,6 +18,7 @@ __license__     = """
 
 from .DtaError import DtaError
 from .Link import Link
+from .Movement import Movement
 from .Node import Node
 from .VehicleClassGroup import VehicleClassGroup
 
@@ -27,14 +28,14 @@ class RoadLink(Link):
     
     """
     
-    def __init__(self, id, nodeA, nodeB, reverseAttachedLinkId, facilityType, length,
+    def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
                  roundAbout, level, label):
         """
         Constructor.
         
          * *id* is a unique identifier (unique within the containing network), an integer
-         * *nodeA*, *nodeB* are Nodes
+         * *startNode*, *endNode* are Nodes
          * *reverseAttachedId* is the id of the reverse link, if attached; pass None if not
            attached
          * *facilityType* is a non-negative integer indicating the category of facility such
@@ -52,7 +53,7 @@ class RoadLink(Link):
          * *label* is a link label
          
         """
-        Link.__init__(self, id, nodeA, nodeB, label)
+        Link.__init__(self, id, startNode, endNode, label)
         self._reverseAttachedLinkId     = reverseAttachedLinkId
         self._facilityType              = facilityType
         self._length                    = length
@@ -64,6 +65,7 @@ class RoadLink(Link):
         self._level                     = level
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
+        self._outgoingMovements         = []  #: list of outgoing Movements
     
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
@@ -77,3 +79,21 @@ class RoadLink(Link):
                            (laneId, self._numLanes))
         
         self._lanePermissions[laneId] = vehicleClassGroup
+        
+    def addOutgoingMovement(self, movement):
+        """
+        Adds the given movement.
+        """
+        if not isinstance(movement, Movement):
+            raise DtaError("RoadLink addOutgoingMovement() called with invalid movement %s" % str(movement))
+        
+        if movement.getIncomingLink() != self:
+            raise DtaError("RoadLink addOutgoingMovement() called with inconsistent movement" % str(movement))
+        
+        self._outgoingMovements.append(movement)
+    
+    def iterOutgoingMovements(self):
+        """
+        Iterator for the outgoing movements of this link
+        """
+        return iter(self._outgoingMovements)

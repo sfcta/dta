@@ -52,21 +52,21 @@
 <h1>dta.Node<a class="headerlink" href="#dta-node" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Node">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Node</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Node</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>geometryType</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Base class that represents a node in a network.</p>
 <dl class="method">
 <dt id="dta.Node.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>geometryType</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Node.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <blockquote>
 <div><ul class="simple">
-<li>id is a unique identifier (unique within the containing network), an integer</li>
-<li>x and y are coordinates (what units?)</li>
-<li>type is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
+<li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
+<li><em>x</em> and <em>y</em> are coordinates (what units?)</li>
+<li><em>geometryType</em> is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
 Node.GEOMETRY_TYPE_VIRTUAL</li>
-<li>label is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
-<li>level is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
+<li><em>label</em> is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
+<li><em>level</em> is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -97,22 +97,34 @@ incoming links.</p>
 outgoing links.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="dta.Node.id">
-<tt class="descname">id</tt><a class="headerlink" href="#dta.Node.id" title="Permalink to this definition">¶</a></dt>
-<dd><p>unique identifier (integer)</p>
+<dl class="method">
+<dt id="dta.Node.getId">
+<tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the integer id for this node.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="dta.Node.x">
-<tt class="descname">x</tt><a class="headerlink" href="#dta.Node.x" title="Permalink to this definition">¶</a></dt>
-<dd><p>x-coordinate</p>
+<dl class="method">
+<dt id="dta.Node.getX">
+<tt class="descname">getX</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the x-coordinate for this node.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="dta.Node.y">
-<tt class="descname">y</tt><a class="headerlink" href="#dta.Node.y" title="Permalink to this definition">¶</a></dt>
-<dd><p>y-coordinate</p>
+<dl class="method">
+<dt id="dta.Node.getY">
+<tt class="descname">getY</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the y-coordinate for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Node.iterIncomingLinks">
+<tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator for the incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Node.iterOutgoingLinks">
+<tt class="descname">iterOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.iterOutgoingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator for the outgoing links.</p>
 </dd></dl>
 
 </dd></dl>

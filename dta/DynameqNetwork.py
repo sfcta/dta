@@ -16,10 +16,12 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
+import sys
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
 from .Logger import DtaLogger
+from .Movement import Movement
 from .Network import Network
 from .Node import Node
 from .RoadLink import RoadLink
@@ -38,54 +40,80 @@ class DynameqNetwork(Network):
     TRANSIT_FILE    = '%s_ptrn.dqt'
     PRIORITIES_FILE = '%s_prio.dqt'
     
-    def __init__(self, dir, file_prefix, scenario):
+    def __init__(self, scenario):
         """
-        Constructor.  Reads the network in the given *dir* with the given *file_prefix*.
+        Constructor.  Initializes to an empty network.
         
         Keeps a reference to the given dynameqScenario (a :py:class:`DynameqScenario` instance)
-        for :py:class:`VehicleClassGroup` lookups
-        
-        """
+        for :py:class:`VehicleClassGroup` lookups        
+        """ 
         Network.__init__(self, scenario)
+
         
+    def read(self, dir, file_prefix, ):
+        """
+        Reads the network in the given *dir* with the given *file_prefix*.
+
+        """
         # base file processing
         basefile = os.path.join(dir, DynameqNetwork.BASE_FILE % file_prefix)
         if not os.path.exists(basefile):
             raise DtaError("Base network file %s does not exist" % basefile)
         
+        count = 0
         for fields in self._readSectionFromFile(basefile, "NODES", "CENTROIDS"):
             self.addNode(self._parseNodeFromFields(fields))
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "NODES", basefile))
 
+        count = 0
         for fields in self._readSectionFromFile(basefile, "CENTROIDS", "LINKS"):
-            self.addCentroid(self._parseCentroidFromFields(fields))
+            self.addNode(self._parseCentroidFromFields(fields))
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "CENTROIDS", basefile))
         
+        count = 0
         for fields in self._readSectionFromFile(basefile, "LINKS", "LANE_PERMS"):
             self.addLink(self._parseLinkFromFields(fields))
-            
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "LINKS", basefile))
+        
+        count = 0
         for fields in self._readSectionFromFile(basefile, "LANE_PERMS", "LINK_EVENTS"):
             self._addLanePermissionFromFields(fields)
-            
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "LANE_PERMS", basefile))
+        
+        count = 0
         for fields in self._readSectionFromFile(basefile, "LINK_EVENTS", "LANE_EVENTS"):
             # TODO do LINK_EVENTS have to correspond to scenario events?
             print fields
-            
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "LINK_EVENTS", basefile))
+
+        count = 0
         for fields in self._readSectionFromFile(basefile, "LANE_EVENTS", "VIRTUAL_LINKS"):
             # TODO do LANE_EVENTS have to correspond to scenario events?
             print fields
-
-        for fields in self._readSectionFromFile(basefile, "VIRTUAL_LINKS", "MOVEMENTS"):
-            (vlink1, vlink2) = self._parseVirtualLinkFromFields(fields)
-            self.addVirtualLink(vlink1)
-            self.addVirtualLink(vlink2)
-        return
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "LANE_EVENTS", basefile))
             
+        count = 0
+        for fields in self._readSectionFromFile(basefile, "VIRTUAL_LINKS", "MOVEMENTS"):
+            self.addLink(self._parseVirtualLinkFromFields(fields))
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "VIRTUAL_LINKS", basefile))
+            
+        count = 0                        
         for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
-            print fields            
-                    
-    def __del__(self):
-        pass
-    
+            self.addMovement(self._parseMovementFromFields(fields))
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))
+                
     def write(self, dir, file_prefix):
+        """
+        Writes the network into the given *dir* with the given *file_prefix*
+        """
         basefile = os.path.join(dir, DynameqNetwork.BASE_FILE % file_prefix)
         
         basefile_object = open(basefile, "w")
@@ -94,6 +122,7 @@ class DynameqNetwork(Network):
         self._writeLinksToBasefile(basefile_object)
         self._writeLanePermissionsToBaseFile(basefile_object)
         self._writeVirtualLinksToBaseFile(basefile_object)
+        self._writeMovementsToBaseFile(basefile_object)
         basefile_object.close()
 
     def _readSectionFromFile(self, filename, sectionName, nextSectionName):
@@ -164,9 +193,12 @@ class DynameqNetwork(Network):
                                "type",
                                "level",
                                "label"))
+        count = 0
         for nodeId in sorted(self._nodes.keys()):
             node = self._nodes[nodeId]
-            if isinstance(node, VirtualNode):
+            if isinstance(node, Centroid):
+                continue # don't write centroids; they go in their own section
+            elif isinstance(node, VirtualNode):
                 control = VirtualNode.DEFAULT_CONTROL
                 priority = VirtualNode.DEFAULT_PRIORITY
             else:
@@ -174,14 +206,16 @@ class DynameqNetwork(Network):
                 priority = node._priority
 
             basefile_object.write("%9d %20.6f %20.6f %8d %8d %4d %6d %12s\n" %
-                                  (node.id,
-                                   node.x,
-                                   node.y,
+                                  (node.getId(),
+                                   node.getX(),
+                                   node.getY(),
                                    control,
                                    priority,
-                                   node._type,
+                                   node._geometryType,
                                    node._level,
                                    '"' + node._label + '"'))
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "NODES", basefile_object.name))
 
     def _parseCentroidFromFields(self, fields):
         """
@@ -209,14 +243,20 @@ class DynameqNetwork(Network):
                                "y-coordinate",
                                "level",
                                "label"))
-        for nodeId in sorted(self._centroids.keys()):
-            centroid = self._centroids[nodeId]
+        
+        count = 0
+        for nodeId in sorted(self._nodes.keys()):
+            centroid = self._nodes[nodeId]
+            if not isinstance(centroid, Centroid): continue
+            
             basefile_object.write("%9d %20.6f %20.6f %6d %s\n" % 
-                                  (centroid.id,
-                                   centroid.x,
-                                   centroid.y,
+                                  (centroid.getId(),
+                                   centroid.getX(),
+                                   centroid.getY(),
                                    centroid._level,
                                    '"' + centroid._label + '"'))
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "CENTROIDS", basefile_object.name))
 
     def _parseLinkFromFields(self, fields):
         """
@@ -238,21 +278,20 @@ class DynameqNetwork(Network):
         if label[0] == '"' and label[-1] ==  '"':
             label = label[1:-1]
             
-        nodeA = self.getNodeForId(startid)
-        nodeB = self.getNodeForId(endid)
+        startNode = self.getNodeForId(startid)
+        endNode = self.getNodeForId(endid)
         
-        if (isinstance(nodeA, Centroid) or isinstance(nodeB, Centroid) or
-            isinstance(nodeA, VirtualNode) or isinstance(nodeB, VirtualNode)):
+        if (isinstance(startNode, Centroid) or isinstance(endNode, Centroid) or
+            isinstance(startNode, VirtualNode) or isinstance(endNode, VirtualNode)):
             
-            DtaLogger.debug("Connector has faci %d length %f" % (faci, length))
-            return Connector(id, nodeA, nodeB, reverseAttachedLinkId=rev, 
+            return Connector(id, startNode, endNode, reverseAttachedLinkId=rev, 
                                 facilityType=faci, length=length,
                                 freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                                 responseTimeFactor=resfac, numLanes=lanes,
                                 roundAbout=rabout, level=level, label=label)
         
         # are these all RoadLinks?  What about VirtualLinks?
-        return RoadLink(id, nodeA, nodeB, reverseAttachedLinkId=rev, 
+        return RoadLink(id, startNode, endNode, reverseAttachedLinkId=rev, 
                            facilityType=faci, length=length,
                            freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                            responseTimeFactor=resfac, numLanes=lanes,
@@ -266,13 +305,17 @@ class DynameqNetwork(Network):
         basefile_object.write("LINKS\n")
         basefile_object.write("*      id    start      end      rev faci          len       fspeed   lenfac   resfac lanes rabout  level         label\n")
         
-
-        for linkId in sorted(self._links.keys()):
-            link = self._links[linkId]
+        count = 0
+        for linkId in sorted(self._linksById.keys()):
+            link = self._linksById[linkId]
+            
+            # virtual links are later
+            if isinstance(link, VirtualLink): continue
+            
             basefile_object.write("%9d %8d %8d %7d %4d %12f %12f %8f %8f %5d %5d %6d %13s\n" % 
                                   (link.id,
-                                   link.nodeA.id,
-                                   link.nodeB.id,
+                                   link.getStartNode().getId(),
+                                   link.getEndNode().getId(),
                                    link._reverseAttachedLinkId,
                                    link._facilityType,
                                    link._length,
@@ -283,7 +326,9 @@ class DynameqNetwork(Network):
                                    link._roundAbout,
                                    link._level,
                                    '"' + link.label + '"'))
-    
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
+        
     def _addLanePermissionFromFields(self, fields):
         """
         Updates links by attaching permissions.
@@ -303,37 +348,71 @@ class DynameqNetwork(Network):
         """
         basefile_object.write("LANE_PERMS\n")
         basefile_object.write("*    link  id                perms\n")
-        for linkId in sorted(self._links.keys()):
-            if not isinstance(self._links[linkId], RoadLink): continue
-            for laneId in range(self._links[linkId]._numLanes):
+        
+        count = 0
+        for linkId in sorted(self._linksById.keys()):
+            
+            if (not isinstance(self._linksById[linkId], RoadLink) and
+                not isinstance(self._linksById[linkId], Connector)):
+                continue
+            
+            for laneId in range(self._linksById[linkId]._numLanes):
                 basefile_object.write("%9d %3d %20s\n" % 
                                       (linkId,
                                        laneId,
-                                       self._links[linkId]._lanePermissions[laneId].name))
+                                       self._linksById[linkId]._lanePermissions[laneId].name))
+                count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LANE_PERMS", basefile_object.name))
     
     def _parseVirtualLinkFromFields(self, fields):
         """
-        Interprets fields into two VirtualLink (one in each direction)
+        Interprets fields into a VirtualLink
         """
         centroidId  = int(fields[0])
         linkId      = int(fields[1])
         
-        centroid    = self._centroids[centroidId]
-        connector   = self._links[linkId]
+        centroid    = self._nodes[centroidId]
+        connector   = self._linksById[linkId]
 
         if not isinstance(connector, Connector):
             raise DtaError("Virtual link specified with non-Connector link: %s" % str(connector))
         
-        return (VirtualLink(id=None,
-                            nodeA=centroid, 
-                            nodeB=(connector.nodeB if connector._fromRoadNode else connector.nodeA),
-                            label=None,
-                            connector=connector),
-                VirtualLink(id=None,
-                            nodeA=(connector.nodeB if connector._fromRoadNode else connector.nodeA),
-                            nodeB=centroid,
-                            label=None,
-                            connector=connector))
+        
+        # no id -- make one up
+        newId = self._maxLinkId + 1
+        
+        # if the connector is incoming to a virtual node, the the virtual link is incoming:
+        # connector to centroid
+        if connector._fromRoadNode:
+            vlink = VirtualLink(id=newId,
+                                startNode=connector.getEndNode(),
+                                endNode=centroid,
+                                label=None)
+            # DtaLogger.debug("Creating virtual link from connector %d (node %d) to centroid %d" % 
+            #                 (linkId, vlink.getStartNode().getId(), centroidId))            
+        else:
+            # the connector is outgoing to a virtual node, so the virtual link is outgoing:
+            # connector to centroid
+            vlink = VirtualLink(id=newId,
+                            startNode=centroid,
+                            endNode=connector.getStartNode(),
+                            label=None)
+            
+            # DtaLogger.debug("Creating virtual link from centroid %d to connector %d (node %d)" % 
+            #                 (centroidId, linkId, vlink.getEndNode().getId()))
+     
+        try:
+            conn2 = vlink.getAdjacentConnector()
+            assert(conn2 == connector)
+        except DtaError:
+            DtaLogger.warn(sys.exc_info()[1])
+            raise
+        except AssertionError:
+            DtaLogger.warn("When creating Virtual Link from centroid %d to connector %d, different connector %d found" % 
+                           (centroidId, linkId, conn2.id))
+            raise
+            
+        return vlink
         
     def _writeVirtualLinksToBaseFile(self, basefile_object):
         """
@@ -342,10 +421,69 @@ class DynameqNetwork(Network):
         """
         basefile_object.write("VIRTUAL_LINKS\n")
         basefile_object.write("* centroid_id  link_id\n")
-        for virtualLink in self._virtualLinks:
-            # these are bidirectional so ignore those with NodeB as the centroid
-            if isinstance(virtualLink.nodeB, Centroid): continue
-            # nodeA is a centroid
+        
+        count = 0
+        for linkId in sorted(self._linksById.keys()):
+            link = self._linksById[linkId]
+            
+            if not isinstance(link, VirtualLink): continue
             basefile_object.write("%13d %8d\n" %
-                                  (virtualLink.nodeA.id,
-                                   virtualLink._connector.id))
+                                  (link.getStartNode().getId(),
+                                   link.getAdjacentConnector().id))
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VIRTUAL_LINKS", basefile_object.name))
+
+    def _parseMovementFromFields(self, fields):
+        """
+        Interprets fields into a Movement
+        """
+        nodeId          = int(fields[0])
+        incomingLinkId  = int(fields[1])
+        outgoingLinkId  = int(fields[2])
+        freeflowSpeed   = float(fields[3])
+        perms           = fields[4]
+        numLanes        = int(fields[5])
+        incomingLane    = int(fields[6])
+        outgoingLane    = int(fields[7])
+        followupTime    = float(fields[8])
+    
+        node                = self.getNodeForId(nodeId)
+        incomingLink        = self.getLinkForId(incomingLinkId)
+        outgoingLink        = self.getLinkForId(outgoingLinkId)
+        vehicleClassGroup   = self._scenario.getVehicleClassGroup(perms)
+        
+        return Movement(node, incomingLink, outgoingLink, freeflowSpeed,
+                        vehicleClassGroup,
+                        None if numLanes==-1 else numLanes,
+                        None if incomingLane==-1 else incomingLane,
+                        None if outgoingLane==-1 else outgoingLane,
+                        followupTime)
+        
+    def _writeMovementsToBaseFile(self, basefile_object):
+        """
+        Write version of _parseMovementFromFields().  *basefile_object* is the file object,
+        ready for writing.        
+        """
+        basefile_object.write("MOVEMENTS\n")
+        basefile_object.write("*   at_node   inc_link   out_link       fspeed                perms lanes inlane outlane  tfollow\n")
+        
+        count = 0
+        for linkId in sorted(self._linksById.keys()):
+            
+            if (not isinstance(self._linksById[linkId], RoadLink) and
+                not isinstance(self._linksById[linkId], Connector)):
+                continue
+            
+            for movement in self._linksById[linkId].iterOutgoingMovements():
+                basefile_object.write("%11d %10d %10d %12s %20s %5d %6d %7d %8s\n" %
+                                      (movement._node.getId(),
+                                       movement.getIncomingLink().id,
+                                       movement._outgoingLink.id,
+                                       str(-1 if not movement._freeflowSpeed else movement._freeflowSpeed),
+                                       movement._permission.name,
+                                       -1 if not movement._numLanes else movement._numLanes,
+                                       -1 if not movement._incomingLane else movement._incomingLane,
+                                       -1 if not movement._outgoingLane else movement._outgoingLane,
+                                       str(movement._followupTime)))
+                count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))

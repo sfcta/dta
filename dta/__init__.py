@@ -31,6 +31,7 @@ from .DynameqNetwork import DynameqNetwork
 from .DynameqScenario import DynameqScenario
 from .Link import Link
 from .Logger import DtaLogger, setupLogging
+from .Movement import Movement
 from .Network import Network
 from .Node import Node
 from .RoadLink import RoadLink

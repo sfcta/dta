@@ -35,4 +35,4 @@ class VirtualNode(Node):
          * label is a string, for readability.  If None passed, will default to "label [id]"
          * level is for vertical alignment.  More details TBD.  If None passed, will use default.  
         """        
-        Node.__init__(self, id, x, y, type=Node.GEOMETRY_TYPE_VIRTUAL, label=label, level=level)
+        Node.__init__(self, id, x, y, geometryType=Node.GEOMETRY_TYPE_VIRTUAL, label=label, level=level)

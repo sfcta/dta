@@ -52,21 +52,20 @@
 <h1>dta.VirtualLink<a class="headerlink" href="#dta-virtuallink" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.VirtualLink">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VirtualLink</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>label</em>, <em>connector</em><big>)</big><a class="headerlink" href="#dta.VirtualLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VirtualLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
 <p>A VirtualLink is a Link that connects a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> with
 a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</p>
 <dl class="method">
 <dt id="dta.VirtualLink.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>label</em>, <em>connector</em><big>)</big><a class="headerlink" href="#dta.VirtualLink.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Verifies one node is a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> and the
 other node is a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>.</p>
 <blockquote>
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
-<li><em>nodeA</em>, <em>nodeB</em> are <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances</li>
+<li><em>startNode</em>, <em>endNode</em> are <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances</li>
 <li><em>label</em> is a string, or None</li>
-<li><em>connector</em> is a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instance</li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -90,6 +89,40 @@ other node is a <a class="reference internal" href="dta.VirtualNode.html#dta.Vir
 <dt id="dta.VirtualLink.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.getAdjacentConnector">
+<tt class="descname">getAdjacentConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getAdjacentConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A VirtualLink connects a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> with a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>; this
+returns the <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.getEndNode">
+<tt class="descname">getEndNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getEndNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for endNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.getReferenceAngle">
+<tt class="descname">getReferenceAngle</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getReferenceAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualizing the link as a straight vector from (0,0), returns the angle between &lt;1,0&gt; and this link.</p>
+<p>So returns a number in [0,2pi), increasing clockwise.</p>
+<p>These are based on the euclidean length of the link, so assumes a straight line.  If the link has no length,
+returns 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.getStartNode">
+<tt class="descname">getStartNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getStartNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for startNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.updateNodesAdjacencyLists">
+<tt class="descname">updateNodesAdjacencyLists</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.updateNodesAdjacencyLists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instructs the relevant nodes about this link</p>
 </dd></dl>
 
 </dd></dl>

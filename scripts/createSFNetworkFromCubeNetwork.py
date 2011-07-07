@@ -32,7 +32,8 @@ if __name__ == '__main__':
     gearyscenario = dta.DynameqScenario(dir=".", file_prefix="Base_Final")
     gearyscenario.write(dir="test", file_prefix="geary_")
     
-    gearynet_dta = dta.DynameqNetwork(dir=".", file_prefix="Base_Final", scenario=gearyscenario)
+    gearynet_dta = dta.DynameqNetwork(scenario=gearyscenario)
+    gearynet_dta.read(dir=".", file_prefix="Base_Final")
     gearynet_dta.write(dir="test", file_prefix="geary_")
     
 

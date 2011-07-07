@@ -122,7 +122,7 @@
 <td>A RoadLink in a network.  Both nodes must be RoadNodes.</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VirtualLink</span></tt></a></td>
-<td>A VirtualLink is a Link that connects a Centroid with a VirtualNode.</td>
+<td>A VirtualLink is a Link that connects a <tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt> with</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Connector</span></tt></a></td>
 <td>A Connector is a Link that connects a RoadNode with a Centroid or a VirtualNode.</td>
@@ -196,7 +196,8 @@
 48
 49
 50
-51</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+51
+52</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -230,7 +231,8 @@
     <span class="n">gearyscenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
     <span class="n">gearyscenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
     
-    <span class="n">gearynet_dta</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="n">gearyscenario</span><span class="p">)</span>
+    <span class="n">gearynet_dta</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">gearyscenario</span><span class="p">)</span>
+    <span class="n">gearynet_dta</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
     <span class="n">gearynet_dta</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary_&quot;</span><span class="p">)</span>
     
 

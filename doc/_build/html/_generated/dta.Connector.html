@@ -52,18 +52,18 @@
 <h1>dta.Connector<a class="headerlink" href="#dta-connector" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Connector">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
 <p>A Connector is a Link that connects a RoadNode with a Centroid or a VirtualNode.</p>
 <dl class="method">
 <dt id="dta.Connector.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>nodeA</em>, <em>nodeB</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Verifies one node is a RoadNode and the other node is either
 a Centroid or a VirtualNode.</p>
 <blockquote>
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
-<li><em>nodeA</em>, <em>nodeB</em> are Nodes</li>
+<li><em>startNode</em>, <em>endNode</em> are Nodes</li>
 <li><em>label</em> is a string, or None</li>
 </ul>
 </div></blockquote>
@@ -95,9 +95,48 @@ Therefore they have the same set of attributes and those attributes are meaningf
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.addOutgoingMovement">
+<tt class="descname">addOutgoingMovement</tt><big>(</big><em>movement</em><big>)</big><a class="headerlink" href="#dta.Connector.addOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the given movement.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getEndNode">
+<tt class="descname">getEndNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getEndNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for endNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getReferenceAngle">
+<tt class="descname">getReferenceAngle</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getReferenceAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualizing the link as a straight vector from (0,0), returns the angle between &lt;1,0&gt; and this link.</p>
+<p>So returns a number in [0,2pi), increasing clockwise.</p>
+<p>These are based on the euclidean length of the link, so assumes a straight line.  If the link has no length,
+returns 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getStartNode">
+<tt class="descname">getStartNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getStartNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for startNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.iterOutgoingMovements">
+<tt class="descname">iterOutgoingMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.iterOutgoingMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator for the outgoing movements of this link</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.updateNodesAdjacencyLists">
+<tt class="descname">updateNodesAdjacencyLists</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.updateNodesAdjacencyLists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instructs the relevant nodes about this link</p>
 </dd></dl>
 
 </dd></dl>

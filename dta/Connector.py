@@ -19,6 +19,7 @@ __license__     = """
 from .Centroid import Centroid
 from .DtaError import DtaError
 from .Link import Link
+from .Movement import Movement
 from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
 from .VirtualNode import VirtualNode
@@ -29,7 +30,7 @@ class Connector(Link):
     
     """
     
-    def __init__(self, id, nodeA, nodeB, reverseAttachedLinkId, facilityType, length,
+    def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
                  roundAbout, level, label):
         """
@@ -37,7 +38,7 @@ class Connector(Link):
         a Centroid or a VirtualNode.
         
          * *id* is a unique identifier (unique within the containing network), an integer
-         * *nodeA*, *nodeB* are Nodes
+         * *startNode*, *endNode* are Nodes
          * *label* is a string, or None 
          
         See RoadLink for the rest of the args.  Why do these make sense for centroid connectors?
@@ -47,20 +48,20 @@ class Connector(Link):
         Putting RoadLink attributes heres for now, re-examine this (like should they go into the Link?) 
         """
         
-        if isinstance(nodeA, RoadNode):
+        if isinstance(startNode, RoadNode):
             self._fromRoadNode = True
-        elif isinstance(nodeB, RoadNode):
+        elif isinstance(endNode, RoadNode):
             self._fromRoadNode = False
         else:
             raise DtaError("Attempting to initialize a Connector without a RoadNode: %s - %s" % 
-                           (str(nodeA), str(nodeB)))
+                           (str(startNode), str(endNode)))
 
-        if (not isinstance(nodeA, Centroid) and not isinstance(nodeA, VirtualNode) and
-            not isinstance(nodeB, Centroid) and not isinstance(nodeB, VirtualNode)):
+        if (not isinstance(startNode, Centroid) and not isinstance(startNode, VirtualNode) and
+            not isinstance(endNode, Centroid) and not isinstance(endNode, VirtualNode)):
             raise DtaError("Attempting to initialize a Connector without a Centroid/VirtualNode: %s - %s" % 
-                           (str(nodeA), str(nodeB)))
+                           (str(startNode), str(endNode)))
        
-        Link.__init__(self, id, nodeA, nodeB, label)
+        Link.__init__(self, id, startNode, endNode, label)
         self._reverseAttachedLinkId     = reverseAttachedLinkId
         self._facilityType              = facilityType
         self._length                    = length
@@ -72,6 +73,7 @@ class Connector(Link):
         self._level                     = level
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
+        self._outgoingMovements         = []  #: list of outgoing Movements
 
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
@@ -85,3 +87,22 @@ class Connector(Link):
                            (laneId, self._numLanes))
         
         self._lanePermissions[laneId] = vehicleClassGroup
+
+        
+    def addOutgoingMovement(self, movement):
+        """
+        Adds the given movement.
+        """
+        if not isinstance(movement, Movement):
+            raise DtaError("RoadLink addOutgoingMovement() called with invalid movement %s" % str(movement))
+        
+        if movement.getIncomingLink() != self:
+            raise DtaError("RoadLink addOutgoingMovement() called with inconsistent movement" % str(movement))
+        
+        self._outgoingMovements.append(movement)
+        
+    def iterOutgoingMovements(self):
+        """
+        Iterator for the outgoing movements of this link
+        """
+        return iter(self._outgoingMovements)

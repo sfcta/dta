@@ -20,38 +20,73 @@ import math
 from .DtaError import DtaError
 from .Node import Node
 
-class Link:
+class Link(object):
     """
     Base class that represents a link in a network.
     """
     
-    def __init__(self, id, nodeA, nodeB, label):
+    def __init__(self, id, startNode, endNode, label):
         """
         Constructor.
         
-         * *id* is a unique identifier (unique within the containing network), an integer
-         * *nodeA*, *nodeB* are Nodes
+         * *id* is a unique identifier (unique within the containing network), an integer, or None
+         * *startNode*, *endNode* are Nodes
          * *label* is a string, or None 
         """
         
         self.id    = id     # integer id
         self.label = label
         
-        if not isinstance(nodeA, Node):
-            raise DtaError("Initializing Link with non-Node A: %s" % str(nodeA))
+        if not isinstance(startNode, Node):
+            raise DtaError("Initializing Link with non-Node startNode: %s" % str(startNode))
         
-        if not isinstance(nodeB, Node):
-            raise DtaError("Initializing Link with non-Node A: %s" % str(nodeA))
+        if not isinstance(endNode, Node):
+            raise DtaError("Initializing Link with non-Node endNode: %s" % str(endNode))
 
-        self.nodeA = nodeA  # a Node instance
-        self.nodeB = nodeB  # a Node instance
-        
-        self.nodeA.addOutgoingLink(self)
-        self.nodeB.addIncomingLink(self)
+        self._startNode = startNode     #: a Node instance
+        self._endNode   = endNode       #: a Node instance
+    
+    def updateNodesAdjacencyLists(self):
+        """
+        Instructs the relevant nodes about this link
+        """
+        self._startNode.addOutgoingLink(self)
+        self._endNode.addIncomingLink(self)
             
+    def getStartNode(self):
+        """
+        Accessor for startNode
+        """
+        return self._startNode
+    
+    def getEndNode(self):
+        """
+        Accessor for endNode
+        """
+        return self._endNode
+    
     def euclideanLength(self):
         """
         Calculates the length based on simple Euclidean distance.
         """
-        return math.sqrt( ((self.nodeA.x-self.nodeB.x)*(self.nodeA.x-self.nodeB.x)) +
-                          ((self.nodeA.y-self.nodeB.y)*(self.nodeA.y-self.nodeB.y)) )
+        return math.sqrt( ((self._startNode.getX()-self._endNode.getX())*(self._startNode.getX()-self._endNode.getX())) +
+                          ((self._startNode.getY()-self._endNode.getY())*(self._startNode.getY()-self._endNode.getY())) )
+        
+    def getReferenceAngle(self):
+        """
+        Visualizing the link as a straight vector from (0,0), returns the angle between <1,0> and this link.
+        
+        So returns a number in [0,2pi), increasing clockwise.
+        
+        These are based on the euclidean length of the link, so assumes a straight line.  If the link has no length,
+        returns 0.
+        
+        """
+        if self.euclideanLength() == 0: return 0
+        
+        angle = math.acos( (self._endNode.getX() - self._startNode.getX()) / self.euclideanLength() )
+        # angle is in [0, pi]
+        if angle > 0 and self._endNode.getY() > self._startNode.getY():
+            angle = 2.0*math.pi - angle
+        return angle
+        

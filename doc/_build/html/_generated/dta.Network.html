@@ -79,43 +79,51 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 </tbody>
 </table>
 <dl class="method">
-<dt id="dta.Network.addCentroid">
-<tt class="descname">addCentroid</tt><big>(</big><em>newCentroid</em><big>)</big><a class="headerlink" href="#dta.Network.addCentroid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that <em>newCentroid</em> is a Centroid and that the id is not already used;
-stores it.</p>
+<dt id="dta.Network.addLink">
+<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.Network.addLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the <em>newLink</em> is a Link</li>
+<li>that the id is not already used</li>
+<li>the nodepair is not already used</li>
+</ul>
+</div></blockquote>
+<p>Stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Network.addLink">
-<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.Network.addLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that the <em>newLink</em> is a Link and that the id is not already used; stores it.</p>
+<dt id="dta.Network.addMovement">
+<tt class="descname">addMovement</tt><big>(</big><em>newMovement</em><big>)</big><a class="headerlink" href="#dta.Network.addMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the movement by adding it to the movement&#8217;s incomingLink</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Network.addNode">
 <tt class="descname">addNode</tt><big>(</big><em>newNode</em><big>)</big><a class="headerlink" href="#dta.Network.addNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that <em>newNode</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> or a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> and that the id is not
-already used; stores it.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.Network.addVirtualLink">
-<tt class="descname">addVirtualLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.Network.addVirtualLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies that <em>newLink</em> is a <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> and stores it</p>
+<dd><p>Verifies that <em>newNode</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>, <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> or <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a>
+and that the id is not already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Network.getLinkForId">
 <tt class="descname">getLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Network.getLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-Raises DtaError if not found.</p>
+<dd><p>Accessor for link given the <em>linkId</em>.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getLinkForNodeIdPair">
+<tt class="descname">getLinkForNodeIdPair</tt><big>(</big><em>nodeAId</em>, <em>nodeBId</em><big>)</big><a class="headerlink" href="#dta.Network.getLinkForNodeIdPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the link given the link nodes.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Network.getNodeForId">
 <tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Network.getNodeForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-Raises DtaError if not found.</p>
+<dd><p>Accessor for node given the <em>nodeId</em>.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
 </dd></dl>
 
 </dd></dl>

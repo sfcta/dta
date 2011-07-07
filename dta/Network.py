@@ -17,6 +17,7 @@ __license__     = """
 """
 
 from .Centroid import Centroid
+from .DtaError import DtaError
 from .Link import Link
 from .RoadNode import RoadNode
 from .Scenario import Scenario
@@ -40,14 +41,18 @@ class Network(object):
         scenario (a :py:class:`Scenario` instance).
         """
         
-        #: node id -> node; can be :py:class:`RoadNode`s or :py:class:`VirtualNode`s
-        self._nodes     = {}
-        #: node id -> :py:class:`Centroid` node
-        self._centroids = {}
+        #: node id -> node; these can be instances of :py:class:`RoadNode` :py:class:`VirtualNode` or
+        #: :py:class:`Centroid`
+        self._nodes         = {}
         #: link id -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
-        self._links     = {}
+        self._linksById     = {}
+        #: (nodeA id, nodeB id) -> :py:class:`Link`
+        self._linksByNodeIdPair = {}
         #: virtual links.  these have no id -- TODO: make one up?
         self._virtualLinks = []
+        
+        #: maximum link id
+        self._maxLinkId    = 0
         
         #: the relevant :py:class:`Scenario` instance
         if not isinstance(scenario, Scenario):
@@ -61,77 +66,78 @@ class Network(object):
     
     def addNode(self, newNode):
         """
-        Verifies that *newNode* is a :py:class:`RoadNode` or a :py:class:`VirtualNode` and that the id is not
-        already used; stores it.
+        Verifies that *newNode* is a :py:class:`RoadNode`, :py:class:`VirtualNode` or :py:class:`Centroid`
+        and that the id is not already used; stores it.
         """
-        if not isinstance(newNode, RoadNode) and not isinstance(newNode, VirtualNode):
-            raise DtaError("Network.addNode called on non-RoadNode/VirtualNode: %s" % str(newNode))
+        if (not isinstance(newNode, RoadNode) and 
+            not isinstance(newNode, VirtualNode) and 
+            not isinstance(newNode, Centroid)):
+            raise DtaError("Network.addNode called on non-RoadNode/VirtualNode/Centroid: %s" % str(newNode))
 
-        if newNode.id in self._nodes:
+        if newNode.getId() in self._nodes:
             raise DtaError("Network.addNode called on node with id %d already in the network (for a node)" % newNode.id)
 
-        if newNode.id in self._centroids:
-            raise DtaError("Network.addNode called on node with id %d already in the network (for a centroid)" % newNode.id)
-
-        self._nodes[newNode.id] = newNode
+        self._nodes[newNode.getId()] = newNode
 
     def getNodeForId(self, nodeId):
         """
-        Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-        Raises DtaError if not found.
+        Accessor for node given the *nodeId*.
+        Raises :py:class:`DtaError` if not found.
         """
         if nodeId in self._nodes:
             return self._nodes[nodeId]
-        if nodeId in self._centroids:
-            return self._centroids[nodeId]
         
         raise DtaError("Network getNodeForId: none found for id %d" % nodeId)
     
-    def addCentroid(self, newCentroid):
-        """
-        Verifies that *newCentroid* is a Centroid and that the id is not already used;
-        stores it.
-        """
-        if not isinstance(newCentroid, Centroid):
-            raise DtaError("Network.addCentroid called on a non-Centroid: %s" % str(newCentroid))
-
-        if newCentroid.id in self._nodes:
-            raise DtaError("Network.addCentroid called on node with id %d already in the network (for a node)" % newNode.id)
-
-        if newCentroid.id in self._centroids:
-            raise DtaError("Network.addCentroid called on node with id %d already in the network (for a centroid)" % newNode.id)
-        
-        self._centroids[newCentroid.id] = newCentroid
-
     def addLink(self, newLink):
         """
-        Verifies that the *newLink* is a Link and that the id is not already used; stores it.
+        Verifies that:
+        
+         * the *newLink* is a Link
+         * that the id is not already used
+         * the nodepair is not already used
+         
+        Stores it.
         """ 
 
         if not isinstance(newLink, Link):
             raise DtaError("Network.addLink called on a non-Link: %s" % str(newLink))
 
-        if newLink.id in self._links:
+        if newLink.id in self._linksById:
             raise DtaError("Link with id %s already exists in the network" % newLink.id)
+        if (newLink.getStartNode().getId(), newLink.getEndNode().getId()) in self._linksByNodeIdPair:
+            raise DtaError("Link for nodes (%d,%d) already exists in the network" % 
+                           (newLink.getStartNode().getId(), newLink.getEndNode().getId()))
         
-        self._links[newLink.id] = newLink
-
-    def addVirtualLink(self, newLink):
-        """
-        Verifies that *newLink* is a :py:class:`VirtualLink` and stores it
-        """
-        if not isinstance(newLink, VirtualLink):
-            raise DtaError("Network.addVirtualLink called on a non-VirtualLink: %s" % str(newLink))
+        self._linksById[newLink.id] = newLink
+        self._linksByNodeIdPair[(newLink.getStartNode().getId(), newLink.getEndNode().getId())] = newLink
         
-        self._virtualLinks.append(newLink)
-
+        if newLink.id > self._maxLinkId: self._maxLinkId = newLink.id
+        
+        newLink.updateNodesAdjacencyLists()
+    
     def getLinkForId(self, linkId):
         """
-        Accessor for node given the nodeId.  Looks at nodes, virtual nodes and centroids.
-        Raises DtaError if not found.
+        Accessor for link given the *linkId*.
+        Raises :py:class:`DtaError` if not found.
         """
-        if linkId in self._links:
-            return self._links[linkId]
+        if linkId in self._linksById:
+            return self._linksById[linkId]
         
         raise DtaError("Network getLinkForId: none found for id %d" % linkId)
     
+    def getLinkForNodeIdPair(self, nodeAId, nodeBId):
+        """
+        Accessor for the link given the link nodes.
+        Raises :py:class:`DtaError` if not found.        
+        """
+        if (nodeAId,nodeBId) in self._linksByNodeIdPair:
+            return self._linksByNodeIdPair[(nodeAId,nodeBId)]
+        
+        raise DtaError("Network getLinkForNodeIdPair: none found for (%d,%d)" % (nodeAId,nodeBId))
+    
+    def addMovement(self, newMovement):
+        """
+        Adds the movement by adding it to the movement's incomingLink
+        """
+        newMovement.getIncomingLink().addOutgoingMovement(newMovement)
