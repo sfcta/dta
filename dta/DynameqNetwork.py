@@ -40,6 +40,18 @@ class DynameqNetwork(Network):
     TRANSIT_FILE    = '%s_ptrn.dqt'
     PRIORITIES_FILE = '%s_prio.dqt'
     
+    BASE_HEADER          = """<DYNAMEQ>
+<VERSION_1.5>
+<BASE_NETWORK_FILE>
+* CREATED by DTA Anyway http://code.google.com/p/dta/
+"""
+    ADVANCED_HEADER     = """<DYNAMEQ>
+<VERSION_1.5>
+<ADVN_NETWORK_FILE>
+* CREATED by DTA Anyway http://code.google.com/p/dta/    
+"""
+
+
     def __init__(self, scenario):
         """
         Constructor.  Initializes to an empty network.
@@ -50,7 +62,7 @@ class DynameqNetwork(Network):
         Network.__init__(self, scenario)
 
         
-    def read(self, dir, file_prefix, ):
+    def read(self, dir, file_prefix):
         """
         Reads the network in the given *dir* with the given *file_prefix*.
 
@@ -87,14 +99,14 @@ class DynameqNetwork(Network):
         count = 0
         for fields in self._readSectionFromFile(basefile, "LINK_EVENTS", "LANE_EVENTS"):
             # TODO do LINK_EVENTS have to correspond to scenario events?
-            print fields
+            raise DtaError("LINK_EVENTS not implemented yet")
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "LINK_EVENTS", basefile))
 
         count = 0
         for fields in self._readSectionFromFile(basefile, "LANE_EVENTS", "VIRTUAL_LINKS"):
-            # TODO do LANE_EVENTS have to correspond to scenario events?
-            print fields
+            ## TODO do LANE_EVENTS have to correspond to scenario events?
+            raise DtaError("LANE_EVENTS not implemented yet")
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "LANE_EVENTS", basefile))
             
@@ -109,7 +121,34 @@ class DynameqNetwork(Network):
             self.addMovement(self._parseMovementFromFields(fields))
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))
-                
+        
+        count = 0
+        for fields in self._readSectionFromFile(basefile, "MOVEMENT_EVENTS", "ENDOFFILE"):
+            ## TODO
+            raise DtaError("MOVEMENT_EVENTS not implemented yet")            
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENT_EVENTS", basefile))
+        
+        # advanced file processing
+        advancedfile = os.path.join(dir, DynameqNetwork.ADVANCED_FILE % file_prefix)
+        if os.path.exists(advancedfile):
+            
+            count = 0
+            for fields in self._readSectionFromFile(advancedfile, "SHIFTS", "VERTICES"):
+                self._addShiftFromFields(fields)
+                count += 1
+            DtaLogger.info("Read  %8d %-16s from %s" % (count, "SHIFTS", advancedfile))
+            
+            count = 0
+            for fields in self._readSectionFromFile(advancedfile, "VERTICES", "ENDOFFILE"):
+                self._addShapePointsToLink(fields)
+                count += 1
+            DtaLogger.info("Read  %8d %-16s from %s" % (count, "VERTICES", advancedfile))
+        
+        ## TODO - what about the custom priorities file?  I don't see that in pbtools
+        ## TODO - what about the control plans file?
+        ## TODO - what about the public transit file?
+        
     def write(self, dir, file_prefix):
         """
         Writes the network into the given *dir* with the given *file_prefix*
@@ -117,6 +156,7 @@ class DynameqNetwork(Network):
         basefile = os.path.join(dir, DynameqNetwork.BASE_FILE % file_prefix)
         
         basefile_object = open(basefile, "w")
+        basefile_object.write(DynameqNetwork.BASE_HEADER)
         self._writeNodesToBaseFile(basefile_object)
         self._writeCentroidsToBaseFile(basefile_object)
         self._writeLinksToBasefile(basefile_object)
@@ -124,7 +164,13 @@ class DynameqNetwork(Network):
         self._writeVirtualLinksToBaseFile(basefile_object)
         self._writeMovementsToBaseFile(basefile_object)
         basefile_object.close()
-
+        
+        advancedfile = os.path.join(dir, DynameqNetwork.ADVANCED_FILE % file_prefix)
+        advancedfile_object = open(advancedfile, "w")
+        self._writeShiftsToAdvancedFile(advancedfile_object)
+        self._writeShapePointsToAdvancedFile(advancedfile_object)
+        advancedfile_object.close()
+        
     def _readSectionFromFile(self, filename, sectionName, nextSectionName):
         """
         Generator function, yields fields (array of strings) from the given section of the given file.
@@ -285,14 +331,14 @@ class DynameqNetwork(Network):
             isinstance(startNode, VirtualNode) or isinstance(endNode, VirtualNode)):
             
             return Connector(id, startNode, endNode, reverseAttachedLinkId=rev, 
-                                facilityType=faci, length=length,
+                                facilityType=faci, length=(None if length==-1 else length),
                                 freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                                 responseTimeFactor=resfac, numLanes=lanes,
                                 roundAbout=rabout, level=level, label=label)
         
         # are these all RoadLinks?  What about VirtualLinks?
         return RoadLink(id, startNode, endNode, reverseAttachedLinkId=rev, 
-                           facilityType=faci, length=length,
+                           facilityType=faci, length=(None if length==-1 else length),
                            freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                            responseTimeFactor=resfac, numLanes=lanes,
                            roundAbout=rabout, level=level, label=label)                    
@@ -312,13 +358,13 @@ class DynameqNetwork(Network):
             # virtual links are later
             if isinstance(link, VirtualLink): continue
             
-            basefile_object.write("%9d %8d %8d %7d %4d %12f %12f %8f %8f %5d %5d %6d %13s\n" % 
+            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %13s\n" % 
                                   (link.id,
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
                                    link._reverseAttachedLinkId,
                                    link._facilityType,
-                                   link._length,
+                                   ("%12.3f" % link._length if link._length else "-1"),
                                    link._freeflowSpeed,
                                    link._effectiveLengthFactor,
                                    link._responseTimeFactor,
@@ -487,3 +533,69 @@ class DynameqNetwork(Network):
                                        str(movement._followupTime)))
                 count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))
+        
+    def _addShiftFromFields(self, fields):
+        """
+        Updates links by attaching permissions.
+        """            
+        linkId      = int(fields[0])
+        startShift  = int(fields[1])
+        endShift    = int(fields[2])
+        
+        link = self.getLinkForId(linkId)
+        link.addShifts(startShift, endShift)
+    
+    def _writeShiftsToAdvancedFile(self, advancedfile_object):
+        """
+        Write version of _addLanePermissionsFromFields().  
+        *advancedfile_object* is the file object, ready for writing.
+        """
+        advancedfile_object.write("SHIFTS\n")
+        advancedfile_object.write("*      id  start-shift    end-shift\n")
+        
+        count = 0
+        for linkId in sorted(self._linksById.keys()):
+            link = self._linksById[linkId]
+            
+            if isinstance(link, RoadLink):
+                (startShift,endShift) = link.getShifts()
+                if startShift != None or endShift != None:
+                    advancedfile_object.write("%9d %12d %12d\n" % (linkId, startShift, endShift))
+                    
+                    count += 1
+        DtaLogger.info("Write %8d %-16s to %s" % (count, "SHIFTS", advancedfile_object.name))
+        
+    def _addShapePointsToLink(self, fields):
+        """
+        Update links by attaching shape points
+        """
+        linkId      = int(fields[0])
+        sequenceNum = int(fields[1])
+        xcoord      = float(fields[2])
+        ycoord      = float(fields[3])
+        
+        link = self.getLinkForId(linkId)
+        link.addShapePoint(sequenceNum, xcoord, ycoord)
+
+    def _writeShapePointsToAdvancedFile(self, advancedfile_object):
+        """
+        Write version of _addShapePointsToLink().  
+        *advancedfile_object* is the file object, ready for writing.
+        """
+        advancedfile_object.write("VERTICES\n")
+        advancedfile_object.write("*      id   sequence_num                     x-coordinate                     y-coordinate\n")
+        
+        count = 0
+        for linkId in sorted(self._linksById.keys()):
+            link = self._linksById[linkId]
+            
+            if isinstance(link, RoadLink) or isinstance(link, Connector):
+                for seqnum in sorted(link._shapePoints.keys()):
+                    advancedfile_object.write("%9d %14d %32f %32f\n" % 
+                                              (linkId, 
+                                               seqnum,
+                                               link._shapePoints[seqnum][0],
+                                               link._shapePoints[seqnum][1]))
+                    
+                    count += 1
+        DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))

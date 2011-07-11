@@ -30,11 +30,11 @@ if __name__ == '__main__':
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
     gearyscenario = dta.DynameqScenario(dir=".", file_prefix="Base_Final")
-    gearyscenario.write(dir="test", file_prefix="geary_")
+    gearyscenario.write(dir="test", file_prefix="geary")
     
     gearynet_dta = dta.DynameqNetwork(scenario=gearyscenario)
     gearynet_dta.read(dir=".", file_prefix="Base_Final")
-    gearynet_dta.write(dir="test", file_prefix="geary_")
+    gearynet_dta.write(dir="test", file_prefix="geary")
     
 
     exit(0)

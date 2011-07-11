@@ -68,7 +68,7 @@ attached</li>
 <li><em>facilityType</em> is a non-negative integer indicating the category of facility such
 as a freeway, arterial, collector, etc.  A lower number indicates a facility of
 higher priority, that is, higher capacity and speed.</li>
-<li><em>length</em> is the link length</li>
+<li><em>length</em> is the link length.  Pass None to automatically calculate it.</li>
 <li><em>freeflowSpeed</em> is in km/h or mi/h</li>
 <li><em>effectiveLengthFactor</em> is applied to the effective length of a vehicle while it is
 on the link.  May vary over time with LinkEvents</li>
@@ -113,6 +113,23 @@ on the link.  May vary over time with LinkEvents</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.addShapePoint">
+<tt class="descname">addShapePoint</tt><big>(</big><em>sequenceNum</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShapePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a shape point to the link for the given sequenceNum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.addShifts">
+<tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShifts" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from
+the center line of the roadway that the first segment is shifted.</li>
+<li><em>endShift</em>: End-shift: the shift value of the last segment of the link, that is, the number of 
+lanes from the center line of the roadway that the last segment is shifted.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
@@ -131,6 +148,13 @@ on the link.  May vary over time with LinkEvents</li>
 <p>So returns a number in [0,2pi), increasing clockwise.</p>
 <p>These are based on the euclidean length of the link, so assumes a straight line.  If the link has no length,
 returns 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getShifts">
+<tt class="descname">getShifts</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getShifts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <em>startShift</em> and <em>endShift</em> ordered pair, or (None,None) if it wasn&#8217;t set.
+See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">

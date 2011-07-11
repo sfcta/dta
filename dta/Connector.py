@@ -75,6 +75,8 @@ class Connector(Link):
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements
 
+        self._shapePoints               = {}  #: sequenceNum -> (x,y)
+
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
         Adds the lane permissions for the lane numbered by *laneId* (outside lane is lane 0, increases towards inside edge.)
@@ -88,6 +90,11 @@ class Connector(Link):
         
         self._lanePermissions[laneId] = vehicleClassGroup
 
+    def addShapePoint(self, sequenceNum, x, y):
+        """
+        Adds a shape point to the link for the given sequenceNum
+        """
+        self._shapePoints[sequenceNum] = (x,y)
         
     def addOutgoingMovement(self, movement):
         """

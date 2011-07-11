@@ -41,7 +41,7 @@ class RoadLink(Link):
          * *facilityType* is a non-negative integer indicating the category of facility such
            as a freeway, arterial, collector, etc.  A lower number indicates a facility of
            higher priority, that is, higher capacity and speed.
-         * *length* is the link length
+         * *length* is the link length.  Pass None to automatically calculate it.
          * *freeflowSpeed* is in km/h or mi/h
          * *effectiveLengthFactor* is applied to the effective length of a vehicle while it is
            on the link.  May vary over time with LinkEvents
@@ -66,6 +66,9 @@ class RoadLink(Link):
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements
+        self._startShift                = None
+        self._endShift                  = None
+        self._shapePoints               = {}  #: sequenceNum -> (x,y)
     
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
@@ -80,6 +83,29 @@ class RoadLink(Link):
         
         self._lanePermissions[laneId] = vehicleClassGroup
         
+    def addShifts(self, startShift, endShift):
+        """
+         * *startShift*: the shift value of the first segment of the link, that is, the number of lanes from
+           the center line of the roadway that the first segment is shifted.
+         * *endShift*: End-shift: the shift value of the last segment of the link, that is, the number of 
+           lanes from the center line of the roadway that the last segment is shifted.
+        """
+        self._startShift    = startShift
+        self._endShift      = endShift
+    
+    def getShifts(self):
+        """
+        Returns the *startShift* and *endShift* ordered pair, or (None,None) if it wasn't set.
+        See addShifts() for details.
+        """
+        return (self._startShift, self._endShift)
+    
+    def addShapePoint(self, sequenceNum, x, y):
+        """
+        Adds a shape point to the link for the given sequenceNum
+        """
+        self._shapePoints[sequenceNum] = (x,y)
+    
     def addOutgoingMovement(self, movement):
         """
         Adds the given movement.
