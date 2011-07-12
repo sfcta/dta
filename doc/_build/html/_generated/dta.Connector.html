@@ -64,10 +64,10 @@ a Centroid or a VirtualNode.</p>
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
 <li><em>startNode</em>, <em>endNode</em> are Nodes</li>
-<li><em>label</em> is a string, or None</li>
+<li><em>label</em> is a string, or None . If None passed, will use default.</li>
 </ul>
 </div></blockquote>
-<p>See RoadLink for the rest of the args.  Why do these make sense for centroid connectors?
+<p>See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> for the rest of the args.  Why do these make sense for centroid connectors?
 Answer: many centroid connectors are based on road links; all of them at the boundaries
 Therefore they have the same set of attributes and those attributes are meaningful.</p>
 <p>Putting RoadLink attributes heres for now, re-examine this (like should they go into the Link?)</p>
@@ -88,6 +88,12 @@ Therefore they have the same set of attributes and those attributes are meaningf
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.Connector.DEFAULT_LEVEL">
+<tt class="descname">DEFAULT_LEVEL</tt><a class="headerlink" href="#dta.Connector.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>default level value</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.Connector.addLanePermission">
 <tt class="descname">addLanePermission</tt><big>(</big><em>laneId</em>, <em>vehicleClassGroup</em><big>)</big><a class="headerlink" href="#dta.Connector.addLanePermission" title="Permalink to this definition">¶</a></dt>

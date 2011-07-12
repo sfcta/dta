@@ -26,6 +26,7 @@ __license__     = """
 
 from .Centroid import Centroid
 from .Connector import Connector
+from .CubeNetwork import CubeNetwork
 from .DtaError import DtaError
 from .DynameqNetwork import DynameqNetwork
 from .DynameqScenario import DynameqScenario
@@ -44,7 +45,7 @@ from .VirtualNode import VirtualNode
 
 
 __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
-           'Network', 'DynameqNetwork', 
+           'Network', 'DynameqNetwork', 'CubeNetwork',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
            'Link', 'RoadLink', 'Connector', 'VirtualLink'

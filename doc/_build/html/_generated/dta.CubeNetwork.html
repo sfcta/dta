@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.CubeNetwork &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.Scenario" href="dta.Scenario.html" />
+    <link rel="prev" title="dta.DynameqNetwork" href="dta.DynameqNetwork.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dta.Scenario.html" title="dta.Scenario"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-cubenetwork">
+<h1>dta.CubeNetwork<a class="headerlink" href="#dta-cubenetwork" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.CubeNetwork">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">CubeNetwork</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Network.Network</span></tt></p>
+<p>A DTA Network originating from a Cube network.</p>
+<dl class="method">
+<dt id="dta.CubeNetwork.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.  Initializes to an empty network.</p>
+<p>Keeps a reference to the given Scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" title="dta.Scenario"><tt class="xref py py-class docutils literal"><span class="pre">Scenario</span></tt></a> instance)
+for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> lookups</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.__init__" title="dta.CubeNetwork.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.addLink" title="dta.CubeNetwork.addLink"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.addMovement" title="dta.CubeNetwork.addMovement"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.addNode" title="dta.CubeNetwork.addNode"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getLinkForId" title="dta.CubeNetwork.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getLinkForNodeIdPair" title="dta.CubeNetwork.getLinkForNodeIdPair"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getLinkForNodeIdPair</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNodeForId" title="dta.CubeNetwork.getNodeForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNodeForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.CubeNetwork.readCSVs"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.readCSVs</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.readNetfile" title="dta.CubeNetwork.readNetfile"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.readNetfile</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dta.CubeNetwork.addLink">
+<tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the <em>newLink</em> is a Link</li>
+<li>that the id is not already used</li>
+<li>the nodepair is not already used</li>
+</ul>
+</div></blockquote>
+<p>Stores it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.addMovement">
+<tt class="descname">addMovement</tt><big>(</big><em>newMovement</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the movement by adding it to the movement&#8217;s incomingLink</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.addNode">
+<tt class="descname">addNode</tt><big>(</big><em>newNode</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that <em>newNode</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>, <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> or <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a>
+and that the id is not already used; stores it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.copy">
+<tt class="descname">copy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the contents of the originNetwork into self (Nodes and Links, not the scenario).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getLinkForId">
+<tt class="descname">getLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for link given the <em>linkId</em>.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getLinkForNodeIdPair">
+<tt class="descname">getLinkForNodeIdPair</tt><big>(</big><em>nodeAId</em>, <em>nodeBId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getLinkForNodeIdPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the link given the link nodes.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNodeForId">
+<tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNodeForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for node given the <em>nodeId</em>.
+Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.readCSVs">
+<tt class="descname">readCSVs</tt><big>(</big><em>nodesCsvFilename</em>, <em>nodeVariableNames</em>, <em>linksCsvFilename</em>, <em>linkVariableNames</em>, <em>centroidIds</em>, <em>nodeGeometryTypeEvalStr</em>, <em>nodeControlEvalStr</em>, <em>nodePriorityEvalStr</em>, <em>nodeLabelEvalStr</em>, <em>nodeLevelEvalStr</em>, <em>linkReverseAttachedIdEvalStr</em>, <em>linkFacilityTypeEvalStr</em>, <em>linkLengthEvalStr</em>, <em>linkFreeflowSpeedEvalStr</em>, <em>linkEffectiveLengthFactorEvalStr</em>, <em>linkResponseTimeFactorEvalStr</em>, <em>linkNumLanesEvalStr</em>, <em>linkRoundAboutEvalStr</em>, <em>linkLevelEvalStr</em>, <em>linkLabelEvalStr</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readCSVs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the network from the given csv files.
+* <em>nodesCsvFilename</em> is the csv with the node data; <em>nodeVariableNames</em> are the column names.
+* <em>linksCsvFilename</em> is the csv with the link data; <em>linkVariableNames</em> are the column names.
+* <em>centroidIds</em> is a list of the node Ids that should be interpreted as centroids</p>
+<p>The following strings are used to indicate how the <strong>nodes</strong> should be interpreted.  These
+will be eval()ed by python, and so they can reference one of the <em>nodeVariableNames</em>, or they
+can be constants.</p>
+<p>For example, <em>nodeControlEvalStr</em> can be <tt class="docutils literal"><span class="pre">&quot;RoadNode.CONTROL_TYPE_SIGNALIZED&quot;</span></tt> if
+there are no useful node variables and we just want to default the control attribute of <strong>all</strong>
+<a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> to <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode.CONTROL_TYPE_SIGNALIZED" title="dta.RoadNode.CONTROL_TYPE_SIGNALIZED"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.CONTROL_TYPE_SIGNALIZED</span></tt></a>.</p>
+<p>Alternatively, if a column in the file given by <em>nodesCsvFilename</em> could be used, then
+it can be referenced.  So if there is a column called &#8220;SIGNAL&#8221; which is 1 for signalized
+intersections and 0 otherwise, the <em>nodeControlEvalStr</em> could be 
+<tt class="docutils literal"><span class="pre">&quot;RoadNode.CONTROL_TYPE_SIGNALIZED</span> <span class="pre">if</span> <span class="pre">int(SIGNAL)==1</span> <span class="pre">else</span> <span class="pre">RoadNode.CONTROL_TYPE_UNSIGNALIZED&quot;</span></tt>.</p>
+<p>Note that the CSV fields are all strings, which is why SIGNAL is cast to an int here.</p>
+<ul class="simple">
+<li><em>nodeGeometryTypeEvalStr</em> indicates how to set the <em>geometryType</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
+<li><em>nodeControlEvalStr</em> indicates how to set the <em>control</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
+<li><em>nodePriorityEvalStr</em> indicates how to set the <em>priority</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
+<li><em>nodeLabelEvalStr</em> indicates how to set the <em>label</em> for each <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></li>
+<li><em>nodeLevelEvalStr</em> indicates how to set the <em>level</em> for each <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></li>
+</ul>
+<p>Similarly, the following strings are used to indicate how the <strong>links</strong> should be interpreted.</p>
+<ul class="simple">
+<li><em>linkReverseAttachedIdEvalStr</em> indicates how to set the <em>reversedAttachedId</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkFacilityTypeEvalStr</em> indicates how to set the <em>facilityType</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkLengthEvalStr</em> indicates how to set the <em>length</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkFreeflowSpeedEvalStr</em> indicates how to set the <em>freeflowSpeed</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkEffectiveLengthFactorEvalStr</em> indicates how to set the <em>effectiveLengthFactor</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkResponseTimeFactorEvalStr</em> indicates how to set the <em>responseTimeFactor</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkNumLanesEvalStr</em> indicates how to set the <em>numLanes</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkRoundAboutEvalStr</em> indicates how to set the <em>roundAbout</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkLevelEvalStr</em> indicates how to set the <em>level</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkLabelEvalStr</em> indicates how to set the <em>label</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.readNetfile">
+<tt class="descname">readNetfile</tt><big>(</big><em>netFile</em>, <em>nodeVariableNames</em>, <em>linkVariableNames</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readNetfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the given netFile by exporting to CSV files and reading those.
+<em>nodeVariableNames</em> is a list of variable names for the nodes and
+<em>linkVariableNames</em> is a list of variable names for the links.
+See <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.CubeNetwork.readCSVs"><tt class="xref py py-meth docutils literal"><span class="pre">CubeNetwork.readCSVs()</span></tt></a> for the description of the rest of the arguments.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.DynameqNetwork.html"
+                        title="previous chapter">dta.DynameqNetwork</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.Scenario.html"
+                        title="next chapter">dta.Scenario</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.CubeNetwork.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dta.Scenario.html" title="dta.Scenario"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

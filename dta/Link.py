@@ -25,17 +25,23 @@ class Link(object):
     Base class that represents a link in a network.
     """
     
+    #: Default label is an empty string
+    DEFAULT_LABEL = ""
+    
     def __init__(self, id, startNode, endNode, label):
         """
         Constructor.
         
          * *id* is a unique identifier (unique within the containing network), an integer, or None
          * *startNode*, *endNode* are Nodes
-         * *label* is a string, or None 
-        """
-        
+         * *label* is a string. If None passed, will use default.
+         
+        """ 
         self.id    = id     # integer id
-        self.label = label
+        if label:   
+            self.label = label
+        else:
+            self.label = Link.DEFAULT_LABEL
         
         if not isinstance(startNode, Node):
             raise DtaError("Initializing Link with non-Node startNode: %s" % str(startNode))
@@ -43,8 +49,10 @@ class Link(object):
         if not isinstance(endNode, Node):
             raise DtaError("Initializing Link with non-Node endNode: %s" % str(endNode))
 
-        self._startNode = startNode     #: a Node instance
-        self._endNode   = endNode       #: a Node instance
+        #: a Node instance
+        self._startNode = startNode
+        #: a Node instance
+        self._endNode   = endNode
     
     def updateNodesAdjacencyLists(self):
         """

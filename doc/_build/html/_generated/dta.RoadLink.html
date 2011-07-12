@@ -76,8 +76,8 @@ on the link.  May vary over time with LinkEvents</li>
 on the link.  May vary over time with LinkEvents</li>
 <li><em>numLanes</em> is an integer</li>
 <li><em>roundAbout</em> is true/false or 1/0</li>
-<li><em>level</em> is an indicator to attribute vertical alignment/elevation</li>
-<li><em>label</em> is a link label</li>
+<li><em>level</em> is an indicator to attribute vertical alignment/elevation. If None passed, will use default.</li>
+<li><em>label</em> is a link label. If None passed, will use default.</li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -100,6 +100,12 @@ on the link.  May vary over time with LinkEvents</li>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.RoadLink.DEFAULT_LEVEL">
+<tt class="descname">DEFAULT_LEVEL</tt><a class="headerlink" href="#dta.RoadLink.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>default level value</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.RoadLink.addLanePermission">
 <tt class="descname">addLanePermission</tt><big>(</big><em>laneId</em>, <em>vehicleClassGroup</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addLanePermission" title="Permalink to this definition">¶</a></dt>

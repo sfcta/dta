@@ -15,6 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import datetime
 import dta
 
 USAGE = """
@@ -29,24 +30,65 @@ if __name__ == '__main__':
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
-    gearyscenario = dta.DynameqScenario(dir=".", file_prefix="Base_Final")
-    gearyscenario.write(dir="test", file_prefix="geary")
+    gearyScenario = dta.DynameqScenario(startTime=datetime.time(hour=0),
+                                        endTime=datetime.time(hour=1))
+    gearyScenario.read(dir=".", file_prefix="Base_Final")
+    gearyScenario.write(dir="test", file_prefix="geary")
     
-    gearynet_dta = dta.DynameqNetwork(scenario=gearyscenario)
-    gearynet_dta.read(dir=".", file_prefix="Base_Final")
-    gearynet_dta.write(dir="test", file_prefix="geary")
-    
-
-    exit(0)
+    gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
+    gearynetDta.read(dir=".", file_prefix="Base_Final")
+    gearynetDta.write(dir="test", file_prefix="geary")
     
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
-    sanfrancisco_cube = dta.CubeNetwork(dir="sfnet")
+    sanfranciscoScenario = dta.DynameqScenario(startTime=datetime.time(hour=15),
+                                               endTime=datetime.time(hour=18))
+    
+    sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
+    sanfranciscoCubeNet.readNetfile \
+      (netFile=r"Y:\champ\networks\RTP2009\2015\hwy\FREEFLOW.NET",
+       nodeVariableNames=["N","X","Y"],
+       linkVariableNames=["A","B","TOLL","USE",
+                          "CAP","AT","FT","STREETNAME","TYPE",
+                          "MTYPE","SPEED","DISTANCE","TIME",
+                          "LANE_AM","LANE_OP","LANE_PM",
+                          "BUSLANE_AM","BUSLANE_OP","BUSLANE_PM",
+                          "TOLLAM_DA","TOLLAM_SR2","TOLLAM_SR3",
+                          "TOLLPM_DA","TOLLPM_SR2","TOLLPM_SR3",
+                          "TOLLEA_DA","TOLLEA_SR2","TOLLEA_SR3",
+                          "TOLLMD_DA","TOLLMD_SR2","TOLLMD_SR3",
+                          "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3",
+                          "VALUETOLL_FLAG","PASSTHRU",
+                          "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
+                          "PROJ","HOT"],
+       centroidIds=range(1,2476),
+       nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
+       nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
+       nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
+       nodeLabelEvalStr                 = "None",
+       nodeLevelEvalStr                 = "None",
+       linkReverseAttachedIdEvalStr     = "None", #TODO: fix?
+       linkFacilityTypeEvalStr          = "int(FT)",
+       linkLengthEvalStr                = "float(DISTANCE)",
+       linkFreeflowSpeedEvalStr         = "float(SPEED)",
+       linkEffectiveLengthFactorEvalStr = "1",
+       linkResponseTimeFactorEvalStr    = "1.05",
+       linkNumLanesEvalStr              = "int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0)",
+       linkRoundAboutEvalStr            = "False",
+       linkLevelEvalStr                 = "None",
+       linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
+       )
+    
+    sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
+    sanfrancsicoDynameqNet.copy(sanfranciscoCubeNet)
+    sanfrancsicoDynameqNet.write(dir="test", file_prefix="sf")
+    sanfranciscoScenario.write(dir="test", file_prefix="sf")   
+    exit(0)
     
     # Merge them together
-    sanfrancisco_dta = gearynet_dta
-    sanfrancisco_dta.merge(sanfrancisco_cube)
+    sanfranciscoNet = gearynetDta
+    sanfranciscoNet.merge(sanfranciscoCubeNet)
     
     # Write the result.  sanfrancisco_dta is a DynameqNetwork
-    sanfrancisco_dta.write(dir = ".", file_prefix="SanFrancisco_")
+    sanfranciscoNet.write(dir = ".", file_prefix="SanFrancisco_")
     

@@ -10,15 +10,22 @@
 
 Network classes
 ===============
+.. inheritance-diagram:: dta.Network dta.DynameqNetwork dta.CubeNetwork
+   :parts: 1
+   
 .. autosummary::
    :nosignatures:
    :toctree: _generated
    
    dta.Network
    dta.DynameqNetwork
+   dta.CubeNetwork
    
 Scenario classes
 ================
+.. inheritance-diagram:: dta.Scenario dta.DynameqScenario dta.VehicleType dta.VehicleClassGroup
+   :parts: 1
+   
 .. autosummary::
    :nosignatures:
    :toctree: _generated
@@ -30,6 +37,9 @@ Scenario classes
    
 Node classes
 ================
+.. inheritance-diagram:: dta.Node dta.RoadNode dta.VirtualNode dta.Centroid
+   :parts: 1
+   
 .. autosummary::
    :nosignatures:
    :toctree: _generated
@@ -41,6 +51,9 @@ Node classes
    
 Link classes
 ================
+.. inheritance-diagram:: dta.Link dta.RoadLink dta.VirtualLink dta.Connector
+   :parts: 1
+   
 .. autosummary::
    :nosignatures:
    :toctree: _generated

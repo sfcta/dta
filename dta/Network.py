@@ -15,7 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import copy
 from .Centroid import Centroid
 from .DtaError import DtaError
 from .Link import Link
@@ -48,8 +48,6 @@ class Network(object):
         self._linksById     = {}
         #: (nodeA id, nodeB id) -> :py:class:`Link`
         self._linksByNodeIdPair = {}
-        #: virtual links.  these have no id -- TODO: make one up?
-        self._virtualLinks = []
         
         #: maximum link id
         self._maxLinkId    = 0
@@ -63,6 +61,18 @@ class Network(object):
         
     def __del__(self):
         pass
+    
+    def copy(self, originNetwork):
+        """
+        Copies the contents of the originNetwork into self (Nodes and Links, not the scenario).
+        """
+        self._nodes     = copy.copy(originNetwork._nodes)
+        self._linksById = copy.copy(originNetwork._linksById)
+        
+        self._linksByNodeIdPair = {}
+        for link in self._linksById.itervalues():
+            self._linksByNodeIdPair[(link.getStartNode().getId(), link.getEndNode().getId())] = link
+        self._maxLinkId = originNetwork._maxLinkId
     
     def addNode(self, newNode):
         """

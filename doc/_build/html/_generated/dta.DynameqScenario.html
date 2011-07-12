@@ -52,13 +52,13 @@
 <h1>dta.DynameqScenario<a class="headerlink" href="#dta-dynameqscenario" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.DynameqScenario">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">DynameqScenario</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">DynameqScenario</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Scenario.Scenario</span></tt></p>
 <p>A Dynameq Scenario.</p>
 <dl class="method">
 <dt id="dta.DynameqScenario.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor. Reads the scenario in the given <em>dir</em> with the given <em>file_prefix</em>.</p>
+<tt class="descname">__init__</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. Creates empty Dynameq scenario</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -111,6 +111,19 @@
 <dt id="dta.DynameqScenario.addVehicleType">
 <tt class="descname">addVehicleType</tt><big>(</big><em>vehicleType</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.addVehicleType" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>vehicleType</em> is a <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqScenario.getVehicleClassGroup">
+<tt class="descname">getVehicleClassGroup</tt><big>(</big><em>vehicleClassGroupName</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.getVehicleClassGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the relevant <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> or throws a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not
+found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqScenario.read">
+<tt class="descname">read</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the scenario configuration from the Dynameq scenario file.</p>
 </dd></dl>
 
 <dl class="method">

@@ -15,6 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+from .DtaError import DtaError
 from .Node import Node
 
 class RoadNode(Node):
@@ -22,9 +23,11 @@ class RoadNode(Node):
     A Node subclass that represents a road node in a network.
     
     """
-    #: Control types - how is this used?
-    CONTROL_TYPE_UNSIGNALIZED       = 0  # the intersection is not signalized
-    CONTROL_TYPE_SIGNALIZED         = 1  # the intersection is signalized
+    #: the intersection is not signalized
+    CONTROL_TYPE_UNSIGNALIZED       = 0
+    #: the intersection is signalized
+    CONTROL_TYPE_SIGNALIZED         = 1
+    #: all control types
     CONTROL_TYPES                   = [CONTROL_TYPE_UNSIGNALIZED,
                                        CONTROL_TYPE_SIGNALIZED]
     
@@ -64,24 +67,35 @@ class RoadNode(Node):
                                        PRIORITY_TEMPLATE_MERGE,
                                        PRIORITY_TEMPLATE_SIGNALIZED]
         
-    def __init__(self, id, x, y, type, control, priority, label=None, level=None):
+    def __init__(self, id, x, y, geometryType, control, priority, label=None, level=None):
         """
         Constructor.
         
-         * id is a unique identifier (unique within the containing network), an integer
-         * x and y are coordinates (what units?)
-         * type is one of Node.GEOMETRY_TYPE_INTERSECTION or Node.GEOMETRY_TYPE_JUNCTION
-         * control is one of Node.CONTROL_TYPE_UNSIGNALIZED or Node.CONTROL_TYPE_SIGNALIZED
-         * label is a string, for readability.  If None passed, will default to "label [id]"
-         * level is for vertical alignment.  More details TBD.  If None passed, will use default.  
+         * *id* is a unique identifier (unique within the containing network), an integer
+         * *x* and *y* are coordinates (what units?)
+         * *geometryType* is one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION` or 
+           :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`
+         * *control* is one of :py:attr:`RoadNode.CONTROL_TYPE_UNSIGNALIZED` or 
+           :py:attr:`RoadNode.CONTROL_TYPE_SIGNALIZED`
+         * *priority* is one of
+         
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_NONE`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_AWSC`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_TWSC`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_MERGE`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_SIGNALIZED`
+                                       
+         * *label* is a string, for readability.  If None passed, will default to "label [id]"
+         * *level* is for vertical alignment.  More details TBD.  If None passed, will use default.  
         """
-        if type not in [Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION]:
+        if geometryType not in [Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION]:
             raise DtaError("RoadNode initialized with invalid type: %d" % type)
         
         if control not in RoadNode.CONTROL_TYPES:
             raise DtaError("RoadNode initailized with invalid control: %d" % control)
         
-        Node.__init__(self, id, x, y, type, label, level)
+        Node.__init__(self, id, x, y, geometryType, label, level)
 
         self._control    = control
         self._priority   = priority

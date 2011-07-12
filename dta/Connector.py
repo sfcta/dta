@@ -29,7 +29,9 @@ class Connector(Link):
     A Connector is a Link that connects a RoadNode with a Centroid or a VirtualNode.
     
     """
-    
+    #: default level value
+    DEFAULT_LEVEL = 0
+        
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
                  roundAbout, level, label):
@@ -39,9 +41,9 @@ class Connector(Link):
         
          * *id* is a unique identifier (unique within the containing network), an integer
          * *startNode*, *endNode* are Nodes
-         * *label* is a string, or None 
+         * *label* is a string, or None . If None passed, will use default. 
          
-        See RoadLink for the rest of the args.  Why do these make sense for centroid connectors?
+        See :py:class:`RoadLink` for the rest of the args.  Why do these make sense for centroid connectors?
         Answer: many centroid connectors are based on road links; all of them at the boundaries
         Therefore they have the same set of attributes and those attributes are meaningful.
         
@@ -70,7 +72,10 @@ class Connector(Link):
         self._responseTimeFactor        = responseTimeFactor
         self._numLanes                  = numLanes
         self._roundAbout                = roundAbout
-        self._level                     = level
+        if level:
+            self._level                 = level
+        else:
+            self._level                 = Connector.DEFAULT_LEVEL
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements

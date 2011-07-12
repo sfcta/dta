@@ -18,6 +18,7 @@ __license__     = """
 import datetime
 import os
 from .DtaError import DtaError
+from .Logger import DtaLogger
 from .Scenario import Scenario
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
@@ -29,80 +30,115 @@ class DynameqScenario(Scenario):
     
     SCENARIO_FILE   = '%s_scen.dqt'
 
-    def __init__(self, dir, file_prefix):
+    ADVANCED_HEADER     = """<DYNAMEQ>
+<VERSION_1.5>
+<SCENARIO_FILE>
+* CREATED by DTA Anyway http://code.google.com/p/dta/    
+"""
+
+    def __init__(self, startTime, endTime):
         """
-        Constructor. Reads the scenario in the given *dir* with the given *file_prefix*.
-        
+        Constructor. Creates empty Dynameq scenario
         """
-        
+        Scenario.__init__(self, startTime, endTime)
+
+        #: for now just a list: (name, units, turn_expr, link_expr, desc)
+        self._generalizedCosts = []
+    
+    def read(self, dir, file_prefix):
+        """
+        Reads the scenario configuration from the Dynameq scenario file.
+        """
         # scenario file processing
         scenariofile = os.path.join(dir, DynameqScenario.SCENARIO_FILE % file_prefix)
         if not os.path.exists(scenariofile):
             raise DtaError("Scenario file %s does not exist" % scenariofile)
         
+        for fields in self._readSectionFromFile(scenariofile, "STUDY_PERIOD", "EVENTS"):
+            self._readStudyPeriodFromFields(fields)
+            DtaLogger.info("Read  %8d %-16s from %s" % (1, "STUDY_PERIOD", scenariofile))
         
-        (startTime, endTime) = self._readStudyPeriodFromScenarioFile(scenariofile)
-        Scenario.__init__(self, startTime, endTime)
-        
-        try:
-            for (eventTime, eventDescription) in self._readEventsFromScenarioFile(scenariofile):
-                self.addEvent(eventTime, eventDescription)
-        except StopIteration:
-            pass
+        count = 0
+        for fields in self._readSectionFromFile(scenariofile, "EVENTS",       "VEH_CLASSES"):
+            self._addEventFromFields(fields)
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "EVENTS", scenariofile))
                 
-        try:
-            for vehicleClassName in self._readVehicleClassesFromScenarioFile(scenariofile):
-                self.addVehicleClass(vehicleClassName)
-        except StopIteration:
-            pass
+        count = 0
+        for fields in self._readSectionFromFile(scenariofile, "VEH_CLASSES",  "VEH_TYPES"):
+            self._readVehicleClassFromFields(fields)
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "VEH_CLASSES", scenariofile))
         
-        try:
-            for vehicleType in self._readVehicleTypesFromScenarioFile(scenariofile):
-                self.addVehicleType(vehicleType)
-        except StopIteration:
-            pass
-            
-        for vehicleClassGroup in self._readVehicleClassGroupsFromScenarioFile(scenariofile):
-            self.addVehicleClassGroup(vehicleClassGroup)
+        count = 0
+        for fields in self._readSectionFromFile(scenariofile, "VEH_TYPES",  "VEH_CLASS_GROUPS"):
+            self.addVehicleType(self._readVehicleTypeFromFields(fields))
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "VEH_TYPES", scenariofile))
+
+        count = 0
+        for fields in self._readSectionFromFile(scenariofile, "VEH_CLASS_GROUPS",  "GENERALIZED_COSTS"):
+            self.addVehicleClassGroup(self._readVehicleClassGroupFromFields(fields))
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "VEH_CLASS_GROUPS", scenariofile))
                  
-        # TODO: generalized cost   
-        # for generalizedCost in self._readGeneralizedCostFromScenarioFile(scenariofile):
-        #    self.addGeneralizedCost(generalizedCost)
+        count = 0
+        for fields in self._readSectionFromFile(scenariofile, "GENERALIZED_COSTS", "ENDOFFILE"):
+            self._readGeneralizedCostFromFields(fields)
+            count += 1
+        DtaLogger.info("Read  %8d %-16s from %s" % (count, "GENERALIZED_COSTS", scenariofile))
 
     def write(self, dir, file_prefix):
         scenariofile = os.path.join(dir, DynameqScenario.SCENARIO_FILE % file_prefix)
         
         scenariofile_object = open(scenariofile, "w")
+        scenariofile_object.write(DynameqScenario.ADVANCED_HEADER)
         self._writeStudyPeriodToScenarioFile(scenariofile_object)
         self._writeEventsToScenarioFile(scenariofile_object)
         self._writeVehicleClassesToScenarioFile(scenariofile_object)
         self._writeVehicleTypesToScenarioFile(scenariofile_object)
-        self._writeVehicleClassGroupsFromScenarioFile(scenariofile_object)
+        self._writeVehicleClassGroupsToScenarioFile(scenariofile_object)
+        self._writeGeneralizedCostsToScenarioFile(scenariofile_object)
+        scenariofile_object.close()
         
-    def _readStudyPeriodFromScenarioFile(self, scenariofile):
-        """ 
-        Reads the study period and returns the start and times as datetime.time objects
+    def _readSectionFromFile(self, filename, sectionName, nextSectionName):
         """
-        lines = open(scenariofile, "r")
-        curLine = lines.next().strip()
+        Generator function, yields fields (array of strings) from the given section of the given file.
+        """
+        lines = open(filename, "r")
+        curLine = ""
         try:
-            while curLine !="STUDY_PERIOD":
+            # find the section
+            while curLine != sectionName:
                 curLine = lines.next().strip()
         except StopIteration:
-            raise DtaError("Scenario file %s: cannot locate the STUDY_PERIOD section" % scenariofile)
-
+            raise DtaError("DynameqNetwork _readSectionFromFile failed to find %s in %s" % 
+                           (sectionName,filename))
+        
+        # go past the section name
         curLine = lines.next().strip()
-        while curLine[0] == "*": # if its a comment, skip
+        # skip any comments
+        while curLine[0] == "*":
             curLine = lines.next().strip()
+        
+        # these are the ones we want
+        while not curLine == nextSectionName:
+            fields  = curLine.split()
+            yield fields
             
-        fields  = curLine.split()        
+            curLine = lines.next().strip()
+        lines.close()
+        raise StopIteration
+
+    def _readStudyPeriodFromFields(self, fields):
+        """ 
+        Reads the study period and returns the start and times as datetime.time objects
+        """  
         time1 = fields[0].split(":")
         time2 = fields[1].split(":")
         
-        lines.close()
-        
-        return (datetime.time(hour=int(time1[0]), minute=int(time1[1])),
-                datetime.time(hour=int(time2[0]), minute=int(time2[1])))
+        self.startTime  = datetime.time(hour=int(time1[0]), minute=int(time1[1]))
+        self.endTime    = datetime.time(hour=int(time2[0]), minute=int(time2[1]))
     
     def _writeStudyPeriodToScenarioFile(self, scenariofile_object):
         """
@@ -114,33 +150,15 @@ class DynameqScenario(Scenario):
         scenariofile_object.write("    %02d:%02d    %02d:%02d\n" % (self.startTime.hour, self.startTime.minute,
                                                                     self.endTime.hour,   self.endTime.minute))
         
-    def _readEventsFromScenarioFile(self, scenariofile):
+    def _readEventsFromFields(self, scenariofile):
         """
         Generator function, yields (eventTime, eventDescription) to the caller
         """
-        lines = open(scenariofile, "r")
-        curLine = lines.next().strip()
-        try:
-            while curLine !="EVENTS":
-                curLine = lines.next().strip()
-        except StopIteration:
-            raise DtaError("Scenario file %s: cannot locate the EVENTS section" % scenariofile)
-
-        curLine = lines.next().strip()
-        while curLine[0] == "*": # if its a comment, skip
-            curLine = lines.next().strip()
-            
-        while not curLine == "VEH_CLASSES":
-            fields  = curLine.split()
-            
-            timestrs = fields[0].split(":")            
-            yield (datetime.time(hour=int(timestrs[0]), minute=int(timestrs[1])), fields[1])
-            
-            curLine = lines.next().strip()
+        timestrs = fields[0].split(":")
+        eventTime = datetime.time(hour=int(timestrs[0]), minute=int(timestrs[1]))
+        eventDesc = fields[1]
+        self.events[eventTime] = self.eventDesc
         
-        lines.close()
-        raise StopIteration
-    
     def _writeEventsToScenarioFile(self, scenariofile_object):
         """
         Write version of _readEventsFromScenarioFile().  *scenariofile_object* is the file object,
@@ -148,34 +166,16 @@ class DynameqScenario(Scenario):
         """
         scenariofile_object.write("EVENTS\n")
         scenariofile_object.write("*    time                                                     desc\n")
+        count = 0
         for eventTime in sorted(self.events.keys()):
             scenariofile_object.write("    %02d:%02d %56s\n" % (eventTime.hour, eventTime.minute,
                                                                 self.events[eventTime]))
-                
-    def _readVehicleClassesFromScenarioFile(self, scenariofile):
-        """
-        Generator function, yields vehicleClassName (strings) to the caller
-        """
-        lines = open(scenariofile, "r")
-        curLine = lines.next().strip()
-        try:
-            while curLine !="VEH_CLASSES":
-                curLine = lines.next().strip()
-        except StopIteration:
-            raise DtaError("Scenario file %s: cannot locate the VEH_CLASSES section" % scenariofile)
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "EVENTS", scenariofile_object.name))
 
-        curLine = lines.next().strip()
-        while curLine[0] == "*": # if its a comment, skip
-            curLine = lines.next().strip()
-            
-        while not curLine == "VEH_TYPES":
-            fields  = curLine.split()
-            yield fields[0]
-            
-            curLine = lines.next().strip()
-        
-        lines.close()
-        raise StopIteration
+                
+    def _readVehicleClassFromFields(self, fields):
+        self.addVehicleClass(fields[0])
         
     def _writeVehicleClassesToScenarioFile(self, scenariofile_object):
         """
@@ -184,37 +184,26 @@ class DynameqScenario(Scenario):
         """
         scenariofile_object.write("VEH_CLASSES\n")
         scenariofile_object.write("*      class_name\n")
+        count = 0
         for vehicleClassName in self.vehicleClassNames:
             scenariofile_object.write("%17s" % vehicleClassName)
-        
-    def _readVehicleTypesFromScenarioFile(self, scenariofile):
-        """
-        Generator function, yields VehicleType objects to the caller        
-        """
-        lines = open(scenariofile, "r")
-        curLine = lines.next().strip()
-        try:
-            while curLine !="VEH_TYPES":
-                curLine = lines.next().strip()
-        except StopIteration:
-            raise DtaError("Scenario file %s: cannot locate the VEH_TYPES section" % scenariofile)
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VEH_CLASSES", scenariofile_object.name))
 
-        curLine = lines.next().strip()
-        while curLine[0] == "*": # if its a comment, skip
-            curLine = lines.next().strip()
-            
-        while not curLine == "VEH_CLASS_GROUPS":
-            fields  = curLine.split()
-            vehicleClassName    = fields[0]
-            vehicleTypeName     = fields[1]
-            length              = float(fields[2])
-            responseTime        = float(fields[3])
-            yield VehicleType(vehicleTypeName, vehicleClassName, length, responseTime)
-            
-            curLine = lines.next().strip()
         
-        lines.close()
-        raise StopIteration
+    def _readVehicleTypeFromFields(self, fields):
+        """
+        Returns a VehicleType
+        """
+        vehicleClassName    = fields[0]
+        vehicleTypeName     = fields[1]
+        length              = float(fields[2])
+        responseTime        = float(fields[3])
+        return VehicleType(vehicleTypeName,
+                           vehicleClassName,
+                           length,
+                           responseTime)
+
     
     def _writeVehicleTypesToScenarioFile(self, scenariofile_object):
         """
@@ -223,49 +212,53 @@ class DynameqScenario(Scenario):
         """
         scenariofile_object.write("VEH_TYPES\n")
         scenariofile_object.write("*class_name type_name   length res_time\n")
+        count = 0
         for vehicleTypeName in sorted(self.vehicleTypes.keys()):
             scenariofile_object.write("%11s %9s %8f %8f\n" % (self.vehicleTypes[vehicleTypeName].className,
                                                               vehicleTypeName,
                                                               self.vehicleTypes[vehicleTypeName].length,
                                                               self.vehicleTypes[vehicleTypeName].responseTime))
-        
-    def _readVehicleClassGroupsFromScenarioFile(self, scenariofile):
-        """
-        Generator function, yields VehicleClassGroup objects to the caller        
-        """
-        lines = open(scenariofile, "r")
-        curLine = lines.next().strip()
-        try:
-            while curLine !="VEH_CLASS_GROUPS":
-                curLine = lines.next().strip()
-        except StopIteration:
-            raise DtaError("Scenario file %s: cannot locate the VEH_TYPES section" % scenariofile)
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VEH_TYPES", scenariofile_object.name))
 
-        curLine = lines.next().strip()
-        while curLine[0] == "*": # if its a comment, skip
-            curLine = lines.next().strip()
-            
-        while not curLine == "GENERALIZED_COSTS":
-            fields  = curLine.split()
-            groupName     = fields[0]
-            classDef      = fields[1]
-            colorCode     = fields[2]
-            yield VehicleClassGroup(groupName, classDef, colorCode)
-            
-            curLine = lines.next().strip()
         
-        lines.close()
-        raise StopIteration
-    
-    def _writeVehicleClassGroupsFromScenarioFile(self, scenariofile_object):
+    def _readVehicleClassGroupFromFields(self, fields):
+        """
+        Returns a VehicleClassGroup
+        """
+        groupName     = fields[0]
+        classDef      = fields[1]
+        colorCode     = fields[2]
+        return VehicleClassGroup(groupName, classDef, colorCode)
+
+    def _writeVehicleClassGroupsToScenarioFile(self, scenariofile_object):
         """
         Write version of _readVehicleClassGroupsFromScenarioFile().  *scenariofile_object* is the file object,
         ready for writing.
         """
         scenariofile_object.write("VEH_CLASS_GROUPS\n")
         scenariofile_object.write("*      name   class      color\n")
+        count = 0
         for groupname in sorted(self.vehicleClassGroups.keys()):
             scenariofile_object.write("%11s %7s %10s\n" % (groupname,
                                                            self.vehicleClassGroups[groupname].classDefinitionString,
                                                            self.vehicleClassGroups[groupname].colorCode))
-        
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VEH_CLASS_GROUPS", scenariofile_object.name))
+
+    
+    def _readGeneralizedCostFromFields(self, fields):
+        self._generalizedCosts.append(fields)
+    
+    def _writeGeneralizedCostsToScenarioFile(self, scenariofile_object):
+        """
+        Write version of _readGenarlizedCostFromFields().
+        *scenariofile_object* should be ready for writing
+        """
+        scenariofile_object.write("GENERALIZED_COSTS\n")
+        scenariofile_object.write("*        name   units                                                 turn_expr link_expr desc\n")
+        count = 0
+        for gc in self._generalizedCosts:
+            scenariofile_object.write(" ".join(gc) + "\n")
+            count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "GENERALIZED_COSTS", scenariofile_object.name))

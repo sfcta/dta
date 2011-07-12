@@ -63,7 +63,7 @@
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer, or None</li>
 <li><em>startNode</em>, <em>endNode</em> are Nodes</li>
-<li><em>label</em> is a string, or None</li>
+<li><em>label</em> is a string. If None passed, will use default.</li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -83,6 +83,12 @@
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.Link.DEFAULT_LABEL">
+<tt class="descname">DEFAULT_LABEL</tt><a class="headerlink" href="#dta.Link.DEFAULT_LABEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default label is an empty string</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.Link.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.euclideanLength" title="Permalink to this definition">¶</a></dt>

@@ -30,10 +30,15 @@ class Node(object):
     DEFAULT_LEVEL = 0
 
     # Geometry types - how is this used?  Why is the centroid not in the type list?
-    GEOMETRY_TYPE_INTERSECTION      = 1   # RoadNode geometry type
-    GEOMETRY_TYPE_JUNCTION          = 2   # RoadNode geometry type
-    GEOMETRY_TYPE_VIRTUAL           = 99  # VirtualNode geometry type
-    GEOMETRY_TYPE_CENTROID          = 100 # Centroid geometry type
+    
+    #: :py:class:`RoadNode` geometry type
+    GEOMETRY_TYPE_INTERSECTION      = 1
+    #: :py:class:`RoadNode` geometry type
+    GEOMETRY_TYPE_JUNCTION          = 2
+    #: :py:class:`VirtualNode` geometry type
+    GEOMETRY_TYPE_VIRTUAL           = 99
+    #: :py:class:`Centroid` geometry type
+    GEOMETRY_TYPE_CENTROID          = 100
     GEOMETRY_TYPES                  = [GEOMETRY_TYPE_INTERSECTION,
                                        GEOMETRY_TYPE_JUNCTION,
                                        GEOMETRY_TYPE_VIRTUAL]
@@ -44,9 +49,9 @@ class Node(object):
         
          * *id* is a unique identifier (unique within the containing network), an integer
          * *x* and *y* are coordinates (what units?)
-         * *geometryType* is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
-           Node.GEOMETRY_TYPE_VIRTUAL
-         * *label* is a string, for readability.  If None passed, will default to "label [id]"
+         * *geometryType* is one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION`, :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`, or 
+           :py:attr:`Node.GEOMETRY_TYPE_VIRTUAL`
+         * *label* is a string, for readability.  If None passed, will use default. 
          * *level* is for vertical alignment.  More details TBD.  If None passed, will use default.  
         
         """

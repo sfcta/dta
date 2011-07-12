@@ -52,21 +52,32 @@
 <h1>dta.RoadNode<a class="headerlink" href="#dta-roadnode" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.RoadNode">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadNode</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadNode</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>geometryType</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Node.Node</span></tt></p>
 <p>A Node subclass that represents a road node in a network.</p>
 <dl class="method">
 <dt id="dta.RoadNode.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>type</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>geometryType</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <blockquote>
 <div><ul class="simple">
-<li>id is a unique identifier (unique within the containing network), an integer</li>
-<li>x and y are coordinates (what units?)</li>
-<li>type is one of Node.GEOMETRY_TYPE_INTERSECTION or Node.GEOMETRY_TYPE_JUNCTION</li>
-<li>control is one of Node.CONTROL_TYPE_UNSIGNALIZED or Node.CONTROL_TYPE_SIGNALIZED</li>
-<li>label is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
-<li>level is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
+<li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
+<li><em>x</em> and <em>y</em> are coordinates (what units?)</li>
+<li><em>geometryType</em> is one of <a class="reference internal" href="dta.Node.html#dta.Node.GEOMETRY_TYPE_INTERSECTION" title="dta.Node.GEOMETRY_TYPE_INTERSECTION"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_INTERSECTION</span></tt></a> or 
+<a class="reference internal" href="dta.Node.html#dta.Node.GEOMETRY_TYPE_JUNCTION" title="dta.Node.GEOMETRY_TYPE_JUNCTION"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_JUNCTION</span></tt></a></li>
+<li><em>control</em> is one of <a class="reference internal" href="#dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED" title="dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.CONTROL_TYPE_UNSIGNALIZED</span></tt></a> or 
+<a class="reference internal" href="#dta.RoadNode.CONTROL_TYPE_SIGNALIZED" title="dta.RoadNode.CONTROL_TYPE_SIGNALIZED"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.CONTROL_TYPE_SIGNALIZED</span></tt></a></li>
+<li><em>priority</em> is one of<ul>
+<li><a class="reference internal" href="#dta.RoadNode.PRIORITY_TEMPLATE_NONE" title="dta.RoadNode.PRIORITY_TEMPLATE_NONE"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.PRIORITY_TEMPLATE_NONE</span></tt></a></li>
+<li><a class="reference internal" href="#dta.RoadNode.PRIORITY_TEMPLATE_AWSC" title="dta.RoadNode.PRIORITY_TEMPLATE_AWSC"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.PRIORITY_TEMPLATE_AWSC</span></tt></a></li>
+<li><a class="reference internal" href="#dta.RoadNode.PRIORITY_TEMPLATE_TWSC" title="dta.RoadNode.PRIORITY_TEMPLATE_TWSC"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.PRIORITY_TEMPLATE_TWSC</span></tt></a></li>
+<li><a class="reference internal" href="#dta.RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT" title="dta.RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT</span></tt></a></li>
+<li><a class="reference internal" href="#dta.RoadNode.PRIORITY_TEMPLATE_MERGE" title="dta.RoadNode.PRIORITY_TEMPLATE_MERGE"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.PRIORITY_TEMPLATE_MERGE</span></tt></a></li>
+<li><a class="reference internal" href="#dta.RoadNode.PRIORITY_TEMPLATE_SIGNALIZED" title="dta.RoadNode.PRIORITY_TEMPLATE_SIGNALIZED"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.PRIORITY_TEMPLATE_SIGNALIZED</span></tt></a></li>
+</ul>
+</li>
+<li><em>label</em> is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
+<li><em>level</em> is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -84,9 +95,21 @@
 </tbody>
 </table>
 <dl class="attribute">
+<dt id="dta.RoadNode.CONTROL_TYPES">
+<tt class="descname">CONTROL_TYPES</tt><a class="headerlink" href="#dta.RoadNode.CONTROL_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd><p>all control types</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadNode.CONTROL_TYPE_SIGNALIZED">
+<tt class="descname">CONTROL_TYPE_SIGNALIZED</tt><a class="headerlink" href="#dta.RoadNode.CONTROL_TYPE_SIGNALIZED" title="Permalink to this definition">¶</a></dt>
+<dd><p>the intersection is signalized</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED">
 <tt class="descname">CONTROL_TYPE_UNSIGNALIZED</tt><a class="headerlink" href="#dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED" title="Permalink to this definition">¶</a></dt>
-<dd><p>Control types - how is this used?</p>
+<dd><p>the intersection is not signalized</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -152,6 +175,36 @@ incoming links.</p>
 <tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify that the given link starts with this node, and adds it to the list of
 outgoing links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getId">
+<tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the integer id for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getX">
+<tt class="descname">getX</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the x-coordinate for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getY">
+<tt class="descname">getY</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the y-coordinate for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterIncomingLinks">
+<tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator for the incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterOutgoingLinks">
+<tt class="descname">iterOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterOutgoingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator for the outgoing links.</p>
 </dd></dl>
 
 </dd></dl>

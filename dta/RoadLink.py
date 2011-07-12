@@ -27,6 +27,8 @@ class RoadLink(Link):
     A RoadLink in a network.  Both nodes must be RoadNodes.
     
     """
+    #: default level value
+    DEFAULT_LEVEL = 0
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
@@ -49,8 +51,8 @@ class RoadLink(Link):
            on the link.  May vary over time with LinkEvents
          * *numLanes* is an integer
          * *roundAbout* is true/false or 1/0
-         * *level* is an indicator to attribute vertical alignment/elevation
-         * *label* is a link label
+         * *level* is an indicator to attribute vertical alignment/elevation. If None passed, will use default.
+         * *label* is a link label. If None passed, will use default. 
          
         """
         Link.__init__(self, id, startNode, endNode, label)
@@ -62,7 +64,10 @@ class RoadLink(Link):
         self._responseTimeFactor        = responseTimeFactor
         self._numLanes                  = numLanes
         self._roundAbout                = roundAbout
-        self._level                     = level
+        if level:
+            self._level                 = level
+        else:
+            self._level                 = RoadLink.DEFAULT_LEVEL
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements

@@ -63,9 +63,9 @@
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
 <li><em>x</em> and <em>y</em> are coordinates (what units?)</li>
-<li><em>geometryType</em> is one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or 
-Node.GEOMETRY_TYPE_VIRTUAL</li>
-<li><em>label</em> is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
+<li><em>geometryType</em> is one of <a class="reference internal" href="#dta.Node.GEOMETRY_TYPE_INTERSECTION" title="dta.Node.GEOMETRY_TYPE_INTERSECTION"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_INTERSECTION</span></tt></a>, <a class="reference internal" href="#dta.Node.GEOMETRY_TYPE_JUNCTION" title="dta.Node.GEOMETRY_TYPE_JUNCTION"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_JUNCTION</span></tt></a>, or 
+<a class="reference internal" href="#dta.Node.GEOMETRY_TYPE_VIRTUAL" title="dta.Node.GEOMETRY_TYPE_VIRTUAL"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_VIRTUAL</span></tt></a></li>
+<li><em>label</em> is a string, for readability.  If None passed, will use default.</li>
 <li><em>level</em> is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
 </ul>
 </div></blockquote>
@@ -83,6 +83,30 @@ Node.GEOMETRY_TYPE_VIRTUAL</li>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.Node.GEOMETRY_TYPE_CENTROID">
+<tt class="descname">GEOMETRY_TYPE_CENTROID</tt><a class="headerlink" href="#dta.Node.GEOMETRY_TYPE_CENTROID" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> geometry type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Node.GEOMETRY_TYPE_INTERSECTION">
+<tt class="descname">GEOMETRY_TYPE_INTERSECTION</tt><a class="headerlink" href="#dta.Node.GEOMETRY_TYPE_INTERSECTION" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> geometry type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Node.GEOMETRY_TYPE_JUNCTION">
+<tt class="descname">GEOMETRY_TYPE_JUNCTION</tt><a class="headerlink" href="#dta.Node.GEOMETRY_TYPE_JUNCTION" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> geometry type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Node.GEOMETRY_TYPE_VIRTUAL">
+<tt class="descname">GEOMETRY_TYPE_VIRTUAL</tt><a class="headerlink" href="#dta.Node.GEOMETRY_TYPE_VIRTUAL" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> geometry type</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.Node.addIncomingLink">
 <tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Node.addIncomingLink" title="Permalink to this definition">¶</a></dt>
