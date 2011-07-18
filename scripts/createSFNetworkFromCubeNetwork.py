@@ -46,7 +46,7 @@ if __name__ == '__main__':
     
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \
-      (netFile=r"Y:\champ\networks\RTP2009\2015\hwy\FREEFLOW.NET",
+      (netFile=r"Y:\dta\SanFrancisco\2010\CubeNetworkSource\SanFranciscoSubArea_2010.net",
        nodeVariableNames=["N","X","Y"],
        linkVariableNames=["A","B","TOLL","USE",
                           "CAP","AT","FT","STREETNAME","TYPE",
@@ -60,8 +60,8 @@ if __name__ == '__main__':
                           "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3",
                           "VALUETOLL_FLAG","PASSTHRU",
                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
-                          "PROJ","HOT"],
-       centroidIds=range(1,2476),
+                          ],
+       centroidIds=range(1,999),
        nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",

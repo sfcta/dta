@@ -76,6 +76,12 @@ class Node(object):
         #: List of outgoing link objects, in clockwise order starting from <1,0>
         self._outgoingLinks = []
     
+    def __str__(self):
+        """
+        String representation
+        """
+        return "Node of type %s, id=%s, x,y=(%f,%f)" % (self.__class__, self._id, self._x, self._y)
+    
     def addIncomingLink(self, link):
         """
         Verify that the given link ends in this node, and adds it to the list of
