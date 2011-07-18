@@ -46,7 +46,7 @@ class Network(object):
         self._nodes         = {}
         #: link id -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
         self._linksById     = {}
-        #: (nodeA id, nodeB id) -> :py:class:`Link`
+        #: (nodeA id, nodeB id) -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
         self._linksByNodeIdPair = {}
         
         #: maximum link id

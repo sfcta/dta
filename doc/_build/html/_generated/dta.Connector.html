@@ -53,24 +53,17 @@
 <dl class="class">
 <dt id="dta.Connector">
 <em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
-<p>A Connector is a Link that connects a RoadNode with a Centroid or a VirtualNode.</p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.RoadLink.RoadLink</span></tt></p>
+<p>A Connector is a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> that connects a RoadNode with a Centroid or a VirtualNode.</p>
+<p>Why is a Connector a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> rather than a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a>?  
+Many centroid connectors are based on road links; all of them at the boundaries
+Therefore they have the same set of attributes and those attributes are meaningful.</p>
 <dl class="method">
 <dt id="dta.Connector.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Verifies one node is a RoadNode and the other node is either
 a Centroid or a VirtualNode.</p>
-<blockquote>
-<div><ul class="simple">
-<li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
-<li><em>startNode</em>, <em>endNode</em> are Nodes</li>
-<li><em>label</em> is a string, or None . If None passed, will use default.</li>
-</ul>
-</div></blockquote>
-<p>See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> for the rest of the args.  Why do these make sense for centroid connectors?
-Answer: many centroid connectors are based on road links; all of them at the boundaries
-Therefore they have the same set of attributes and those attributes are meaningful.</p>
-<p>Putting RoadLink attributes heres for now, re-examine this (like should they go into the Link?)</p>
+<p>See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.__init__" title="dta.RoadLink.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.__init__()</span></tt></a> for the arg descriptions.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -113,6 +106,17 @@ Therefore they have the same set of attributes and those attributes are meaningf
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.addShifts">
+<tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em><big>)</big><a class="headerlink" href="#dta.Connector.addShifts" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from
+the center line of the roadway that the first segment is shifted.</li>
+<li><em>endShift</em>: End-shift: the shift value of the last segment of the link, that is, the number of 
+lanes from the center line of the roadway that the last segment is shifted.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
@@ -131,6 +135,13 @@ Therefore they have the same set of attributes and those attributes are meaningf
 <p>So returns a number in [0,2pi), increasing clockwise.</p>
 <p>These are based on the euclidean length of the link, so assumes a straight line.  If the link has no length,
 returns 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getShifts">
+<tt class="descname">getShifts</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getShifts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <em>startShift</em> and <em>endShift</em> ordered pair, or (None,None) if it wasn&#8217;t set.
+See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
