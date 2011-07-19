@@ -334,8 +334,10 @@ class DynameqNetwork(Network):
         if (isinstance(startNode, Centroid) or isinstance(endNode, Centroid) or
             isinstance(startNode, VirtualNode) or isinstance(endNode, VirtualNode)):
             
+            # check faci == Connector.FACILITY_TYPE?
+            
             return Connector(id, startNode, endNode, reverseAttachedLinkId=rev, 
-                                facilityType=faci, length=(None if length==-1 else length),
+                                length=(None if length==-1 else length),
                                 freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                                 responseTimeFactor=resfac, numLanes=lanes,
                                 roundAbout=rabout, level=level, label=label)
@@ -366,7 +368,7 @@ class DynameqNetwork(Network):
                                   (link.id,
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
-                                   link._reverseAttachedLinkId if link._reverseAttachedLinkId else 0,
+                                   link._reverseAttachedLinkId if link._reverseAttachedLinkId else -1,
                                    link._facilityType,
                                    ("%12.3f" % link._length if link._length else "-1"),
                                    link._freeflowSpeed,

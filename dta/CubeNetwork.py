@@ -244,7 +244,7 @@ ENDRUN
                     startNode               = nodeA,
                     endNode                 = nodeB,
                     reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
-                    facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
+                    # facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
                     length                  = eval(linkLengthEvalStr, globals(), localsdict),
                     freeflowSpeed           = eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
                     effectiveLengthFactor   = eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),

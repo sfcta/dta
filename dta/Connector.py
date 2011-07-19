@@ -35,8 +35,11 @@ class Connector(RoadLink):
     """
     #: default level value
     DEFAULT_LEVEL = 0
+    
+    #: connectors have a specific facility type
+    FACILITY_TYPE = 99
         
-    def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
+    def __init__(self, id, startNode, endNode, reverseAttachedLinkId, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
                  roundAbout, level, label):
         """
@@ -59,7 +62,9 @@ class Connector(RoadLink):
             raise DtaError("Attempting to initialize a Connector without a Centroid/VirtualNode: %s - %s" % 
                            (str(startNode), str(endNode)))
        
-        RoadLink.__init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
-                          freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes,
-                          roundAbout, level, label)
+        RoadLink.__init__(self, id=id, startNode=startNode, endNode=endNode, 
+                          reverseAttachedLinkId=reverseAttachedLinkId, facilityType=Connector.FACILITY_TYPE, 
+                          length=length, freeflowSpeed=freeflowSpeed, effectiveLengthFactor=effectiveLengthFactor, 
+                          responseTimeFactor=responseTimeFactor, numLanes=numLanes,
+                          roundAbout=roundAbout, level=level, label=label)
 

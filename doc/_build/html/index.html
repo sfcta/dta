@@ -308,7 +308,7 @@
     
     <span class="n">sanfranciscoCubeNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">CubeNetwork</span><span class="p">(</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">readNetfile</span> \
-      <span class="p">(</span><span class="n">netFile</span><span class="o">=</span><span class="s">r&quot;Y:\champ\networks\RTP2009\2015\hwy\FREEFLOW.NET&quot;</span><span class="p">,</span>
+      <span class="p">(</span><span class="n">netFile</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010\CubeNetworkSource\SanFranciscoSubArea_2010.net&quot;</span><span class="p">,</span>
        <span class="n">nodeVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;N&quot;</span><span class="p">,</span><span class="s">&quot;X&quot;</span><span class="p">,</span><span class="s">&quot;Y&quot;</span><span class="p">],</span>
        <span class="n">linkVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;TOLL&quot;</span><span class="p">,</span><span class="s">&quot;USE&quot;</span><span class="p">,</span>
                           <span class="s">&quot;CAP&quot;</span><span class="p">,</span><span class="s">&quot;AT&quot;</span><span class="p">,</span><span class="s">&quot;FT&quot;</span><span class="p">,</span><span class="s">&quot;STREETNAME&quot;</span><span class="p">,</span><span class="s">&quot;TYPE&quot;</span><span class="p">,</span>
@@ -322,8 +322,8 @@
                           <span class="s">&quot;TOLLEV_DA&quot;</span><span class="p">,</span><span class="s">&quot;TOLLEV_SR2&quot;</span><span class="p">,</span><span class="s">&quot;TOLLEV_SR3&quot;</span><span class="p">,</span>
                           <span class="s">&quot;VALUETOLL_FLAG&quot;</span><span class="p">,</span><span class="s">&quot;PASSTHRU&quot;</span><span class="p">,</span>
                           <span class="s">&quot;BUSTPS_AM&quot;</span><span class="p">,</span><span class="s">&quot;BUSTPS_OP&quot;</span><span class="p">,</span><span class="s">&quot;BUSTPS_PM&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;PROJ&quot;</span><span class="p">,</span><span class="s">&quot;HOT&quot;</span><span class="p">],</span>
-       <span class="n">centroidIds</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2476</span><span class="p">),</span>
+                          <span class="p">],</span>
+       <span class="n">centroidIds</span>                      <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">999</span><span class="p">),</span>
        <span class="n">nodeGeometryTypeEvalStr</span>          <span class="o">=</span> <span class="s">&quot;Node.GEOMETRY_TYPE_INTERSECTION&quot;</span><span class="p">,</span>
        <span class="n">nodeControlEvalStr</span>               <span class="o">=</span> <span class="s">&quot;RoadNode.CONTROL_TYPE_SIGNALIZED&quot;</span><span class="p">,</span>
        <span class="n">nodePriorityEvalStr</span>              <span class="o">=</span> <span class="s">&quot;RoadNode.PRIORITY_TEMPLATE_NONE&quot;</span><span class="p">,</span>
@@ -343,8 +343,8 @@
     
     <span class="n">sanfrancsicoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
-    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>   
+    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>
+    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>   
     <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     
     <span class="c"># Merge them together</span>

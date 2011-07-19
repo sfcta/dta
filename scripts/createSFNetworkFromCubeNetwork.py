@@ -61,7 +61,7 @@ if __name__ == '__main__':
                           "VALUETOLL_FLAG","PASSTHRU",
                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
                           ],
-       centroidIds=range(1,999),
+       centroidIds                      = range(1,999),
        nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
@@ -81,8 +81,8 @@ if __name__ == '__main__':
     
     sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfrancsicoDynameqNet.copy(sanfranciscoCubeNet)
-    sanfrancsicoDynameqNet.write(dir="test", file_prefix="sf")
-    sanfranciscoScenario.write(dir="test", file_prefix="sf")   
+    sanfrancsicoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
+    sanfranciscoScenario.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   
     exit(0)
     
     # Merge them together

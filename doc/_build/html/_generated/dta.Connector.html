@@ -52,7 +52,7 @@
 <h1>dta.Connector<a class="headerlink" href="#dta-connector" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Connector">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.RoadLink.RoadLink</span></tt></p>
 <p>A Connector is a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> that connects a RoadNode with a Centroid or a VirtualNode.</p>
 <p>Why is a Connector a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> rather than a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a>?  
@@ -60,7 +60,7 @@ Many centroid connectors are based on road links; all of them at the boundaries
 Therefore they have the same set of attributes and those attributes are meaningful.</p>
 <dl class="method">
 <dt id="dta.Connector.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Verifies one node is a RoadNode and the other node is either
 a Centroid or a VirtualNode.</p>
 <p>See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.__init__" title="dta.RoadLink.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.__init__()</span></tt></a> for the arg descriptions.</p>
@@ -85,6 +85,12 @@ a Centroid or a VirtualNode.</p>
 <dt id="dta.Connector.DEFAULT_LEVEL">
 <tt class="descname">DEFAULT_LEVEL</tt><a class="headerlink" href="#dta.Connector.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
 <dd><p>default level value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Connector.FACILITY_TYPE">
+<tt class="descname">FACILITY_TYPE</tt><a class="headerlink" href="#dta.Connector.FACILITY_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd><p>connectors have a specific facility type</p>
 </dd></dl>
 
 <dl class="method">
