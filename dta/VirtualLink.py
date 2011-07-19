@@ -71,7 +71,7 @@ class VirtualLink(Link):
                 if isinstance(link, Connector): return link
 
             raise DtaError("VirtualLink getAdjacentConnector(): Connector not found for %d-%d from endNode: %s" % 
-                           (self._startNode.id, self._endNode.id,
+                           (self._startNode.getId(), self._endNode.getId(),
                             str(self._endNode._outgoingLinks)))
                         
         if isinstance(self._endNode, Centroid):
@@ -79,5 +79,5 @@ class VirtualLink(Link):
                 if isinstance(link, Connector): return link
             
             raise DtaError("VirtualLink getAdjacentConnector(): Connector not found for %d-%d from startNode: %s" % 
-                           (self._startNode.id, self._endNode.id,
+                           (self._startNode.getId(), self._endNode.getId(),
                             str(self._startNode._incomingLinks)))

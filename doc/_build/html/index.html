@@ -96,7 +96,7 @@
 <div class="section" id="node-classes">
 <h1>Node classes<a class="headerlink" href="#node-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-14a3ec389e430f9233ab17b4bc99b679082ed9c6.png" alt="Inheritance diagram of dta.Node, dta.RoadNode, dta.VirtualNode, dta.Centroid" class="inheritance"/>
+<img src="_images/inheritance-769e4f83d4f0435f65ce53d172982920def2952a.png" alt="Inheritance diagram of dta.Node, dta.RoadNode, dta.VirtualNode, dta.Centroid" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -122,7 +122,7 @@
 <div class="section" id="link-classes">
 <h1>Link classes<a class="headerlink" href="#link-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-cb53b763c37049317054c794c9be4515eb2fd304.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
+<img src="_images/inheritance-7de1cbdcbba12647c3f8e9e3946c82fa2758066b.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -260,7 +260,11 @@
 91
 92
 93
-94</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+94
+95
+96
+97
+98</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -343,6 +347,10 @@
     
     <span class="n">sanfrancsicoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
+    
+    <span class="c"># add virtual nodes and links between Centroids and RoadNodes</span>
+    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">insertVirtualNodeBetweenCentroidsAndRoadNodes</span><span class="p">()</span>
+    
     <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>
     <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>   
     <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>

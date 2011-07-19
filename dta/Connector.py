@@ -49,17 +49,19 @@ class Connector(RoadLink):
         See :py:meth:`RoadLink.__init__` for the arg descriptions.  
         """
         
-        if isinstance(startNode, RoadNode):
-            self._fromRoadNode = True
-        elif isinstance(endNode, RoadNode):
+        if isinstance(startNode, Centroid) or isinstance(startNode, VirtualNode):
             self._fromRoadNode = False
+        elif isinstance(endNode, Centroid) or isinstance(endNode, VirtualNode):
+            self._fromRoadNode = True
         else:
-            raise DtaError("Attempting to initialize a Connector without a RoadNode: %s - %s" % 
-                           (str(startNode), str(endNode)))
-
-        if (not isinstance(startNode, Centroid) and not isinstance(startNode, VirtualNode) and
-            not isinstance(endNode, Centroid) and not isinstance(endNode, VirtualNode)):
             raise DtaError("Attempting to initialize a Connector without a Centroid/VirtualNode: %s - %s" % 
+                           (str(startNode), str(endNode)))
+        
+        if self._fromRoadNode and not isinstance(startNode, RoadNode):
+            raise DtaError("Attempting to initialize a Connector without a start RoadNode: %s - %s" % 
+                           (str(startNode), str(endNode)))
+        elif not self._fromRoadNode and not isinstance(endNode, RoadNode):
+            raise DtaError("Attempting to initialize a Connector without an end RoadNode: %s - %s" % 
                            (str(startNode), str(endNode)))
        
         RoadLink.__init__(self, id=id, startNode=startNode, endNode=endNode, 
@@ -68,3 +70,58 @@ class Connector(RoadLink):
                           responseTimeFactor=responseTimeFactor, numLanes=numLanes,
                           roundAbout=roundAbout, level=level, label=label)
 
+    def startIsRoadNode(self):
+        """
+        Returns a boolean indicating wither the start node is the :py:class:`RoadNode` instance.
+        """
+        return self._fromRoadNode
+    
+    def endIsRoadNode(self):
+        """
+        Returns a boolean indicating wither the end node is the :py:class:`RoadNode` instance.
+        """
+        return not self._fromRoadNode
+    
+    def setStartNode(self, newStartNode):
+        """
+        This is a dumb method which allows the caller to substitute the newStartNode for the old one.
+        It does update the the outgoing links for both the old and the new start nodes.
+
+        .. warning:: This does not fix the :py:class:`Network` for this change so it is meant to be
+                     called from the :py:class:`Network` itself 
+                     (e.g. :py:meth:`Network.insertVirtualNodeBetweenCentroidsAndRoadNodes`)
+        """
+        # needs to stay this way
+        if self._fromRoadNode and not isinstance(newStartNode, RoadNode):
+            raise DtaError("Attempting to setStartNode on Connector without a start RoadNode: %s" % 
+                           str(newStartNode))
+        
+        if not self._fromRoadNode and not(isinstance(newStartNode, Centroid) or isinstance(newStartNode, VirtualNode)):
+            raise DtaError("Attempting to setStartNode on Connector without a Centroid/VirtualNode: %s" % 
+                           str(newStartNode))
+            
+        self._startNode.removeOutgoingLink(self)
+        self._startNode = newStartNode
+        self._startNode.addOutgoingLink(self)
+        
+    def setEndNode(self, newEndNode):
+        """
+        This is a dumb method which allows the caller to substitute the newEndNode for the old one.
+        It does update the the incoming links for both the old and the new end nodes.
+        
+        .. warning:: This does not fix the :py:class:`Network` for this change so it is meant to be
+                     called from the :py:class:`Network` itself 
+                     (e.g. :py:meth:`Network.insertVirtualNodeBetweenCentroidsAndRoadNodes`)
+        """
+        # needs to stay this way
+        if not self._fromRoadNode and not isinstance(newEndNode, RoadNode):
+            raise DtaError("Attempting to setEndNode on Connector without a start RoadNode: %s" % 
+                           str(newEndNode))
+        
+        if self._fromRoadNode and not(isinstance(newEndNode, Centroid) or isinstance(newEndNode, VirtualNode)):
+            raise DtaError("Attempting to setEndNode on Connector without a Centroid/VirtualNode: %s" % 
+                           str(newEndNode))
+            
+        self._endNode.removeIncomingLink(self)
+        self._endNode = newEndNode
+        self._endNode.addIncomingLink(self)

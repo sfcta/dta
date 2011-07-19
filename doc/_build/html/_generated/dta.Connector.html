@@ -123,6 +123,12 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.endIsRoadNode">
+<tt class="descname">endIsRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.endIsRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean indicating wither the end node is the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
@@ -160,6 +166,38 @@ See addShifts() for details.</p>
 <dt id="dta.Connector.iterOutgoingMovements">
 <tt class="descname">iterOutgoingMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.iterOutgoingMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator for the outgoing movements of this link</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.setEndNode">
+<tt class="descname">setEndNode</tt><big>(</big><em>newEndNode</em><big>)</big><a class="headerlink" href="#dta.Connector.setEndNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a dumb method which allows the caller to substitute the newEndNode for the old one.
+It does update the the incoming links for both the old and the new end nodes.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This does not fix the <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> for this change so it is meant to be
+called from the <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> itself 
+(e.g. <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-meth docutils literal"><span class="pre">Network.insertVirtualNodeBetweenCentroidsAndRoadNodes()</span></tt></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.setStartNode">
+<tt class="descname">setStartNode</tt><big>(</big><em>newStartNode</em><big>)</big><a class="headerlink" href="#dta.Connector.setStartNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a dumb method which allows the caller to substitute the newStartNode for the old one.
+It does update the the outgoing links for both the old and the new start nodes.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This does not fix the <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> for this change so it is meant to be
+called from the <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> itself 
+(e.g. <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-meth docutils literal"><span class="pre">Network.insertVirtualNodeBetweenCentroidsAndRoadNodes()</span></tt></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.startIsRoadNode">
+<tt class="descname">startIsRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.startIsRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean indicating wither the start node is the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</p>
 </dd></dl>
 
 <dl class="method">

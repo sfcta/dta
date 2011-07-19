@@ -17,7 +17,9 @@ __license__     = """
 """
 
 import math
+from .DtaError import DtaError
 # from .Link import Link
+
 
 class Node(object):
     """
@@ -102,6 +104,14 @@ class Node(object):
             
         self._incomingLinks.insert(position, link)
     
+    def removeIncomingLink(self, link):
+        """
+        Simple removal.
+        """
+        if link not in self._incomingLinks:
+            raise DtaError("Node.removeIncomingLink called for link not in incoming links list: %s" % str(link))
+        self._incomingLinks.remove(link)
+    
     def addOutgoingLink(self, link):
         """
         Verify that the given link starts with this node, and adds it to the list of
@@ -122,6 +132,14 @@ class Node(object):
             
         self._outgoingLinks.insert(position, link)
         # print self._outgoingLinks
+        
+    def removeOutgoingLink(self, link):
+        """
+        Simple removal.
+        """
+        if link not in self._outgoingLinks:
+            raise DtaError("Node.removeOutgoingLink called for link not in outgoing links list: %s" % str(link))
+        self._outgoingLinks.remove(link)
 
     def iterIncomingLinks(self):
         """
