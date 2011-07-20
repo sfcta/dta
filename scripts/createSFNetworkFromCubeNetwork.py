@@ -73,7 +73,7 @@ if __name__ == '__main__':
        linkFreeflowSpeedEvalStr         = "float(SPEED)",
        linkEffectiveLengthFactorEvalStr = "1",
        linkResponseTimeFactorEvalStr    = "1.05",
-       linkNumLanesEvalStr              = "int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0)",
+       linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'

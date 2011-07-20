@@ -239,6 +239,7 @@ ENDRUN
                 
             newLink = None
             if isinstance(nodeA, Centroid) or isinstance(nodeB, Centroid):
+                localsdict['isConnector'] = True
                 newLink = Connector \
                    (id                      = self._maxLinkId+1,
                     startNode               = nodeA,
@@ -255,6 +256,7 @@ ENDRUN
                     label                   = eval(linkLabelEvalStr, globals(), localsdict))
                 countConnectors += 1
             else:
+                localsdict['isConnector'] = False
                 newLink = RoadLink \
                    (id                      = self._maxLinkId+1,
                     startNode               = nodeA,
