@@ -552,6 +552,82 @@ class DynameqNetwork(Network):
                                        str(movement._followupTime)))
                 count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))
+        
+        
+        
+                
+        
+        
+    def retrieveCountListFromCountDracula(self, countDracula, starttime, period, number, tolerance):
+        """
+        Writes counts to movements from CountDracula
+        starttime = startitme for counts
+        period = interval for each count
+        number = total counts = (endtime-starttime)/period
+        tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)        
+        """
+        Movement.countNumber = number
+        Movement.countPeriod = period
+        Movement.countStartTime = starttime
+        
+        movementcounter = 0
+        
+        dtaNodes2countDraculaNodes_dict = countDracula.mapNodesFromDTA(self._nodes, tolerance)
+        
+        for id in self._linksById:
+            link = self._linksById[id]
+            if not isinstance(link, VirtualLink):
+                for movement in link.iterOutgoingMovements():
+                    movementcounter += 1
+                    print movementcounter
+                    
+                    atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()]
+                    fromNode = dtaNodes2countDraculaNodes_dict[movement.getOriginNode().getId()]
+                    toNode = dtaNodes2countDraculaNodes_dict[movement.getDestinationNode().getId()]
+                    
+                    if not ((atNode == -1) or (fromNode == -1) or (toNode == -1)):
+                    
+                        fromangle = movement.getIncomingLink().getReferenceAngle()
+                        toangle = movement.getOutgoingLink().getReferenceAngle()
+                        
+                        countsList = countDracula.getTurningCounts(atNode, fromNode, toNode, fromangle, toangle, starttime, period, number)
+                        if not countsList == []: 
+                            print "***************************************"
+                            movement.setCountsFromCountDracula(countsList)
+                            
+    def writeCountListToFile(self, dir):
+        """
+        Writes counts to movements from CountDracula
+        starttime = startitme for counts
+        period = interval for each count
+        number = total counts = (endtime-starttime)/period
+        tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)        
+        """
+       
+        
+        movementcounter = 0
+        countList2write = []
+
+        for id in self._linksById:
+            link = self._linksById[id]
+            if not isinstance(link, VirtualLink):
+                for movement in link.iterOutgoingMovements():
+                    
+                    movementcounter += 1
+                    print movementcounter
+                    
+                    atNode = movement.getAtNode().getId()
+                    fromNode = movement.getOriginNode().getId()
+                    toNode = movement.getDestinationNode().getId()
+                    
+                    movementcountsList = movement.getCountList()
+                    
+                    if not movementcountsList == []: 
+                        countList2write.append([atNode,fromNode,toNode].extend(movementcountsList))
+                        
+        filewriter = csv.writer(open(dir+'\\movement_counts_user_attribute.csv', 'wb'),dialect = 'excel-tab', delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerows(countList2write)
+        
 
     def _writeMovementEventsToBaseFile(self, basefile_object):
         """
@@ -625,3 +701,4 @@ class DynameqNetwork(Network):
                     
                     count += 1
         DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
+

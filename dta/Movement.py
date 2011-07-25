@@ -73,9 +73,46 @@ class Movement(object):
         self._incomingLane  = incomingLane
         self._outgoingLane  = outgoingLane
         self._followupTime  = followupTime
+        
+        self._countsList = []
 
     def getIncomingLink(self):
         """
         Returns the incomingLink, a :py:class:`Link` instance
         """
         return self._incomingLink
+    
+    
+    def getOutgoingLink(self):
+        """
+        Returns the outgoung, a :py:class:`Link` instance
+        """
+        return self._outgoingLink
+    
+    
+    def getAtNode(self):
+        
+        return self._node  
+    
+    def getOriginNode(self):
+        """
+        Returns the start node of incomingLink, a :py:class:`Link` instance
+        """
+        return self._incomingLink.getStartNode()
+    
+    def getDestinationNode(self):
+        """
+        Returns the end node of outgoingLink, a :py:class:`Link` instance
+        """
+        
+        return self._outgoingLink.getEndNode()
+    
+    def getCountList(self):
+        return self._countsList
+    
+    def setCountsFromCountDracula(self, countsListFromCountDracula):
+        """
+        Inserts the countlist
+        """
+        self._countsList = countsListFromCountDracula
+        
