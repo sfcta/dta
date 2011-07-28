@@ -16,7 +16,7 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-import sys
+import sys, csv
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
@@ -558,7 +558,7 @@ class DynameqNetwork(Network):
                 
         
         
-    def retrieveCountListFromCountDracula(self, countDracula, starttime, period, number, tolerance):
+    def retrieveCountListFromCountDracula(self, countDraculaReader, starttime, period, number, tolerance):
         """
         Writes counts to movements from CountDracula
         starttime = startitme for counts
@@ -566,13 +566,30 @@ class DynameqNetwork(Network):
         number = total counts = (endtime-starttime)/period
         tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)        
         """
+        #Can have additional arguments for aggregating counts, days and other args
+        
         Movement.countNumber = number
         Movement.countPeriod = period
         Movement.countStartTime = starttime
         
         movementcounter = 0
         
-        dtaNodes2countDraculaNodes_dict = countDracula.mapNodesFromDTA(self._nodes, tolerance)
+        dtaNodes2countDraculaNodes_dict = {}  #Dictionary by dta node id: Key = dta_node_id, value = CD_node_id
+        #counter = 0
+
+        for dtanodeid in self._nodes:
+            dtanode = self._nodes[dtanodeid]
+            dta_node_x = dtanode.getX()
+            dta_node_y = dtanode.getY()
+            cd_node = countDraculaReader.mapNodeId(dta_node_x, dta_node_y, tolerance)
+            
+            #------ASSUMING there is a single match !!!!------ 
+            if not cd_node == -1 :
+                dtaNodes2countDraculaNodes_dict[dtanode.getId()] = cd_node
+            
+                #counter = counter+1
+        
+        print str(len(dtaNodes2countDraculaNodes_dict))+" nodes matched from "+str(len(self._nodes))+" nodes"
         
         for id in self._linksById:
             link = self._linksById[id]
@@ -581,19 +598,20 @@ class DynameqNetwork(Network):
                     movementcounter += 1
                     print movementcounter
                     
-                    atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()]
-                    fromNode = dtaNodes2countDraculaNodes_dict[movement.getOriginNode().getId()]
-                    toNode = dtaNodes2countDraculaNodes_dict[movement.getDestinationNode().getId()]
+                    if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict:
+                        atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()]
+                        if movement.getOriginNode().getId() in dtaNodes2countDraculaNodes_dict:
+                            fromNode = dtaNodes2countDraculaNodes_dict[movement.getOriginNode().getId()]
+                            if movement.getDestinationNode().getId() in dtaNodes2countDraculaNodes_dict:
+                                toNode = dtaNodes2countDraculaNodes_dict[movement.getDestinationNode().getId()]
                     
-                    if not ((atNode == -1) or (fromNode == -1) or (toNode == -1)):
-                    
-                        fromangle = movement.getIncomingLink().getReferenceAngle()
-                        toangle = movement.getOutgoingLink().getReferenceAngle()
-                        
-                        countsList = countDracula.getTurningCounts(atNode, fromNode, toNode, fromangle, toangle, starttime, period, number)
-                        if not countsList == []: 
-                            print "***************************************"
-                            movement.setCountsFromCountDracula(countsList)
+                                fromangle = movement.getIncomingLink().getReferenceAngle()
+                                toangle = movement.getOutgoingLink().getReferenceAngle()
+                                
+                                countsList = countDraculaReader.getTurningCounts(atNode, fromNode, toNode, fromangle, toangle, starttime, period, number)
+                                if not countsList == []: 
+                                    print "***************************************"
+                                    movement.setCountsFromCountDracula(countsList)
                             
     def writeCountListToFile(self, dir):
         """
@@ -624,7 +642,7 @@ class DynameqNetwork(Network):
                     
                     if not movementcountsList == []: 
                         countList2write.append([atNode,fromNode,toNode].extend(movementcountsList))
-                        
+        ## TODO Implement better csv file writer                  
         filewriter = csv.writer(open(dir+'\\movement_counts_user_attribute.csv', 'wb'),dialect = 'excel-tab', delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
         filewriter.writerows(countList2write)
         

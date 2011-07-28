@@ -91,6 +91,9 @@ class Movement(object):
     
     
     def getAtNode(self):
+        """
+        Returns the node at which the movement is happening
+        """
         
         return self._node  
     
@@ -108,6 +111,9 @@ class Movement(object):
         return self._outgoingLink.getEndNode()
     
     def getCountList(self):
+        """
+        Returns countslist saved for the movement
+        """
         return self._countsList
     
     def setCountsFromCountDracula(self, countsListFromCountDracula):
