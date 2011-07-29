@@ -594,14 +594,26 @@ class DynameqNetwork(Network):
         for id in self._linksById:
             link = self._linksById[id]
             if not isinstance(link, VirtualLink):
+        
+        #TODO - Attach link counts
+        #====================================================================
+        # 
+        # Here we can insert count attachment to links. For this we would need:
+        # 1)counts[] instance variable for class link (or roadlink or connector)
+        # 2)create getMainlineCountFromCountDracula method for countdracula.ReadFromCD class
+        #   
+        #====================================================================
+                
+ 
+                
                 for movement in link.iterOutgoingMovements():
                     movementcounter += 1
                     #print movementcounter
                     #if movementcounter == 9000:
                     #    return
                     
-                    if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict:
-                        atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()]
+                    if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict: #check if node is in CD
+                        atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()] #returns the nodes CD id
                         if movement.getOriginNode().getId() in dtaNodes2countDraculaNodes_dict:
                             fromNode = dtaNodes2countDraculaNodes_dict[movement.getOriginNode().getId()]
                             if movement.getDestinationNode().getId() in dtaNodes2countDraculaNodes_dict:

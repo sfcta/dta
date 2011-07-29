@@ -1,7 +1,14 @@
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = ""
     
+"""
+Script that imports counts to dta network
 
+Currently tested for geary network
+
+
+
+"""
 
 
 import dta
@@ -24,7 +31,10 @@ if __name__ == '__main__':
     gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
     gearynetDta.read(dir="C:\Documents and Settings\Varun\Desktop\GIT\dtaFILES", file_prefix="Base_Final")
     #gearynetDta.write(dir="C:\Documents and Settings\Varun\Desktop\GIT\dtaFILES\countsTest", file_prefix="geary")
-    #attach counts ?!
+    
+    
+    
+    #Following attaches counts and saves the csv file ?!
     starttime = datetime.time(16,30)
     period = datetime.timedelta(minutes = 15)
     
