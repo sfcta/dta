@@ -596,9 +596,9 @@ class DynameqNetwork(Network):
             if not isinstance(link, VirtualLink):
                 for movement in link.iterOutgoingMovements():
                     movementcounter += 1
-                    print movementcounter
-                    if movementcounter == 9000:
-                        return
+                    #print movementcounter
+                    #if movementcounter == 9000:
+                    #    return
                     
                     if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict:
                         atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()]
@@ -615,7 +615,7 @@ class DynameqNetwork(Network):
                                     #print "***************************************"
                                     movement.setCountsFromCountDracula(countsList)
                             
-    def writeCountListToFile(self, dir):
+    def writeCountListToFile(self, dir, starttime, period, number):
         """
         Writes counts to movements from CountDracula
         starttime = startitme for counts
@@ -634,7 +634,7 @@ class DynameqNetwork(Network):
                 for movement in link.iterOutgoingMovements():
                     
                     movementcounter += 1
-                    print movementcounter
+                    #print movementcounter
                     
                     
                     atNode = movement.getAtNode().getId()
@@ -647,6 +647,7 @@ class DynameqNetwork(Network):
                         countList2write.append([atNode,fromNode,toNode]+(movementcountsList))
         ## TODO Implement better csv file writer                  
         filewriter = csv.writer(open(dir+'\\movement_counts_user_attribute.csv', 'wb'),dialect = 'excel-tab', delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow("*atNode FromNode toNode starttime="+str(starttime)+" period="+str(period)+" number="+str(number))
         filewriter.writerows(countList2write)
         
 
