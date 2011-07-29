@@ -25,10 +25,10 @@ if __name__ == '__main__':
     gearynetDta.read(dir="C:\Documents and Settings\Varun\Desktop\GIT\dtaFILES", file_prefix="Base_Final")
     #gearynetDta.write(dir="C:\Documents and Settings\Varun\Desktop\GIT\dtaFILES\countsTest", file_prefix="geary")
     #attach counts ?!
-    starttime = datetime.time(00,00)
+    starttime = datetime.time(16,00)
     period = datetime.timedelta(minutes = 15)
     
-    number = 96
+    number = 4
     tolerance = 5 #feet
     
     countDraculaReader = countdracula.ReadFromCD("172.30.1.120","countdracula", "cdreader", "ReadOnly")

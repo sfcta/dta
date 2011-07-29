@@ -597,6 +597,8 @@ class DynameqNetwork(Network):
                 for movement in link.iterOutgoingMovements():
                     movementcounter += 1
                     print movementcounter
+                    if movementcounter == 9000:
+                        return
                     
                     if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict:
                         atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()]
@@ -610,7 +612,7 @@ class DynameqNetwork(Network):
                                 
                                 countsList = countDraculaReader.getTurningCounts(atNode, fromNode, toNode, fromangle, toangle, starttime, period, number)
                                 if not countsList == []: 
-                                    print "***************************************"
+                                    #print "***************************************"
                                     movement.setCountsFromCountDracula(countsList)
                             
     def writeCountListToFile(self, dir):
@@ -634,6 +636,7 @@ class DynameqNetwork(Network):
                     movementcounter += 1
                     print movementcounter
                     
+                    
                     atNode = movement.getAtNode().getId()
                     fromNode = movement.getOriginNode().getId()
                     toNode = movement.getDestinationNode().getId()
@@ -641,7 +644,7 @@ class DynameqNetwork(Network):
                     movementcountsList = movement.getCountList()
                     
                     if not movementcountsList == []: 
-                        countList2write.append([atNode,fromNode,toNode].extend(movementcountsList))
+                        countList2write.append([atNode,fromNode,toNode]+(movementcountsList))
         ## TODO Implement better csv file writer                  
         filewriter = csv.writer(open(dir+'\\movement_counts_user_attribute.csv', 'wb'),dialect = 'excel-tab', delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
         filewriter.writerows(countList2write)
