@@ -20,7 +20,6 @@ from .Node import Node
 class VirtualNode(Node):
     """
     A Node subclass that represents a virtual node in a network.
-    
     """
     
     DEFAULT_CONTROL  = 0 # value to use if we must

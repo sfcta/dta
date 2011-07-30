@@ -20,7 +20,6 @@ from .Node import Node
 class Centroid(Node):
     """
     A Node subclass that represents a centroid node in a network.
-    
     """        
     def __init__(self, id, x, y, label=None, level=None):
         """
