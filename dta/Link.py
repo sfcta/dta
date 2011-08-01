@@ -54,12 +54,12 @@ class Link(object):
         #: a Node instance
         self._endNode   = endNode
     
-    def updateNodesAdjacencyLists(self):
-        """
-        Instructs the relevant nodes about this link
-        """
-        self._startNode.addOutgoingLink(self)
-        self._endNode.addIncomingLink(self)
+#    def updateNodesAdjacencyLists(self):
+#        """
+#        Instructs the relevant nodes about this link
+#        """
+#        self._startNode.addOutgoingLink(self)
+#        self._endNode.addIncomingLink(self)
             
     def getStartNode(self):
         """

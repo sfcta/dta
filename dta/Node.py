@@ -84,7 +84,7 @@ class Node(object):
         """
         return "Node of type %s, id=%s, x,y=(%f,%f)" % (self.__class__, self._id, self._x, self._y)
     
-    def addIncomingLink(self, link):
+    def _addIncomingLink(self, link):
         """
         Verify that the given link ends in this node, and adds it to the list of
         incoming links.
@@ -104,7 +104,7 @@ class Node(object):
             
         self._incomingLinks.insert(position, link)
     
-    def removeIncomingLink(self, link):
+    def _removeIncomingLink(self, link):
         """
         Simple removal.
         """
@@ -112,7 +112,7 @@ class Node(object):
             raise DtaError("Node.removeIncomingLink called for link not in incoming links list: %s" % str(link))
         self._incomingLinks.remove(link)
     
-    def addOutgoingLink(self, link):
+    def _addOutgoingLink(self, link):
         """
         Verify that the given link starts with this node, and adds it to the list of
         outgoing links.
@@ -133,7 +133,7 @@ class Node(object):
         self._outgoingLinks.insert(position, link)
         # print self._outgoingLinks
         
-    def removeOutgoingLink(self, link):
+    def _removeOutgoingLink(self, link):
         """
         Simple removal.
         """
@@ -170,4 +170,47 @@ class Node(object):
         Returns the y-coordinate for this node.
         """
         return self._y
+
+    def hasIncomingLinkForId(self, linkId):
+        """
+        Returns True if there is an incoming link with the given id
+        """
+        for link in self.iterIncomingLinks():
+            if link.getId() == linkId:
+                return True
+        return False
+
+    def hasIncomingLinkForNodeId(self, nodeId):
+        """
+        Returns True if there is an incoming link starting from nodeId
+        """
+        for link in self.iterIncomingLinks():
+            if link.getStartNode().getId() == nodeId:
+                return True
+        return False
+
+    def hasOutgoingLinkForId(self, linkId):
+        """
+        Returns True if there is an outgoing link wwith the given id
+        """
+        for link in self.iterIncomingLinks():
+            if link.getId() == linkId:
+                return True
+        return False
+
+    def hasOutgoingLinkForNodeId(self, nodeId):
+        """
+        Returns True if there is a link towards the given node id
+        """
+        for link in self.iterOutgoingLinks():
+            if link.getEndNode(). getId() == nodeId:
+                return True
+        return False
             
+    def _removeIncomingLink(self, link):
+        """
+        Simple removal.
+        """
+        if link not in self._incomingLinks:
+            raise DtaError("Node.removeIncomingLink called for link not in incoming links list: %#s" % str(link))
+        self._incomingLinks.remove(link)

@@ -71,6 +71,7 @@ class RoadLink(Link):
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements
+        self._incomingMovements         = []  #: list of incoming Movements
         self._startShift                = None
         self._endShift                  = None
         self._shapePoints               = {}  #: sequenceNum -> (x,y)
@@ -97,6 +98,12 @@ class RoadLink(Link):
         """
         self._startShift    = startShift
         self._endShift      = endShift
+
+    def getNumOutgoingMovements(self):
+        """
+        Returns the number of outgoing movements
+        """
+        return len(self._outgoingMovements)
     
     def getShifts(self):
         """
@@ -110,6 +117,15 @@ class RoadLink(Link):
         Adds a shape point to the link for the given sequenceNum
         """
         self._shapePoints[sequenceNum] = (x,y)
+
+    def hasOutgoingMovement(self, nodeId):
+        """
+        Return True if the link has an outgoing movement towards nodeId
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.getDestinationNode().getId() == nodeId:
+                return True
+        return False
     
     def addOutgoingMovement(self, movement):
         """
@@ -120,11 +136,45 @@ class RoadLink(Link):
         
         if movement.getIncomingLink() != self:
             raise DtaError("RoadLink addOutgoingMovement() called with inconsistent movement" % str(movement))
+
+        if self.hasOutgoingMovement(movement.getDestinationNode().getId()):
+            raise DtaError("RoadLink %s addOutgoingMovement() called to add already "
+                           "existing movement" % str(movement))
         
         self._outgoingMovements.append(movement)
+        movement.getOutgoingLink()._incomingMovements.append(movement)
     
     def iterOutgoingMovements(self):
         """
         Iterator for the outgoing movements of this link
         """
         return iter(self._outgoingMovements)
+
+    def getNumIncomingMovements(self):
+        """
+        Returns the number of incoming movements
+        """
+        return len(self._incomingMovements)
+
+    def removeOutgoingMovement(self, movementToRemove):
+        """
+        Delete the input movement
+        """
+        if not isinstance(movementToRemove, Movement):
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called with invalid movement %s" % str(movement))
+        
+        if movementToRemove.getIncomingLink() != self:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
+
+        if not movementToRemove in self._outgoingMovements:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
+                           "inexisting movement" % str(movementToRemove))
+
+        self._outgoingMovements.remove(movementToRemove)
+        movementToRemove.getOutgoingLink()._incomingMovements.remove(movementToRemove)
+
+    def iterIncomingMovements(self):
+        """
+        Iterator for the incoming movements of this link
+        """
+        return iter(self._incomingMovements)

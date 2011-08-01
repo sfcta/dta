@@ -97,6 +97,36 @@ class Network(object):
         
         if newNode.getId() > self._maxNodeId: self._maxNodeId = newNode.getId()
 
+    def getNumNodes(self):
+        """
+        Returns the number of nodes in the network
+        """
+        return len(self._nodes)
+
+    def getNumRoadNodes(self):
+        """
+        Returns the number of roadnodes in the network
+        """
+        return sum(1 for node in self.iterNodes() if isinstance(node, RoadNode))
+
+    def getNumCentroids(self):
+        """
+        Returns the number of centroids in the network
+        """
+        return sum(1 for node in self.iterNodes() if isinstance(node, Centroid))
+
+    def getNumVirtualNodes(self):
+        """
+        Returns the number of virtual nodes in the network
+        """
+        return sum(1 for node in self.iterNodes() if isinstance(node, VirtualNode))
+        
+    def getNumLinks(self):
+        """
+        Returns the number of links in the network
+        """
+        return len(self._linksById)
+
     def getNodeForId(self, nodeId):
         """
         Accessor for node given the *nodeId*.
@@ -132,7 +162,13 @@ class Network(object):
         
         if newLink.id > self._maxLinkId: self._maxLinkId = newLink.id
         
-        newLink.updateNodesAdjacencyLists()
+        #newLink.updateNodesAdjacencyLists()
+        #TODO: Ok I am accessing the internals of the startNode so this is not OO
+        #but is there a better way? If C++ we would do a friend function.
+        #do you think there is a better way? 
+        newLink.getStartNode()._addOutgoingLink(newLink)
+        newLink.getEndNode()._addIncomingLink(newLink)
+
     
     def getLinkForId(self, linkId):
         """
@@ -266,3 +302,86 @@ class Network(object):
                     modifiedConnectorCount += 1
         
         DtaLogger.info("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() modified %d connectors" % modifiedConnectorCount)
+
+
+    def iterNodes(self):
+        """
+        Return an iterator to the node collection
+        """
+        return self._nodes.itervalues()
+
+    def iterLinks(self):
+        """
+        Return an iterator to the link collection
+        """
+        return self._linksById.itervalues()
+
+    def hasNodeForId(self, nodeId):
+        """
+        Return True if there is a node with the given id
+        """
+        try:
+            self.getNodeForId(nodeId)
+            return True
+        except DtaError:
+            return False
+
+    def hasLinkForId(self, linkId):
+        """
+        Return True if a link with the given id exists
+        """
+        try:
+            self.getLinkForId(linkId)
+            return True
+        except DtaError:
+            return False
+
+    def hasLinkForNodeIdPair(self, startNodeId, endNodeId):
+        """
+        Return True if the network has a link with the given node ids 
+        """
+        try:
+            self.getLinkForNodeIdPair(startNodeId, endNodeId)
+            return True
+        except DtaError:
+            return False
+
+    def removeLink(self, linkToRemove):
+        """
+        Remove the input link from the network
+        """
+        #remove all incoming and ougoing movements from the link 
+        outMovsToRemove = [mov for mov in linkToRemove.iterOutgoingMovements()]
+        inMovsToRemove = [mov for mov in linkToRemove.iterIncomingMovements()]
+        
+        for mov in outMovsToRemove:
+            linkToRemove.removeOutgoingMovement(mov)
+
+        for mov in inMovsToRemove:
+            mov.getIncomingLink().removeOutgoingMovement(mov)
+
+        #TODO: ugly code below 
+        linkToRemove.getStartNode()._removeOutgoingLink(linkToRemove)
+        linkToRemove.getEndNode()._removeIncomingLink(linkToRemove)
+
+        del self._linksById[linkToRemove.id]
+        del self._linksByNodeIdPair[linkToRemove.getStartNode().getId(),
+                                linkToRemove.getEndNode().getId()]
+        #TODO: do you want to update the maxIds?
+
+    def removeNode(self, nodeToRemove):
+        """
+        Remove the input node from the network
+        """
+        iLinks = [link for link in nodeToRemove.iterIncomingLinks()]
+        oLinks = [link for link in nodeToRemove.iterOutgoingLinks()]
+
+        for link in iLinks:
+            self.removeLink(link)
+
+        for link in oLinks:
+            self.removeLink(link)
+
+        del self._nodes[nodeToRemove.getId()] 
+
+        #TODO: do you want to update the maxIds? 
