@@ -27,7 +27,7 @@ class Movement(object):
     """
     Base class that represents a movement.
     """
-    
+        
     def __init__(self, node, incomingLink, outgoingLink, freeflowSpeed, vehicleClassGroup,
                  numLanes=None, incomingLane=None, outgoingLane=None, followupTime=0):
         """

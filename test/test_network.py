@@ -266,7 +266,30 @@ class TestNetwork(object):
         assert not net.hasLinkForNodeIdPair(5, 2)
         
 
+    def test_splitLink(self):
 
+        net = getSimpleNet()
+        addAllMovements(net)
+
+        l = net.getLinkForNodeIdPair(1, 5)
+
+        assert net.getNumNodes() == 8 
+        assert net.getNumLinks() == 14
+
+        net.splitLink(l) 
+
+        assert net.getNumNodes() == 9
+        assert net.getNumLinks() == 15
+
+        link1 = net.getLinkForNodeIdPair(1, 9) 
+        link2 = net.getLinkForNodeIdPair(9, 5) 
+
+        link1.getNumOutgoingMovements() == 1
+
+        assert link1.hasOutgoingMovement(5)
+        assert link2.hasOutgoingMovement(2) 
+        assert link2.hasOutgoingMovement(4)
+        assert link2.hasOutgoingMovement(3)
 
         
 
