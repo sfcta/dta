@@ -81,3 +81,21 @@ class VirtualLink(Link):
             raise DtaError("VirtualLink getAdjacentConnector(): Connector not found for %d-%d from startNode: %s" % 
                            (self._startNode.getId(), self._endNode.getId(),
                             str(self._startNode._incomingLinks)))
+
+    def isRoadLink(self):
+        """
+        Return True this Link is RoadLink
+        """
+        return False
+
+    def isConnector(self):
+        """
+        Return True if this Link is a Connector
+        """
+        return False
+
+    def isVirtualLink(self):
+        """
+        Return True if this LInk is a VirtualLink
+        """
+        return True

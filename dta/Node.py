@@ -17,7 +17,9 @@ __license__     = """
 """
 
 import math
+from itertools import chain 
 from .DtaError import DtaError
+
 # from .Link import Link
 
 
@@ -214,3 +216,81 @@ class Node(object):
         if link not in self._incomingLinks:
             raise DtaError("Node.removeIncomingLink called for link not in incoming links list: %#s" % str(link))
         self._incomingLinks.remove(link)
+
+    def getNumAdjacentLinks(self):
+        """
+        Return the number of links adjacent to this node (either incoming or outgoing) 
+        """
+        return len(self._incomingLinks) + len(self._outgoingLinks) 
+
+    def getNumAdjacentRoadLinks(self):
+        """
+        Return the number of RoadLinks adjacent to this node (either incoming or outgoing)
+        """
+        return sum([1 for link in self.iterAdjacentRoadLinks()])
+
+    def iterAdjacentNodes(self):
+        """
+        Return an iterator to the adjacent Nodes
+        """ 
+        nodes = set()
+        for link in self.iterIncomingLinks():
+            nodes.add(link.getStartNode())
+
+        for link in self.iterOutgoingLinks():
+            nodes.add(link.getEndNode()) 
+        return iter(nodes) 
+
+    def getNumAdjacentNodes(self):
+        """
+        Return the number of nodes that are connected to this node.
+        """ 
+        return sum([1 for node in self.iterAdjacentNodes()])
+
+    def isShapePoint(self, countRoadNodesOnly=False):
+        """
+        Return True if the node is a shape point. If countRoadNodesOnly is True
+        the method will count only RoadLinks attached to this Node
+        """
+
+        if not countRoadNodesOnly:
+            if self.getNumAdjacentLinks() == 4 and self.getNumAdjacentNodes() == 2:
+                return True
+            if self.getNumAdjacentLinks() == 2 and self.getNumAdjacentNodes() == 2:
+                return True
+            return False
+        else:
+            if self.getNumAdjacentRoadLinks() == 4 and self.getNumAdjacentRoadNodes() == 2:
+                return True
+            if self.getNumAdjacentRoadLinks() == 2 and self.getNumAdjacentRoadNodes() == 2:
+                return True
+            return False            
+        
+    def iterAdjacentLinks(self):
+        """
+        Return an iterator to all links adjacent (incoming or outgoing)
+        to this node
+        """
+        return chain(iter(self._incomingLinks), iter(self._outgoingLinks))
+
+    def iterAdjacentRoadLinks(self):
+        """
+        Return an iterator to all RoadLinks adjacent to this Node (excluding Connectors)
+        """
+        for link in self.iterAdjacentLinks():
+            if link.isRoadLink():
+                yield link 
+
+    def iterAdjacentRoadNodes(self):
+        """
+        Return an iterator to all RoadNodes adjacent to this Node
+        """
+        for node in self.iterAdjacentNodes():
+            if node.isRoadNode():
+                yield node
+
+    def getNumAdjacentRoadNodes(self):
+        """
+        Return the number of nodes that are connected to this node.
+        """ 
+        return sum([1 for node in self.iterAdjacentRoadNodes()])

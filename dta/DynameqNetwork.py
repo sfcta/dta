@@ -15,8 +15,10 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import math
 import os
 import sys, csv
+import pdb
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
@@ -24,7 +26,7 @@ from .Logger import DtaLogger
 from .Movement import Movement
 from .Network import Network
 from .Node import Node
-from .RoadLink import RoadLink
+from .RoadLink import RoadLink, lineSegmentsCross
 from .RoadNode import RoadNode
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
@@ -736,3 +738,167 @@ class DynameqNetwork(Network):
                     count += 1
         DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
 
+
+    def removeCentroidConnectorsFromIntersections(self):
+        """
+        Remove centroid connectors from intersections and attach them to midblock locations
+        """
+
+        allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]
+        for node in allRoadNodes: 
+
+            if not hasConnector(node):
+                continue 
+
+            connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
+        
+            for con in connectors:
+                self.removeCentroidConnectorFromIntersection(node, con) 
+
+    def removeCentroidConnectorFromIntersection(self, roadNode, connector):
+        """Remove the input connector for an intersection and attach it to a midblock 
+        location. If a midblock location does does not exist a RoadLink close
+        to the connector is split and the connector is attached to the new 
+        midblock location
+        """
+        if not isinstance(roadNode, RoadNode):
+            raise DtaError("Input Node %d is not a RoadNode" % roadNode.getId())
+        if not isinstance(connector, Connector):
+            raise DtaError("Input Link %s is not a Connector" % connector.getId())
+
+        candidateLinks = getCandidateLinks(roadNode, connector)
+
+        nodeToAttachConnector = None
+
+        if len(candidateLinks) >= 2: 
+
+            if candidateLinks[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
+                nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode)
+            elif candidateLinks[1].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):                                        
+                nodeToAttachConnector = candidateLinks[1].getOtherEnd(roadNode)
+            else:                    
+                nodeToAttachConnector = self.splitLink(candidateLinks[0])
+
+        elif len(candidateLinks) == 1:
+
+            if candidateLink[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
+                nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode) 
+            else:
+                nodeToAttachConnector = net.splitLink(candidateLink[0]) 
+        else:
+            raise DtaError("Centroid connector(s) were not removed from intersection %d" % roadNode.getId())
+
+        if connector.startIsRoadNode():
+            virtualNode = connector.getEndNode() 
+
+            length = math.sqrt((nodeToAttachConnector.getX() - virtualNode.getX()) ** 2 + 
+                (nodeToAttachConnector.getY() - virtualNode.getY()) ** 2)
+
+            newConnector = Connector(connector.getId(),
+                                     nodeToAttachConnector,
+                                     virtualNode,
+                                     None,
+                                     length, 
+                                     connector._freeflowSpeed,
+                                     connector._effectiveLengthFactor,
+                                     connector._responseTimeFactor,
+                                     connector._numLanes,
+                                     connector._roundAbout,
+                                     connector._level, 
+                                     connector._label)
+
+            self.removeLink(connector)
+            self.addLink(newConnector)
+            #TODO: do the movements
+            return newConnector 
+        else:
+            virtualNode = connector.getStartNode() 
+
+            length = math.sqrt((nodeToAttachConnector.getX() - virtualNode.getX()) ** 2 + 
+                (nodeToAttachConnector.getY() - virtualNode.getY()) ** 2)
+
+            newConnector = Connector(connector.getId(),
+                                     virtualNode,
+                                     nodeToAttachConnector,
+                                     None,
+                                     length, 
+                                     connector._freeflowSpeed,
+                                     connector._effectiveLengthFactor,
+                                     connector._responseTimeFactor,
+                                     connector._numLanes,
+                                     connector._roundAbout,
+                                     connector._level, 
+                                     connector._label)
+
+            self.removeLink(connector)
+            self.addLink(newConnector)
+            #TODO: do the movements 
+            return newConnector 
+
+def hasConnector(node):
+    """
+    Return True if there is a connector atached to the node.
+    """
+    #TODO:consider associating this function to an object
+    for link in node.iterIncomingLinks():
+        if isinstance(link, Connector):
+            return True
+
+    for link in node.iterOutgoingLinks():
+        if isinstance(link, Connector):
+            return True
+
+    return False 
+
+def getCandidateLinks(node, connector):
+    """
+    Return the closest links to the virtual node the connector
+    can be attached. Slitting or attaching the connector to 
+    any of the returned links will not result in overlapping links.
+    For example:
+
+     ----------    will become     ----------
+     |*      *|                   |    |    |
+     | *    * |                   |    |    |
+     |  *  *  |                   |    |    |
+     |   *    |                   |---------|
+     |  *  *  |                   |    |    | 
+     | *    * |                   |    |    |
+     |*      *|                   |    |    |
+     ----------                   ----------           
+
+    """
+    #TODO:consider associating this function to an object
+    if node not in [connector.getStartNode(), connector.getEndNode()]:
+        raise DtaError("Node %d is not adjacent to connector %d" %
+                       (node.getId(), connector.getId())) 
+
+    if connector.startIsRoadNode():
+        vNode = (connector.getEndNode().getX(), connector.getEndNode().getY())
+    else:
+        vNode = (connector.getStartNode().getX(), connector.getStartNode().getY())
+        
+    result = []
+    
+    for link1 in node.iterAdjacentRoadLinks():
+        p3, p4 = link1.getCenterLine()
+        middlePoint = getMidPoint(p3, p4) 
+        for link2 in node.iterAdjacentRoadLinks():
+            if link1 == link2:
+                continue 
+            p5, p6 = link2.getCenterLine() 
+            if lineSegmentsCross(vNode, middlePoint, p5, p6):
+                break
+        else:
+            result.append(link1)             
+    return result 
+                    
+        
+def getMidPoint(p1, p2):
+    """
+    Return the the point in the middle of p1 and p2 as a (x,y) tuple.
+    """
+    #TODO:consider associating this function to an object
+    return ((p1[0] + p2[0]) / 2.0, (p1[1] + p2[1]) / 2.0)
+
+                    

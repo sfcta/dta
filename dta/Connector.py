@@ -70,6 +70,16 @@ class Connector(RoadLink):
                           responseTimeFactor=responseTimeFactor, numLanes=numLanes,
                           roundAbout=roundAbout, level=level, label=label)
 
+#        TODO: the  5 if statements above can be abbreviated into the following 3
+#        if isinstance(startNode, (Centroid, VirtualNode)) and isinstance(endNode, RoadNode):
+#            self._fromRoadNode = False
+#        elif isinstance(startNode, RoadNode) and isinstance(endNode, (Centroid, VirtualNode)):
+#            self._fromRoadNode = True
+#        else:
+#            DtaError("Attempting to initialize a Connector that does not connect a "
+#                     "RoadNode to a Centroid or VirtualNode")
+
+
     def startIsRoadNode(self):
         """
         Returns a boolean indicating wither the start node is the :py:class:`RoadNode` instance.
@@ -125,3 +135,24 @@ class Connector(RoadLink):
         self._endNode.removeIncomingLink(self)
         self._endNode = newEndNode
         self._endNode.addIncomingLink(self)
+
+    def getRoadNode(self):
+        """
+        Return the RoadNode of the Connector
+        """
+        if self._fromRoadNode:
+            return self._startNode
+        else:
+            return self._endNode
+        
+    def isRoadLink(self):
+        """
+        Return True this Link is RoadLink
+        """
+        return False
+
+    def isConnector(self):
+        """
+        Return True if this Link is a Connector
+        """
+        return True 

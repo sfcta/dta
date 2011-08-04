@@ -42,7 +42,7 @@ class Movement(object):
            upstream and downstream, the minimum of these two values should be used.  The number of lanes
            can vary over time.  Pass `None` to let the software choose.
          * *incomingLane*: Of the lanes associated with this movement on the *incomingLink*, the id number
-           of the lane closest to the inside of the roadway (that is, the one with the highest id number).
+           of tbhe lane closest to the inside of the roadway (that is, the one with the highest id number).
            This attribute can vary over time.  Pass `None` to let the software choose.
          * *outgoingLane*: Of the lanes associated with this movement on the *outgoingLink*, the id number
            of the lane closest to the inside of the roadway (that is, the one with the highest id number).

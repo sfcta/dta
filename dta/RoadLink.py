@@ -29,6 +29,7 @@ class RoadLink(Link):
     """
     #: default level value
     DEFAULT_LEVEL = 0
+    DEFAULT_LANE_WIDTH_FEET = 12
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
@@ -69,12 +70,14 @@ class RoadLink(Link):
         else:
             self._level                 = RoadLink.DEFAULT_LEVEL
 
+        self._label                     = label
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements
         self._incomingMovements         = []  #: list of incoming Movements
         self._startShift                = None
         self._endShift                  = None
         self._shapePoints               = {}  #: sequenceNum -> (x,y)
+        self._centerline                = None
     
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
@@ -178,3 +181,95 @@ class RoadLink(Link):
         Iterator for the incoming movements of this link
         """
         return iter(self._incomingMovements)
+
+    def getNumLanes(self):
+        """
+        Return the number of lanes.
+        """
+        return self._numLanes
+
+    def getLength(self):
+        """
+        Return the  length of the link 
+        """
+        return self._length 
+
+        
+    def getCenterLine(self):
+        """
+        Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
+        representing the centerline. 
+        """
+        if self._centerline:
+            return self._centerline
+        else: 
+
+            dx = self._endNode.getX() - self._startNode.getX()
+            dy = self._endNode.getY() - self._startNode.getY() 
+
+            length = self.getLength() # dx ** 2 + dy ** 2
+            
+            if length == 0:
+                length = 1
+
+            scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH_FEET / 2.0 / length 
+
+            xOffset = dy * scale
+            yOffset = - dx * scale 
+
+            self._centerline = ((self._startNode.getX() + xOffset, self._startNode.getY() + yOffset),
+                                (self._endNode.getX() + xOffset, self._endNode.getY() + yOffset))
+
+            return self._centerline
+
+    def isRoadLink(self):
+        """
+        Return True this Link is RoadLink
+        """
+        return True
+
+    def isConnector(self):
+        """
+        Return True if this Link is a Connector
+        """
+        return False 
+
+    def isVirtualLink(self):
+        """
+        Return True if this LInk is a VirtualLink
+        """
+        return False
+
+
+def lineSegmentsCross(p1, p2, p3, p4):
+    """
+    Helper function that determines if line segments (p1,p2) and (p3,p4) intersect. 
+    If so it returns True, otherwise False. A point is defined as the tuple (x, y)
+    """
+    
+    def crossProduct(pl, pm):
+        """Return the cross product of two points pl and pm 
+        each of them defined as a tuple (x, y)
+        """ 
+        return pl[0]*pm[1] - pm[0]*pl[1]
+
+
+    def direction(pi, pj, pk):
+        
+        return crossProduct((pk[0] - pi[0], pk[1] - pi[1]),
+                            (pj[0] - pi[0], pj[1] - pi[1])) 
+
+    d1 = direction(p3, p4, p1)
+    d2 = direction(p3, p4, p2)
+    d3 = direction(p1, p2, p3)
+    d4 = direction(p1, p2, p4) 
+
+    if ((d1 > 0 and d2 < 0) or (d1 < 0 and d2 > 0)) and \
+            ((d3 > 0 and d4 < 0) or (d3 < 0 and d4 > 0)):
+        return True
+    else:
+        return False
+    
+
+        
+

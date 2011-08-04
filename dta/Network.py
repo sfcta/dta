@@ -484,3 +484,19 @@ class Network(object):
         newLink1.addOutgoingMovement(newMovement)
         self.removeLink(linkToSplit)
         
+        return midNode 
+
+    def getNumConnectors(self):
+        """
+        Return the number of connectors in the Network
+        """
+        return sum([1 for link in self.iterLinks() if link.isConnector()])
+
+    def getNumRoadLinks(self):
+        """
+        Return the number of RoadLinks in the Network(excluding connectors)
+        """
+        return sum([1 for link in self.iterLinks() if link.isRoadLink()])
+        
+        
+        

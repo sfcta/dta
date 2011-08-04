@@ -98,3 +98,22 @@ class Link(object):
             angle = 2.0*math.pi - angle
         return angle
         
+    def getOtherEnd(self, node):
+        """
+        Return the other end node than the one provided.
+        """
+        if self._startNode == node:
+            return self._endNode
+        elif self._endNode == node:
+            return self._startNode 
+        else:
+            raise DynameqError("Link %d does not have end node %s" % (Link.getId(),
+                                                                      node.getId()))
+
+    def getId(self):
+        """
+        Return the link id
+        """
+        return self.id
+
+

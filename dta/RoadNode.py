@@ -99,3 +99,22 @@ class RoadNode(Node):
 
         self._control    = control
         self._priority   = priority
+
+    def isRoadNode(self):
+        """
+        Return True if this Node is a RoadNode.
+        """
+        return True
+
+    def isCentroid(self):
+        """
+        Return True if this Node is a Centroid
+        """
+        return False
+
+    def isVirtualNode(self):
+        """
+        Return True if this Node is a VirtualNode
+        """
+        return False
+        

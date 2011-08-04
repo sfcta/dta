@@ -35,3 +35,22 @@ class VirtualNode(Node):
          * level is for vertical alignment.  More details TBD.  If None passed, will use default.  
         """        
         Node.__init__(self, id, x, y, geometryType=Node.GEOMETRY_TYPE_VIRTUAL, label=label, level=level)
+
+    def isRoadNode(self):
+        """
+        Return True if this Node is a RoadNode.
+        """
+        return False
+
+    def isCentroid(self):
+        """
+        Return True if this Node is a Centroid
+        """
+        return False
+
+    def isVirtualNode(self):
+        """
+        Return True if this Node is a VirtualNode
+        """
+        return True
+        
