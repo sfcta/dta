@@ -156,3 +156,9 @@ class Connector(RoadLink):
         Return True if this Link is a Connector
         """
         return True 
+
+    def isVirtualLink(self):
+        """
+        Return True if this LInk is a VirtualLink
+        """
+        return False

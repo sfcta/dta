@@ -107,7 +107,7 @@ class Link(object):
         elif self._endNode == node:
             return self._startNode 
         else:
-            raise DynameqError("Link %d does not have end node %s" % (Link.getId(),
+            raise DtaError("Link %d does not have end node %s" % (Link.getId(),
                                                                       node.getId()))
 
     def getId(self):

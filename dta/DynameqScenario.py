@@ -15,6 +15,9 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+
+import pdb
+
 import datetime
 import os
 from .DtaError import DtaError
@@ -31,10 +34,10 @@ class DynameqScenario(Scenario):
     SCENARIO_FILE   = '%s_scen.dqt'
 
     ADVANCED_HEADER     = """<DYNAMEQ>
-<VERSION_1.5>
+<VERSION_1.7>
 <SCENARIO_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/    
-"""
+""" 
 
     def __init__(self, startTime, endTime):
         """
@@ -49,6 +52,8 @@ class DynameqScenario(Scenario):
         """
         Reads the scenario configuration from the Dynameq scenario file.
         """
+        #TODO: the read method will overwrite the startTime and endTime properties 
+
         # scenario file processing
         scenariofile = os.path.join(dir, DynameqScenario.SCENARIO_FILE % file_prefix)
         if not os.path.exists(scenariofile):

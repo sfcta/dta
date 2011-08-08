@@ -19,16 +19,37 @@ __license__     = """
 import pdb
 import nose.tools
 
+import os
 import datetime
+import math 
 from dta.Scenario import Scenario
 from dta.Network import Network
 from dta.Node import Node
 from dta.RoadNode import RoadNode
-from dta.RoadLink import RoadLink
+from dta.RoadLink import RoadLink, lineSegmentsCross
 from dta.Link import Link
 from dta.Movement import Movement 
+from dta.VirtualNode import VirtualNode
+from dta.Connector import Connector
+
 from dta.VehicleClassGroup import VehicleClassGroup
 from dta.DtaError import DtaError 
+from dta.DynameqNetwork import DynameqNetwork
+from dta.DynameqNetwork import *  
+from dta.DynameqScenario import DynameqScenario
+
+def getTestNet():
+
+    projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+    prefix = 'smallTestNet' 
+
+    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario.read(projectFolder, prefix) 
+    net = DynameqNetwork(scenario) 
+    net.read(projectFolder, prefix) 
+
+    return net 
+
 
 def simpleRoadNodeFactory(id_, x, y):
 
@@ -43,9 +64,18 @@ def simpleRoadNodeFactory(id_, x, y):
 
 def simpleRoadLinkFactory(id_, startNode, endNode):
 
+    #length = math.sqrt((endNode.getX()  - startNode.getX()) ** 2 + (endNode.getY() - startNode.getY()) ** 2)
+
     return RoadLink(id_, startNode, endNode,
                     None, 0, 100, 30, 1.0, 1.0, 3,
                     0, 0, "")
+
+def simpleConnectorFactory(id_, startNode, endNode):
+
+    return Connector(id_, startNode, endNode,
+                    None, 100, 30, 1.0, 1.0, 3,
+                    0, 0, "")
+
 
 def simpleMovementFactory(incomingLink, outgoingLink):
 
@@ -56,11 +86,12 @@ def simpleMovementFactory(incomingLink, outgoingLink):
                    VehicleClassGroup("all", "-", "#ffff00"))
 
     return mov                                                                                           
+
 def getSimpleNet():
 
 
     sc = Scenario(datetime.time(0, 0, 0), datetime.time(1, 0, 0))
-    net = Network(sc)
+    net = DynameqNetwork(sc)
     
     v1 = simpleRoadNodeFactory(1, 0,   100)
     v2 = simpleRoadNodeFactory(2, 100, 200)
@@ -252,6 +283,32 @@ class TestNetwork(object):
         assert link_15.hasOutgoingMovement(4)
         assert link_15.hasOutgoingMovement(3)
 
+    def test_removeConnector(self):
+
+        net = getSimpleNet()
+        
+        vn = VirtualNode(9, 0, 200) 
+        n5 = net.getNodeForId(5) 
+
+        net.addNode(vn) 
+        con = simpleConnectorFactory(15, vn, n5)
+        con2 = simpleConnectorFactory(16, n5, vn) 
+
+        net.addLink(con)
+        net.addLink(con2)
+        assert net.getNumLinks() == 16
+
+        assert n5.getNumAdjacentLinks() == 10 
+        assert n5.getNumAdjacentNodes() == 5
+
+        net.removeLink(con) 
+        assert net.getNumLinks() == 15
+        net.removeLink(con2)
+        assert net.getNumLinks() == 14
+
+        assert n5.getNumAdjacentLinks() == 8 
+        assert n5.getNumAdjacentNodes() == 4
+
     def test_8removeNode(self):
 
         net = getSimpleNet()
@@ -265,8 +322,7 @@ class TestNetwork(object):
         assert not net.hasLinkForNodeIdPair(1, 5)
         assert not net.hasLinkForNodeIdPair(5, 2)
         
-
-    def test_splitLink(self):
+    def test_9splitLink(self):
 
         net = getSimpleNet()
         addAllMovements(net)
@@ -291,9 +347,246 @@ class TestNetwork(object):
         assert link2.hasOutgoingMovement(4)
         assert link2.hasOutgoingMovement(3)
 
-        
-
-        
-
-
     
+    def test_10link_getCenterline(self):
+
+        net = getSimpleNet()
+
+        link = net.getLinkForNodeIdPair(1, 5) 
+
+        assert link.getCenterLine() == ((0.0, 82.0), (100.0, 82.0))
+
+        link = net.getLinkForNodeIdPair(3, 5) 
+        
+        assert link.getCenterLine() == ((118.0, 0.0), (118.0, 100.0))
+
+
+    def test_11link_lineSegmentsIntersect(self):
+
+
+        net = getSimpleNet() 
+
+        link51 = net.getLinkForNodeIdPair(5, 1) 
+        p1, p2 = link51.getCenterLine() 
+
+        link25 = net.getLinkForNodeIdPair(2, 5) 
+        p3, p4 = link25.getCenterLine() 
+
+        assert lineSegmentsCross(p1, p2, p3, p4)
+
+        link15 = net.getLinkForNodeIdPair(1, 5) 
+        p5, p6 = link15.getCenterLine()
+
+        assert not lineSegmentsCross(p5, p6, p3, p4)
+        assert not lineSegmentsCross(p3, p4, p5, p6)
+
+        p7 = (50, 0)
+        p8 = (50, 100 - 18) 
+    
+        assert not lineSegmentsCross(p7, p8, p5, p6)
+
+        p9 = (50, 0)
+        p10 = (50, 100 - 17) 
+
+        assert lineSegmentsCross(p9, p10, p5, p6)
+
+    def test_12getNumAdjacentNodesAndLinks(self):
+
+        net = getSimpleNet() 
+
+        n5 = net.getNodeForId(5) 
+
+        assert n5.getNumAdjacentLinks() == 8
+        assert n5.getNumAdjacentNodes() == 4
+
+        n1 = net.getNodeForId(1) 
+
+        link51 = net.getLinkForNodeIdPair(5, 1) 
+
+        assert not link51.hasOutgoingMovement(5) 
+
+        assert n1.getNumAdjacentLinks() == 2
+        assert n1.getNumAdjacentNodes() == 1
+
+    def test_13IsShapePoint(self):
+
+        net = getSimpleNet() 
+
+        n5 = net.getNodeForId(5) 
+        n1 = net.getNodeForId(1) 
+        assert not n5.isShapePoint() 
+        assert not n1.isShapePoint()
+
+        link15 = net.getLinkForNodeIdPair(1, 5) 
+
+        midNode = net.splitLink(link15) 
+
+        assert midNode.isShapePoint()
+
+    def test_hasConnector(self):
+
+        net = getSimpleNet()
+
+        n5 = net.getNodeForId(5) 
+
+        assert not hasConnector(n5)
+        
+        vn = VirtualNode(9, 0, 200) 
+
+        net.addNode(vn) 
+        assert isinstance(n5, RoadNode) 
+        assert isinstance(vn, VirtualNode)
+        con = simpleConnectorFactory(15, vn, n5)
+
+        net.addLink(con)
+        assert net.getNumLinks() == 15 
+
+        assert hasConnector(n5)
+
+    def test_getCandidateLinks(self):
+
+        net = getSimpleNet()
+        n5 = net.getNodeForId(5) 
+
+        assert not hasConnector(n5)
+        
+        vn = VirtualNode(9, 0, 200) 
+
+        net.addNode(vn) 
+        con = simpleConnectorFactory(15, vn, n5)
+        con2 = simpleConnectorFactory(16, n5, vn) 
+
+        net.addLink(con)
+        net.addLink(con2)
+        assert net.getNumLinks() == 16
+
+        assert hasConnector(n5)
+
+        clinks = getCandidateLinks(n5, con) 
+        assert len(clinks) == 2
+        assert 2 in [link.getId() for link in clinks]
+        assert 8 in [link.getId() for link in clinks]
+
+        clinks = getCandidateLinks(n5, con2) 
+        assert len(clinks) == 2
+        assert 2 in [link.getId() for link in clinks]
+        assert 8 in [link.getId() for link in clinks]
+
+    def test_removeConnectorFromIntersection(self):
+        
+        net = getSimpleNet()
+        n5 = net.getNodeForId(5) 
+
+        assert not hasConnector(n5)
+        
+        vn = VirtualNode(9, 0, 200) 
+
+        net.addNode(vn) 
+        con = simpleConnectorFactory(15, vn, n5)
+        con2 = simpleConnectorFactory(16, n5, vn) 
+
+        net.addLink(con)
+        net.addLink(con2)
+        assert net.getNumLinks() == 16
+        assert hasConnector(n5)
+        #this is the connector to be removed 
+        assert net.hasLinkForNodeIdPair(9, 5) 
+        assert net.hasLinkForNodeIdPair(5, 9)
+        assert net.hasLinkForId(15) 
+        assert net.hasLinkForId(16)
+
+        newConnector = net.removeCentroidConnectorFromIntersection(n5, con) 
+        #the old connector is no longer there 
+        assert not net.hasLinkForNodeIdPair(9, 5) 
+        #but a connector with the same id is attached to newly created midblock 
+        assert net.hasLinkForId(15) 
+        assert net.getNumLinks() == 17  #one more link than before
+        assert net.getNumNodes() == 10  #one more node than before 
+
+        assert hasConnector(n5)         #there is still one connector at intersection 5 
+        newConnector.getRoadNode().getX(), newConnector.getRoadNode().getY()
+        assert newConnector.getRoadNode().isShapePoint(countRoadNodesOnly=True) 
+
+        newConnector2 = net.removeCentroidConnectorFromIntersection(n5, con2)
+        #the old connector is no longer there
+        assert not net.hasLinkForNodeIdPair(5, 9)
+        #a new connector is there with the same id 
+        assert net.hasLinkForId(16)
+        assert net.getNumLinks() == 17  #same links as before the algorithm picked the newly created block 
+        assert net.getNumNodes() == 10  #same nodes as before. No new link was split
+        
+    def test_removeAllCentroidConnectorsFromIntersections(self):
+        
+        net = getSimpleNet()
+        n5 = net.getNodeForId(5) 
+
+        assert not hasConnector(n5)
+        
+        vn = VirtualNode(9, 0, 200) 
+
+        net.addNode(vn) 
+        con = simpleConnectorFactory(15, vn, n5)
+        con2 = simpleConnectorFactory(16, n5, vn) 
+
+        net.addLink(con)
+        net.addLink(con2)
+        assert net.getNumLinks() == 16
+        assert hasConnector(n5)
+        #this is the connector to be removed 
+        assert net.hasLinkForNodeIdPair(9, 5) 
+        assert net.hasLinkForNodeIdPair(5, 9)
+        assert net.hasLinkForId(15) 
+        assert net.hasLinkForId(16)
+
+        assert net.getNumConnectors() == 2 
+
+        net.removeCentroidConnectorsFromIntersections() 
+        
+        #the connectors have been removed from the intersection 
+        assert not net.hasLinkForNodeIdPair(9, 5) 
+        assert not net.hasLinkForNodeIdPair(5, 9)
+        assert net.getNumConnectors() == 2 
+
+        assert net.hasLinkForId(15) 
+        assert net.hasLinkForId(16)
+
+        assert net.getNumLinks() == 17 
+        assert net.getNumNodes() == 10  
+
+        assert not hasConnector(n5)         #there is no connector at intersection 5
+
+    def test_readScenario(self):
+
+        net = getTestNet()
+        projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+
+        prefix = 'smallTestNet' 
+        sc = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+        sc.read(projectFolder, prefix) 
+
+        
+        assert 'All' in sc.vehicleClassGroups.keys() 
+        assert 'Transit' in sc.vehicleClassGroups.keys() 
+        assert 'Prohibited' in sc.vehicleClassGroups.keys() 
+
+    def test_writeScenario(self):
+
+        net = getTestNet() 
+        sc = net.getScenario() 
+
+        sc.write(os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
+
+    def test_readDynameqNetwork(self):
+
+        net = getTestNet()
+
+        assert net.getNumNodes() == 299 
+        assert  net.getNumLinks() == 560
+
+    def test_writeDynameqNetwork(self): 
+
+        net = getTestNet()
+
+        net.write(os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
+
+              

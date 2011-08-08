@@ -27,7 +27,7 @@ class Scenario(object):
     """
     
     __all__ = ["__init__", "vehicleClassNames"]
-    
+
     def __init__(self, startTime, endTime):
         """
         Constructor.

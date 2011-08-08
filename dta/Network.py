@@ -498,5 +498,9 @@ class Network(object):
         """
         return sum([1 for link in self.iterLinks() if link.isRoadLink()])
         
-        
+    def getScenario(self):
+        """
+        Return the scenario object associated with this network
+        """
+        return self._scenario 
         

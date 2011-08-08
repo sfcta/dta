@@ -120,6 +120,11 @@ class DynameqNetwork(Network):
             
         count = 0                        
         for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
+            #TODO: I suggest we write here newMovement.getIncomingLink().addOutgoingMovement(newMovement)
+            #and do not have a .addMovement method in the network object. I too have done it the same 
+            #way in one of my implementation but I would suggest that the network does not deal with 
+            #movements as it is two levels up in the object hierarchy 
+
             self.addMovement(self._parseMovementFromFields(fields))
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))
@@ -155,6 +160,8 @@ class DynameqNetwork(Network):
         """
         Writes the network into the given *dir* with the given *file_prefix*
         """
+
+        self._scenario.write(dir, file_prefix)
         basefile = os.path.join(dir, DynameqNetwork.BASE_FILE % file_prefix)
         
         basefile_object = open(basefile, "w")
@@ -553,12 +560,7 @@ class DynameqNetwork(Network):
                                        -1 if not movement._outgoingLane else movement._outgoingLane,
                                        str(movement._followupTime)))
                 count += 1
-        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))
-        
-        
-        
-                
-        
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))                                           
         
     def retrieveCountListFromCountDracula(self, countDraculaReader, starttime, period, number, tolerance):
         """
