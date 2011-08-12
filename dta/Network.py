@@ -71,17 +71,45 @@ class Network(object):
     
     def copy(self, originNetwork):
         """
-        Copies the contents of the originNetwork into self (Nodes and Links, not the scenario).
+        Copies the contents of the originNetwork into self (Nodes and Links and Movements
+        , not the scenario).
         """
-        self._nodes     = copy.copy(originNetwork._nodes)
-        self._linksById = copy.copy(originNetwork._linksById)
-        
-        self._linksByNodeIdPair = {}
-        for link in self._linksById.itervalues():
-            self._linksByNodeIdPair[(link.getStartNode().getId(), link.getEndNode().getId())] = link
+        #self._nodes     = copy.deepcopy(originNetwork._nodes)
+        #self._linksById = copy.deepcopy(originNetwork._linksById)
+        #
+        #self._linksByNodeIdPair = {}
+        #for link in self._linksById.itervalues():
+        #    self._linksByNodeIdPair[(link.getStartNode().getId(), link.getEndNode().getId())] = link
+        #
 
         self._maxLinkId = originNetwork._maxLinkId
         self._maxNodeId = originNetwork._maxNodeId
+        
+        for node in originNetwork.iterNodes():            
+            cNode = copy.copy(node) 
+            cNode._incomingLinks = []
+            cNode._outgoingLinks = []
+            self.addNode(cNode)
+
+        for link in originNetwork.iterLinks():
+            cLink = copy.copy(link)
+            cLink._startNode = self.getNodeForId(link._startNode.getId())
+            cLink._endNode = self.getNodeForId(link._endNode.getId())
+            if isinstance(link, RoadLink):                
+                cLink._outgoingMovements = []
+                cLink._incomingMovements = [] 
+            self.addLink(cLink) 
+
+        for link in originNetwork.iterLinks():
+            if isinstance(link, RoadLink):                
+                for mov in link.iterOutgoingMovements():
+                    cLink = self.getLinkForId(link.getId())
+                    cMov = copy.copy(mov)
+                    cMov._node = self.getNodeForId(mov._node.getId())
+                    cMov._incomingLink = self.getLinkForId(mov._incomingLink.getId())
+                    cMov._outgoingLink = self.getLinkForId(mov._outgoingLink.getId())
+
+                    cLink.addOutgoingMovement(cMov) 
         
     def addNode(self, newNode):
         """
@@ -263,6 +291,9 @@ class Network(object):
                 
                 # switch the node out
                 self._switchConnectorNode(connector, switchStart=True, newNode=newNode)
+                
+                newConnector = None
+
                 # add the virtualLink
                 self.addLink(VirtualLink(id=self._maxLinkId + 1, startNode=startNode, endNode=newNode, label=None))
                 # tally

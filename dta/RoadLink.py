@@ -240,7 +240,16 @@ class RoadLink(Link):
         """
         return False
 
-
+    def getOutgoingMovement(self, nodeId):
+        """
+        Return True if the link has an outgoing movement towards nodeId
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.getDestinationNode().getId() == nodeId:
+                mov
+        raise DtaError("RoadLink from %d to %d does not have a movement to node %d" % (self._startNode.getId(),
+                                                                                       self._endNode.getId(),
+                                                                                       nodeId))
 def lineSegmentsCross(p1, p2, p3, p4):
     """
     Helper function that determines if line segments (p1,p2) and (p3,p4) intersect. 

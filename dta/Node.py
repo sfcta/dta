@@ -294,3 +294,33 @@ class Node(object):
         Return the number of nodes that are connected to this node.
         """ 
         return sum([1 for node in self.iterAdjacentRoadNodes()])
+
+    def getIncomingLinkForId(self, linkId):
+        """
+        Returns True if there is an incoming link with the given id
+        """
+        for link in self.iterIncomingLinks():
+            if link.getId() == linkId:
+                return link 
+        raise DtaError("Node %d does not have incoming link with id %d" % (self._id, linkId)) 
+
+    def getIncomingLinkForNodeId(self, nodeId):
+        """
+        Returns True if there is an incoming link starting from nodeId
+        """
+        for link in self.iterIncomingLinks():
+            if link.getStartNode().getId() == nodeId:
+                return True
+        raise DtaError("Node %d does not have an incoming link starting from" % (self._id, nodeId)) 
+
+    def getNumIncomingLinks(self):
+        """
+        Returns the number of incoming links
+        """
+        return len(self._incomingLinks)
+
+    def getNumOutoingLinks(self):
+        """
+        Retruns the number of outoing links
+        """
+        return len(self._outgoingLinks)

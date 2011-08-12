@@ -22,6 +22,8 @@ import nose.tools
 import os
 import datetime
 import math 
+from itertools import izip 
+
 from dta.Scenario import Scenario
 from dta.Network import Network
 from dta.Node import Node
@@ -590,3 +592,61 @@ class TestNetwork(object):
         net.write(os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
 
               
+    def test_mycopy(self):
+
+        net1 = getSimpleNet() 
+        addAllMovements(net1)
+
+        link1_15 = net1.getLinkForNodeIdPair(1, 5) 
+        link1_15._label = "123" 
+        
+        sc = net1.getScenario() 
+        net2 = DynameqNetwork(sc) 
+        net2.copy(net1)
+        
+        link2_15 = net2.getLinkForNodeIdPair(1, 5) 
+        assert link2_15._label == "123"
+        #now change the label of the first link 
+        link1_15._label = "342"
+        #make sure that the label of the copied link does not change 
+        assert link2_15._label == "123"        
+        #more rigorously 
+        assert id(link1_15) != id(link2_15) 
+
+        assert net1.getNumNodes() == net2.getNumNodes()
+        assert net2.getNumLinks() == net2.getNumLinks() 
+
+        #check that links from the second network contain references to nodes in the second network 
+        for link2 in net2.iterLinks():
+            assert id(link2._startNode) == id(net2.getNodeForId(link2._startNode._id))
+            assert id(link2._endNode) == id(net2.getNodeForId(link2._endNode._id))
+
+        node1_5 = net1.getNodeForId(5) 
+        node2_5 = net2.getNodeForId(5) 
+
+        assert node1_5.getNumIncomingLinks() == node2_5.getNumIncomingLinks() 
+
+        for link1, link2 in izip (node1_5._incomingLinks, node2_5._incomingLinks):
+            assert not id(link1) == id(link2) 
+            assert id(link1) == id(net1.getLinkForId(link1.getId()))
+            assert id(link2) == id(net2.getLinkForId(link2.getId()))
+
+            assert link1.getNumIncomingMovements() == link2.getNumIncomingMovements() 
+            assert link1.getNumOutgoingMovements() == link2.getNumOutgoingMovements() 
+
+            for mov2 in link2.iterIncomingMovements():
+                assert id(mov2._node) == id(net2.getNodeForId(mov2._node.getId()))
+                assert id(mov2._incomingLink) == id(net2.getLinkForId(mov2._incomingLink.getId()))
+                assert id(mov2._outgoingLink) == id(net2.getLinkForId(mov2._outgoingLink.getId()))
+
+            for mov2 in link2.iterOutgoingMovements():
+                assert id(mov2._node) == id(net2.getNodeForId(mov2._node.getId()))
+                assert id(mov2._incomingLink) == id(net2.getLinkForId(mov2._incomingLink.getId()))
+                assert id(mov2._outgoingLink) == id(net2.getLinkForId(mov2._outgoingLink.getId()))
+
+                
+                
+        
+
+        
+

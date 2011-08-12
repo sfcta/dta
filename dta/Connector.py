@@ -110,9 +110,9 @@ class Connector(RoadLink):
             raise DtaError("Attempting to setStartNode on Connector without a Centroid/VirtualNode: %s" % 
                            str(newStartNode))
             
-        self._startNode.removeOutgoingLink(self)
+        self._startNode._removeOutgoingLink(self)
         self._startNode = newStartNode
-        self._startNode.addOutgoingLink(self)
+        self._startNode._addOutgoingLink(self)
         
     def setEndNode(self, newEndNode):
         """
@@ -132,9 +132,9 @@ class Connector(RoadLink):
             raise DtaError("Attempting to setEndNode on Connector without a Centroid/VirtualNode: %s" % 
                            str(newEndNode))
             
-        self._endNode.removeIncomingLink(self)
+        self._endNode._removeIncomingLink(self)
         self._endNode = newEndNode
-        self._endNode.addIncomingLink(self)
+        self._endNode._addIncomingLink(self)
 
     def getRoadNode(self):
         """
