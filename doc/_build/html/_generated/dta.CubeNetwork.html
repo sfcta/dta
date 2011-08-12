@@ -129,7 +129,8 @@ and that the id is not already used; stores it.</p>
 <dl class="method">
 <dt id="dta.CubeNetwork.copy">
 <tt class="descname">copy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the contents of the originNetwork into self (Nodes and Links, not the scenario).</p>
+<dd><p>Copies the contents of the originNetwork into self (Nodes and Links and Movements
+, not the scenario).</p>
 </dd></dl>
 
 <dl class="method">
@@ -151,6 +152,92 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <tt class="descname">getNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNodeForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for node given the <em>nodeId</em>.
 Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumCentroids">
+<tt class="descname">getNumCentroids</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumCentroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of centroids in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumConnectors">
+<tt class="descname">getNumConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of connectors in the Network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumLinks">
+<tt class="descname">getNumLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of links in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumNodes">
+<tt class="descname">getNumNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumRoadLinks">
+<tt class="descname">getNumRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of RoadLinks in the Network(excluding connectors)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumRoadNodes">
+<tt class="descname">getNumRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of roadnodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getNumVirtualNodes">
+<tt class="descname">getNumVirtualNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNumVirtualNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of virtual nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.getScenario">
+<tt class="descname">getScenario</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getScenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the scenario object associated with this network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.hasLinkForId">
+<tt class="descname">hasLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if a link with the given id exists</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.hasLinkForNodeIdPair">
+<tt class="descname">hasLinkForNodeIdPair</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasLinkForNodeIdPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the network has a link with the given node ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.hasNodeForId">
+<tt class="descname">hasNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasNodeForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a node with the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes">
+<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
+<a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> nodes and <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> objects.</p>
+<img alt="../_images/addVirtualNode_before_after6.png" src="../_images/addVirtualNode_before_after6.png" style="height: 300px;" />
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.iterLinks">
+<tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.iterLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the link collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.iterNodes">
+<tt class="descname">iterNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.iterNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the node collection</p>
 </dd></dl>
 
 <dl class="method">
@@ -211,6 +298,23 @@ and <a class="reference internal" href="dta.Connector.html#dta.Connector" title=
 <em>linkVariableNames</em> is a list of variable names for the links.
 See <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.CubeNetwork.readCSVs"><tt class="xref py py-meth docutils literal"><span class="pre">CubeNetwork.readCSVs()</span></tt></a> for the description of the rest of the arguments.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.removeLink">
+<tt class="descname">removeLink</tt><big>(</big><em>linkToRemove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.removeLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input link from the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.removeNode">
+<tt class="descname">removeNode</tt><big>(</big><em>nodeToRemove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.removeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input node from the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.splitLink">
+<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.splitLink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

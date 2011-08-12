@@ -79,32 +79,66 @@
 <tr><td><a class="reference internal" href="#dta.Centroid.__init__" title="dta.Centroid.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Centroid.addIncomingLink" title="dta.Centroid.addIncomingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addIncomingLink</span></tt></a></td>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addIncomingLink</span></tt></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Centroid.addOutgoingLink" title="dta.Centroid.addOutgoingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addOutgoingLink</span></tt></a></td>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addOutgoingLink</span></tt></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dta.Centroid.addIncomingLink">
-<tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Centroid.addIncomingLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verify that the given link ends in this node, and adds it to the list of
-incoming links.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.Centroid.addOutgoingLink">
-<tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.Centroid.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verify that the given link starts with this node, and adds it to the list of
-outgoing links.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="dta.Centroid.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the integer id for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getIncomingLinkForId">
+<tt class="descname">getIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link with the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getIncomingLinkForNodeId">
+<tt class="descname">getIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumAdjacentLinks">
+<tt class="descname">getNumAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of links adjacent to this node (either incoming or outgoing)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumAdjacentNodes">
+<tt class="descname">getNumAdjacentNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of nodes that are connected to this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumAdjacentRoadLinks">
+<tt class="descname">getNumAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of RoadLinks adjacent to this node (either incoming or outgoing)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumAdjacentRoadNodes">
+<tt class="descname">getNumAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of nodes that are connected to this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumIncomingLinks">
+<tt class="descname">getNumIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumIncomingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of incoming links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumOutoingLinks">
+<tt class="descname">getNumOutoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumOutoingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retruns the number of outoing links</p>
 </dd></dl>
 
 <dl class="method">
@@ -117,6 +151,80 @@ outgoing links.</p>
 <dt id="dta.Centroid.getY">
 <tt class="descname">getY</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the y-coordinate for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.hasIncomingLinkForId">
+<tt class="descname">hasIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link with the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.hasIncomingLinkForNodeId">
+<tt class="descname">hasIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.hasOutgoingLinkForId">
+<tt class="descname">hasOutgoingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasOutgoingLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an outgoing link wwith the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.hasOutgoingLinkForNodeId">
+<tt class="descname">hasOutgoingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasOutgoingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is a link towards the given node id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.isCentroid">
+<tt class="descname">isCentroid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isCentroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a Centroid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.isRoadNode">
+<tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a RoadNode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.isShapePoint">
+<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isShapePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is a shape point. If countRoadNodesOnly is True
+the method will count only RoadLinks attached to this Node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.isVirtualNode">
+<tt class="descname">isVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isVirtualNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a VirtualNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterAdjacentLinks">
+<tt class="descname">iterAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all links adjacent (incoming or outgoing)
+to this node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterAdjacentNodes">
+<tt class="descname">iterAdjacentNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the adjacent Nodes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterAdjacentRoadLinks">
+<tt class="descname">iterAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all RoadLinks adjacent to this Node (excluding Connectors)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterAdjacentRoadNodes">
+<tt class="descname">iterAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all RoadNodes adjacent to this Node</p>
 </dd></dl>
 
 <dl class="method">

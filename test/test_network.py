@@ -25,6 +25,7 @@ import math
 from itertools import izip 
 
 from dta.Scenario import Scenario
+from dta.DynameqScenario import DynameqScenario 
 from dta.Network import Network
 from dta.Node import Node
 from dta.RoadNode import RoadNode
@@ -38,7 +39,18 @@ from dta.VehicleClassGroup import VehicleClassGroup
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork
 from dta.DynameqNetwork import *  
-from dta.DynameqScenario import DynameqScenario
+
+
+def getTestScenario():
+ 
+
+    projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+    prefix = 'smallTestNet' 
+
+    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario.read(projectFolder, prefix) 
+
+    return scenario 
 
 def getTestNet():
 
@@ -66,16 +78,17 @@ def simpleRoadNodeFactory(id_, x, y):
 
 def simpleRoadLinkFactory(id_, startNode, endNode):
 
-    #length = math.sqrt((endNode.getX()  - startNode.getX()) ** 2 + (endNode.getY() - startNode.getY()) ** 2)
+    length = math.sqrt((endNode.getX()  - startNode.getX()) ** 2 + (endNode.getY() - startNode.getY()) ** 2)
 
     return RoadLink(id_, startNode, endNode,
-                    None, 0, 100, 30, 1.0, 1.0, 3,
+                    None, 0, length, 30, 1.0, 1.0, 3,
                     0, 0, "")
 
 def simpleConnectorFactory(id_, startNode, endNode):
 
+    length = math.sqrt((endNode.getX()  - startNode.getX()) ** 2 + (endNode.getY() - startNode.getY()) ** 2)
     return Connector(id_, startNode, endNode,
-                    None, 100, 30, 1.0, 1.0, 3,
+                    None, length, 30, 1.0, 1.0, 3,
                     0, 0, "")
 
 
@@ -92,7 +105,7 @@ def simpleMovementFactory(incomingLink, outgoingLink):
 def getSimpleNet():
 
 
-    sc = Scenario(datetime.time(0, 0, 0), datetime.time(1, 0, 0))
+    sc = DynameqScenario(datetime.time(0, 0, 0), datetime.time(1, 0, 0))
     net = DynameqNetwork(sc)
     
     v1 = simpleRoadNodeFactory(1, 0,   100)
@@ -557,6 +570,40 @@ class TestNetwork(object):
 
         assert not hasConnector(n5)         #there is no connector at intersection 5
 
+
+    def test_aaa(self):
+
+        
+        net = getSimpleNet()
+        n5 = net.getNodeForId(5) 
+
+        assert not hasConnector(n5)
+        
+        centroid = Centroid(9, 0, 200) 
+        net.addNode(centroid) 
+        
+
+
+        #net.addNode(vn) 
+        con = simpleConnectorFactory(15, centroid, n5)
+        con2 = simpleConnectorFactory(16, n5, centroid) 
+
+        net.addLink(con)
+        net.addLink(con2)
+    
+        #net.removeCentroidConnectorsFromIntersections() 
+        
+        print "****" , net.getNumLinks() 
+        net.insertVirtualNodeBetweenCentroidsAndRoadNodes()
+        net.write("test", "test") 
+        print "****" , net.getNumLinks()         
+
+        scenario = getTestScenario() 
+        
+        net = DynameqNetwork(scenario) 
+        net.read("test", "test") 
+
+
     def test_readScenario(self):
 
         net = getTestNet()
@@ -645,8 +692,21 @@ class TestNetwork(object):
                 assert id(mov2._outgoingLink) == id(net2.getLinkForId(mov2._outgoingLink.getId()))
 
                 
-                
-        
+    def test_readWrite(self):
 
+        projectFolder = "/Users/michalis/Documents/workspace/dta/dev/test/"
+        prefix = 'test' 
+
+        scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+        scenario.read(projectFolder, prefix)
+
+        net = DynameqNetwork(scenario) 
+        net.read(projectFolder, prefix) 
+
+        net.write("test", "crossHair")
+
+        net.removeCentroidConnectorsFromIntersections() 
+
+        net.write("test", "crossHair3") 
         
 

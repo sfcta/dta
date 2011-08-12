@@ -105,6 +105,18 @@ returns the <a class="reference internal" href="dta.Connector.html#dta.Connector
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.VirtualLink.getId">
+<tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the link id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.getOtherEnd">
+<tt class="descname">getOtherEnd</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#dta.VirtualLink.getOtherEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the other end node than the one provided.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.VirtualLink.getReferenceAngle">
 <tt class="descname">getReferenceAngle</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getReferenceAngle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualizing the link as a straight vector from (0,0), returns the angle between &lt;1,0&gt; and this link.</p>
@@ -120,9 +132,21 @@ returns 0.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.VirtualLink.updateNodesAdjacencyLists">
-<tt class="descname">updateNodesAdjacencyLists</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.updateNodesAdjacencyLists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instructs the relevant nodes about this link</p>
+<dt id="dta.VirtualLink.isConnector">
+<tt class="descname">isConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.isConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Link is a Connector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.isRoadLink">
+<tt class="descname">isRoadLink</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.isRoadLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True this Link is RoadLink</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualLink.isVirtualLink">
+<tt class="descname">isVirtualLink</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.isVirtualLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this LInk is a VirtualLink</p>
 </dd></dl>
 
 </dd></dl>

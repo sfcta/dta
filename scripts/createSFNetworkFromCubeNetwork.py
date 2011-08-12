@@ -84,6 +84,7 @@ if __name__ == '__main__':
     
     # add virtual nodes and links between Centroids and RoadNodes
     sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes()
+    sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections()
     
     sanfrancsicoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
     sanfranciscoScenario.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   

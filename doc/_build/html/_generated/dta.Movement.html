@@ -66,7 +66,7 @@ instance of <a class="reference internal" href="dta.VehicleClassGroup.html#dta.V
 upstream and downstream, the minimum of these two values should be used.  The number of lanes
 can vary over time.  Pass <cite>None</cite> to let the software choose.</li>
 <li><em>incomingLane</em>: Of the lanes associated with this movement on the <em>incomingLink</em>, the id number
-of the lane closest to the inside of the roadway (that is, the one with the highest id number).
+of tbhe lane closest to the inside of the roadway (that is, the one with the highest id number).
 This attribute can vary over time.  Pass <cite>None</cite> to let the software choose.</li>
 <li><em>outgoingLane</em>: Of the lanes associated with this movement on the <em>outgoingLink</em>, the id number
 of the lane closest to the inside of the roadway (that is, the one with the highest id number).
@@ -92,9 +92,45 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 </tbody>
 </table>
 <dl class="method">
+<dt id="dta.Movement.getAtNode">
+<tt class="descname">getAtNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getAtNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the node at which the movement is happening</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getCountList">
+<tt class="descname">getCountList</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getCountList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns countslist saved for the movement</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getDestinationNode">
+<tt class="descname">getDestinationNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getDestinationNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the end node of outgoingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Movement.getIncomingLink">
 <tt class="descname">getIncomingLink</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getIncomingLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the incomingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getOriginNode">
+<tt class="descname">getOriginNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getOriginNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the start node of incomingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getOutgoingLink">
+<tt class="descname">getOutgoingLink</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getOutgoingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the outgoung, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.setCountsFromCountDracula">
+<tt class="descname">setCountsFromCountDracula</tt><big>(</big><em>countsListFromCountDracula</em><big>)</big><a class="headerlink" href="#dta.Movement.setCountsFromCountDracula" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts the countlist</p>
 </dd></dl>
 
 </dd></dl>

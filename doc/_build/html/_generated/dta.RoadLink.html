@@ -142,9 +142,58 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getCenterLine">
+<tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getCenterLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
+representing the centerline.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getEndNode">
 <tt class="descname">getEndNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getEndNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for endNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getId">
+<tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the link id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getLength">
+<tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the  length of the link</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getNumIncomingMovements">
+<tt class="descname">getNumIncomingMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getNumIncomingMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of incoming movements</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getNumLanes">
+<tt class="descname">getNumLanes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getNumLanes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of lanes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getNumOutgoingMovements">
+<tt class="descname">getNumOutgoingMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getNumOutgoingMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of outgoing movements</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getOtherEnd">
+<tt class="descname">getOtherEnd</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOtherEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the other end node than the one provided.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getOutgoingMovement">
+<tt class="descname">getOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the link has an outgoing movement towards nodeId</p>
 </dd></dl>
 
 <dl class="method">
@@ -170,15 +219,45 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.hasOutgoingMovement">
+<tt class="descname">hasOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadLink.hasOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the link has an outgoing movement towards nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.isConnector">
+<tt class="descname">isConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.isConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Link is a Connector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.isRoadLink">
+<tt class="descname">isRoadLink</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.isRoadLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True this Link is RoadLink</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.isVirtualLink">
+<tt class="descname">isVirtualLink</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.isVirtualLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this LInk is a VirtualLink</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.iterIncomingMovements">
+<tt class="descname">iterIncomingMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.iterIncomingMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator for the incoming movements of this link</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.iterOutgoingMovements">
 <tt class="descname">iterOutgoingMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.iterOutgoingMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator for the outgoing movements of this link</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.RoadLink.updateNodesAdjacencyLists">
-<tt class="descname">updateNodesAdjacencyLists</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.updateNodesAdjacencyLists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instructs the relevant nodes about this link</p>
+<dt id="dta.RoadLink.removeOutgoingMovement">
+<tt class="descname">removeOutgoingMovement</tt><big>(</big><em>movementToRemove</em><big>)</big><a class="headerlink" href="#dta.RoadLink.removeOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the input movement</p>
 </dd></dl>
 
 </dd></dl>

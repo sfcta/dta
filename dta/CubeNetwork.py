@@ -240,38 +240,46 @@ ENDRUN
             newLink = None
             if isinstance(nodeA, Centroid) or isinstance(nodeB, Centroid):
                 localsdict['isConnector'] = True
-                newLink = Connector \
-                   (id                      = self._maxLinkId+1,
-                    startNode               = nodeA,
-                    endNode                 = nodeB,
-                    reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
-                    # facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
-                    length                  = eval(linkLengthEvalStr, globals(), localsdict),
-                    freeflowSpeed           = eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
-                    effectiveLengthFactor   = eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),
-                    responseTimeFactor      = eval(linkResponseTimeFactorEvalStr, globals(), localsdict),
-                    numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
-                    roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
-                    level                   = eval(linkLevelEvalStr, globals(), localsdict),
-                    label                   = eval(linkLabelEvalStr, globals(), localsdict))
-                countConnectors += 1
+                try: 
+                    newLink = Connector \
+                       (id                      = self._maxLinkId+1,
+                        startNode               = nodeA,
+                        endNode                 = nodeB,
+                        reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
+                        # facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
+                        length                  = eval(linkLengthEvalStr, globals(), localsdict),
+                        freeflowSpeed           = eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
+                        effectiveLengthFactor   = eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),
+                        responseTimeFactor      = eval(linkResponseTimeFactorEvalStr, globals(), localsdict),
+                        numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
+                        roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
+                        level                   = eval(linkLevelEvalStr, globals(), localsdict),
+                        label                   = eval(linkLabelEvalStr, globals(), localsdict))
+                    countConnectors += 1
+                except DtaError, e:
+                    DtaLogger.error("%s" % str(e))
+                    continue
             else:
                 localsdict['isConnector'] = False
-                newLink = RoadLink \
-                   (id                      = self._maxLinkId+1,
-                    startNode               = nodeA,
-                    endNode                 = nodeB,
-                    reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
-                    facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
-                    length                  = eval(linkLengthEvalStr, globals(), localsdict),
-                    freeflowSpeed           = eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
-                    effectiveLengthFactor   = eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),
-                    responseTimeFactor      = eval(linkResponseTimeFactorEvalStr, globals(), localsdict),
-                    numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
-                    roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
-                    level                   = eval(linkLevelEvalStr, globals(), localsdict),
-                    label                   = eval(linkLabelEvalStr, globals(), localsdict))
-                countRoadLinks += 1
+                try: 
+                    newLink = RoadLink \
+                       (id                      = self._maxLinkId+1,
+                        startNode               = nodeA,
+                        endNode                 = nodeB,
+                        reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
+                        facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
+                        length                  = eval(linkLengthEvalStr, globals(), localsdict),
+                        freeflowSpeed           = eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
+                        effectiveLengthFactor   = eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),
+                        responseTimeFactor      = eval(linkResponseTimeFactorEvalStr, globals(), localsdict),
+                        numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
+                        roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
+                        level                   = eval(linkLevelEvalStr, globals(), localsdict),
+                        label                   = eval(linkLabelEvalStr, globals(), localsdict))
+                    countRoadLinks += 1
+                except DtaError, e:
+                    DtaLogger.error("%s" % str(e))
+                    continue 
             self.addLink(newLink)
         DtaLogger.info("Read  %8d %-16s from %s" % (countConnectors, "connectors", linksCsvFilename))
         DtaLogger.info("Read  %8d %-16s from %s" % (countRoadLinks, "roadlinks", linksCsvFilename))

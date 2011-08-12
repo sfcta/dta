@@ -19,6 +19,7 @@ import math
 import os
 import sys, csv
 import pdb
+from itertools import chain 
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
@@ -252,12 +253,16 @@ class DynameqNetwork(Network):
                                "type",
                                "level",
                                "label"))
+
+
         count = 0
-        for nodeId in sorted(self._nodes.keys()):
-            node = self._nodes[nodeId]
-            if isinstance(node, Centroid):
-                continue # don't write centroids; they go in their own section
-            elif isinstance(node, VirtualNode):
+
+        roadNodes = sorted(self.iterRoadNodes(), key=lambda n:n.getId())
+        virtualNodes = sorted(self.iterVirtualNodes(), key=lambda n:n.getId())
+
+        for node in chain(roadNodes, virtualNodes):
+            
+            if isinstance(node, VirtualNode):
                 control = VirtualNode.DEFAULT_CONTROL
                 priority = VirtualNode.DEFAULT_PRIORITY
             else:
@@ -275,7 +280,7 @@ class DynameqNetwork(Network):
                                    '"' + node._label + '"'))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "NODES", basefile_object.name))
-
+        
     def _parseCentroidFromFields(self, fields):
         """
         Interprets fields into a Centroid
@@ -365,14 +370,14 @@ class DynameqNetwork(Network):
         """
         basefile_object.write("LINKS\n")
         basefile_object.write("*      id    start      end      rev faci          len       fspeed   lenfac   resfac lanes rabout  level         label\n")
-        
+
         count = 0
-        for linkId in sorted(self._linksById.keys()):
-            link = self._linksById[linkId]
-            
-            # virtual links are later
-            if isinstance(link, VirtualLink): continue
-            
+
+        roadLinks = sorted(self.iterRoadLinks() , key=lambda rl:rl.getId()) 
+        connectors = sorted(self.iterConnectors(), key=lambda c:c.getId())
+
+        for link in chain(roadLinks, connectors):
+
             basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %13s\n" % 
                                   (link.id,
                                    link.getStartNode().getId(),
@@ -755,7 +760,10 @@ class DynameqNetwork(Network):
             connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
         
             for con in connectors:
-                self.removeCentroidConnectorFromIntersection(node, con) 
+                try:
+                    self.removeCentroidConnectorFromIntersection(node, con) 
+                except DtaError, e:
+                    DtaLogger.error("%s" % str(e))
 
     def removeCentroidConnectorFromIntersection(self, roadNode, connector):
         """Remove the input connector for an intersection and attach it to a midblock 
@@ -783,10 +791,10 @@ class DynameqNetwork(Network):
 
         elif len(candidateLinks) == 1:
 
-            if candidateLink[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
+            if candidateLinks[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
                 nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode) 
             else:
-                nodeToAttachConnector = net.splitLink(candidateLink[0]) 
+                nodeToAttachConnector = self.splitLink(candidateLinks[0]) 
         else:
             raise DtaError("Centroid connector(s) were not removed from intersection %d" % roadNode.getId())
 
@@ -836,7 +844,55 @@ class DynameqNetwork(Network):
             self.addLink(newConnector)
             #TODO: do the movements 
             return newConnector 
+    
+    def iterVirtualNodes(self):
+        """
+        Return an iterator for the virtual nodes in the network
+        """
+        for node in self.iterNodes():
+            if isinstance(node, VirtualNode):
+                yield node 
 
+    def iterRoadNodes(self):
+        """
+        Return an iterator for the roadNodes in the network
+        """
+        for node in self.iterNodes():
+            if isinstance(node, RoadNode):
+                yield node
+
+    def iterCentroids(self):
+        """
+        Return an iterator to the centroids in the network
+        """
+        for node in self.iterNodes():
+            if isinstance(node, Centroid):
+                yield node 
+
+    def iterVirtualLinks(self):
+        """
+        Return an iterator for the virtual links in the network
+        """
+        for link in self.iterLinks():
+            if isinstance(link, VirtualLink):
+                yield link
+
+    def iterRoadLinks(self):
+        """
+        Return an iterator for the RoadLinks in the network that are not connectors
+        """
+        for link in self.iterLinks():
+            if link.isRoadLink():
+                yield link 
+
+    def iterConnectors(self):
+        """
+        Return an iterator for the Connectors in the network
+        """
+        for link in self.iterLinks():
+            if isinstance(link, Connector):
+                yield link 
+                
 def hasConnector(node):
     """
     Return True if there is a connector atached to the node.

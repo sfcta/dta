@@ -108,7 +108,8 @@ and that the id is not already used; stores it.</p>
 <dl class="method">
 <dt id="dta.Network.copy">
 <tt class="descname">copy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the contents of the originNetwork into self (Nodes and Links, not the scenario).</p>
+<dd><p>Copies the contents of the originNetwork into self (Nodes and Links and Movements
+, not the scenario).</p>
 </dd></dl>
 
 <dl class="method">
@@ -133,12 +134,107 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Network.getNumCentroids">
+<tt class="descname">getNumCentroids</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumCentroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of centroids in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumConnectors">
+<tt class="descname">getNumConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of connectors in the Network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumLinks">
+<tt class="descname">getNumLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of links in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumNodes">
+<tt class="descname">getNumNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumRoadLinks">
+<tt class="descname">getNumRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of RoadLinks in the Network(excluding connectors)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumRoadNodes">
+<tt class="descname">getNumRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of roadnodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumVirtualNodes">
+<tt class="descname">getNumVirtualNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumVirtualNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of virtual nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getScenario">
+<tt class="descname">getScenario</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getScenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the scenario object associated with this network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.hasLinkForId">
+<tt class="descname">hasLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Network.hasLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if a link with the given id exists</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.hasLinkForNodeIdPair">
+<tt class="descname">hasLinkForNodeIdPair</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.Network.hasLinkForNodeIdPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the network has a link with the given node ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.hasNodeForId">
+<tt class="descname">hasNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Network.hasNodeForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a node with the given id</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes">
 <tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
 <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> nodes and <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> objects.</p>
 <img alt="../_images/addVirtualNode_before_after6.png" src="../_images/addVirtualNode_before_after6.png" style="height: 300px;" />
 </dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.iterLinks">
+<tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the link collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.iterNodes">
+<tt class="descname">iterNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the node collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.removeLink">
+<tt class="descname">removeLink</tt><big>(</big><em>linkToRemove</em><big>)</big><a class="headerlink" href="#dta.Network.removeLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input link from the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.removeNode">
+<tt class="descname">removeNode</tt><big>(</big><em>nodeToRemove</em><big>)</big><a class="headerlink" href="#dta.Network.removeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input node from the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.splitLink">
+<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em><big>)</big><a class="headerlink" href="#dta.Network.splitLink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

@@ -164,23 +164,57 @@ only the minor street is stop-controlled</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.RoadNode.addIncomingLink">
-<tt class="descname">addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addIncomingLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verify that the given link ends in this node, and adds it to the list of
-incoming links.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.RoadNode.addOutgoingLink">
-<tt class="descname">addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addOutgoingLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verify that the given link starts with this node, and adds it to the list of
-outgoing links.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="dta.RoadNode.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the integer id for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getIncomingLinkForId">
+<tt class="descname">getIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link with the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getIncomingLinkForNodeId">
+<tt class="descname">getIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getNumAdjacentLinks">
+<tt class="descname">getNumAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of links adjacent to this node (either incoming or outgoing)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getNumAdjacentNodes">
+<tt class="descname">getNumAdjacentNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of nodes that are connected to this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getNumAdjacentRoadLinks">
+<tt class="descname">getNumAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of RoadLinks adjacent to this node (either incoming or outgoing)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getNumAdjacentRoadNodes">
+<tt class="descname">getNumAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of nodes that are connected to this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getNumIncomingLinks">
+<tt class="descname">getNumIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumIncomingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of incoming links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getNumOutoingLinks">
+<tt class="descname">getNumOutoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumOutoingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retruns the number of outoing links</p>
 </dd></dl>
 
 <dl class="method">
@@ -193,6 +227,80 @@ outgoing links.</p>
 <dt id="dta.RoadNode.getY">
 <tt class="descname">getY</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the y-coordinate for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.hasIncomingLinkForId">
+<tt class="descname">hasIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link with the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.hasIncomingLinkForNodeId">
+<tt class="descname">hasIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.hasOutgoingLinkForId">
+<tt class="descname">hasOutgoingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasOutgoingLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is an outgoing link wwith the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.hasOutgoingLinkForNodeId">
+<tt class="descname">hasOutgoingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasOutgoingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if there is a link towards the given node id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.isCentroid">
+<tt class="descname">isCentroid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isCentroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a Centroid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.isRoadNode">
+<tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a RoadNode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.isShapePoint">
+<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is a shape point. If countRoadNodesOnly is True
+the method will count only RoadLinks attached to this Node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.isVirtualNode">
+<tt class="descname">isVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isVirtualNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a VirtualNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterAdjacentLinks">
+<tt class="descname">iterAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all links adjacent (incoming or outgoing)
+to this node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterAdjacentNodes">
+<tt class="descname">iterAdjacentNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the adjacent Nodes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterAdjacentRoadLinks">
+<tt class="descname">iterAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all RoadLinks adjacent to this Node (excluding Connectors)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterAdjacentRoadNodes">
+<tt class="descname">iterAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all RoadNodes adjacent to this Node</p>
 </dd></dl>
 
 <dl class="method">

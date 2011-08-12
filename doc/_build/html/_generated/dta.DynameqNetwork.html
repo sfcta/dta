@@ -120,7 +120,8 @@ and that the id is not already used; stores it.</p>
 <dl class="method">
 <dt id="dta.DynameqNetwork.copy">
 <tt class="descname">copy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the contents of the originNetwork into self (Nodes and Links, not the scenario).</p>
+<dd><p>Copies the contents of the originNetwork into self (Nodes and Links and Movements
+, not the scenario).</p>
 </dd></dl>
 
 <dl class="method">
@@ -145,15 +146,189 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.getNumCentroids">
+<tt class="descname">getNumCentroids</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumCentroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of centroids in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getNumConnectors">
+<tt class="descname">getNumConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of connectors in the Network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getNumLinks">
+<tt class="descname">getNumLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of links in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getNumNodes">
+<tt class="descname">getNumNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getNumRoadLinks">
+<tt class="descname">getNumRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of RoadLinks in the Network(excluding connectors)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getNumRoadNodes">
+<tt class="descname">getNumRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of roadnodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getNumVirtualNodes">
+<tt class="descname">getNumVirtualNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNumVirtualNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of virtual nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.getScenario">
+<tt class="descname">getScenario</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getScenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the scenario object associated with this network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.hasLinkForId">
+<tt class="descname">hasLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasLinkForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if a link with the given id exists</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.hasLinkForNodeIdPair">
+<tt class="descname">hasLinkForNodeIdPair</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasLinkForNodeIdPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the network has a link with the given node ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.hasNodeForId">
+<tt class="descname">hasNodeForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasNodeForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a node with the given id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes">
+<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
+<a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> nodes and <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> objects.</p>
+<img alt="../_images/addVirtualNode_before_after6.png" src="../_images/addVirtualNode_before_after6.png" style="height: 300px;" />
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterCentroids">
+<tt class="descname">iterCentroids</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterCentroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the centroids in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterConnectors">
+<tt class="descname">iterConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator for the Connectors in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterLinks">
+<tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the link collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterNodes">
+<tt class="descname">iterNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the node collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterRoadLinks">
+<tt class="descname">iterRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator for the RoadLinks in the network that are not connectors</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterRoadNodes">
+<tt class="descname">iterRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator for the roadNodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterVirtualLinks">
+<tt class="descname">iterVirtualLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterVirtualLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator for the virtual links in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterVirtualNodes">
+<tt class="descname">iterVirtualNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterVirtualNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator for the virtual nodes in the network</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.read">
 <tt class="descname">read</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the network in the given <em>dir</em> with the given <em>file_prefix</em>.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.removeCentroidConnectorFromIntersection">
+<tt class="descname">removeCentroidConnectorFromIntersection</tt><big>(</big><em>roadNode</em>, <em>connector</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeCentroidConnectorFromIntersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input connector for an intersection and attach it to a midblock 
+location. If a midblock location does does not exist a RoadLink close
+to the connector is split and the connector is attached to the new 
+midblock location</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.removeCentroidConnectorsFromIntersections">
+<tt class="descname">removeCentroidConnectorsFromIntersections</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeCentroidConnectorsFromIntersections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove centroid connectors from intersections and attach them to midblock locations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.removeLink">
+<tt class="descname">removeLink</tt><big>(</big><em>linkToRemove</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input link from the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.removeNode">
+<tt class="descname">removeNode</tt><big>(</big><em>nodeToRemove</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the input node from the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.retrieveCountListFromCountDracula">
+<tt class="descname">retrieveCountListFromCountDracula</tt><big>(</big><em>countDraculaReader</em>, <em>starttime</em>, <em>period</em>, <em>number</em>, <em>tolerance</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.retrieveCountListFromCountDracula" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes counts to movements from CountDracula
+starttime = startitme for counts
+period = interval for each count
+number = total counts = (endtime-starttime)/period
+tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.splitLink">
+<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.splitLink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.write">
 <tt class="descname">write</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the network into the given <em>dir</em> with the given <em>file_prefix</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.writeCountListToFile">
+<tt class="descname">writeCountListToFile</tt><big>(</big><em>dir</em>, <em>starttime</em>, <em>period</em>, <em>number</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.writeCountListToFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes counts to movements from CountDracula
+starttime = startitme for counts
+period = interval for each count
+number = total counts = (endtime-starttime)/period
+tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)</p>
 </dd></dl>
 
 </dd></dl>

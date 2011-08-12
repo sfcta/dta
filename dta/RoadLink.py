@@ -63,6 +63,10 @@ class RoadLink(Link):
         self._freeflowSpeed             = freeflowSpeed
         self._effectiveLengthFactor     = effectiveLengthFactor
         self._responseTimeFactor        = responseTimeFactor
+
+        if numLanes <= 0: 
+            raise DtaError("RoadLink %d cannot have number of lanes = %d" % (self.getId(), numLanes))
+
         self._numLanes                  = numLanes
         self._roundAbout                = roundAbout
         if level:
