@@ -754,7 +754,7 @@ class DynameqNetwork(Network):
         allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]
         for node in allRoadNodes: 
 
-            if not hasConnector(node):
+            if not node.hasConnector():
                 continue 
 
             connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
@@ -893,20 +893,6 @@ class DynameqNetwork(Network):
             if isinstance(link, Connector):
                 yield link 
                 
-def hasConnector(node):
-    """
-    Return True if there is a connector atached to the node.
-    """
-    #TODO:consider associating this function to an object
-    for link in node.iterIncomingLinks():
-        if isinstance(link, Connector):
-            return True
-
-    for link in node.iterOutgoingLinks():
-        if isinstance(link, Connector):
-            return True
-
-    return False 
 
 def getCandidateLinks(node, connector):
     """

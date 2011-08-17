@@ -246,25 +246,6 @@ class Node(object):
         Return the number of nodes that are connected to this node.
         """ 
         return sum([1 for node in self.iterAdjacentNodes()])
-
-    def isShapePoint(self, countRoadNodesOnly=False):
-        """
-        Return True if the node is a shape point. If countRoadNodesOnly is True
-        the method will count only RoadLinks attached to this Node
-        """
-
-        if not countRoadNodesOnly:
-            if self.getNumAdjacentLinks() == 4 and self.getNumAdjacentNodes() == 2:
-                return True
-            if self.getNumAdjacentLinks() == 2 and self.getNumAdjacentNodes() == 2:
-                return True
-            return False
-        else:
-            if self.getNumAdjacentRoadLinks() == 4 and self.getNumAdjacentRoadNodes() == 2:
-                return True
-            if self.getNumAdjacentRoadLinks() == 2 and self.getNumAdjacentRoadNodes() == 2:
-                return True
-            return False            
         
     def iterAdjacentLinks(self):
         """
@@ -324,3 +305,26 @@ class Node(object):
         Retruns the number of outoing links
         """
         return len(self._outgoingLinks)
+
+
+    def hasConnector(self):
+        """
+        Return True if there is a connector atached to the node.
+        """
+        for link in self.iterIncomingLinks():
+            if link.isConnector():
+                return True
+
+        for link in self.iterOutgoingLinks():
+            if link.isConnector():
+                return True
+
+        return False 
+
+    def getCardinality(self):
+        """
+        Return a pair of numbers representing the number of 
+        incoming and outgoing links respectively
+        """
+        return (len(self._incomingLinks), len(self._outgoingLinks))
+        

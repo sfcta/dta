@@ -117,4 +117,53 @@ class RoadNode(Node):
         Return True if this Node is a VirtualNode
         """
         return False
+
+    def isShapePoint(self, countRoadNodesOnly=False, checkAttributes=False):
+        """
+        Return True if the node is a shape point. If countRoadNodesOnly is True
+        the method will count only RoadLinks attached to this Node. If checkAttributes
+        is True the method will check that all the link attributes on either side of 
+        the shapepoint do not change (except link length). 
+        """
+
+        checkAttributes = ["_facilityType", "_freeflowSpeed", "_effectiveLengthFactor", "_responseTimeFactor",
+                           "_numLanes", "_roundAbout", "_level", "_lanePermissions"]                         
+
+        if not countRoadNodesOnly:
+            if self.getNumAdjacentLinks() == 4 and self.getNumAdjacentNodes() == 2:
+                return True
+            if self.getNumAdjacentLinks() == 2 and self.getNumAdjacentNodes() == 2:
+                return True
+        else: 
+            if self.getNumAdjacentRoadLinks() == 4 and self.getNumAdjacentRoadNodes() == 2:
+                return True
+            if self.getNumAdjacentRoadLinks() == 2 and self.getNumAdjacentRoadNodes() == 2:
+                return True
+ 
+        return False
+
+        if result and checkAttributes:
+
+            attributesToCheck = []
+            for attrName in dir(self):
+                if attrName.startswith("_"):
+                    attr = getattr(self, attrName)
+                if isinstance(attr, (int, float, str)):
+                    attributesToCheck.append(attrName) 
+                                  
+            
+        return result 
+
+
         
+#                if checkAttributes: 
+#                    for ilink in self.iterIncomingLinks():
+#                        for mov in ilink.iterOutgoingMovements():
+#                            if mov.isUTurn():
+#                                continue
+#                            oLink = mov.getOutgoingLink() 
+#
+#                            for attrName in checkAttributes():
+#                                if getattr(ilink, attrName) != getattr(olink, attrName):
+#                                    return False
+#                    return True 

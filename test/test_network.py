@@ -41,8 +41,7 @@ from dta.DynameqNetwork import DynameqNetwork
 from dta.DynameqNetwork import *  
 
 
-def getTestScenario():
- 
+def getTestScenario(): 
 
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
@@ -438,13 +437,15 @@ class TestNetwork(object):
 
         assert midNode.isShapePoint()
 
+        net = getTestNet() 
+
     def test_hasConnector(self):
 
         net = getSimpleNet()
 
         n5 = net.getNodeForId(5) 
 
-        assert not hasConnector(n5)
+        assert not n5.hasConnector()
         
         vn = VirtualNode(9, 0, 200) 
 
@@ -456,14 +457,14 @@ class TestNetwork(object):
         net.addLink(con)
         assert net.getNumLinks() == 15 
 
-        assert hasConnector(n5)
+        assert n5.hasConnector()
 
     def test_getCandidateLinks(self):
 
         net = getSimpleNet()
         n5 = net.getNodeForId(5) 
 
-        assert not hasConnector(n5)
+        assert not n5.hasConnector()
         
         vn = VirtualNode(9, 0, 200) 
 
@@ -475,7 +476,7 @@ class TestNetwork(object):
         net.addLink(con2)
         assert net.getNumLinks() == 16
 
-        assert hasConnector(n5)
+        assert n5.hasConnector()
 
         clinks = getCandidateLinks(n5, con) 
         assert len(clinks) == 2
@@ -492,7 +493,7 @@ class TestNetwork(object):
         net = getSimpleNet()
         n5 = net.getNodeForId(5) 
 
-        assert not hasConnector(n5)
+        assert not n5.hasConnector()
         
         vn = VirtualNode(9, 0, 200) 
 
@@ -503,7 +504,7 @@ class TestNetwork(object):
         net.addLink(con)
         net.addLink(con2)
         assert net.getNumLinks() == 16
-        assert hasConnector(n5)
+        assert n5.hasConnector()
         #this is the connector to be removed 
         assert net.hasLinkForNodeIdPair(9, 5) 
         assert net.hasLinkForNodeIdPair(5, 9)
@@ -518,7 +519,7 @@ class TestNetwork(object):
         assert net.getNumLinks() == 17  #one more link than before
         assert net.getNumNodes() == 10  #one more node than before 
 
-        assert hasConnector(n5)         #there is still one connector at intersection 5 
+        assert n5.hasConnector()         #there is still one connector at intersection 5 
         newConnector.getRoadNode().getX(), newConnector.getRoadNode().getY()
         assert newConnector.getRoadNode().isShapePoint(countRoadNodesOnly=True) 
 
@@ -535,7 +536,7 @@ class TestNetwork(object):
         net = getSimpleNet()
         n5 = net.getNodeForId(5) 
 
-        assert not hasConnector(n5)
+        assert not n5.hasConnector()
         
         vn = VirtualNode(9, 0, 200) 
 
@@ -546,7 +547,7 @@ class TestNetwork(object):
         net.addLink(con)
         net.addLink(con2)
         assert net.getNumLinks() == 16
-        assert hasConnector(n5)
+        assert n5.hasConnector()
         #this is the connector to be removed 
         assert net.hasLinkForNodeIdPair(9, 5) 
         assert net.hasLinkForNodeIdPair(5, 9)
@@ -555,8 +556,14 @@ class TestNetwork(object):
 
         assert net.getNumConnectors() == 2 
 
+        assert net.getNumNodes() == 9
+        assert net.getNumLinks() == 16
+
         net.removeCentroidConnectorsFromIntersections() 
         
+        assert net.getNumNodes() == 10
+        assert net.getNumLinks() == 17
+
         #the connectors have been removed from the intersection 
         assert not net.hasLinkForNodeIdPair(9, 5) 
         assert not net.hasLinkForNodeIdPair(5, 9)
@@ -568,16 +575,16 @@ class TestNetwork(object):
         assert net.getNumLinks() == 17 
         assert net.getNumNodes() == 10  
 
-        assert not hasConnector(n5)         #there is no connector at intersection 5
+        assert not n5.hasConnector()         #there is no connector at intersection 5
 
 
-    def test_aaa(self):
+    def test_insertVirtualNodes(self):
 
         
         net = getSimpleNet()
         n5 = net.getNodeForId(5) 
 
-        assert not hasConnector(n5)
+        assert not n5.hasConnector()
         
         centroid = Centroid(9, 0, 200) 
         net.addNode(centroid) 
@@ -593,10 +600,10 @@ class TestNetwork(object):
     
         #net.removeCentroidConnectorsFromIntersections() 
         
-        print "****" , net.getNumLinks() 
+        numLinksBefore = net.getNumLinks() 
         net.insertVirtualNodeBetweenCentroidsAndRoadNodes()
         net.write("test", "test") 
-        print "****" , net.getNumLinks()         
+        assert numLinksBefore + 2 == net.getNumLinks()         
 
         scenario = getTestScenario() 
         

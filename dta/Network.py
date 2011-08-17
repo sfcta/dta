@@ -74,14 +74,6 @@ class Network(object):
         Copies the contents of the originNetwork into self (Nodes and Links and Movements
         , not the scenario).
         """
-        #self._nodes     = copy.deepcopy(originNetwork._nodes)
-        #self._linksById = copy.deepcopy(originNetwork._linksById)
-        #
-        #self._linksByNodeIdPair = {}
-        #for link in self._linksById.itervalues():
-        #    self._linksByNodeIdPair[(link.getStartNode().getId(), link.getEndNode().getId())] = link
-        #
-
         self._maxLinkId = originNetwork._maxLinkId
         self._maxNodeId = originNetwork._maxNodeId
         
@@ -253,18 +245,33 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
-    def insertVirtualNodeBetweenCentroidsAndRoadNodes(self):
+    def insertVirtualNodeBetweenCentroidsAndRoadNodes(self, startVirtualNodeId=None, startVirtualLinkId=None):
         """
         In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
         :py:class:`Centroid` nodes and :py:class:`RoadNode` objects.
         
         .. image:: /images/addVirtualNode_before_after.png
            :height: 300px
+
+        If defined, the virtual nodes that will be added will begin from startVirtualNodeId and the 
+        virtual links from startVirtualLinkId
            
         """
         
         allLinkNodeIDPairs = self._linksByNodeIdPair.keys()
         modifiedConnectorCount = 0
+
+                #TODO: option to start at arbitrary node id
+        if startVirtualNodeId:
+            if startVirtualNodeId < self._maxNodeId:
+                raise DtaError("The startVirtualNodeId %d cannot be less than equal to the current max node id %d" %
+                               (startVirtualNodeId, self._maxNodeId))                                
+            self._maxNodeId = startVirtualNodeId 
+        if startVirtualLinkId:
+            if startVirtualLinkId < self._maxLinkId:
+                raise DtaError("The startVirtualLinkId %d cannot be less than equal to hte current max link id %d" %
+                               (startVirtualLinkId, self._maxLinkId))
+            self._maxLinkId = startVirtualLinkId 
         
         for idPair in allLinkNodeIDPairs:
             # if we already took care of it when we did the reverse, it's not here anymore
@@ -283,8 +290,7 @@ class Network(object):
             if isinstance(startNode, Centroid) and connector.endIsRoadNode():
                 DtaLogger.debug("Inserting virtualNode in Centroid(%6d) => RoadNode(%6d)" % (startNode.getId(), endNode.getId()))
                 
-                #TODO: option to start at arbitrary node id
-                newNode = VirtualNode(id=self._maxNodeId+1,
+                newNode = VirtualNode(id=self._maxNodeId + 1,
                                       x=startNode.getX(),
                                       y=startNode.getY())
                 self.addNode(newNode)
@@ -407,6 +413,7 @@ class Network(object):
         """
         Remove the input node from the network
         """
+        #TODO: if you remove a centroid you should remove all virtual links and connectors
         iLinks = [link for link in nodeToRemove.iterIncomingLinks()]
         oLinks = [link for link in nodeToRemove.iterOutgoingLinks()]
 
@@ -535,3 +542,81 @@ class Network(object):
         """
         return self._scenario 
         
+    def mergeSecondaryNetwork(self, secondaryNetwork):
+        """
+        This method will add all the nodes of the secondary network 
+        to the current network unless there is a conflicting node
+        with the same id. Same with links
+        """ 
+
+        centroidsToSkip = []
+        linksToSkip = []
+
+        for sCentroid in secondaryNetwork.iterCentroids():
+
+            if self.hasCentroidForId(sCentroid.getId()):
+                centroidsToSkip.append(sCentroid.getId())
+                for vLink in sCentroid.iterAdjacentLinks():
+                    linksToSkip.append(vLink.getId())
+                    for cLink in vLink.iterAdjacentLinks():
+                        linksToSkip.append(cLink.getId())
+
+            if self.hasRoadNodeForId(sCentroid.getId()):
+                centroidsToSkip.append(sCentroid.getId())
+                for vLink in sCentroid.iterAdjacentLinks():
+                    linksToSkip.append(vLink.getId())
+                    for cLink in vLink.iterAdjacentLinks():
+                        linksToSkip.append(cLink.getId())
+        
+            
+        roadNodesToSkip = []
+        for rNode in secondaryNetwork.iterRoadNodes():            
+            if self.hasRoadNodeForId(rNode.getId()):
+                roadNodesToSkip.append(rNode.getId())
+
+        linksToSkip = []
+
+        for rLink in secondaryNetwork.iterRoadLinks():
+            if self.hasRoadLinkForId(rLink.getId()):
+                linksToSkip.append(rLink.getId())
+            if rLink.getStartNode().getId() in roadNodesToSkip:
+                linksToSkip.append(rLink.getId())
+            if rLink.getEndNode().getId() in roadNodesToSkip:
+                linksToSkip.append(rLink.getId())
+         
+        nodesToSkip = [node for node in roadNodesToSkip]
+        nodesToSkip.extend(centroidsToSkip)              
+        for node in secondaryNetwork.iterNodes():            
+            if node.getId() in nodesToSkip:
+                continue 
+            cNode = copy.copy(node) 
+            cNode._incomingLinks = []
+            cNode._outgoingLinks = []
+            self.addNode(cNode)
+
+        for link in secondaryNetwork.iterLinks():
+            if link.getId() in linksToSkip():
+                continue 
+            cLink = copy.copy(link)
+            cLink._startNode = self.getNodeForId(link._startNode.getId())
+            cLink._endNode = self.getNodeForId(link._endNode.getId())
+            if isinstance(link, RoadLink):                
+                cLink._outgoingMovements = []
+                cLink._incomingMovements = [] 
+            self.addLink(cLink) 
+
+        for link in secondaryNetwork.iterLinks():
+            if link.getId() in linksToSkip():
+                continue 
+            if isinstance(link, RoadLink):                
+                for mov in link.iterOutgoingMovements():
+                    cLink = self.getLinkForId(link.getId())
+                    cMov = copy.copy(mov)
+                    cMov._node = self.getNodeForId(mov._node.getId())
+                    cMov._incomingLink = self.getLinkForId(mov._incomingLink.getId())
+                    cMov._outgoingLink = self.getLinkForId(mov._outgoingLink.getId())
+
+                    cLink.addOutgoingMovement(cMov) 
+        
+
+
