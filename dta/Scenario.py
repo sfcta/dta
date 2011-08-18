@@ -108,3 +108,9 @@ class Scenario(object):
                            (str(eventTime), str(self.endTime)))
         
         self.events[eventTime] = eventDescription
+
+    def iterVehicleClassGroups(self):
+        """
+        Return an iterator to the vehicle class group items
+        """
+        return self.vehicleClassGroups.itervalues() 

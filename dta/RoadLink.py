@@ -197,7 +197,6 @@ class RoadLink(Link):
         Return the  length of the link 
         """
         return self._length 
-
         
     def getCenterLine(self):
         """
@@ -254,6 +253,12 @@ class RoadLink(Link):
         raise DtaError("RoadLink from %d to %d does not have a movement to node %d" % (self._startNode.getId(),
                                                                                        self._endNode.getId(),
                                                                                        nodeId))
+    def setNumLanes(self, numLanes):
+        """
+        Sets the number of lanes to the given value
+        """ 
+        self._numLanes = numLanes 
+    
 def lineSegmentsCross(p1, p2, p3, p4):
     """
     Helper function that determines if line segments (p1,p2) and (p3,p4) intersect. 

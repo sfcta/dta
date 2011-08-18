@@ -300,7 +300,7 @@ class Node(object):
         """
         return len(self._incomingLinks)
 
-    def getNumOutoingLinks(self):
+    def getNumOutgoingLinks(self):
         """
         Retruns the number of outoing links
         """
@@ -328,3 +328,67 @@ class Node(object):
         """
         return (len(self._incomingLinks), len(self._outgoingLinks))
         
+    def isIntersection(self):
+        """
+        Return True if this node is an intersection
+        """
+        return not self.isJunction() 
+
+    def isJunction(self):
+        """
+        Return True if this node is a junction. 
+        """
+        if self.getNumOutgoingLinks() == 1 or self.getNumIncomingLinks() == 1:
+            return True
+        if self.isShapePoint():
+            return True 
+
+        return False 
+
+    def isShapePoint(self, countRoadNodesOnly=False, checkAttributes=False):
+        """
+        Return True if the node is a shape point. If countRoadNodesOnly is True
+        the method will count only RoadLinks attached to this Node. If checkAttributes
+        is True the method will check that all the link attributes on either side of 
+        the shapepoint do not change (except link length). 
+        """
+
+        if not countRoadNodesOnly:
+            if self.getNumAdjacentLinks() == 4 and self.getNumAdjacentNodes() == 2:
+                return True
+            if self.getNumAdjacentLinks() == 2 and self.getNumAdjacentNodes() == 2:
+                return True
+        else: 
+            if self.getNumAdjacentRoadLinks() == 4 and self.getNumAdjacentRoadNodes() == 2:
+                return True
+            if self.getNumAdjacentRoadLinks() == 2 and self.getNumAdjacentRoadNodes() == 2:
+                return True
+ 
+        return False
+
+#TODO: finish this once you decide to remove the shapepoints of the network 
+#        checkAttributes = ["_facilityType", "_freeflowSpeed", "_effectiveLengthFactor", "_responseTimeFactor",
+#                           "_numLanes", "_roundAbout", "_level", "_lanePermissions"]                         
+#        if result and checkAttributes:
+#
+#            attributesToCheck = []
+#            for attrName in dir(self):
+#                if attrName.startswith("_"):
+#                    attr = getattr(self, attrName)
+#                if isinstance(attr, (int, float, str)):
+#                    attributesToCheck.append(attrName) 
+#                                  
+#            
+#        return result 
+#        
+#                if checkAttributes: 
+#                    for ilink in self.iterIncomingLinks():
+#                        for mov in ilink.iterOutgoingMovements():
+#                            if mov.isUTurn():
+#                                continue
+#                            oLink = mov.getOutgoingLink() 
+#
+#                            for attrName in checkAttributes():
+#                                if getattr(ilink, attrName) != getattr(olink, attrName):
+#                                    return False
+#                    return True 

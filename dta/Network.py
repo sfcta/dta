@@ -428,7 +428,11 @@ class Network(object):
         #TODO: do you want to update the maxIds? 
 
     def splitLink(self, linkToSplit):
-
+        """
+        Split the input link in half. The two new links have the 
+        attributes of the input link. If there is a link in the 
+        opposing direction then split that too. 
+        """ 
         if isinstance(linkToSplit, VirtualLink):
             raise DtaError("Virtual link %s cannot be split" % linkToSplit.id)
         if isinstance(linkToSplit, Connector):
@@ -444,84 +448,108 @@ class Network(object):
 
         self.addNode(midNode)
 
-        newLink1 = RoadLink(self._maxLinkId + 1,
-                            linkToSplit.getStartNode(), 
-                            midNode, 
-                            None,
-                            linkToSplit._facilityType,
-                            linkToSplit._length / 2.0,
-                            linkToSplit._freeflowSpeed,
-                            linkToSplit._effectiveLengthFactor,
-                            linkToSplit._responseTimeFactor,
-                            linkToSplit._numLanes,
-                            linkToSplit._roundAbout,
-                            linkToSplit._level, 
-                            ""
-                            )
+        def _split(linkToSplit, midNode): 
 
-        self.addLink(newLink1)
- 
-        newLink2 = RoadLink(self._maxLinkId + 2,
-                            midNode, 
-                            linkToSplit.getEndNode(), 
-                            None,
-                            linkToSplit._facilityType,
-                            linkToSplit._length / 2.0,
-                            linkToSplit._freeflowSpeed,
-                            linkToSplit._effectiveLengthFactor,
-                            linkToSplit._responseTimeFactor,
-                            linkToSplit._numLanes,
-                            linkToSplit._roundAbout,
-                            linkToSplit._level,
-                            ""                            
-                            )
+            newLink1 = RoadLink(self._maxLinkId + 1,
+                                linkToSplit.getStartNode(), 
+                                midNode, 
+                                None,
+                                linkToSplit._facilityType,
+                                linkToSplit._length / 2.0,
+                                linkToSplit._freeflowSpeed,
+                                linkToSplit._effectiveLengthFactor,
+                                linkToSplit._responseTimeFactor,
+                                linkToSplit._numLanes,
+                                linkToSplit._roundAbout,
+                                linkToSplit._level, 
+                                ""
+                                )
 
-        self.addLink(newLink2) 
+            self.addLink(newLink1)
 
-        for inMov in linkToSplit.iterIncomingMovements():
-            
-            newMovement = Movement(linkToSplit.getStartNode(),
-                                   inMov.getIncomingLink(),
+            newLink2 = RoadLink(self._maxLinkId + 1,
+                                midNode, 
+                                linkToSplit.getEndNode(), 
+                                None,
+                                linkToSplit._facilityType,
+                                linkToSplit._length / 2.0,
+                                linkToSplit._freeflowSpeed,
+                                linkToSplit._effectiveLengthFactor,
+                                linkToSplit._responseTimeFactor,
+                                linkToSplit._numLanes,
+                                linkToSplit._roundAbout,
+                                linkToSplit._level,
+                                ""                            
+                                )
+
+            self.addLink(newLink2) 
+
+            for inMov in linkToSplit.iterIncomingMovements():
+
+                newMovement = Movement(linkToSplit.getStartNode(),
+                                       inMov.getIncomingLink(),
+                                       newLink1,
+                                       inMov._freeflowSpeed,
+                                       inMov._permission,
+                                       inMov._numLanes,
+                                       inMov._incomingLane,
+                                       inMov._outgoingLane,
+                                       inMov._followupTime)
+
+
+                inMov.getIncomingLink().addOutgoingMovement(newMovement)
+
+            for outMov in linkToSplit.iterOutgoingMovements():
+
+                newMovement = Movement(linkToSplit.getEndNode(),
+                                       newLink2,
+                                       outMov.getOutgoingLink(),
+                                       outMov._freeflowSpeed,
+                                       outMov._permission,
+                                       outMov._numLanes,
+                                       outMov._incomingLane,
+                                       outMov._outgoingLane,
+                                       outMov._followupTime)
+
+                newLink2.addOutgoingMovement(newMovement)
+
+            newMovement = Movement(midNode, 
                                    newLink1,
-                                   inMov._freeflowSpeed,
-                                   inMov._permission,
-                                   inMov._numLanes,
-                                   inMov._incomingLane,
-                                   inMov._outgoingLane,
-                                   inMov._followupTime)
-        
-       
-            inMov.getIncomingLink().addOutgoingMovement(newMovement)
+                                   newLink2,                               
+                                   newLink1._freeflowSpeed,
+                                   VehicleClassGroup("All", "*", "#ffff00"), 
+                                   newLink1._numLanes,
+                                   0,
+                                   newLink1._numLanes,
+                                   1.0
+                                   )                              
+            newLink1.addOutgoingMovement(newMovement)
 
-
-        for outMov in linkToSplit.iterOutgoingMovements():
+        _split(linkToSplit, midNode) 
+        if self.hasLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId()):
+            linkToSplit2 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId())
+            _split(linkToSplit2, midNode)
+            self.removeLink(linkToSplit2)
             
-            newMovement = Movement(linkToSplit.getEndNode(),
-                                   newLink2,
-                                   outMov.getOutgoingLink(),
-                                   outMov._freeflowSpeed,
-                                   outMov._permission,
-                                   outMov._numLanes,
-                                   outMov._incomingLane,
-                                   outMov._outgoingLane,
-                                   outMov._followupTime)
+            link1 = self.getLinkForNodeIdPair(linkToSplit.getStartNode().getId(), 
+                                             midNode.getId())
+            link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
+            prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
+                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+            link1.addOutgoingMovement(prohibitedMovement)
 
-            newLink2.addOutgoingMovement(newMovement)
+            link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
+                                             midNode.getId())
+            link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getEndNode().getId())
+            prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
+                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+            
+            link1.addOutgoingMovement(prohibitedMovement)
 
-        #TODO: you have to update the vehClassGroup with defaults
-        newMovement = Movement(midNode, 
-                               newLink1,
-                               newLink2,                               
-                               newLink1._freeflowSpeed,
-                               VehicleClassGroup("All", "*", "#ffff00"), 
-                               newLink1._numLanes,
-                               0,
-                               newLink1._numLanes,
-                               1.0
-                               )                              
-        newLink1.addOutgoingMovement(newMovement)
+            
+
         self.removeLink(linkToSplit)
-        
+                      
         return midNode 
 
     def getNumConnectors(self):

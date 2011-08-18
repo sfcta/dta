@@ -31,6 +31,7 @@ from .RoadLink import RoadLink, lineSegmentsCross
 from .RoadNode import RoadNode
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
+from .VehicleClassGroup import VehicleClassGroup
 
 class DynameqNetwork(Network):
     """
@@ -765,6 +766,52 @@ class DynameqNetwork(Network):
                 except DtaError, e:
                     DtaLogger.error("%s" % str(e))
 
+        #fix the number of lanes on the new connectors
+        for node in self.iterNodes():
+
+            if not node.isRoadNode():
+                continue 
+            if not node.hasConnector():
+                continue 
+            if node.isIntersection():                
+                for link in node.iterAdjacentLinks():
+                    if link.isConnector():
+                        link.setNumLanes(1) 
+
+            #remove the connector to connector movements
+            movementsToDelete = []
+            
+            #if sum([1 for link in node.iterAdjacentLinks() if link.isConnector()]):
+            #    pdb.set_trace() 
+            for ilink in node.iterIncomingLinks():                
+                for olink in node.iterOutgoingLinks():
+                    if ilink.isConnector() and olink.isConnector():
+                        prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
+                           self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                        ilink.addOutgoingMovement(prohibitedMovement) 
+                    else:
+                        if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
+                            
+                            allowedMovement = Movement.simpleMovementFactory(ilink, olink,
+                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL))
+                            ilink.addOutgoingMovement(allowedMovement)
+                    
+#                for mov in ilink.iterOutgoingMovements():
+#                    if ilink.isConnector() and mov.getOutgoingLink().isConnector():
+#                        movementsToDelete.append(mov) 
+#            
+#            for mov in movementsToDelete:
+#                mov.getIncomingLink().removeOutgoingMovement(mov) 
+#                print "deleted movement", mov.getIncomingLink().getId(), mov.getOutgoingLink().getId() 
+                        
+                    
+
+                
+
+                
+
+
+
     def removeCentroidConnectorFromIntersection(self, roadNode, connector):
         """Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
@@ -934,8 +981,9 @@ def getCandidateLinks(node, connector):
             if lineSegmentsCross(vNode, middlePoint, p5, p6):
                 break
         else:
-            result.append(link1)             
-    return result 
+            result.append(link1)         
+
+    return  sorted(result, key = lambda l:l.euclideanLength(), reverse=True) # key=lambda l:l.getOtherEnd(node).getNumAdjacentLinks())
                     
         
 def getMidPoint(p1, p2):

@@ -27,6 +27,19 @@ class Movement(object):
     """
     Base class that represents a movement.
     """
+    @classmethod
+    def simpleMovementFactory(cls, incomingLink, outgoingLink, vehicleClassGroup):
+        """
+        Return a movement connecting the input links with the given permissions 
+        defined by the vehicle class group.
+        """
+        return Movement(incomingLink.getEndNode(), 
+                        incomingLink, 
+                        outgoingLink, 
+                        incomingLink._freeflowSpeed, 
+                        vehicleClassGroup
+                        )
+                        
         
     def __init__(self, node, incomingLink, outgoingLink, freeflowSpeed, vehicleClassGroup,
                  numLanes=None, incomingLane=None, outgoingLane=None, followupTime=0):

@@ -20,7 +20,10 @@ class VehicleClassGroup:
     """
     Represents a group (or a set) of VehicleClasses, which are the classNames in :py:class:`VehicleType`.
     """
-    
+    ALL = "All"
+    PROHIBITED = "Prohibited"
+    TRANSIT = "Transit" 
+
     def __init__(self, name, classDefinitionString, colorCode):
         """
         Constructor.

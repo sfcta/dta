@@ -104,7 +104,7 @@ def simpleMovementFactory(incomingLink, outgoingLink):
 def getSimpleNet():
 
 
-    sc = DynameqScenario(datetime.time(0, 0, 0), datetime.time(1, 0, 0))
+    sc = getTestScenario() 
     net = DynameqNetwork(sc)
     
     v1 = simpleRoadNodeFactory(1, 0,   100)
@@ -349,7 +349,7 @@ class TestNetwork(object):
         net.splitLink(l) 
 
         assert net.getNumNodes() == 9
-        assert net.getNumLinks() == 15
+        assert net.getNumLinks() == 16
 
         link1 = net.getLinkForNodeIdPair(1, 9) 
         link2 = net.getLinkForNodeIdPair(9, 5) 
@@ -516,7 +516,7 @@ class TestNetwork(object):
         assert not net.hasLinkForNodeIdPair(9, 5) 
         #but a connector with the same id is attached to newly created midblock 
         assert net.hasLinkForId(15) 
-        assert net.getNumLinks() == 17  #one more link than before
+        assert net.getNumLinks() == 18  #one more link than before
         assert net.getNumNodes() == 10  #one more node than before 
 
         assert n5.hasConnector()         #there is still one connector at intersection 5 
@@ -528,7 +528,7 @@ class TestNetwork(object):
         assert not net.hasLinkForNodeIdPair(5, 9)
         #a new connector is there with the same id 
         assert net.hasLinkForId(16)
-        assert net.getNumLinks() == 17  #same links as before the algorithm picked the newly created block 
+        assert net.getNumLinks() == 18  #same links as before the algorithm picked the newly created block 
         assert net.getNumNodes() == 10  #same nodes as before. No new link was split
         
     def test_removeAllCentroidConnectorsFromIntersections(self):
@@ -562,7 +562,7 @@ class TestNetwork(object):
         net.removeCentroidConnectorsFromIntersections() 
         
         assert net.getNumNodes() == 10
-        assert net.getNumLinks() == 17
+        assert net.getNumLinks() == 18
 
         #the connectors have been removed from the intersection 
         assert not net.hasLinkForNodeIdPair(9, 5) 
@@ -572,8 +572,6 @@ class TestNetwork(object):
         assert net.hasLinkForId(15) 
         assert net.hasLinkForId(16)
 
-        assert net.getNumLinks() == 17 
-        assert net.getNumNodes() == 10  
 
         assert not n5.hasConnector()         #there is no connector at intersection 5
 
@@ -716,4 +714,18 @@ class TestNetwork(object):
 
         net.write("test", "crossHair3") 
         
+    def test_isJunction(self):
+        
+        net = getTestNet() 
+        assert net.getNodeForId(24473).isJunction() 
+        assert net.getNodeForId(26514).isIntersection()
+        assert net.getNodeForId(24472).isIntersection() 
+        assert net.getNodeForId(53085).isIntersection() 
 
+    def test_Scenario(self):
+        
+        sc = getTestScenario() 
+
+        for v in sc.iterVehicleClassGroups():
+            print v.name 
+        
