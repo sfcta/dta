@@ -133,7 +133,6 @@ class Node(object):
             position += 1
             
         self._outgoingLinks.insert(position, link)
-        # print self._outgoingLinks
         
     def _removeOutgoingLink(self, link):
         """

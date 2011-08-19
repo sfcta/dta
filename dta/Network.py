@@ -577,43 +577,32 @@ class Network(object):
         with the same id. Same with links
         """ 
 
-        centroidsToSkip = []
+        nodesToSkip = []
         linksToSkip = []
 
-        for sCentroid in secondaryNetwork.iterCentroids():
+        #first find the common centroids 
+        for node in secondaryNetwork.iterNodes():
 
-            if self.hasCentroidForId(sCentroid.getId()):
-                centroidsToSkip.append(sCentroid.getId())
-                for vLink in sCentroid.iterAdjacentLinks():
-                    linksToSkip.append(vLink.getId())
+            if node.isCentroid():
+                if self.hasNodeForId(node.getId()):
+                    nodesToSkip.append(node.getId())
+                    for vLink in node.iterAdjacentLinks():
+                        linksToSkip.append(vLink.getId())
+                    nodesToSkip.append(vLink.getOtherEnd(node).getId())                        
                     for cLink in vLink.iterAdjacentLinks():
                         linksToSkip.append(cLink.getId())
+            else:
+                if self.hasNodeForId(node.getId()):
+                    nodesToSkip.append(node.getId())
 
-            if self.hasRoadNodeForId(sCentroid.getId()):
-                centroidsToSkip.append(sCentroid.getId())
-                for vLink in sCentroid.iterAdjacentLinks():
-                    linksToSkip.append(vLink.getId())
-                    for cLink in vLink.iterAdjacentLinks():
-                        linksToSkip.append(cLink.getId())
-        
-            
-        roadNodesToSkip = []
-        for rNode in secondaryNetwork.iterRoadNodes():            
-            if self.hasRoadNodeForId(rNode.getId()):
-                roadNodesToSkip.append(rNode.getId())
-
-        linksToSkip = []
-
-        for rLink in secondaryNetwork.iterRoadLinks():
-            if self.hasRoadLinkForId(rLink.getId()):
-                linksToSkip.append(rLink.getId())
-            if rLink.getStartNode().getId() in roadNodesToSkip:
-                linksToSkip.append(rLink.getId())
-            if rLink.getEndNode().getId() in roadNodesToSkip:
-                linksToSkip.append(rLink.getId())
+        for link in secondaryNetwork.iterLinks():
+            if self.hasLinkForId(link.getId()):
+                linksToSkip.append(link.getId())
+            if link.getStartNode().getId() in nodesToSkip:
+                linksToSkip.append(link.getId())
+            if link.getEndNode().getId() in nodesToSkip:
+                linksToSkip.append(link.getId())
          
-        nodesToSkip = [node for node in roadNodesToSkip]
-        nodesToSkip.extend(centroidsToSkip)              
         for node in secondaryNetwork.iterNodes():            
             if node.getId() in nodesToSkip:
                 continue 
@@ -623,7 +612,7 @@ class Network(object):
             self.addNode(cNode)
 
         for link in secondaryNetwork.iterLinks():
-            if link.getId() in linksToSkip():
+            if link.getId() in linksToSkip:
                 continue 
             cLink = copy.copy(link)
             cLink._startNode = self.getNodeForId(link._startNode.getId())
@@ -634,9 +623,9 @@ class Network(object):
             self.addLink(cLink) 
 
         for link in secondaryNetwork.iterLinks():
-            if link.getId() in linksToSkip():
-                continue 
-            if isinstance(link, RoadLink):                
+            if link.getId() in linksToSkip:
+                continue
+            if link.isRoadLink() or link.isConnector():
                 for mov in link.iterOutgoingMovements():
                     cLink = self.getLinkForId(link.getId())
                     cMov = copy.copy(mov)
