@@ -71,7 +71,7 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.__init__" title="dta.DynameqNetwork.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
 </tr>
 <tr><td><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.addCentroid</span></tt></td>
 <td></td>
@@ -118,10 +118,12 @@ and that the id is not already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.DynameqNetwork.copy">
-<tt class="descname">copy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the contents of the originNetwork into self (Nodes and Links and Movements
-, not the scenario).</p>
+<dt id="dta.DynameqNetwork.deepcopy">
+<tt class="descname">deepcopy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the contents of the originNetwork by creating copies of all its 
+constituent elements into self (Nodes and Links and Movements
+, not the scenario). If the originNetwork contains an element 
+with an already existing id this method will throw an exception.</p>
 </dd></dl>
 
 <dl class="method">
@@ -213,10 +215,12 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes">
-<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><em>startVirtualNodeId=None</em>, <em>startVirtualLinkId=None</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
 <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> nodes and <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> objects.</p>
 <img alt="../_images/addVirtualNode_before_after6.png" src="../_images/addVirtualNode_before_after6.png" style="height: 300px;" />
+<p>If defined, the virtual nodes that will be added will begin from startVirtualNodeId and the 
+virtual links from startVirtualLinkId</p>
 </dd></dl>
 
 <dl class="method">
@@ -268,6 +272,14 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.mergeSecondaryNetwork">
+<tt class="descname">mergeSecondaryNetwork</tt><big>(</big><em>secondaryNetwork</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.mergeSecondaryNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will create copies of all the elements of the 
+secondary network that do not exist in the current network 
+and add them to the current network.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.read">
 <tt class="descname">read</tt><big>(</big><em>dir</em>, <em>file_prefix</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the network in the given <em>dir</em> with the given <em>file_prefix</em>.</p>
@@ -278,14 +290,19 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <tt class="descname">removeCentroidConnectorFromIntersection</tt><big>(</big><em>roadNode</em>, <em>connector</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeCentroidConnectorFromIntersection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the input connector for an intersection and attach it to a midblock 
 location. If a midblock location does does not exist a RoadLink close
-to the connector is split and the connector is attached to the new 
+to the connector is split in half and the connector is attached to the new 
 midblock location</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.removeCentroidConnectorsFromIntersections">
 <tt class="descname">removeCentroidConnectorsFromIntersections</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeCentroidConnectorsFromIntersections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove centroid connectors from intersections and attach them to midblock locations</p>
+<dd><p>Remove centroid connectors from intersections and attach them to midblock locations.
+If there is not a node defining a midblock location the algorithm will split the 
+relevant links (in both directions) and attach the connector to the newly 
+created node.</p>
+<img alt="../_images/removeCentroidConnectors12.png" src="../_images/removeCentroidConnectors12.png" style="height: 300px;" />
+<img alt="../_images/removeCentroidConnectors22.png" src="../_images/removeCentroidConnectors22.png" style="height: 300px;" />
 </dd></dl>
 
 <dl class="method">
@@ -313,7 +330,10 @@ tolerance = tolerance for matching nodes in two databases in feet (5 ft is appro
 <dl class="method">
 <dt id="dta.DynameqNetwork.splitLink">
 <tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.splitLink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Split the input link in half. The two new links have the 
+attributes of the input link. If there is a link in the 
+opposing direction then split that too.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.write">

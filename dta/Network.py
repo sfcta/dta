@@ -69,10 +69,12 @@ class Network(object):
     def __del__(self):
         pass
     
-    def copy(self, originNetwork):
+    def deepcopy(self, originNetwork):
         """
-        Copies the contents of the originNetwork into self (Nodes and Links and Movements
-        , not the scenario).
+        Copies the contents of the originNetwork by creating copies of all its 
+        constituent elements into self (Nodes and Links and Movements
+        , not the scenario). If the originNetwork contains an element 
+        with an already existing id this method will throw an exception. 
         """
         self._maxLinkId = originNetwork._maxLinkId
         self._maxNodeId = originNetwork._maxNodeId
@@ -174,21 +176,17 @@ class Network(object):
         if not isinstance(newLink, Link):
             raise DtaError("Network.addLink called on a non-Link: %s" % str(newLink))
 
-        if newLink.id in self._linksById:
-            raise DtaError("Link with id %s already exists in the network" % newLink.id)
+        if newLink.getId() in self._linksById:
+            raise DtaError("Link with id %s already exists in the network" % newLink.getId())
         if (newLink.getStartNode().getId(), newLink.getEndNode().getId()) in self._linksByNodeIdPair:
             raise DtaError("Link for nodes (%d,%d) already exists in the network" % 
                            (newLink.getStartNode().getId(), newLink.getEndNode().getId()))
         
-        self._linksById[newLink.id] = newLink
+        self._linksById[newLink.getId()] = newLink
         self._linksByNodeIdPair[(newLink.getStartNode().getId(), newLink.getEndNode().getId())] = newLink
         
-        if newLink.id > self._maxLinkId: self._maxLinkId = newLink.id
+        if newLink.getId() > self._maxLinkId: self._maxLinkId = newLink.getId()
         
-        #newLink.updateNodesAdjacencyLists()
-        #TODO: Ok I am accessing the internals of the startNode so this is not OO
-        #but is there a better way? If C++ we would do a friend function.
-        #do you think there is a better way? 
         newLink.getStartNode()._addOutgoingLink(newLink)
         newLink.getEndNode()._addIncomingLink(newLink)
 
@@ -404,7 +402,7 @@ class Network(object):
         linkToRemove.getStartNode()._removeOutgoingLink(linkToRemove)
         linkToRemove.getEndNode()._removeIncomingLink(linkToRemove)
 
-        del self._linksById[linkToRemove.id]
+        del self._linksById[linkToRemove.getId()]
         del self._linksByNodeIdPair[linkToRemove.getStartNode().getId(),
                                 linkToRemove.getEndNode().getId()]
         #TODO: do you want to update the maxIds?
@@ -434,9 +432,9 @@ class Network(object):
         opposing direction then split that too. 
         """ 
         if isinstance(linkToSplit, VirtualLink):
-            raise DtaError("Virtual link %s cannot be split" % linkToSplit.id)
+            raise DtaError("Virtual link %s cannot be split" % linkToSplit.getId())
         if isinstance(linkToSplit, Connector):
-            raise DtaError("Connector %s cannot be split" % linkToSplit.id)
+            raise DtaError("Connector %s cannot be split" % linkToSplit.getId())
 
         midX = (linkToSplit.getStartNode().getX() + linkToSplit.getEndNode().getX()) / 2.0
         midY = (linkToSplit.getStartNode().getY() + linkToSplit.getEndNode().getY()) / 2.0
@@ -572,11 +570,10 @@ class Network(object):
         
     def mergeSecondaryNetwork(self, secondaryNetwork):
         """
-        This method will add all the nodes of the secondary network 
-        to the current network unless there is a conflicting node
-        with the same id. Same with links
+        This method will create copies of all the elements of the 
+        secondary network that do not exist in the current network 
+        and add them to the current network. 
         """ 
-
         nodesToSkip = []
         linksToSkip = []
 

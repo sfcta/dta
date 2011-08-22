@@ -16,7 +16,6 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import math
 from itertools import chain 
 from .DtaError import DtaError
 
@@ -208,14 +207,6 @@ class Node(object):
                 return True
         return False
             
-    def _removeIncomingLink(self, link):
-        """
-        Simple removal.
-        """
-        if link not in self._incomingLinks:
-            raise DtaError("Node.removeIncomingLink called for link not in incoming links list: %#s" % str(link))
-        self._incomingLinks.remove(link)
-
     def getNumAdjacentLinks(self):
         """
         Return the number of links adjacent to this node (either incoming or outgoing) 
@@ -346,12 +337,18 @@ class Node(object):
 
     def isShapePoint(self, countRoadNodesOnly=False, checkAttributes=False):
         """
-        Return True if the node is a shape point. If countRoadNodesOnly is True
-        the method will count only RoadLinks attached to this Node. If checkAttributes
+        Return True if the node is a shape point (e.g. Node 51546 in the 
+        following graph). 
+        If countRoadNodesOnly is True the method will count only RoadLinks 
+        attached to this Node and will disregard an connectors. If checkAttributes
         is True the method will check that all the link attributes on either side of 
         the shapepoint do not change (except link length). 
+        
+        .. image:: /images/shapePoint.png
+           :height: 300px
+           
         """
-
+        
         if not countRoadNodesOnly:
             if self.getNumAdjacentLinks() == 4 and self.getNumAdjacentNodes() == 2:
                 return True

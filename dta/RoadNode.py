@@ -17,6 +17,8 @@ __license__     = """
 """
 from .DtaError import DtaError
 from .Node import Node
+from .utils import lineSegmentsCross, getMidPoint
+
 
 class RoadNode(Node):
     """
@@ -117,4 +119,38 @@ class RoadNode(Node):
         Return True if this Node is a VirtualNode
         """
         return False
+    
+    def getCandidateLinksForSplitting(self, connector):
+        """
+        Return the closest links to the virtual node the connector
+        can be attached. Spitting or attaching the connector to 
+        any of the returned links will not result in overlapping links.      
+        """
+        
+        if self not in [connector.getStartNode(), connector.getEndNode()]:
+            raise DtaError("Node %d is not adjacent to connector %d" %
+                           (self.getId(), connector.getId())) 
+    
+        if connector.startIsRoadNode():
+            vNode = (connector.getEndNode().getX(), connector.getEndNode().getY())
+        else:
+            vNode = (connector.getStartNode().getX(), connector.getStartNode().getY())
+            
+        result = []
+        
+        for candidateLink in self.iterAdjacentRoadLinks():
+            candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
+            middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd) 
+            for everyOtherRoadLink in self.iterAdjacentRoadLinks():
+                if candidateLink == everyOtherRoadLink:
+                    continue 
+                otherLinkStart, otherLinkEnd = everyOtherRoadLink.getCenterLine() 
+                if lineSegmentsCross(vNode, middlePointAtCandidateLink, otherLinkStart, otherLinkEnd):
+                    break
+            else:
+                result.append(candidateLink)         
+        #finally sort the candidate links based on their length 
+        return  sorted(result, key = lambda l:l.euclideanLength(), reverse=True) 
+                        
+        
 

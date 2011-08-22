@@ -27,7 +27,7 @@ from .Logger import DtaLogger
 from .Movement import Movement
 from .Network import Network
 from .Node import Node
-from .RoadLink import RoadLink, lineSegmentsCross
+from .RoadLink import RoadLink
 from .RoadNode import RoadNode
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
@@ -383,7 +383,7 @@ class DynameqNetwork(Network):
         for link in chain(roadLinks, connectors):
 
             basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %13s\n" % 
-                                  (link.id,
+                                  (link.getId(),
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
                                    link._reverseAttachedLinkId if link._reverseAttachedLinkId else -1,
@@ -395,7 +395,7 @@ class DynameqNetwork(Network):
                                    link._numLanes,
                                    link._roundAbout,
                                    link._level,
-                                   '"' + (link.label if link.label else "") + '"'))
+                                   '"' + (link._label if link._label else "") + '"'))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
         
@@ -492,7 +492,7 @@ class DynameqNetwork(Network):
             raise
         except AssertionError:
             DtaLogger.warn("When creating Virtual Link from centroid %d to connector %d, different connector %d found" % 
-                           (centroidId, linkId, conn2.id))
+                           (centroidId, linkId, conn2.getId()))
             raise
             
         return vlink
@@ -512,7 +512,7 @@ class DynameqNetwork(Network):
             if not isinstance(link, VirtualLink): continue
             basefile_object.write("%13d %8d\n" %
                                   (link.getStartNode().getId() if isinstance(link.getStartNode(), Centroid) else link.getEndNode().getId(),
-                                   link.getAdjacentConnector().id))
+                                   link.getAdjacentConnector().getId()))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VIRTUAL_LINKS", basefile_object.name))
 
@@ -560,8 +560,8 @@ class DynameqNetwork(Network):
             for movement in self._linksById[linkId].iterOutgoingMovements():
                 basefile_object.write("%11d %10d %10d %12s %20s %5d %6d %7d %8s\n" %
                                       (movement._node.getId(),
-                                       movement.getIncomingLink().id,
-                                       movement._outgoingLink.id,
+                                       movement.getIncomingLink().getId(),
+                                       movement._outgoingLink.getId(),
                                        str(-1 if not movement._freeflowSpeed else movement._freeflowSpeed),
                                        movement._permission.name,
                                        -1 if not movement._numLanes else movement._numLanes,
@@ -752,7 +752,18 @@ class DynameqNetwork(Network):
 
     def removeCentroidConnectorsFromIntersections(self):
         """
-        Remove centroid connectors from intersections and attach them to midblock locations
+        Remove centroid connectors from intersections and attach them to midblock locations.
+        If there is not a node defining a midblock location the algorithm will split the 
+        relevant links (in both directions) and attach the connector to the newly 
+        created node.
+        
+        .. image:: /images/removeCentroidConnectors1.png
+           :height: 300px
+           
+        .. image:: /images/removeCentroidConnectors2.png
+           :height: 300px
+        
+        
         """
 
         allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]
@@ -784,8 +795,6 @@ class DynameqNetwork(Network):
             #remove the connector to connector movements
             movementsToDelete = []
             
-            #if sum([1 for link in node.iterAdjacentLinks() if link.isConnector()]):
-            #    pdb.set_trace() 
             for ilink in node.iterIncomingLinks():                
                 for olink in node.iterOutgoingLinks():
                     if ilink.isConnector() and olink.isConnector():
@@ -799,34 +808,23 @@ class DynameqNetwork(Network):
                                self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL))
                             ilink.addOutgoingMovement(allowedMovement)
                     
-#                for mov in ilink.iterOutgoingMovements():
-#                    if ilink.isConnector() and mov.getOutgoingLink().isConnector():
-#                        movementsToDelete.append(mov) 
-#            
-#            for mov in movementsToDelete:
-#                mov.getIncomingLink().removeOutgoingMovement(mov) 
-#                print "deleted movement", mov.getIncomingLink().getId(), mov.getOutgoingLink().getId() 
-                        
-                    
-
-                
-
-                
-
-
 
     def removeCentroidConnectorFromIntersection(self, roadNode, connector):
         """Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
-        to the connector is split and the connector is attached to the new 
+        to the connector is split in half and the connector is attached to the new 
         midblock location
         """
         if not isinstance(roadNode, RoadNode):
             raise DtaError("Input Node %d is not a RoadNode" % roadNode.getId())
         if not isinstance(connector, Connector):
             raise DtaError("Input Link %s is not a Connector" % connector.getId())
+        
+        if not roadNode.hasConnector():
+            raise DtaError("RoadNode %d does not have a connector attached to it"
+                           % roadNode.getId())
 
-        candidateLinks = getCandidateLinks(roadNode, connector)
+        candidateLinks = roadNode.getCandidateLinksForSplitting(connector)
 
         nodeToAttachConnector = None
 
@@ -944,56 +942,7 @@ class DynameqNetwork(Network):
                 yield link 
                 
 
-def getCandidateLinks(node, connector):
-    """
-    Return the closest links to the virtual node the connector
-    can be attached. Slitting or attaching the connector to 
-    any of the returned links will not result in overlapping links.
-    For example:
 
-     ----------    will become     ----------
-     |*      *|                   |    |    |
-     | *    * |                   |    |    |
-     |  *  *  |                   |    |    |
-     |   *    |                   |---------|
-     |  *  *  |                   |    |    | 
-     | *    * |                   |    |    |
-     |*      *|                   |    |    |
-     ----------                   ----------           
 
-    """
-    #TODO:consider associating this function to an object
-    if node not in [connector.getStartNode(), connector.getEndNode()]:
-        raise DtaError("Node %d is not adjacent to connector %d" %
-                       (node.getId(), connector.getId())) 
-
-    if connector.startIsRoadNode():
-        vNode = (connector.getEndNode().getX(), connector.getEndNode().getY())
-    else:
-        vNode = (connector.getStartNode().getX(), connector.getStartNode().getY())
-        
-    result = []
-    
-    for link1 in node.iterAdjacentRoadLinks():
-        p3, p4 = link1.getCenterLine()
-        middlePoint = getMidPoint(p3, p4) 
-        for link2 in node.iterAdjacentRoadLinks():
-            if link1 == link2:
-                continue 
-            p5, p6 = link2.getCenterLine() 
-            if lineSegmentsCross(vNode, middlePoint, p5, p6):
-                break
-        else:
-            result.append(link1)         
-
-    return  sorted(result, key = lambda l:l.euclideanLength(), reverse=True) # key=lambda l:l.getOtherEnd(node).getNumAdjacentLinks())
-                    
-        
-def getMidPoint(p1, p2):
-    """
-    Return the the point in the middle of p1 and p2 as a (x,y) tuple.
-    """
-    #TODO:consider associating this function to an object
-    return ((p1[0] + p2[0]) / 2.0, (p1[1] + p2[1]) / 2.0)
 
                     

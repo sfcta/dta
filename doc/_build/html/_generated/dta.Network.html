@@ -74,7 +74,7 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Network.__init__" title="dta.Network.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
 </tr>
 </tbody>
 </table>
@@ -106,10 +106,12 @@ and that the id is not already used; stores it.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Network.copy">
-<tt class="descname">copy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the contents of the originNetwork into self (Nodes and Links and Movements
-, not the scenario).</p>
+<dt id="dta.Network.deepcopy">
+<tt class="descname">deepcopy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the contents of the originNetwork by creating copies of all its 
+constituent elements into self (Nodes and Links and Movements
+, not the scenario). If the originNetwork contains an element 
+with an already existing id this method will throw an exception.</p>
 </dd></dl>
 
 <dl class="method">
@@ -201,10 +203,12 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 
 <dl class="method">
 <dt id="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes">
-<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><em>startVirtualNodeId=None</em>, <em>startVirtualLinkId=None</em><big>)</big><a class="headerlink" href="#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
 <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> nodes and <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> objects.</p>
 <img alt="../_images/addVirtualNode_before_after6.png" src="../_images/addVirtualNode_before_after6.png" style="height: 300px;" />
+<p>If defined, the virtual nodes that will be added will begin from startVirtualNodeId and the 
+virtual links from startVirtualLinkId</p>
 </dd></dl>
 
 <dl class="method">
@@ -217,6 +221,14 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dt id="dta.Network.iterNodes">
 <tt class="descname">iterNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the node collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.mergeSecondaryNetwork">
+<tt class="descname">mergeSecondaryNetwork</tt><big>(</big><em>secondaryNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.mergeSecondaryNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will create copies of all the elements of the 
+secondary network that do not exist in the current network 
+and add them to the current network.</p>
 </dd></dl>
 
 <dl class="method">
@@ -234,7 +246,10 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dl class="method">
 <dt id="dta.Network.splitLink">
 <tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em><big>)</big><a class="headerlink" href="#dta.Network.splitLink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Split the input link in half. The two new links have the 
+attributes of the input link. If there is a link in the 
+opposing direction then split that too.</p>
+</dd></dl>
 
 </dd></dl>
 

@@ -18,10 +18,10 @@ __license__     = """
 
 import pdb
 import nose.tools
+import math
 
 import os
 import datetime
-import math 
 from itertools import izip 
 
 from dta.Scenario import Scenario
@@ -29,7 +29,8 @@ from dta.DynameqScenario import DynameqScenario
 from dta.Network import Network
 from dta.Node import Node
 from dta.RoadNode import RoadNode
-from dta.RoadLink import RoadLink, lineSegmentsCross
+from dta.RoadLink import RoadLink
+from dta.Centroid import Centroid
 from dta.Link import Link
 from dta.Movement import Movement 
 from dta.VirtualNode import VirtualNode
@@ -37,8 +38,8 @@ from dta.Connector import Connector
 
 from dta.VehicleClassGroup import VehicleClassGroup
 from dta.DtaError import DtaError 
-from dta.DynameqNetwork import DynameqNetwork
-from dta.DynameqNetwork import *  
+from dta.DynameqNetwork import DynameqNetwork 
+from dta.utils import lineSegmentsCross
 
 
 def getTestScenario(): 
@@ -354,7 +355,6 @@ class TestNetwork(object):
         link1 = net.getLinkForNodeIdPair(1, 9) 
         link2 = net.getLinkForNodeIdPair(9, 5) 
 
-        link1.getNumOutgoingMovements() == 1
 
         assert link1.hasOutgoingMovement(5)
         assert link2.hasOutgoingMovement(2) 
@@ -478,12 +478,12 @@ class TestNetwork(object):
 
         assert n5.hasConnector()
 
-        clinks = getCandidateLinks(n5, con) 
+        clinks = n5.getCandidateLinksForSplitting(con) 
         assert len(clinks) == 2
         assert 2 in [link.getId() for link in clinks]
         assert 8 in [link.getId() for link in clinks]
 
-        clinks = getCandidateLinks(n5, con2) 
+        clinks = n5.getCandidateLinksForSplitting(con2) 
         assert len(clinks) == 2
         assert 2 in [link.getId() for link in clinks]
         assert 8 in [link.getId() for link in clinks]
@@ -654,7 +654,7 @@ class TestNetwork(object):
         
         sc = net1.getScenario() 
         net2 = DynameqNetwork(sc) 
-        net2.copy(net1)
+        net2.deepcopy(net1)
         
         link2_15 = net2.getLinkForNodeIdPair(1, 5) 
         assert link2_15._label == "123"
@@ -699,7 +699,7 @@ class TestNetwork(object):
                 
     def test_readWrite(self):
 
-        projectFolder = "/Users/michalis/Documents/workspace/dta/dev/test/"
+        projectFolder = os.path.join(os.path.dirname(__file__), '..', "test")
         prefix = 'test' 
 
         scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
@@ -725,7 +725,7 @@ class TestNetwork(object):
     def test_Scenario(self):
         
         sc = getTestScenario() 
-
-        for v in sc.iterVehicleClassGroups():
-            print v.name 
+        assert "All" in list(sc.name for sc in sc.iterVehicleClassGroups())
+        assert "Prohibited" in list(sc.name for sc in sc.iterVehicleClassGroups())
+ 
         

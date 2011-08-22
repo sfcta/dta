@@ -77,7 +77,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.VirtualNode.__init__" title="dta.VirtualNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
 </tr>
 <tr><td><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.addIncomingLink</span></tt></td>
 <td></td>
@@ -87,6 +87,13 @@
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="dta.VirtualNode.getCardinality">
+<tt class="descname">getCardinality</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getCardinality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pair of numbers representing the number of 
+incoming and outgoing links respectively</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.VirtualNode.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getId" title="Permalink to this definition">¶</a></dt>
@@ -136,8 +143,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.VirtualNode.getNumOutoingLinks">
-<tt class="descname">getNumOutoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getNumOutoingLinks" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.VirtualNode.getNumOutgoingLinks">
+<tt class="descname">getNumOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getNumOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retruns the number of outoing links</p>
 </dd></dl>
 
@@ -151,6 +158,12 @@
 <dt id="dta.VirtualNode.getY">
 <tt class="descname">getY</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the y-coordinate for this node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode.hasConnector">
+<tt class="descname">hasConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.hasConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a connector atached to the node.</p>
 </dd></dl>
 
 <dl class="method">
@@ -184,6 +197,18 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.VirtualNode.isIntersection">
+<tt class="descname">isIntersection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isIntersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this node is an intersection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode.isJunction">
+<tt class="descname">isJunction</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isJunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this node is a junction.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.VirtualNode.isRoadNode">
 <tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Node is a RoadNode.</p>
@@ -191,9 +216,14 @@
 
 <dl class="method">
 <dt id="dta.VirtualNode.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point. If countRoadNodesOnly is True
-the method will count only RoadLinks attached to this Node</p>
+<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em>, <em>checkAttributes=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
+following graph). 
+If countRoadNodesOnly is True the method will count only RoadLinks 
+attached to this Node and will disregard an connectors. If checkAttributes
+is True the method will check that all the link attributes on either side of 
+the shapepoint do not change (except link length).</p>
+<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 900px;" />
 </dd></dl>
 
 <dl class="method">

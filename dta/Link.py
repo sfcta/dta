@@ -28,7 +28,7 @@ class Link(object):
     #: Default label is an empty string
     DEFAULT_LABEL = ""
     
-    def __init__(self, id, startNode, endNode, label):
+    def __init__(self, id_, startNode, endNode, label):
         """
         Constructor.
         
@@ -37,11 +37,11 @@ class Link(object):
          * *label* is a string. If None passed, will use default.
          
         """ 
-        self.id    = id     # integer id
+        self._id    = id_     # integer id
         if label:   
-            self.label = label
+            self._label = label
         else:
-            self.label = Link.DEFAULT_LABEL
+            self._label = Link.DEFAULT_LABEL
         
         if not isinstance(startNode, Node):
             raise DtaError("Initializing Link with non-Node startNode: %s" % str(startNode))
@@ -107,13 +107,13 @@ class Link(object):
         elif self._endNode == node:
             return self._startNode 
         else:
-            raise DtaError("Link %d does not have end node %s" % (Link.getId(),
+            raise DtaError("Link %d does not have end node %d" % (Link.getId(),
                                                                       node.getId()))
 
     def getId(self):
         """
         Return the link id
         """
-        return self.id
+        return self._id
 
 

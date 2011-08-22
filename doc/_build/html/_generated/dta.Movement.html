@@ -84,7 +84,7 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Movement.__init__" title="dta.Movement.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getIncomingLink" title="dta.Movement.getIncomingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getIncomingLink</span></tt></a></td>
 <td></td>
@@ -131,6 +131,13 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <dt id="dta.Movement.setCountsFromCountDracula">
 <tt class="descname">setCountsFromCountDracula</tt><big>(</big><em>countsListFromCountDracula</em><big>)</big><a class="headerlink" href="#dta.Movement.setCountsFromCountDracula" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inserts the countlist</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="dta.Movement.simpleMovementFactory">
+<em class="property">classmethod </em><tt class="descname">simpleMovementFactory</tt><big>(</big><em>incomingLink</em>, <em>outgoingLink</em>, <em>vehicleClassGroup</em><big>)</big><a class="headerlink" href="#dta.Movement.simpleMovementFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a movement connecting the input links with the given permissions 
+defined by the vehicle class group.</p>
 </dd></dl>
 
 </dd></dl>

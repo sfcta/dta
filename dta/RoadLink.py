@@ -19,7 +19,6 @@ __license__     = """
 from .DtaError import DtaError
 from .Link import Link
 from .Movement import Movement
-from .Node import Node
 from .VehicleClassGroup import VehicleClassGroup
 
 class RoadLink(Link):
@@ -74,7 +73,6 @@ class RoadLink(Link):
         else:
             self._level                 = RoadLink.DEFAULT_LEVEL
 
-        self._label                     = label
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements
         self._incomingMovements         = []  #: list of incoming Movements
@@ -168,7 +166,8 @@ class RoadLink(Link):
         Delete the input movement
         """
         if not isinstance(movementToRemove, Movement):
-            raise DtaError("RoadLink %s deleteOutgoingMovement() called with invalid movement %s" % str(movement))
+            raise DtaError("RoadLink %s deleteOutgoingMovement() "
+                           "called with invalid movement %s" % str(movementToRemove))
         
         if movementToRemove.getIncomingLink() != self:
             raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
@@ -259,34 +258,7 @@ class RoadLink(Link):
         """ 
         self._numLanes = numLanes 
     
-def lineSegmentsCross(p1, p2, p3, p4):
-    """
-    Helper function that determines if line segments (p1,p2) and (p3,p4) intersect. 
-    If so it returns True, otherwise False. A point is defined as the tuple (x, y)
-    """
-    
-    def crossProduct(pl, pm):
-        """Return the cross product of two points pl and pm 
-        each of them defined as a tuple (x, y)
-        """ 
-        return pl[0]*pm[1] - pm[0]*pl[1]
 
-
-    def direction(pi, pj, pk):
-        
-        return crossProduct((pk[0] - pi[0], pk[1] - pi[1]),
-                            (pj[0] - pi[0], pj[1] - pi[1])) 
-
-    d1 = direction(p3, p4, p1)
-    d2 = direction(p3, p4, p2)
-    d3 = direction(p1, p2, p3)
-    d4 = direction(p1, p2, p4) 
-
-    if ((d1 > 0 and d2 < 0) or (d1 < 0 and d2 > 0)) and \
-            ((d3 > 0 and d4 < 0) or (d3 < 0 and d4 > 0)):
-        return True
-    else:
-        return False
     
 
         
