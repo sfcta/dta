@@ -42,11 +42,53 @@ class TestLink(object):
 
         net = getTestNet()
         
-        for node in net.iterNodes():
+
+        link1 = net.getLinkForId(2221)
+        link2 = net.getLinkForId(902480) 
+
+                             
+        nodes = net.iterNodes()
+        #nodes = [net.getNodeForId(2085)]
+
+        for node in nodes:
             if not node.isRoadNode():
                 continue
+ 
+#            for link in node.iterAdjacentLinks():
+#                if node.isOverlapping(link, 2):
+#                    pass
 
-            for link1 in node.iterAdjacentLinks():
-                for link2 in node.iterAdjacentLinks():
+            for link1 in node.iterIncomingLinks():
+                for link2 in node.iterIncomingLinks():
+                    if link1 == link2:
+                        continue
+
+#                    if not (link1.isRoadLink() and link2.isRoadLink()):
+#                        continue
+                    
+                    if not link1.isConnector() and not link2.isConnector():
+                        continue 
+
                     if link1.getAcuteAngle(link2) <= 1:
-                        print link1.getId(), link2.getId(), link1.getAcuteAngle(link2)
+                        print node.getId(), link1.getId(), link2.getId(), link1.getAcuteAngle(link2)
+
+
+
+            for link1 in node.iterOutgoingLinks():
+                for link2 in node.iterOutgoingLinks():
+                    if link1 == link2:
+                        continue
+
+
+#                    if not (link1.isRoadLink() and link2.isRoadLink()):
+#                        continue
+
+                    if not link1.isConnector() and not link2.isConnector():
+                        continue 
+
+
+                    if link1.getAcuteAngle(link2) <= 1:
+                        print node.getId(), link1.getId(), link2.getId(), link1.getAcuteAngle(link2)
+
+
+        

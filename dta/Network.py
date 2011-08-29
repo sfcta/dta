@@ -15,6 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import pdb 
 import copy
 from .Centroid import Centroid
 from .Connector import Connector
@@ -354,6 +355,22 @@ class Network(object):
         """
         return self._linksById.itervalues()
 
+    def iterRoadLinks(self):
+        """
+        Return an iterator to all the RoadLinks in the network (that are not connectors)
+        """
+        for link in self.iterLinks():
+            if link.isRoadLink():
+                return link
+
+    def iterConnectors(self):
+        """
+        Return an iterator to all the connectors in the network
+        """
+        for link in self.iterLinks():
+            if link.isConnector():
+                yield link 
+
     def hasNodeForId(self, nodeId):
         """
         Return True if there is a node with the given id
@@ -388,6 +405,7 @@ class Network(object):
         """
         Remove the input link from the network
         """
+
         #remove all incoming and ougoing movements from the link 
         outMovsToRemove = [mov for mov in linkToRemove.iterOutgoingMovements()]
         inMovsToRemove = [mov for mov in linkToRemove.iterIncomingMovements()]
@@ -574,32 +592,66 @@ class Network(object):
         secondary network that do not exist in the current network 
         and add them to the current network. 
         """ 
-        nodesToSkip = []
-        linksToSkip = []
 
-        #first find the common centroids 
+        primaryNodesToDelete = set()
+        primaryLinksToDelete = set()
+
+        for node in self.iterNodes():
+            if node.isCentroid():
+                if secondaryNetwork.hasNodeForId(node.getId()) and secondaryNetwork.getNodeForId(node.getId()).isRoadNode():
+                    for vLink in node.iterAdjacentLinks():
+                        primaryLinksToDelete.add(vLink)
+
+                        try:
+                            cLink = vLink.getAdjacentConnector()
+                            linksToSkip.append(cLink) 
+                        except DtaError, e:
+                            DtaLogger.error(str(e))
+
+                        primaryNodesToDelete.add(vLink.getOtherEnd(node))
+
+
+        for link in primaryLinksToDelete:
+            self.removeLink(link)
+        for node in primaryNodesToDelete:
+            self.remove(node)
+            
+
+        nodesToSkip = set()
+        linksToSkip = set()
+
+        #first find the common centroids and skip all the links associated with them
         for node in secondaryNetwork.iterNodes():
+
+            if node.getId() == 286:
+                pdb.set_trace() 
 
             if node.isCentroid():
                 if self.hasNodeForId(node.getId()):
-                    nodesToSkip.append(node.getId())
+                    nodesToSkip.add(node.getId())
                     for vLink in node.iterAdjacentLinks():
-                        linksToSkip.append(vLink.getId())
-                    nodesToSkip.append(vLink.getOtherEnd(node).getId())                        
-                    for cLink in vLink.iterAdjacentLinks():
-                        linksToSkip.append(cLink.getId())
+                        linksToSkip.add(vLink.getId())                    
+                        cLink = vLink.getAdjacentConnector()
+                        linksToSkip.add(cLink) 
+                    nodesToSkip.add(vLink.getOtherEnd(node).getId())                        
             else:
                 if self.hasNodeForId(node.getId()):
-                    nodesToSkip.append(node.getId())
+                    nodesToSkip.add(node.getId())
 
+                
+        #links with common ids. 
         for link in secondaryNetwork.iterLinks():
             if self.hasLinkForId(link.getId()):
-                linksToSkip.append(link.getId())
+                linksToSkip.add(link.getId())
+                if link.isVirtualLink(): print "skipping virtual link", link.getId()
             if link.getStartNode().getId() in nodesToSkip:
-                linksToSkip.append(link.getId())
+                linksToSkip.add(link.getId())
+                if link.isVirtualLink(): print "skipping virtual link", link.getId()
             if link.getEndNode().getId() in nodesToSkip:
-                linksToSkip.append(link.getId())
+                linksToSkip.add(link.getId())
+                if link.isVirtualLink(): print "skipping virual link", link.getId()
          
+        #copy the secondary network 
         for node in secondaryNetwork.iterNodes():            
             if node.getId() in nodesToSkip:
                 continue 
@@ -627,10 +679,15 @@ class Network(object):
                     cLink = self.getLinkForId(link.getId())
                     cMov = copy.copy(mov)
                     cMov._node = self.getNodeForId(mov._node.getId())
-                    cMov._incomingLink = self.getLinkForId(mov._incomingLink.getId())
-                    cMov._outgoingLink = self.getLinkForId(mov._outgoingLink.getId())
 
-                    cLink.addOutgoingMovement(cMov) 
+                    try: 
+                        cMov._incomingLink = self.getLinkForId(mov._incomingLink.getId())                    
+                        cMov._outgoingLink = self.getLinkForId(mov._outgoingLink.getId())
+                        cLink.addOutgoingMovement(cMov) 
+                    except DtaError, e:
+                        DtaLogger.error(str(e))
+                        
+
         
 
 

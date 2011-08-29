@@ -15,6 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import math
 from .DtaError import DtaError
 from .Node import Node
 from .utils import lineSegmentsCross, getMidPoint
@@ -151,6 +152,91 @@ class RoadNode(Node):
                 result.append(candidateLink)         
         #finally sort the candidate links based on their length 
         return  sorted(result, key = lambda l:l.euclideanLength(), reverse=True) 
-                        
+                                
+
+    def getOrientation(self, point):
+        """
+        Return the angle from the North measured clockwise of the line 
+        segments that has its start the current node and its end the given point 
+        """
+        x1 = self.getX()
+        y1 = self.getY()
+        x2 = point[0]
+        y2 = point[1]
+
+        if x2 > x1 and y2 <= y1:   # 2nd quarter
+            orientation = math.atan(abs(y2-y1)/abs(x2-x1)) + math.pi/2
+        elif x2 <= x1 and y2 < y1:   # 3th quarter
+            orientation = math.atan(abs(x2-x1)/abs(y2-y1)) + math.pi
+        elif x2 < x1 and y2 >= y1:  # 4nd quarter 
+            orientation = math.atan(abs(y2-y1)/abs(x2-x1)) + 3 * math.pi/2
+        elif x2 >= x1 and y2 > y1:  # 1st quarter
+            orientation = math.atan(abs(x2-x1)/abs(y2-y1))
+        else:
+            orientation = 0.0
+
+        return orientation * 180.0 / math.pi
+
+
+    def _getMinAngle(self, node1, edge1, node2, edge2):
+            """
+            Returns a positive number in degrees always in [0, 180]
+            that corresponds to the
+            acute angle between the two edges
+            """
+            orientation1 = node1.getOrientation(edge1.getMidPoint())
+            orientation2 = node2.getOrientation(edge2.getMidPoint())
+            if orientation2 > orientation1:
+                angle1 = orientation2 - orientation1
+                angle2 = 360 - orientation2 + orientation1
+                assert min(angle1, angle2) > 0
+                return min(angle1, angle2)
+            elif orientation1 > orientation2:
+                angle1 = orientation1 - orientation2 
+                angle2 = 360 - orientation1 + orientation2
+                assert min(angle1, angle2) > 0
+                return min(angle1, angle2)
+            else:
+                return 0
+
+
+    def isOverlapping(self, link, minAngle):
+        """
+        Returns true if the minimum angle between the input link and any similarly 
+        oriented link of the intersection is less than the input minAngle
+        """
+        #outgoing link
+        if link.getEndNode() == self: 
+            for ilink in self.iterIncomingLinks():  
+                if ilink == link:
+                    continue
+                #if self._getMinAngle(self, ilink, self, link) < minAngle:
+                if link.getAcuteAngle(ilink) < minAngle:
+                    print self.getId(),link.getId(), ilink.getId()                     
+
+                    return True
+            else:
+                return False
+        #incoming link
+        elif link.getStartNode() == self:
+            for olink in self.iterOutgoingLinks():
+                if olink == link:
+                    continue
+                if link.getAcuteAngle(olink) < minAngle:
+                    
+#                if self._getMinAngle(self, olink, self, link) < minAngle:
+                    print self.getId(),link.getId(), olink.getId() 
+                    return True
+            else:
+                return False
+        else:
+            raise DtaError("Link %d is not adjacent to node %d" % (link.getId(), node.getId()))
+
+            
+        
         
 
+        
+
+
+        

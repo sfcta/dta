@@ -16,10 +16,13 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import math
+
 from .DtaError import DtaError
 from .Link import Link
 from .Movement import Movement
 from .VehicleClassGroup import VehicleClassGroup
+
 
 class RoadLink(Link):
     """
@@ -79,7 +82,7 @@ class RoadLink(Link):
         self._startShift                = None
         self._endShift                  = None
         self._shapePoints               = {}  #: sequenceNum -> (x,y)
-        self._centerline                = None
+        self._centerline                = self.getCenterLine()
     
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
@@ -202,28 +205,34 @@ class RoadLink(Link):
         Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
         representing the centerline. 
         """
-        if self._centerline:
-            return self._centerline
-        else: 
 
-            dx = self._endNode.getX() - self._startNode.getX()
-            dy = self._endNode.getY() - self._startNode.getY() 
+        dx = self._endNode.getX() - self._startNode.getX()
+        dy = self._endNode.getY() - self._startNode.getY() 
 
-            length = self.getLength() # dx ** 2 + dy ** 2
-            
-            if length == 0:
-                length = 1
+        length = self.getLength() # dx ** 2 + dy ** 2
 
-            scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH_FEET / 2.0 / length 
+        if length == 0:
+            length = 1
 
-            xOffset = dy * scale
-            yOffset = - dx * scale 
+        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH_FEET / 2.0 / length 
 
-            self._centerline = ((self._startNode.getX() + xOffset, self._startNode.getY() + yOffset),
-                                (self._endNode.getX() + xOffset, self._endNode.getY() + yOffset))
+        xOffset = dy * scale
+        yOffset = - dx * scale 
 
-            return self._centerline
+        self._centerline = ((self._startNode.getX() + xOffset, self._startNode.getY() + yOffset),
+                            (self._endNode.getX() + xOffset, self._endNode.getY() + yOffset))
 
+        return self._centerline
+
+    def getMidPoint(self):
+        """
+        Return the midpoint of the link's centerline as a tuple of two floats
+        """
+        
+        return ((self._centerline[0][0] + self._centerline[1][0]) / 2.0,
+                (self._centerline[0][1] + self._centerline[1][1]) / 2.0)
+        
+        
     def isRoadLink(self):
         """
         Return True this Link is RoadLink
@@ -258,7 +267,62 @@ class RoadLink(Link):
         """ 
         self._numLanes = numLanes 
     
+    def getAcuteAngle(self, other):
+        """
+        Return the acute angle (0, 180) between this link and the input one.
+        Both links are considered as line segments from start to finish (shapepoints 
+        are not taken into account).
+        """
 
+        if self == other:
+            return 0
+
+        if self.getStartNode().getX() == other.getStartNode().getX() and \
+                self.getStartNode().getY() == other.getEndNode().getY() and \
+                self.getEndNode().getX() == other.getEndNode().getX() and \
+                self.getEndNode().getY() == other.getEndNode().getY():
+            return 0
+
+        if self.getStartNode() == other.getEndNode() and \
+                self.getEndNode() == other.getStartNode():
+            return 180 
+
+        if self.getStartNode() == other.getStartNode():
+            p0 = self.getEndNode()
+            p1 = self.getStartNode()
+            p2 = other.getEndNode() 
+        elif self.getEndNode() == other.getEndNode():
+            p0 = self.getStartNode()
+            p1 = self.getEndNode()
+            p2 = other.getStartNode()
+        elif self.getEndNode() == other.getStartNode():
+            p0 = self.getStartNode()
+            p1 = self.getEndNode()
+            p2 = other.getEndNode()
+        elif self.getStartNode() == other.getEndNode():
+            p0 = self.getEndNode()
+            p1 = self.getStartNode()
+            p2 = other.getStartNode() 
+        
+        dx1 = p0.getX() - p1.getX()
+        dy1 = p0.getY() - p1.getY()
+        dx2 = p2.getX() - p1.getX()
+        dy2 = p2.getY() - p1.getY()
+
+        length1 = math.sqrt(dx1 ** 2 + dy1 ** 2)
+        length2 = math.sqrt(dx2 ** 2 + dy2 ** 2)
+
+        if length1 == 0:
+            raise DtaError("The length of link %d cannot not be zero" % self.getId())
+        if length2 == 0:
+            raise DtaError("The length of link %d cannot not be zero" % other.getId())
+
+        if abs((dx1 * dx2 + dy1 * dy2) / (length1 * length2)) > 1:
+            if abs((dx1 * dx2 + dy1 * dy2) / (length1 * length2)) - 1 < 0.00001:
+                return 0
+            else:
+                print "cannot apply getAcute angle from %d to %d" % (self.getId(), other.getId())
+        return abs(math.acos((dx1 * dx2 + dy1 * dy2) / (length1 * length2))) / math.pi * 180.0
     
 
         

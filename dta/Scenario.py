@@ -114,3 +114,8 @@ class Scenario(object):
         Return an iterator to the vehicle class group items
         """
         return self.vehicleClassGroups.itervalues() 
+
+    def iterVehicleClasses(self):
+        """
+        Return an iterator to the vehicle classes 
+        """
