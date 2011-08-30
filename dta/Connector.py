@@ -15,7 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import pdb 
 from .Centroid import Centroid
 from .DtaError import DtaError
 from .Movement import Movement
@@ -144,6 +144,15 @@ class Connector(RoadLink):
             return self._startNode
         else:
             return self._endNode
+
+    def getVirtualNode(self):
+        """
+        Return the Virtual Node associated with this connector
+        """
+        if not self._fromRoadNode:
+            return self._startNode
+        else:
+            return self._endNode        
         
     def isRoadLink(self):
         """
@@ -162,3 +171,28 @@ class Connector(RoadLink):
         Return True if this LInk is a VirtualLink
         """
         return False
+
+#    def getCentroid(self):
+#        """
+#        Return the centroid accocited with this connector
+#        """
+#        pdb.set_trace()
+#        if self.startIsRoadNode():            
+#            for vLink in self.getVirtualNode().iterOutgoingLinks():
+#                if not vLink.isVirtualLink():
+#                    continue
+#                    return vLink.getCentroid()
+#            raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
+#
+#        elif not self.startIsRoadNode():
+#            for vLink in self.getVirtualNode().iterIncomingLinks():
+#                if not vLink.isVirtualLink(): 
+#                    continue
+#                    return vLink.getCentroid()
+#            raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
+#
+#        raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
+            
+            
+
+            

@@ -16,6 +16,7 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import pdb 
 import math
 
 from .DtaError import DtaError
@@ -231,8 +232,7 @@ class RoadLink(Link):
         
         return ((self._centerline[0][0] + self._centerline[1][0]) / 2.0,
                 (self._centerline[0][1] + self._centerline[1][1]) / 2.0)
-        
-        
+                
     def isRoadLink(self):
         """
         Return True this Link is RoadLink
@@ -287,27 +287,12 @@ class RoadLink(Link):
                 self.getEndNode() == other.getStartNode():
             return 180 
 
-        if self.getStartNode() == other.getStartNode():
-            p0 = self.getEndNode()
-            p1 = self.getStartNode()
-            p2 = other.getEndNode() 
-        elif self.getEndNode() == other.getEndNode():
-            p0 = self.getStartNode()
-            p1 = self.getEndNode()
-            p2 = other.getStartNode()
-        elif self.getEndNode() == other.getStartNode():
-            p0 = self.getStartNode()
-            p1 = self.getEndNode()
-            p2 = other.getEndNode()
-        elif self.getStartNode() == other.getEndNode():
-            p0 = self.getEndNode()
-            p1 = self.getStartNode()
-            p2 = other.getStartNode() 
+        dx1 = self.getEndNode().getX() - self.getStartNode().getX()
+        dy1 = self.getEndNode().getY() - self.getStartNode().getY()
         
-        dx1 = p0.getX() - p1.getX()
-        dy1 = p0.getY() - p1.getY()
-        dx2 = p2.getX() - p1.getX()
-        dy2 = p2.getY() - p1.getY()
+        dx2 = other.getEndNode().getX() - other.getStartNode().getX()
+        dy2 = other.getEndNode().getY() - other.getStartNode().getY()
+
 
         length1 = math.sqrt(dx1 ** 2 + dy1 ** 2)
         length2 = math.sqrt(dx2 ** 2 + dy2 ** 2)
@@ -321,9 +306,16 @@ class RoadLink(Link):
             if abs((dx1 * dx2 + dy1 * dy2) / (length1 * length2)) - 1 < 0.00001:
                 return 0
             else:
-                print "cannot apply getAcute angle from %d to %d" % (self.getId(), other.getId())
+                raise DtaError("cannot apply getAcute angle from %d to %d" % (self.getId(), other.getId()))            
         return abs(math.acos((dx1 * dx2 + dy1 * dy2) / (length1 * length2))) / math.pi * 180.0
     
-
+    def isOverlapping(self, other):
+        """
+        Return True if the angle between the two links (measured using their endpoints) is less than 1 degree
+        """
+        if self.getAcuteAngle(other) <= 1.0:
+            return True
+        return False
+        
         
 

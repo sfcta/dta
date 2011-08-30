@@ -50,3 +50,17 @@ class Centroid(Node):
         """
         return False
         
+    def isConnectedToRoadNode(self, roadNode):
+        """
+        Return True if there is a virtual link and a connetor that 
+        connect to the roadNode
+        """
+        for vLink in self.iterAdjacentLinks():
+            vNode = vLink.getOtherEnd(self)
+            con = vLink.getAdjacentConnector()
+            rNode = con.getOtherEnd(vNode)
+            
+            if rNode == roadNode:
+                return True
+        return False
+        

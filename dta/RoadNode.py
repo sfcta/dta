@@ -140,6 +140,10 @@ class RoadNode(Node):
         result = []
         
         for candidateLink in self.iterAdjacentRoadLinks():
+
+            #if connector.getCentroid().isConnectedToRoadNode(candidateLink.getOtherEnd(self)):
+            #    continue
+
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
             middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd) 
             for everyOtherRoadLink in self.iterAdjacentRoadLinks():

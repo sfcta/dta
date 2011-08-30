@@ -64,6 +64,19 @@ def getTestNet():
 
     return net 
 
+def getDowntownSF():
+
+    projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
+    prefix = 'sf' 
+
+    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario.read(projectFolder, prefix) 
+    net = DynameqNetwork(scenario) 
+    net.read(projectFolder, prefix) 
+
+    return net 
+
+
 
 def simpleRoadNodeFactory(id_, x, y):
 
@@ -728,4 +741,64 @@ class TestNetwork(object):
         assert "All" in list(sc.name for sc in sc.iterVehicleClassGroups())
         assert "Prohibited" in list(sc.name for sc in sc.iterVehicleClassGroups())
  
+        
+    def test_getAcuteAngle(self):
+
+        net = getSimpleNet()
+
+        link1 = net.getLinkForNodeIdPair(1, 5)
+        link2 = net.getLinkForNodeIdPair(5, 4)
+
+        assert link1.getAcuteAngle(link2) == 0
+        link3 = net.getLinkForNodeIdPair(5, 1) 
+
+        assert link3.getAcuteAngle(link1) == 180
+        assert link1.getAcuteAngle(link3) == 180
+
+        link4 = net.getLinkForNodeIdPair(5, 2)
+        
+        assert link4.getAcuteAngle(link1) == 90
+        assert link1.getAcuteAngle(link4) == 90
+        assert link3.getAcuteAngle(link3) == 0
+        assert link4.getAcuteAngle(link3) == 90
+
+    def test_moveVirtualNodesToAvoidOverlappingLinks(self):
+
+        net = getDowntownSF()
+
+        link1 = net.getLinkForId(904)
+        link2 = net.getLinkForId(905)
+
+        assert link1.getAcuteAngle(link2) < 0.0001
+
+
+        assert net.getNumOverlappingConnectors() > 0 
+
+        net.moveVirtualNodesToAvoidOverlappingLinks()
+        assert net.getNumOverlappingConnectors()  == 0
+
+        outputFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
+        prefix = 'sf5' 
+        net.write(dir=outputFolder, file_prefix=prefix)
+
+    def test_isConnectedToRoadNode(self):
+
+        net = getDowntownSF()
+
+        c = net.getNodeForId(958)
+        n = net.getNodeForId(2085)
+        n2 = net.getNodeForId(2426)
+
+        assert c.isConnectedToRoadNode(n)
+        assert not c.isConnectedToRoadNode(n2)
+
+    def test_hasOutgoingLink(self):
+        
+        net = getDowntownSF() 
+        c = net.getNodeForId(958)        
+        c.hasOutgoingLinkForNodeId(900110)
+
+        v = net.getNodeForId(900110)
+        v.hasOutgoingLinkForNodeId(958)
+        
         

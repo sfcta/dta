@@ -1,4 +1,4 @@
-__copyright__   = "Copyright 2011 SFCTA"
+s__copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
 
@@ -17,6 +17,8 @@ __license__     = """
 """
 import pdb 
 import copy
+import random
+
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
@@ -586,11 +588,14 @@ class Network(object):
         """
         return self._scenario 
         
-    def mergeSecondaryNetwork(self, secondaryNetwork):
+    def mergeSecondaryNetworkBasedOnLinkIds(self, secondaryNetwork):
         """
         This method will create copies of all the elements of the 
         secondary network that do not exist in the current network 
-        and add them to the current network. 
+        and add them to the current network. The method will merge the 
+        networks using node and link ids. Elements of the secondary 
+        network having an id that exists in this network will not be 
+        coppied.
         """ 
 
         primaryNodesToDelete = set()
@@ -686,8 +691,70 @@ class Network(object):
                         cLink.addOutgoingMovement(cMov) 
                     except DtaError, e:
                         DtaLogger.error(str(e))
-                        
 
+    def getNumOverlappingConnectors(self):
+        """
+        Return the number of connectors that overlap with a RoadLink or 
+        another connector
+        """
+        num = 0
+        for node in self.iterNodes():
+            if not node.isRoadNode():
+                continue
+            for con in node.iterAdjacentLinks():
+                if not con.isConnector():
+                    continue
+                for link in node.iterAdjacentLinks():
+                    if link == con:
+                        continue
+                    if con.isOverlapping(link):
+                        num += 1
+        return num
+                                
+    def moveVirtualNodesToAvoidOverlappingLinks(self):
+        """
+        Virtual nodes are being moved + or minus 100 feet in either the X or the Y
+        dimension to avoid overapping links
+        """
+        
+        MAX_NUM_MOVES = 8
+        MAX_DIST_TO_MOVE = 100
+        
+        for node in self.iterNodes():
+            if not node.isRoadNode():
+                continue
+            numMoves = 0
+            for con in node.iterAdjacentLinks():
+                if not con.isConnector():
+                    continue
+                
+                virtualNode = con.getOtherEnd(node)
+                vNodeNeedsToMove = True 
+                while vNodeNeedsToMove:
+                    
+                    for link in node.iterAdjacentLinks():
+                        if link == con:
+                            continue
+
+                        if con.isOverlapping(link):
+                            vNodeNeedsToMove = True
+                            break 
+                    else:
+                        vNodeNeedsToMove = False
+                    
+                    if vNodeNeedsToMove:
+                        virtualNode._x += random.randint(0, MAX_DIST_TO_MOVE)
+                        virtualNode._y += random.randint(0, MAX_DIST_TO_MOVE)
+                        numMoves += 1
+                        if numMoves > MAX_NUM_MOVES:
+                            vNodeNeedsToMove = False
+
+                
+
+                
+
+
+        
         
 
 

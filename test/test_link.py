@@ -40,6 +40,16 @@ class TestLink(object):
 
     def test_acuteAngle(self):
 
+        net =getTestNet()
+
+        link1 = net.getLinkForNodeIdPair(3178, 3183)
+        link2 = net.getLinkForNodeIdPair(3183, 3185)
+
+        print link1.getAcuteAngle(link2)
+        print link2.getAcuteAngle(link1)
+
+    def NOtest_acuteAngle(self):
+
         net = getTestNet()
         
 

@@ -99,3 +99,15 @@ class VirtualLink(Link):
         Return True if this LInk is a VirtualLink
         """
         return True
+
+    def getCentroid(self):
+        """
+        Return the centroid associated with the VirtualLink 
+        """
+        
+        if self.getStartNode().isCentroid():
+            return self.getStartNode()
+        elif self.getEndNode().isCentroid():
+            return self.getEndNode()
+        else:
+            raise DtaError("Virtual link %d is not asociated with a Centroid" % self.getId())
