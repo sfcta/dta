@@ -16,9 +16,11 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .DtaError import DtaError
+import copy
 import csv
 import la 
+import datetime
+from .DtaError import DtaError
 
 class Demand(object):
 
@@ -30,32 +32,66 @@ class Demand(object):
     DATA_SECTION = 'DATA'
     SLICE_SECTION = 'SLICE'
 
+    YEAR = 2010
+    MONTH = 1
+    DAY = 1
     
     def __init__(self, net, timeStepInMin):
 
         self._net = net 
 
-        self._timePeriods = self._createTimeLabels(self.getScenario().startTime, self.getScenario().endTime, timeStepInMin)
-        self._vehicleClassNames = [vehClass.name for vehicleClass in self.getScenario().iterVehicleClassGroups()]
-        self._centroidIds = sorted([node.getId() for node in net.iterNodes() if node.isCentroid()])
+        self._timePeriods = self._getTimeLabels(net.getScenario().startTime, net.getScenario().endTime, timeStepInMin)
+        #self._vehicleClassNames = [vehClass.name for vehicleClass in self.getScenario().iterVehicleClassGroups()]
+        #self._centroidIds = sorted([node.getId() for node in net.iterNodes() if node.isCentroid()])
+
+        assert isinstance(timeStepInMin, datetime.timedelta)
+
+        #self._demand = la(self._timePeriods, self._vehicleClassNames, self._centroidIds)
         
-        self._demand = la(self._timePeriods, self._vehicleClassNames, self._centroidIds)
+    def _getTimeLabels(self, startTime, endTime, timeStep):
         
-    def _createTimeLabels(self, startTime, endTime, timeStepInMin):
-        pass
+        assert isinstance(startTime, datetime.datetime)
+        assert isinstance(startTime, datetime.datetime)
+        assert isinstance(timeStep, datetime.timedelta) 
+        assert startTime < endTime
+
+        #if self._timeInMin(startTime) 
+
+        assert (self._timeInMin(endTime) - self._timeInMin(startTime)) % self._timeInMin(timeStep) == 0
+
+        result = []
+        time = copy.deepcopy(startTime)
+        while time != endTime:
+            time += timeStep
+            print time 
+            result.append(time)
+
+        return result 
+
+    def _timeInMin(self, time):
+        
+        if isinstance(time, datetime.datetime):
+            return time.hour * 60 + time.minute 
+        elif isinstance(time, datetime.timedelta):
+            return time.seconds / 60 
 
     def _datetimeToMilitaryTime(self, time):
         """
         Return an integer that repreents the time of the day e.g. entering 5:00 PM will return 1700
         """
-        pass
-
+        return time.hour * 100 + time.minute
+        
     def _militaryTimeToDayTime(self, militaryTime):
         """
         Return a datetime object that corresponds to the input military time. For example, if the input 
         military time is 1700 the following datetime object will be returned datetime(17, 0, 0)
         """
-        pass 
+        
+        strTime = str(militaryTime)
+        assert 3 <= len(strTime) <= 4
+        minutes = int(strTime[-2:])
+        hours = int(strTime[:-2])
+        return datetime.datetime(Demand.YEAR, Demand.MONTH, Demand.DAY, hours, minutes)         
                                
     def readCubeODTable(self, fileName, fieldNames):
         """

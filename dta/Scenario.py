@@ -36,6 +36,9 @@ class Scenario(object):
         """
         self.startTime = startTime
         self.endTime   = endTime
+
+        if not isinstance(startTime, datetime.datetime) or isinstance(endTime, datetime.datetime):
+            raise DtaError("Start and end times should both be datetime.datetime objects")
         
         if self.endTime <= self.startTime:
             raise DtaError("Scenario cannot have startTime (%s) >= endTime (%s)" %
