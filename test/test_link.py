@@ -28,7 +28,8 @@ def getTestNet():
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
     prefix = 'sf' 
 
-    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0), datetime.datetime(2010,1,1,4,0))
+
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
@@ -45,8 +46,8 @@ class TestLink(object):
         link1 = net.getLinkForNodeIdPair(3178, 3183)
         link2 = net.getLinkForNodeIdPair(3183, 3185)
 
-        print link1.getAcuteAngle(link2)
-        print link2.getAcuteAngle(link1)
+        assert link1.getAcuteAngle(link2) < 0.001 
+        assert link2.getAcuteAngle(link1) == link1.getAcuteAngle(link2)
 
     def NOtest_acuteAngle(self):
 

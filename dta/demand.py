@@ -63,7 +63,6 @@ class Demand(object):
         time = copy.deepcopy(startTime)
         while time != endTime:
             time += timeStep
-            print time 
             result.append(time)
 
         return result 

@@ -47,7 +47,7 @@ def getTestScenario():
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
     scenario.read(projectFolder, prefix) 
 
     return scenario 
@@ -57,7 +57,7 @@ def getTestNet():
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
@@ -69,7 +69,7 @@ def getDowntownSF():
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
     prefix = 'sf' 
 
-    scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
@@ -628,7 +628,7 @@ class TestNetwork(object):
         projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
 
         prefix = 'smallTestNet' 
-        sc = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+        sc = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
         sc.read(projectFolder, prefix) 
 
         
@@ -715,7 +715,7 @@ class TestNetwork(object):
         projectFolder = os.path.join(os.path.dirname(__file__), '..', "test")
         prefix = 'test' 
 
-        scenario = DynameqScenario(datetime.time(0,0,0), datetime.time(4,0,0))
+        scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
         scenario.read(projectFolder, prefix)
 
         net = DynameqNetwork(scenario) 

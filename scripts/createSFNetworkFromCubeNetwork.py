@@ -30,8 +30,9 @@ if __name__ == '__main__':
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
-    gearyScenario = dta.DynameqScenario(startTime=datetime.time(hour=0),
-                                        endTime=datetime.time(hour=1))
+    gearyScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
+                                        datetime.datetime(2010,1,1,4,0,0))
+
     gearyScenario.read(dir=".", file_prefix="Base_Final")
     gearyScenario.write(dir="test", file_prefix="geary")
     
@@ -41,8 +42,8 @@ if __name__ == '__main__':
     
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
-    sanfranciscoScenario = dta.DynameqScenario(startTime=datetime.time(hour=15),
-                                               endTime=datetime.time(hour=18))
+    sanfranciscoScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
+                                               datetime.datetime(2010,1,1,4,0,0))
     
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \

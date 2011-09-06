@@ -25,6 +25,10 @@ class Scenario(object):
     """
     Class that represents a DTA Scenario, and all that it entails.
     """
+    DEFAULT_YEAR = 2010
+    DEFAULT_MONTH = 1
+    DEFAULT_DAY = 1
+
     
     __all__ = ["__init__", "vehicleClassNames"]
 
@@ -32,12 +36,12 @@ class Scenario(object):
         """
         Constructor.
         
-        *startTime* and *endTime* are datetime.time instances.
+        *startTime* and *endTime* are datetime.datetime instances.
         """
         self.startTime = startTime
         self.endTime   = endTime
 
-        if not isinstance(startTime, datetime.datetime) or isinstance(endTime, datetime.datetime):
+        if not isinstance(startTime, datetime.datetime) or not isinstance(endTime, datetime.datetime):
             raise DtaError("Start and end times should both be datetime.datetime objects")
         
         if self.endTime <= self.startTime:
@@ -53,7 +57,7 @@ class Scenario(object):
         #: vehicle class group name (string) -> :py:class:`VehicleClassGroup`
         self.vehicleClassGroups = {}
         
-        #: event time (datetime.time) -> description string
+        #: event time (datetime.datetime) -> description string
         self.events             = {}
         
     def __dir__(self):
@@ -97,7 +101,7 @@ class Scenario(object):
         
     def addEvent(self, eventTime, eventDescription):
         """
-        *eventTime* is a datetime.time instance and *description* is a string.
+        *eventTime* is a datetime.datetime instance and *description* is a string.
         
         Verifies that *eventTime* is in [startTime, endTime)
         """
