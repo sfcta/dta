@@ -21,6 +21,7 @@ import os
 
 import la
 import nose.tools 
+import numpy as np
 
 from dta.demand import Demand
 from dta.DynameqNetwork import DynameqNetwork 
@@ -80,7 +81,11 @@ class TestDemand:
 
         net = getTestNet()
         timeStep = datetime.timedelta(minutes=15) 
-        demand = Demand(net, timeStep)
+        
+        startTime = datetime.datetime(2010, 1, 1, 8, 30)
+        endTime = datetime.datetime(2010, 1, 1, 9, 30)
+        timeStep = datetime.timedelta(minutes=15) 
+        demand = Demand(net, startTime, endTime, timeStep)
 
         d3 = datetime.datetime(2010, 1, 1, 8, 30)
         assert demand._timeInMin(d3) == 8 * 60 + 30
@@ -90,16 +95,24 @@ class TestDemand:
     def test_inMilitaryTime(self):
 
         net = getTestNet()
+
+        startTime = datetime.datetime(2010, 1, 1, 8, 30)
+        endTime = datetime.datetime(2010, 1, 1, 9, 30)
         timeStep = datetime.timedelta(minutes=15) 
-        demand = Demand(net, timeStep) 
+        demand = Demand(net, startTime, endTime, timeStep)
+
         d3 = datetime.datetime(2010, 1, 1, 8, 30)
         assert demand._datetimeToMilitaryTime(d3) == 830
 
     def test_militaryTimeToDateTime(self):
 
         net = getTestNet()
+
+        startTime = datetime.datetime(2010, 1, 1, 8, 30)
+        endTime = datetime.datetime(2010, 1, 1, 9, 30)
         timeStep = datetime.timedelta(minutes=15) 
-        demand = Demand(net, timeStep) 
+        demand = Demand(net, startTime, endTime, timeStep)
+
         d3 = datetime.datetime(2010, 1, 1, 8, 30)
         assert demand._datetimeToMilitaryTime(d3) == 830
 
@@ -110,12 +123,43 @@ class TestDemand:
 
         net = getTestNet()
 
+        startTime = datetime.datetime(2010, 1, 1, 8, 30)
+        endTime = datetime.datetime(2010, 1, 1, 9, 30)
+        timeStep = datetime.timedelta(minutes=15) 
+        demand = Demand(net, startTime, endTime, timeStep)
+
         d3 = datetime.datetime(2010, 1, 1, 8, 0)
         d4 = datetime.datetime(2010, 1, 1, 9, 0)
-        timeStep = datetime.timedelta(minutes=15) 
 
-        demand = Demand(net, timeStep) 
         answer = map(demand._datetimeToMilitaryTime, demand._getTimeLabels(d3, d4, timeStep))
         assert answer == [815, 830, 845, 900]
+
+    def test_read(self):
+        
+        fileName = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset', 'gearysubnet_matx.dqt')
+
+        net = getTestNet() 
+
+        demand = Demand.read(net, fileName)
+        assert demand.getNumSlices() == 4
+
+        print demand._la.sum()
+
+    def test_larry(self):
+        
+        x = np.array([[[1,2], [3,4]],[[1,2], [3,4]]])
+        label = [['a', 'b'], ['c', 'd'], ['e', 'f']]
+
+        m = la.larry(x, label, dtype=float)
+
+        assert m.lix[['a'], ['d'], ['e']] == 3.0
+
+        #m[0, :] = [98, 99]
+        #assert m.lix[['a'], ['d']] == 99
+
+
+
+        #assert m.lix[['a'], :] == [1.0, 3.0]
+        #print "*****", m.lix[['a'], :] 
 
 

@@ -1,4 +1,4 @@
-s__copyright__   = "Copyright 2011 SFCTA"
+__copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
 
