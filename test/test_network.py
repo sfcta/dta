@@ -39,7 +39,7 @@ from dta.Connector import Connector
 from dta.VehicleClassGroup import VehicleClassGroup
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork 
-from dta.utils import lineSegmentsCross
+from dta.Utils import lineSegmentsCross
 
 
 def getTestScenario(): 

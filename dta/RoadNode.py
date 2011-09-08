@@ -18,7 +18,7 @@ __license__     = """
 import math
 from .DtaError import DtaError
 from .Node import Node
-from .utils import lineSegmentsCross, getMidPoint
+from .Utils import lineSegmentsCross, getMidPoint
 
 
 class RoadNode(Node):

@@ -146,12 +146,26 @@ class Node(object):
         Returns iterator for the incoming links.
         """
         return iter(self._incomingLinks)
-    
+
+    def iterUpstreamNodes(self):
+        """
+        Returns an iterator to the upstream nodes
+        """
+        for link in self.iterIncomingLinks():
+            yield link.getStartNode()
+            
     def iterOutgoingLinks(self):
         """
         Returns iterator for the outgoing links.
         """
         return iter(self._outgoingLinks)
+
+    def iterDownstreamNodes(self):
+        """
+        Returns an iterator to the downstream nodes
+        """
+        for link in self.iterOutgoingLinks():
+            yield link.getEndNode() 
 
     def getId(self): 
         """

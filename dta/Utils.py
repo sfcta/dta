@@ -15,6 +15,9 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import copy  
+
+import dta
 
 def lineSegmentsCross(p1, p2, p3, p4):
     """
@@ -53,5 +56,30 @@ def getMidPoint(p1, p2):
     """
     Return the the point in the middle of p1 and p2 as a (x,y) tuple.
     """
-    #TODO:consider associating this function to an object
     return ((p1[0] + p2[0]) / 2.0, (p1[1] + p2[1]) / 2.0)
+
+
+def getReverseNetwork(net):
+    """
+    Returns a network copy that has all the links reversed
+    """
+    
+    rNet = dta.Network(net.getScenario())
+
+    for node in net.iterNodes():
+        cNode = copy.copy(node) 
+        cNode._incomingLinks = []
+        cNode._outgoingLinks = []
+        rNet.addNode(cNode)
+
+    for link in net.iterLinks():
+        rLink = dta.Link(link._id,
+                     rNet.getNodeForId(link.getEndNode().getId()),
+                     rNet.getNodeForId(link.getStartNode().getId()), 
+                     "")
+                                       
+        rNet.addLink(rLink)
+        
+    return rNet 
+
+

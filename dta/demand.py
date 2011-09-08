@@ -25,6 +25,7 @@ from itertools import izip
 
 import numpy as np
 
+from dta.Algorithms import hasPath 
 from .DtaError import DtaError
 
 class Demand(object):
@@ -309,3 +310,19 @@ class Demand(object):
             newDemand._la[i, :, :] = self._la[0, :, :] * factorsInAList[i] 
 
         return newDemand                            
+
+    def removeInvalidODPairs(self):
+        """
+        Examine all the OD interchanges and remove those for which 
+        a path does not exist from origin to destination
+        """
+        
+        for originId in self._centroidIds:
+            for destinationId in self._centroidIds:
+                for timeLabel in self._timeLabels:
+                    if self.getValue(timeLabel, originId, destinationId) > 0:
+                        origin = self._net.getNodeForId(originId)
+                        destination = self._net.getNodeForId(destinationId)
+                        if not hasPath(self._net, origin, destination):
+                            self.setValue(timeLabel, originId, destinationId, 0) 
+                        

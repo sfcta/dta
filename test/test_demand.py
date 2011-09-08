@@ -221,3 +221,12 @@ class TestDemand:
 
         assert d2.getValue(730, 2, 6) == 500
         assert d2.getValue(800, 2, 6) == 500
+
+
+
+
+# Create the demand matrix 
+# remove all the very short links. This is the only way to move forward.
+# you may need to write the algoritm that finds invalid demand pairs 
+# make a run. Maybe you should make a simple run first 
+# you will need to apply the algorithm that takes care of the overlapping links 
