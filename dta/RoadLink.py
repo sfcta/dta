@@ -210,7 +210,7 @@ class RoadLink(Link):
         dx = self._endNode.getX() - self._startNode.getX()
         dy = self._endNode.getY() - self._startNode.getY() 
 
-        length = self.getLength() # dx ** 2 + dy ** 2
+        length = self.euclideanLength() # dx ** 2 + dy ** 2
 
         if length == 0:
             length = 1

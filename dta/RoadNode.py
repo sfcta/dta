@@ -15,6 +15,8 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import pdb
+
 import math
 from .DtaError import DtaError
 from .Node import Node
@@ -127,7 +129,8 @@ class RoadNode(Node):
         can be attached. Spitting or attaching the connector to 
         any of the returned links will not result in overlapping links.      
         """
-        
+        MIN_LENGTH_IN_MILES = 0.009
+
         if self not in [connector.getStartNode(), connector.getEndNode()]:
             raise DtaError("Node %d is not adjacent to connector %d" %
                            (self.getId(), connector.getId())) 
@@ -143,6 +146,8 @@ class RoadNode(Node):
 
             #if connector.getCentroid().isConnectedToRoadNode(candidateLink.getOtherEnd(self)):
             #    continue
+            if candidateLink.getEuclidianLengthInMiles() < MIN_LENGTH_IN_MILES:
+                continue
 
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
             middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd) 

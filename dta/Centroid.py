@@ -15,6 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import pdb
 from .Node import Node
 
 class Centroid(Node):
@@ -63,4 +64,34 @@ class Centroid(Node):
             if rNode == roadNode:
                 return True
         return False
+        
+    def getNumAttachedConnectors(self):
+        """
+        Return the number of connectors attached to this Centroid
+        """
+        return self.getNumOutgoingConnectors() + self.getNumIncomingConnectors()
+
+    def getNumOutgoingConnectors(self):
+        """
+        Return the number of outgoing connectors
+        """
+        return sum([1 for con in self.iterDownstreamNodes()]) 
+
+    def getNumIncomingConnectors(self):
+        """
+        Return the number of incoming connectors
+        """
+        return sum([1 for con in self.iterUpstreamNodes()])
+
+        #    this does not work. Why? 
+        #    for con in vNode.iterOutgoingLinks():
+        #        if con.isConnector():
+        #            yield con     
+        #for vNode in self.iterUpstreamNodes():
+        #    for con in vNode.iterIncomingLinks():
+        #        if con.isConnector():
+        #            yield con
+        
+            
+            
         

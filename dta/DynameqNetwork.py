@@ -281,6 +281,10 @@ class DynameqNetwork(Network):
                                    '"' + node._label + '"'))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "NODES", basefile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadNodes(), "ROAD NODES", basefile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumCentroids(), "CENTROIDS", basefile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumVirtualNodes(), "VIRTUAL NODES", basefile_object.name))
+        
         
     def _parseCentroidFromFields(self, fields):
         """
@@ -388,7 +392,7 @@ class DynameqNetwork(Network):
                                    link.getEndNode().getId(),
                                    link._reverseAttachedLinkId if link._reverseAttachedLinkId else -1,
                                    link._facilityType,
-                                   ("%12.3f" % link._length if link._length else "-1"),
+                                   ("%12.3f" % -1), #link._length if link._length else "-1"),
                                    link._freeflowSpeed,
                                    link._effectiveLengthFactor,
                                    link._responseTimeFactor,
@@ -398,6 +402,9 @@ class DynameqNetwork(Network):
                                    '"' + (link._label if link._label else "") + '"'))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", basefile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumConnectors(), "CONNECTORS", basefile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumVirtualLinks(), "VIRTUAL LINKS", basefile_object.name))
         
     def _addLanePermissionFromFields(self, fields):
         """
@@ -750,7 +757,7 @@ class DynameqNetwork(Network):
         DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
 
 
-    def removeCentroidConnectorsFromIntersections(self):
+    def removeCentroidConnectorsFromIntersections(self, splitReverseLinks=False):
         """
         Remove centroid connectors from intersections and attach them to midblock locations.
         If there is not a node defining a midblock location the algorithm will split the 
@@ -776,7 +783,7 @@ class DynameqNetwork(Network):
         
             for con in connectors:
                 try:
-                    self.removeCentroidConnectorFromIntersection(node, con) 
+                    self.removeCentroidConnectorFromIntersection(node, con, splitReverseLink=splitReverseLinks) 
                 except DtaError, e:
                     DtaLogger.error("%s" % str(e))
 
@@ -809,7 +816,7 @@ class DynameqNetwork(Network):
                             ilink.addOutgoingMovement(allowedMovement)
                     
 
-    def removeCentroidConnectorFromIntersection(self, roadNode, connector):
+    def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
         """Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
         to the connector is split in half and the connector is attached to the new 
@@ -835,14 +842,14 @@ class DynameqNetwork(Network):
             elif candidateLinks[1].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):                                        
                 nodeToAttachConnector = candidateLinks[1].getOtherEnd(roadNode)
             else:                    
-                nodeToAttachConnector = self.splitLink(candidateLinks[0])
+                nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink)
 
         elif len(candidateLinks) == 1:
 
             if candidateLinks[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
                 nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode) 
             else:
-                nodeToAttachConnector = self.splitLink(candidateLinks[0]) 
+                nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink) 
         else:
             raise DtaError("Centroid connector(s) were not removed from intersection %d" % roadNode.getId())
 

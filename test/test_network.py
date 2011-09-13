@@ -209,6 +209,7 @@ class TestNetwork(object):
         assert net.getNumCentroids() == 0
         assert net.getNumVirtualNodes() == 0
 
+
     def test_2hasMethods(self):
 
         net = getSimpleNet()
@@ -360,7 +361,7 @@ class TestNetwork(object):
         assert net.getNumNodes() == 8 
         assert net.getNumLinks() == 14
 
-        net.splitLink(l) 
+        net.splitLink(l, splitReverseLink=True) 
 
         assert net.getNumNodes() == 9
         assert net.getNumLinks() == 16
@@ -446,7 +447,7 @@ class TestNetwork(object):
 
         link15 = net.getLinkForNodeIdPair(1, 5) 
 
-        midNode = net.splitLink(link15) 
+        midNode = net.splitLink(link15, splitReverseLink=True) 
 
         assert midNode.isShapePoint()
 
@@ -524,24 +525,24 @@ class TestNetwork(object):
         assert net.hasLinkForId(15) 
         assert net.hasLinkForId(16)
 
-        newConnector = net.removeCentroidConnectorFromIntersection(n5, con) 
+        newConnector = net.removeCentroidConnectorFromIntersection(n5, con, splitReverseLink=False) 
         #the old connector is no longer there 
         assert not net.hasLinkForNodeIdPair(9, 5) 
         #but a connector with the same id is attached to newly created midblock 
         assert net.hasLinkForId(15) 
-        assert net.getNumLinks() == 18  #one more link than before
+        assert net.getNumLinks() == 17  #one more link than before
         assert net.getNumNodes() == 10  #one more node than before 
 
         assert n5.hasConnector()         #there is still one connector at intersection 5 
         newConnector.getRoadNode().getX(), newConnector.getRoadNode().getY()
         assert newConnector.getRoadNode().isShapePoint(countRoadNodesOnly=True) 
 
-        newConnector2 = net.removeCentroidConnectorFromIntersection(n5, con2)
+        newConnector2 = net.removeCentroidConnectorFromIntersection(n5, con2, splitReverseLink=True)
         #the old connector is no longer there
         assert not net.hasLinkForNodeIdPair(5, 9)
         #a new connector is there with the same id 
         assert net.hasLinkForId(16)
-        assert net.getNumLinks() == 18  #same links as before the algorithm picked the newly created block 
+        assert net.getNumLinks() == 17  #same links as before the algorithm picked the newly created block 
         assert net.getNumNodes() == 10  #same nodes as before. No new link was split
         
     def test_removeAllCentroidConnectorsFromIntersections(self):
@@ -572,8 +573,8 @@ class TestNetwork(object):
         assert net.getNumNodes() == 9
         assert net.getNumLinks() == 16
 
-        net.removeCentroidConnectorsFromIntersections() 
-        
+        net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
+
         assert net.getNumNodes() == 10
         assert net.getNumLinks() == 18
 
@@ -801,4 +802,19 @@ class TestNetwork(object):
         v = net.getNodeForId(900110)
         v.hasOutgoingLinkForNodeId(958)
         
+    def test_shpwrite(self):
+
+        net = getDowntownSF()
+
+        net.writeNodesToShp("test/tmp_nodes")
+        net.writeLinksToShp("test/tmp_links")
+
+        os.remove("test/tmp_nodes.shp")
+        os.remove("test/tmp_nodes.dbf")
+        os.remove("test/tmp_nodes.shx")
+        os.remove("test/tmp_links.shp")
+        os.remove("test/tmp_links.shx")
+        os.remove("test/tmp_links.dbf")
+        
+
         

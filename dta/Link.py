@@ -25,6 +25,8 @@ class Link(object):
     Base class that represents a link in a network.
     """
     
+    MIN_LENGTH_IN_MILES = 0.004
+
     #: Default label is an empty string
     DEFAULT_LABEL = ""
     
@@ -65,6 +67,15 @@ class Link(object):
         Accessor for endNode
         """
         return self._endNode
+
+    def getEuclidianLengthInMiles(self):
+        """
+        Returns the length between the start node and end node
+        """
+        dx1 = self.getEndNode().getX() - self.getStartNode().getX()
+        dy1 = self.getEndNode().getY() - self.getStartNode().getY()
+
+        return math.sqrt(dx1 ** 2 + dy1 ** 2) / 5280.0
     
     def euclideanLength(self):
         """

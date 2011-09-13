@@ -19,6 +19,8 @@ import pdb
 import copy
 import random
 
+import shapefile 
+
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
@@ -289,7 +291,7 @@ class Network(object):
             
             # Centroid => RoadNode
             if isinstance(startNode, Centroid) and connector.endIsRoadNode():
-                DtaLogger.debug("Inserting virtualNode in Centroid(%6d) => RoadNode(%6d)" % (startNode.getId(), endNode.getId()))
+                #DtaLogger.debug("Inserting virtualNode in Centroid(%6d) => RoadNode(%6d)" % (startNode.getId(), endNode.getId()))
                 
                 newNode = VirtualNode(id=self._maxNodeId + 1,
                                       x=startNode.getX(),
@@ -318,7 +320,7 @@ class Network(object):
             
             # RoadNode => Centroid               
             elif connector.startIsRoadNode() and isinstance(endNode, Centroid):
-                DtaLogger.debug("Inserting virtualNode in RoadNode(%6d) => Centroid(%6d)" % (startNode.getId(), endNode.getId()))
+                #DtaLogger.debug("Inserting virtualNode in RoadNode(%6d) => Centroid(%6d)" % (startNode.getId(), endNode.getId()))
                 
                 newNode = VirtualNode(id=self._maxNodeId+1,
                                       x=endNode.getX(),
@@ -409,14 +411,15 @@ class Network(object):
         """
 
         #remove all incoming and ougoing movements from the link 
-        outMovsToRemove = [mov for mov in linkToRemove.iterOutgoingMovements()]
-        inMovsToRemove = [mov for mov in linkToRemove.iterIncomingMovements()]
-        
-        for mov in outMovsToRemove:
-            linkToRemove.removeOutgoingMovement(mov)
+        if not linkToRemove.isVirtualLink():
+            outMovsToRemove = [mov for mov in linkToRemove.iterOutgoingMovements()]
+            inMovsToRemove = [mov for mov in linkToRemove.iterIncomingMovements()]
 
-        for mov in inMovsToRemove:
-            mov.getIncomingLink().removeOutgoingMovement(mov)
+            for mov in outMovsToRemove:
+                linkToRemove.removeOutgoingMovement(mov)
+
+            for mov in inMovsToRemove:
+                mov.getIncomingLink().removeOutgoingMovement(mov)
 
         #TODO: ugly code below 
         linkToRemove.getStartNode()._removeOutgoingLink(linkToRemove)
@@ -445,7 +448,7 @@ class Network(object):
 
         #TODO: do you want to update the maxIds? 
 
-    def splitLink(self, linkToSplit):
+    def splitLink(self, linkToSplit, splitReverseLink=False):
         """
         Split the input link in half. The two new links have the 
         attributes of the input link. If there is a link in the 
@@ -473,7 +476,7 @@ class Network(object):
                                 midNode, 
                                 None,
                                 linkToSplit._facilityType,
-                                linkToSplit._length / 2.0,
+                                linkToSplit.euclideanLength() / 2.0,
                                 linkToSplit._freeflowSpeed,
                                 linkToSplit._effectiveLengthFactor,
                                 linkToSplit._responseTimeFactor,
@@ -490,7 +493,7 @@ class Network(object):
                                 linkToSplit.getEndNode(), 
                                 None,
                                 linkToSplit._facilityType,
-                                linkToSplit._length / 2.0,
+                                linkToSplit.euclideanLength() / 2.0,
                                 linkToSplit._freeflowSpeed,
                                 linkToSplit._effectiveLengthFactor,
                                 linkToSplit._responseTimeFactor,
@@ -544,31 +547,37 @@ class Network(object):
             newLink1.addOutgoingMovement(newMovement)
 
         _split(linkToSplit, midNode) 
-        if self.hasLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId()):
-            linkToSplit2 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId())
-            _split(linkToSplit2, midNode)
-            self.removeLink(linkToSplit2)
-            
-            link1 = self.getLinkForNodeIdPair(linkToSplit.getStartNode().getId(), 
-                                             midNode.getId())
-            link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
-            prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
-                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
-            link1.addOutgoingMovement(prohibitedMovement)
 
-            link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
-                                             midNode.getId())
-            link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getEndNode().getId())
-            prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
-                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
-            
-            link1.addOutgoingMovement(prohibitedMovement)
+        if splitReverseLink == True:
+            if self.hasLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId()):
+                linkToSplit2 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId())
+                _split(linkToSplit2, midNode)
+                self.removeLink(linkToSplit2)
 
-            
+                link1 = self.getLinkForNodeIdPair(linkToSplit.getStartNode().getId(), 
+                                                 midNode.getId())
+                link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
+                prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
+                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                link1.addOutgoingMovement(prohibitedMovement)
+
+                link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
+                                                 midNode.getId())
+                link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getEndNode().getId())
+                prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
+                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+
+                link1.addOutgoingMovement(prohibitedMovement)
 
         self.removeLink(linkToSplit)
                       
         return midNode 
+
+    def getNumVirtualLinks(self):
+        """
+        Return the number of connectors in the Network
+        """
+        return sum([1 for link in self.iterLinks() if link.isVirtualLink()])
 
     def getNumConnectors(self):
         """
@@ -587,6 +596,21 @@ class Network(object):
         Return the scenario object associated with this network
         """
         return self._scenario 
+
+    def _areIDsUnique(self, net1, net2):
+        """
+        Returns True if the node and link Ids are unique 
+        """
+        nodeIds1 = set([node.getId() for node in net1.iterNodes()])
+        nodeIds2 = set([node.getId() for node in net2.iterNodes()])
+
+        linkIds1 = set([link.getId() for link in net1.iterLinks()])
+        linkIds2 = set([linkl.getId() for link in net2.iterLinks()])
+
+        if nodeIds1.intersection(nodeIds2) == set() and \
+                linkIds1.intersection(linkIds2) == set():
+            return True
+        return False 
         
     def mergeSecondaryNetworkBasedOnLinkIds(self, secondaryNetwork):
         """
@@ -597,6 +621,11 @@ class Network(object):
         network having an id that exists in this network will not be 
         coppied.
         """ 
+
+        if not self._areIDsUnique(self, secondaryNetwork):
+            raise DtaError("The two networks cannot be merge because they "
+                           "have conflicting node and/or link ids") 
+        
 
         primaryNodesToDelete = set()
         primaryLinksToDelete = set()
@@ -710,7 +739,29 @@ class Network(object):
                     if con.isOverlapping(link):
                         num += 1
         return num
-                                
+
+    def moveVirtualNodesToAvoidShortConnectors(self):
+        """
+        Connectors are sometimes too short. This method tries to move 
+        the virtual node attached to the connector in the vicinity 
+        of the current virtual node so that the connector length is 
+        greater than Link.MIN_LENGTH_IN_MILES
+        """
+        MAX_DIST_TO_MOVE = 50
+        for link in self.iterLinks():
+            if not link.isConnector():
+                continue
+            if link.getEuclidianLengthInMiles() > Link.MIN_LENGTH_IN_MILES:
+                continue
+            virtualNode = link.getVirtualNode()
+            numMoves = 0
+            print "moved connector", link.getId()
+            while link.getEuclidianLengthInMiles() < Link.MIN_LENGTH_IN_MILES \
+                    and numMoves < 4:
+                virtualNode._x += random.randint(0, MAX_DIST_TO_MOVE)
+                virtualNode._y += random.randint(0, MAX_DIST_TO_MOVE)
+                numMoves += 1
+                                                
     def moveVirtualNodesToAvoidOverlappingLinks(self):
         """
         Virtual nodes are being moved + or minus 100 feet in either the X or the Y
@@ -749,6 +800,47 @@ class Network(object):
                         if numMoves > MAX_NUM_MOVES:
                             vNodeNeedsToMove = False
 
+    def writeNodesToShp(self, name):
+        """
+        Export all the nodes to a shapefile with the given name (without the shp extension)"
+        """
+        w = shapefile.Writer(shapefile.POINT)
+        w.field("ID", "N", 10)
+        w.field("IsRoad", "C", 10)
+        w.field("IsCentroid", "C", 10)
+        w.field("IsVNode", "C", 10) 
+
+        for node in self.iterNodes():
+            w.point(node.getX(), node.getY())
+            w.record(node.getId(), str(node.isRoadNode()), str(node.isCentroid()), str(node.isVirtualNode()))
+
+        w.save(name) 
+
+    def writeLinksToShp(self, name):
+        """
+        Export all the links to a shapefile with the given name (without the shp extension)
+        """
+        w = shapefile.Writer(shapefile.POLYLINE) 
+        w.field("ID", "N", 10)
+        w.field("Start", "N", 10)
+        w.field("End", "N", 10)
+
+        w.field("IsRoad", "C", 10) 
+        w.field("IsConn", "C", 10) 
+        w.field("IsVirtual", "C", 10) 
+
+        for link in self.iterLinks():
+            if link.isVirtualLink():
+                centerline = ((link._startNode.getX(), link._startNode.getY()),
+                            (link._endNode.getX(), link._endNode.getY()))
+                w.line(parts=[centerline])
+            else:
+                w.line(parts=[link.getCenterLine()])
+            w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),
+                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()))
+
+        w.save(name) 
+        
                 
 
                 
