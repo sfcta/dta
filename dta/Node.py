@@ -349,14 +349,12 @@ class Node(object):
 
         return False 
 
-    def isShapePoint(self, countRoadNodesOnly=False, checkAttributes=False):
+    def isShapePoint(self, countRoadNodesOnly=False):
         """
         Return True if the node is a shape point (e.g. Node 51546 in the 
         following graph). 
         If countRoadNodesOnly is True the method will count only RoadLinks 
-        attached to this Node and will disregard an connectors. If checkAttributes
-        is True the method will check that all the link attributes on either side of 
-        the shapepoint do not change (except link length). 
+        attached to this Node and will disregard an connectors. 
         
         .. image:: /images/shapePoint.png
            :height: 300px
@@ -375,30 +373,3 @@ class Node(object):
                 return True
  
         return False
-
-#TODO: finish this once you decide to remove the shapepoints of the network 
-#        checkAttributes = ["_facilityType", "_freeflowSpeed", "_effectiveLengthFactor", "_responseTimeFactor",
-#                           "_numLanes", "_roundAbout", "_level", "_lanePermissions"]                         
-#        if result and checkAttributes:
-#
-#            attributesToCheck = []
-#            for attrName in dir(self):
-#                if attrName.startswith("_"):
-#                    attr = getattr(self, attrName)
-#                if isinstance(attr, (int, float, str)):
-#                    attributesToCheck.append(attrName) 
-#                                  
-#            
-#        return result 
-#        
-#                if checkAttributes: 
-#                    for ilink in self.iterIncomingLinks():
-#                        for mov in ilink.iterOutgoingMovements():
-#                            if mov.isUTurn():
-#                                continue
-#                            oLink = mov.getOutgoingLink() 
-#
-#                            for attrName in checkAttributes():
-#                                if getattr(ilink, attrName) != getattr(olink, attrName):
-#                                    return False
-#                    return True 

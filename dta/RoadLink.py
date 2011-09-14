@@ -197,9 +197,12 @@ class RoadLink(Link):
 
     def getLength(self):
         """
-        Return the  length of the link 
+        Return the  length of the link in feetk 
         """
-        return self._length 
+        if self._length != -1:
+            return self._length 
+        else:
+            return self.euclideanLength()
         
     def getCenterLine(self):
         """

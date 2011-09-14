@@ -165,8 +165,8 @@ class RoadNode(Node):
 
     def getOrientation(self, point):
         """
-        Return the angle from the North measured clockwise of the line 
-        segments that has its start the current node and its end the given point 
+        Return the clockwise angle from the North measured in degrees of the line 
+        segment that has the current node as its start and the given point as its end 
         """
         x1 = self.getX()
         y1 = self.getY()

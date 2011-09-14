@@ -53,4 +53,13 @@ class VirtualNode(Node):
         Return True if this Node is a VirtualNode
         """
         return True
-        
+
+    def getCentroid(self):
+        """
+        Return the centoid associated with this virtual node
+        """
+        for ilink in self.iterIncomingLinks():
+            return ilink.getStartNode() 
+        for olink in self.iterOutgoingLinks():
+            return olink.getEndNode() 
+        raise DtaError("VirtualNode %d is not connected to a centroid" % self.getId())

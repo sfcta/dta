@@ -353,6 +353,14 @@ class Network(object):
         """
         return self._nodes.itervalues()
 
+    def iterRoadNodes(self):
+        """
+        Return an iterator to the road node collection
+        """
+        for node in self.iterNodes():
+            if node.isRoadNode():
+                yield node
+
     def iterLinks(self):
         """
         Return an iterator to the link collection
@@ -483,7 +491,7 @@ class Network(object):
                                 linkToSplit._numLanes,
                                 linkToSplit._roundAbout,
                                 linkToSplit._level, 
-                                ""
+                                linkToSplit.getLabel() 
                                 )
 
             self.addLink(newLink1)
@@ -500,7 +508,7 @@ class Network(object):
                                 linkToSplit._numLanes,
                                 linkToSplit._roundAbout,
                                 linkToSplit._level,
-                                ""                            
+                                linkToSplit.getLabel()
                                 )
 
             self.addLink(newLink2) 
@@ -755,12 +763,14 @@ class Network(object):
                 continue
             virtualNode = link.getVirtualNode()
             numMoves = 0
-            print "moved connector", link.getId()
+
             while link.getEuclidianLengthInMiles() < Link.MIN_LENGTH_IN_MILES \
                     and numMoves < 4:
                 virtualNode._x += random.randint(0, MAX_DIST_TO_MOVE)
                 virtualNode._y += random.randint(0, MAX_DIST_TO_MOVE)
                 numMoves += 1
+
+            DtaLogger.info("Moved virtual node  %8d associated with connector %8d to avoid overlappig links" % (virtualNode.getId(), link.getId()))
                                                 
     def moveVirtualNodesToAvoidOverlappingLinks(self):
         """
@@ -839,14 +849,156 @@ class Network(object):
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),
                      str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()))
 
-        w.save(name) 
+        w.save(name)
         
+    def mergeLinks(self, link1, link2):
+        """
+        Merge the two input sequential links. If any of the characteristics of the 
+        two links are different (except their length) the method will throw an 
+        error
+        """
+        if link1.getEndNode() != link2.getStartNode():
+            raise DtaError("Links %d and %d are not sequential and therefore cannot be merged" % (link1.getId(), link2.getId()))
+        if not link1.isRoadLink() or not link2.isRoadLink():
+            raise DtaError("Links %d and %d should both be road links" % (link1.getId(), link2.getId()))
+        
+        if not link1.getEndNode().isShapePoint():
+            raise DtaError("Links %d and %d cannot be merged because node %d is not "
+                           "a shape point" % (link1.getId(), link2.getId(), link1.getEndNode().getId()))
+
+        if not link1.hasSameAttributes(link2):
+            raise DtaError("Links %d and %d cannot be merged because they have different attributes"
+                            % (link1.getId(), link2.getId()))
+            
+        if link1._facilityType != link2._facilityType:
+            raise DtaError("Links %d and %d cannot be merged because the have different facility types"
+                           % (link1.getId(), link2.getId()))
+            
+        if link1._freeflowSpeed != link2._freeflowSpeed:
+            raise DtaError("Links %d and %d cannot be merged because the have different free flow speeds"
+                           % (link1.getId(), link2.getId()))            
+        
+        if link1._effectiveLengthFactor != link2._effectiveLengthFactor:
+            raise DtaError("Links %d and %d cannot be merged because the have different effective "
+                           "lenth factors" % (link1.getId(), link2.getId()))
+                           
+        
+        if link1._responseTimeFactor != link2._responseTimeFactor:
+            raise DtaError("Links %d and %d cannot be merged because the have different response "
+                           "time factors" % (link1.getId(), link2.getId()))            
+        
+        if link1._numLanes != link2._numLanes:
+            raise DtaError("Links %d and %d cannot be merged because the have different number "
+                           "of lanes" % (link1.getId(), link2.getId()))                        
+
+        if link1._roundAbout != link2._roundAbout:
+            raise DtaError("Links %d and %d cannot be merged because the have different round about "
+                           "classification" % (link1.getId(), link2.getId()))                                    
+
+        if link1._level != link2._level:
+            raise DtaError("Links %d and %d cannot be merged because they belong to different levels "
+                           % (link1.getId(), link2.getId())) 
+
+        label = ""
+        if link1._label:
+            label = link1._label 
+        elif link2._label:
+            label = link2._label
+
+        newLink = RoadLink(self._maxLinkId + 1,
+                           link1.getStartNode(), 
+                           link2.getEndNode(), 
+                            None,
+                            link1._facilityType,
+                            link1.getLength() + link2.getLength(), 
+                            link1._freeflowSpeed,
+                            link1._effectiveLengthFactor,
+                            link1._responseTimeFactor,
+                            link1._numLanes,
+                            link1._roundAbout,
+                            link1._level, 
+                            label
+                            )
+        
+        self.addLink(newLink)
+
+        
+        for inMov in link1.iterIncomingMovements():
                 
+            newMovement = Movement(link1.getStartNode(),
+                                   inMov.getIncomingLink(),
+                                   newLink,
+                                   inMov._freeflowSpeed,
+                                   inMov._permission,
+                                   inMov._numLanes,
+                                   inMov._incomingLane,
+                                   inMov._outgoingLane,
+                                   inMov._followupTime)
 
+
+            inMov.getIncomingLink().addOutgoingMovement(newMovement)
+
+        for outMov in link2.iterOutgoingMovements():
+
+            newMovement = Movement(link2.getEndNode(),
+                                   newLink,
+                                   outMov.getOutgoingLink(),
+                                   outMov._freeflowSpeed,
+                                   outMov._permission,
+                                   outMov._numLanes,
+                                   outMov._incomingLane,
+                                   outMov._outgoingLane,
+                                   outMov._followupTime)
+
+            newLink.addOutgoingMovement(newMovement)
+
+        
+        self.removeLink(link1)
+        self.removeLink(link2)
+        if link1.getEndNode().getCardinality() == (0,0):
+            self.removeNode(link1.getEndNode()) 
                 
+    def removeShapePoints(self):
+        """
+        Remove shape points from the network 
+        """
+        for node in [node for node in self.iterRoadNodes()]:
+            if node.isShapePoint():
+                if node.getCardinality() == (2,2):
 
+                    pair1 = None
+                    pair2 = None
+                    linki1 = node._incomingLinks[0]
+                    linki2 = node._incomingLinks[1]
+                    linko1 = node._outgoingLinks[0]
+                    linko2 = node._outgoingLinks[1] 
 
-        
-        
+                    if abs(linki1.getReferenceAngleInDegrees() - linko1.getReferenceAngleInDegrees()) < 10:
+                           pair1 = (linki1, linko1)
+                           if abs(linki2.getReferenceAngleInDegrees() - linko2.getReferenceAngleInDegrees()) < 10:
+                               pair2 = (linki2, linko2)
+                               
+                    elif abs(linki1.getReferenceAngleInDegrees() - linko2.getReferenceAngleInDegrees()) < 10:
+                           pair1 = (linki1, linko2)
+                           if abs(linki2.getReferenceAngleInDegrees() - linko1.getReferenceAngleInDegrees()) < 10:
+                               pair2 = (linki2, linko1)                    
+                    else:
+                        continue 
+                    if pair1 and pair1[0].hasSameAttributes(pair1[1]):                        
+                        self.mergeLinks(*pair1) 
+                        DtaLogger.info("Merged links  %8d and %8d" % (pair1[0].getId(), pair1[1].getId()))
+                    if pair2 and pair2[0].hasSameAttributes(pair2[1]):
+                        self.mergeLinks(*pair2) 
+                        DtaLogger.info("Merged links  %8d and %8d" % (pair2[0].getId(), pair2[1].getId()))
+                                                        
+                elif node.getCardinality() == (1,1):                    
+                        
+                    link1 = node._incomingLinks[0]
+                    link2 = node._outgoingLinks[0]
+                    if abs(link1.getReferenceAngleInDegrees() - link2.getReferenceAngleInDegrees()) < 10:
+                        if link1.hasSameAttributes(link2):
+                            self.mergeLinks(link1, link2) 
+                            DtaLogger.info("Merged links  %8d and %8d" % (link1.getId(), link2.getId()))
 
+    
 

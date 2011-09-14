@@ -15,7 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import pdb
 import math
 from .DtaError import DtaError
 from .Node import Node
@@ -101,6 +101,12 @@ class Link(object):
         if angle > 0 and self._endNode.getY() > self._startNode.getY():
             angle = 2.0*math.pi - angle
         return angle
+    
+    def getReferenceAngleInDegrees(self):
+        """
+        Return the Reference angle in degrees
+        """
+        return self.getReferenceAngle() / math.pi * 180.0
         
     def getOtherEnd(self, node):
         """
@@ -121,5 +127,43 @@ class Link(object):
         return self._id
 
     def getIid(self):
-        
+        """
+        Return a pair representing the start and end node ids
+        """
         return (self.getStartNode().getId(), self.getEndNode().getId())
+
+    def setLabel(self, label):
+        """
+        Set the link label
+        """
+        self._label = label
+        
+    def getLabel(self):
+        """
+        Return the link label
+        """
+        return self._label
+        
+    def hasSameAttributes(self, other):
+        """
+        Return True if the two links have the same attributes return True
+        """
+
+        def getattrs(link):
+            attrs = (link._facilityType,
+                     link._freeflowSpeed,
+                     link._effectiveLengthFactor,
+                     link._responseTimeFactor,
+                     link._numLanes,
+                     link._roundAbout,
+                     link._level)
+            return attrs 
+
+        attr1 = getattrs(self)
+        attr2 = getattrs(other) 
+
+        if attr1 == attr2:
+            return True 
+        return False 
+        
+        

@@ -816,5 +816,38 @@ class TestNetwork(object):
         os.remove("test/tmp_links.shx")
         os.remove("test/tmp_links.dbf")
         
-
+    def test_mergeLink(self):
         
+        net = getDowntownSF()  
+        assert net.hasNodeForId(3674)
+
+        answer = (net.getNumNodes() - 1, net.getNumLinks() - 1) 
+
+        net.mergeLinks(net.getLinkForId(904266), net.getLinkForId(5424))
+
+        assert (net.getNumNodes(), net.getNumLinks()) ==  answer
+
+        assert not net.hasNodeForId(3674)
+        assert not net.hasLinkForId(904266)
+        assert not net.hasLinkForId(5424)
+
+        answer = (net.getNumNodes(), net.getNumLinks() - 1) 
+
+        net.mergeLinks(net.getLinkForId(901888), net.getLinkForId(901893))
+        assert (net.getNumNodes(), net.getNumLinks()) ==  answer
+
+        answer = (net.getNumNodes() - 1, net.getNumLinks() - 1) 
+        net.mergeLinks(net.getLinkForId(901892), net.getLinkForId(901889))
+        assert (net.getNumNodes(), net.getNumLinks()) ==  answer
+
+        numShapePoints = sum([1 for node in net.iterNodes() if node.isShapePoint() and node.isRoadNode()])
+
+        assert numShapePoints == 152
+        
+        net.removeShapePoints() 
+
+        numShapePoints = sum([1 for node in net.iterNodes() if node.isShapePoint() and node.isRoadNode()])        
+        assert numShapePoints == 40
+
+
+
