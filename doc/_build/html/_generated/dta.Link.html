@@ -76,7 +76,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Link.__init__" title="dta.Link.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Link.euclideanLength" title="dta.Link.euclideanLength"><tt class="xref py py-obj docutils literal"><span class="pre">Link.euclideanLength</span></tt></a></td>
 <td></td>
@@ -102,9 +102,27 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Link.getEuclidianLengthInMiles">
+<tt class="descname">getEuclidianLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.getEuclidianLengthInMiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the length between the start node and end node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Link.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.getId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the link id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Link.getIid">
+<tt class="descname">getIid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.getIid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pair representing the start and end node ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Link.getLabel">
+<tt class="descname">getLabel</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the link label</p>
 </dd></dl>
 
 <dl class="method">
@@ -123,9 +141,27 @@ returns 0.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Link.getReferenceAngleInDegrees">
+<tt class="descname">getReferenceAngleInDegrees</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.getReferenceAngleInDegrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Reference angle in degrees</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Link.getStartNode">
 <tt class="descname">getStartNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Link.getStartNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for startNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Link.hasSameAttributes">
+<tt class="descname">hasSameAttributes</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.Link.hasSameAttributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the two links have the same attributes return True</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Link.setLabel">
+<tt class="descname">setLabel</tt><big>(</big><em>label</em><big>)</big><a class="headerlink" href="#dta.Link.setLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the link label</p>
 </dd></dl>
 
 </dd></dl>

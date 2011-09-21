@@ -192,6 +192,7 @@ class TestDemand:
         demand.write(outFileName)
         demand2 = Demand.read(net, outFileName)
         assert demand == demand2
+        os.remove("test/testDemand.dqt")
 
     def test_readCubeDemand(self):
 

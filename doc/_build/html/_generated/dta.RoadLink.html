@@ -90,7 +90,7 @@ on the link.  May vary over time with LinkEvents</li>
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.RoadLink.__init__" title="dta.RoadLink.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.addLanePermission" title="dta.RoadLink.addLanePermission"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.addLanePermission</span></tt></a></td>
 <td></td>
@@ -142,6 +142,14 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getAcuteAngle">
+<tt class="descname">getAcuteAngle</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getAcuteAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the acute angle (0, 180) between this link and the input one.
+Both links are considered as line segments from start to finish (shapepoints 
+are not taken into account).</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getCenterLine">
 <tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getCenterLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
@@ -155,15 +163,39 @@ representing the centerline.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getEuclidianLengthInMiles">
+<tt class="descname">getEuclidianLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getEuclidianLengthInMiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the length between the start node and end node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the link id</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getIid">
+<tt class="descname">getIid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getIid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pair representing the start and end node ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getLabel">
+<tt class="descname">getLabel</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the link label</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the  length of the link</p>
+<dd><p>Return the  length of the link in feetk</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getMidPoint">
+<tt class="descname">getMidPoint</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getMidPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the midpoint of the link&#8217;s centerline as a tuple of two floats</p>
 </dd></dl>
 
 <dl class="method">
@@ -206,6 +238,12 @@ returns 0.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getReferenceAngleInDegrees">
+<tt class="descname">getReferenceAngleInDegrees</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getReferenceAngleInDegrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Reference angle in degrees</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getShifts">
 <tt class="descname">getShifts</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getShifts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the <em>startShift</em> and <em>endShift</em> ordered pair, or (None,None) if it wasn&#8217;t set.
@@ -225,9 +263,21 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.hasSameAttributes">
+<tt class="descname">hasSameAttributes</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.RoadLink.hasSameAttributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the two links have the same attributes return True</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.isConnector">
 <tt class="descname">isConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.isConnector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Link is a Connector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.isOverlapping">
+<tt class="descname">isOverlapping</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.RoadLink.isOverlapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the angle between the two links (measured using their endpoints) is less than 1 degree</p>
 </dd></dl>
 
 <dl class="method">
@@ -258,6 +308,12 @@ See addShifts() for details.</p>
 <dt id="dta.RoadLink.removeOutgoingMovement">
 <tt class="descname">removeOutgoingMovement</tt><big>(</big><em>movementToRemove</em><big>)</big><a class="headerlink" href="#dta.RoadLink.removeOutgoingMovement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the input movement</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.setLabel">
+<tt class="descname">setLabel</tt><big>(</big><em>label</em><big>)</big><a class="headerlink" href="#dta.RoadLink.setLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the link label</p>
 </dd></dl>
 
 <dl class="method">

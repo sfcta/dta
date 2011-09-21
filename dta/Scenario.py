@@ -28,7 +28,6 @@ class Scenario(object):
     DEFAULT_YEAR = 2010
     DEFAULT_MONTH = 1
     DEFAULT_DAY = 1
-
     
     __all__ = ["__init__", "vehicleClassNames"]
 

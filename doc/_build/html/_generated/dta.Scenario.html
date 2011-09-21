@@ -59,7 +59,7 @@
 <dt id="dta.Scenario.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Scenario.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
-<p><em>startTime</em> and <em>endTime</em> are datetime.time instances.</p>
+<p><em>startTime</em> and <em>endTime</em> are datetime.datetime instances.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -70,7 +70,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Scenario.__init__" title="dta.Scenario.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Scenario.addEvent" title="dta.Scenario.addEvent"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.addEvent</span></tt></a></td>
 <td></td>
@@ -89,7 +89,7 @@
 <dl class="method">
 <dt id="dta.Scenario.addEvent">
 <tt class="descname">addEvent</tt><big>(</big><em>eventTime</em>, <em>eventDescription</em><big>)</big><a class="headerlink" href="#dta.Scenario.addEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>eventTime</em> is a datetime.time instance and <em>description</em> is a string.</p>
+<dd><p><em>eventTime</em> is a datetime.datetime instance and <em>description</em> is a string.</p>
 <p>Verifies that <em>eventTime</em> is in [startTime, endTime)</p>
 </dd></dl>
 
@@ -114,7 +114,7 @@
 <dl class="attribute">
 <dt id="dta.Scenario.events">
 <tt class="descname">events</tt><a class="headerlink" href="#dta.Scenario.events" title="Permalink to this definition">¶</a></dt>
-<dd><p>event time (datetime.time) -&gt; description string</p>
+<dd><p>event time (datetime.datetime) -&gt; description string</p>
 </dd></dl>
 
 <dl class="method">
@@ -128,6 +128,12 @@ found.</p>
 <dt id="dta.Scenario.iterVehicleClassGroups">
 <tt class="descname">iterVehicleClassGroups</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Scenario.iterVehicleClassGroups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the vehicle class group items</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Scenario.iterVehicleClasses">
+<tt class="descname">iterVehicleClasses</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Scenario.iterVehicleClasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the vehicle classes</p>
 </dd></dl>
 
 <dl class="attribute">

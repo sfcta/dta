@@ -72,6 +72,10 @@ Misc
    dta.DtaError
    dta.DtaLogger
    dta.Movement
+   dta.Network
+   dta.Algorithms
+   dta.demand
+
 
 Example: Building a network using dta
 ==========================================

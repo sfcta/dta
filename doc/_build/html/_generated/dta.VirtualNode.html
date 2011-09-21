@@ -77,7 +77,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.VirtualNode.__init__" title="dta.VirtualNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.addIncomingLink</span></tt></td>
 <td></td>
@@ -92,6 +92,12 @@
 <tt class="descname">getCardinality</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getCardinality" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pair of numbers representing the number of 
 incoming and outgoing links respectively</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode.getCentroid">
+<tt class="descname">getCentroid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getCentroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the centoid associated with this virtual node</p>
 </dd></dl>
 
 <dl class="method">
@@ -216,14 +222,12 @@ incoming and outgoing links respectively</p>
 
 <dl class="method">
 <dt id="dta.VirtualNode.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em>, <em>checkAttributes=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
 following graph). 
 If countRoadNodesOnly is True the method will count only RoadLinks 
-attached to this Node and will disregard an connectors. If checkAttributes
-is True the method will check that all the link attributes on either side of 
-the shapepoint do not change (except link length).</p>
-<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 900px;" />
+attached to this Node and will disregard an connectors.</p>
+<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
 </dd></dl>
 
 <dl class="method">
@@ -258,6 +262,12 @@ to this node</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.VirtualNode.iterDownstreamNodes">
+<tt class="descname">iterDownstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.iterDownstreamNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to the downstream nodes</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.VirtualNode.iterIncomingLinks">
 <tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the incoming links.</p>
@@ -267,6 +277,12 @@ to this node</p>
 <dt id="dta.VirtualNode.iterOutgoingLinks">
 <tt class="descname">iterOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.iterOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the outgoing links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode.iterUpstreamNodes">
+<tt class="descname">iterUpstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.iterUpstreamNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to the upstream nodes</p>
 </dd></dl>
 
 </dd></dl>

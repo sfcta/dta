@@ -47,7 +47,7 @@
   <div class="section" id="network-classes">
 <h1>Network classes<a class="headerlink" href="#network-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-36e6fa888b33583a9ed91e8726fa7e91d426946c.png" alt="Inheritance diagram of dta.Network, dta.DynameqNetwork, dta.CubeNetwork" class="inheritance"/>
+<img src="_images/inheritance-c33d360e7d3f83bd5edd7af66b751128aaa3f1d6.png" alt="Inheritance diagram of dta.Network, dta.DynameqNetwork, dta.CubeNetwork" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -70,7 +70,7 @@
 <div class="section" id="scenario-classes">
 <h1>Scenario classes<a class="headerlink" href="#scenario-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-21367e405edac4e0f35b0ef2bee3ef0f026e2667.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
+<img src="_images/inheritance-65f9f2a92be17e37379d09b413fc6b342c53b6be.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -96,7 +96,7 @@
 <div class="section" id="node-classes">
 <h1>Node classes<a class="headerlink" href="#node-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-897ab51af940ac66b7837c0e3d7c70c27f9f2a8e.png" alt="Inheritance diagram of dta.Node, dta.RoadNode, dta.VirtualNode, dta.Centroid" class="inheritance"/>
+<img src="_images/inheritance-769e4f83d4f0435f65ce53d172982920def2952a.png" alt="Inheritance diagram of dta.Node, dta.RoadNode, dta.VirtualNode, dta.Centroid" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -122,7 +122,17 @@
 <div class="section" id="link-classes">
 <h1>Link classes<a class="headerlink" href="#link-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-35dd96671ba574ce56ce978aa54a4bfee91b7e6a.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
+digraph inheritancec8654f281e {
+rankdir=TB;
+size=&quot;8.0, 12.0&quot;;
+  &quot;Link&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
+  &quot;RoadLink&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
+  &quot;Link&quot; -&gt; &quot;RoadLink&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;Connector&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
+  &quot;RoadLink&quot; -&gt; &quot;Connector&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;VirtualLink&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
+  &quot;Link&quot; -&gt; &quot;VirtualLink&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+}
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -162,110 +172,120 @@
 <tr><td><a class="reference internal" href="_generated/dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Movement</span></tt></a></td>
 <td>Base class that represents a movement.</td>
 </tr>
+<tr><td><a class="reference internal" href="_generated/dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Network</span></tt></a></td>
+<td>Base class that represents a DTA Network.  Networks exist on a continuum between</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.Algorithms.html#dta.Algorithms" title="dta.Algorithms"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Algorithms</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">dta.demand</span></tt></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="example-building-a-network-using-dta">
 <h1>Example: Building a network using dta<a class="headerlink" href="#example-building-a-network-using-dta" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -297,8 +317,9 @@
     
     <span class="c"># The Geary network was created in an earlier Phase of work, so it already exists as</span>
     <span class="c"># a Dynameq DTA network.  Initialize it from the Dynameq text files.</span>
-    <span class="n">gearyScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">startTime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-                                        <span class="n">endTime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">gearyScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> 
+                                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+
     <span class="n">gearyScenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
     <span class="n">gearyScenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary&quot;</span><span class="p">)</span>
     
@@ -308,8 +329,8 @@
     
     <span class="c"># The rest of San Francisco currently exists as a Cube network.  Initialize it from</span>
     <span class="c"># the Cube network files (which have been exported to dbfs.)</span>
-    <span class="n">sanfranciscoScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">startTime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
-                                               <span class="n">endTime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">18</span><span class="p">))</span>
+    <span class="n">sanfranciscoScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> 
+                                               <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
     
     <span class="n">sanfranciscoCubeNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">CubeNetwork</span><span class="p">(</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">readNetfile</span> \

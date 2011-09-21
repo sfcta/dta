@@ -90,7 +90,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.RoadNode.__init__" title="dta.RoadNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 </tbody>
 </table>
@@ -233,6 +233,13 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.getOrientation">
+<tt class="descname">getOrientation</tt><big>(</big><em>point</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getOrientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the clockwise angle from the North measured in degrees of the line 
+segment that has the current node as its start and the given point as its end</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.getX">
 <tt class="descname">getX</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getX" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the x-coordinate for this node.</p>
@@ -293,6 +300,13 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.isOverlapping">
+<tt class="descname">isOverlapping</tt><big>(</big><em>link</em>, <em>minAngle</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isOverlapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the minimum angle between the input link and any similarly 
+oriented link of the intersection is less than the input minAngle</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.isRoadNode">
 <tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Node is a RoadNode.</p>
@@ -300,13 +314,11 @@ incoming and outgoing links respectively</p>
 
 <dl class="method">
 <dt id="dta.RoadNode.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em>, <em>checkAttributes=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
 following graph). 
 If countRoadNodesOnly is True the method will count only RoadLinks 
-attached to this Node and will disregard an connectors. If checkAttributes
-is True the method will check that all the link attributes on either side of 
-the shapepoint do not change (except link length).</p>
+attached to this Node and will disregard an connectors.</p>
 <img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
 </dd></dl>
 
@@ -342,6 +354,12 @@ to this node</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.iterDownstreamNodes">
+<tt class="descname">iterDownstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterDownstreamNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to the downstream nodes</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.iterIncomingLinks">
 <tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the incoming links.</p>
@@ -351,6 +369,12 @@ to this node</p>
 <dt id="dta.RoadNode.iterOutgoingLinks">
 <tt class="descname">iterOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the outgoing links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterUpstreamNodes">
+<tt class="descname">iterUpstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterUpstreamNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to the upstream nodes</p>
 </dd></dl>
 
 </dd></dl>

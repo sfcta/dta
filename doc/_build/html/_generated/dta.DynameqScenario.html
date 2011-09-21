@@ -69,7 +69,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.DynameqScenario.__init__" title="dta.DynameqScenario.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqScenario.addEvent" title="dta.DynameqScenario.addEvent"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.addEvent</span></tt></a></td>
 <td></td>
@@ -91,7 +91,7 @@
 <dl class="method">
 <dt id="dta.DynameqScenario.addEvent">
 <tt class="descname">addEvent</tt><big>(</big><em>eventTime</em>, <em>eventDescription</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.addEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>eventTime</em> is a datetime.time instance and <em>description</em> is a string.</p>
+<dd><p><em>eventTime</em> is a datetime.datetime instance and <em>description</em> is a string.</p>
 <p>Verifies that <em>eventTime</em> is in [startTime, endTime)</p>
 </dd></dl>
 
@@ -124,6 +124,12 @@ found.</p>
 <dt id="dta.DynameqScenario.iterVehicleClassGroups">
 <tt class="descname">iterVehicleClassGroups</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqScenario.iterVehicleClassGroups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the vehicle class group items</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqScenario.iterVehicleClasses">
+<tt class="descname">iterVehicleClasses</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqScenario.iterVehicleClasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the vehicle classes</p>
 </dd></dl>
 
 <dl class="method">

@@ -16,6 +16,11 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
+import pdb 
+from dta.Utils import isRightTurn
+from itertools import izip
+
 def dfs(net, root=None):
     """
     Non-Recursive depth first search algorithm with 
@@ -83,10 +88,160 @@ def hasPath(net, originNode, destNode):
     if node is None:
         return False
     return True
+
+def predicate(elem1, elem2):
+    """
+    Compare the two input elements and return a positive 
+    integer if elem2 is greater than elem1. If the first
+    two coordinates of the input elments are the 
+    comparisson is made using the second ones
+    >>> elem1 = (1,4)
+    >>> elem2 = (1,3) 
+    >>> predicate(elem1, elem2)
+    >>> -1    
+    """ 
+    if elem1[0] == elem2[0]:                
+        if elem1[1] < elem2[1]:
+            return -1 
+        elif elem1[1] == elem2[1]:
+            return 0
+        else:
+            return 1
+    else:
+        if elem1[0] < elem2[0]:
+            return -1
+        else:
+            return 1
+
+def getTightHull(setOfPoints, step):
+    """
+    Return the points and and their corresponding 
+    indices with the highest y values in each of 
+    the intervals identified by the input step
+    """
+    points = sorted(setOfPoints, cmp=predicate)    
+
+    hull = []
+    hullIndices = []
+    hull.append(points[0])
+    i = 1
+
+    maxY = -sys.maxint 
+    pivotIndex = 0
+    threshold = points[0][0] + step
+
+    while i < len(points):
+        #print i, points[i], threshold 
+        while points[i][0] <= threshold:
+
+            if i >= len(points) - 1:
+                i += 1
+                break 
+            if points[i][1] > maxY:
+                maxY = points[i][1]
+                pivotIndex = i
+            i += 1
+
+        if pivotIndex == 0:
+            threshold += step 
+        else:
+            threshold += step
+            hull.append(points[pivotIndex])
+            hullIndices.append(pivotIndex)
+            maxY = - sys.maxint 
+            pivotIndex = 0
+                        
+
+    return hull, hullIndices         
+
+def getConvexHull3(points, step):
+    """
+    Modifield implementation of Graham's algorithm.
+    The resulting polygon is no longer convex but will
+    still contain all the given points. 
+    """
+    hull, hullIndices = getTightHull(points, step)
+
+    bigHull = []
+    for i, j in izip(hullIndices, hullIndices[1:]):
+        
+        print i, j
+        print points[i:j+1]
+        partialHull = getHull(points[i:j+1])
+        partialHull.pop()
+        bigHull.extend(partialHull)
     
 
+    return bigHull
 
-                    
+def getHull(points, upper=True):
+    """
+    Return the convex hull of the given points 
+    """ 
+    hull = []
+    if upper:
+        hull.append(points[0])
+        hull.append(points[1])
+        sequenceOfPoints = range(3, len(points))
+        
+    else:
+        hull.append(points[-1])
+        hull.append(points[-2])
+        sequenceOfPoints = range(len(points) - 3, -1, -1)
+
+    for i in sequenceOfPoints:
+        hull.append(points[i])
+        while len(hull) > 2 and not isRightTurn(hull[-3], hull[-2], hull[-1]):
+            hull.pop(len(hull) - 2)
+
+    return hull
+
+def getConvexHull2(setOfPoints):
+    """
+    Refactored Graham's scan algorithm
+    """
+    points = sorted(setOfPoints, cmp=predicate)
+    upperHull = getHull(points, upper=True)
+    lowerHull = getHull(points, upper=False)
+    upperHull.extend(lowerHull[1:-1])
+    return upperHull
+        
+def getConvexHull(setOfPoints):
+    """
+    Implementation of Graham's scan algorithm
+    """
+    points = sorted(setOfPoints, cmp=predicate)
+
+    upper = []
+    upper.append(points[0])
+    upper.append(points[1])
+    
+    for i in range(3, len(points)):        
+        upper.append(points[i])
+        while len(upper) > 2 and not isRightTurn(upper[-3], upper[-2], upper[-1]):
+            upper.pop(len(upper) - 2)
+
+    lower = []
+    lower.append(points[-1])
+    lower.append(points[-2])
+
+    for i in range(len(points) - 3, -1, -1):
+
+        lower.append(points[i])
+        while len(lower) > 2 and not isRightTurn(lower[-3], lower[-2], lower[-1]):
+            lower.pop(len(lower) - 2)
+
+    lower.pop(0)
+    lower.pop(len(lower) -1) 
+
+    upper.extend(lower)
+    return upper 
+
+    
+    
+            
+                
+
         
         
         

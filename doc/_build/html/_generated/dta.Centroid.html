@@ -77,7 +77,7 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Centroid.__init__" title="dta.Centroid.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addIncomingLink</span></tt></td>
 <td></td>
@@ -137,9 +137,27 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Centroid.getNumAttachedConnectors">
+<tt class="descname">getNumAttachedConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAttachedConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of connectors attached to this Centroid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumIncomingConnectors">
+<tt class="descname">getNumIncomingConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumIncomingConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of incoming connectors</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Centroid.getNumIncomingLinks">
 <tt class="descname">getNumIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumIncomingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of incoming links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getNumOutgoingConnectors">
+<tt class="descname">getNumOutgoingConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumOutgoingConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of outgoing connectors</p>
 </dd></dl>
 
 <dl class="method">
@@ -197,6 +215,13 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Centroid.isConnectedToRoadNode">
+<tt class="descname">isConnectedToRoadNode</tt><big>(</big><em>roadNode</em><big>)</big><a class="headerlink" href="#dta.Centroid.isConnectedToRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a virtual link and a connetor that 
+connect to the roadNode</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Centroid.isIntersection">
 <tt class="descname">isIntersection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isIntersection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is an intersection</p>
@@ -216,14 +241,12 @@ incoming and outgoing links respectively</p>
 
 <dl class="method">
 <dt id="dta.Centroid.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em>, <em>checkAttributes=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isShapePoint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isShapePoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
 following graph). 
 If countRoadNodesOnly is True the method will count only RoadLinks 
-attached to this Node and will disregard an connectors. If checkAttributes
-is True the method will check that all the link attributes on either side of 
-the shapepoint do not change (except link length).</p>
-<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 900px;" />
+attached to this Node and will disregard an connectors.</p>
+<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
 </dd></dl>
 
 <dl class="method">
@@ -258,6 +281,12 @@ to this node</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Centroid.iterDownstreamNodes">
+<tt class="descname">iterDownstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterDownstreamNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to the downstream nodes</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Centroid.iterIncomingLinks">
 <tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the incoming links.</p>
@@ -267,6 +296,12 @@ to this node</p>
 <dt id="dta.Centroid.iterOutgoingLinks">
 <tt class="descname">iterOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the outgoing links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterUpstreamNodes">
+<tt class="descname">iterUpstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterUpstreamNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to the upstream nodes</p>
 </dd></dl>
 
 </dd></dl>

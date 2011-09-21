@@ -74,7 +74,7 @@ a Centroid or a VirtualNode.</p>
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Connector.__init__" title="dta.Connector.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.euclideanLength" title="dta.Connector.euclideanLength"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.euclideanLength</span></tt></a></td>
 <td></td>
@@ -135,6 +135,14 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getAcuteAngle">
+<tt class="descname">getAcuteAngle</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.Connector.getAcuteAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the acute angle (0, 180) between this link and the input one.
+Both links are considered as line segments from start to finish (shapepoints 
+are not taken into account).</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getCenterLine">
 <tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getCenterLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
@@ -148,15 +156,39 @@ representing the centerline.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getEuclidianLengthInMiles">
+<tt class="descname">getEuclidianLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getEuclidianLengthInMiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the length between the start node and end node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the link id</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getIid">
+<tt class="descname">getIid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getIid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pair representing the start and end node ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getLabel">
+<tt class="descname">getLabel</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the link label</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the  length of the link</p>
+<dd><p>Return the  length of the link in feetk</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getMidPoint">
+<tt class="descname">getMidPoint</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getMidPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the midpoint of the link&#8217;s centerline as a tuple of two floats</p>
 </dd></dl>
 
 <dl class="method">
@@ -199,6 +231,12 @@ returns 0.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getReferenceAngleInDegrees">
+<tt class="descname">getReferenceAngleInDegrees</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getReferenceAngleInDegrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Reference angle in degrees</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getRoadNode">
 <tt class="descname">getRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the RoadNode of the Connector</p>
@@ -218,15 +256,33 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getVirtualNode">
+<tt class="descname">getVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getVirtualNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Virtual Node associated with this connector</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.hasOutgoingMovement">
 <tt class="descname">hasOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Connector.hasOutgoingMovement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the link has an outgoing movement towards nodeId</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.hasSameAttributes">
+<tt class="descname">hasSameAttributes</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.Connector.hasSameAttributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the two links have the same attributes return True</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.isConnector">
 <tt class="descname">isConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.isConnector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Link is a Connector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.isOverlapping">
+<tt class="descname">isOverlapping</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.Connector.isOverlapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the angle between the two links (measured using their endpoints) is less than 1 degree</p>
 </dd></dl>
 
 <dl class="method">
@@ -270,6 +326,12 @@ It does update the the incoming links for both the old and the new end nodes.</p
 called from the <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> itself 
 (e.g. <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-meth docutils literal"><span class="pre">Network.insertVirtualNodeBetweenCentroidsAndRoadNodes()</span></tt></a>)</p>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.setLabel">
+<tt class="descname">setLabel</tt><big>(</big><em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.setLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the link label</p>
 </dd></dl>
 
 <dl class="method">

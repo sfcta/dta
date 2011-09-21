@@ -326,3 +326,8 @@ class Demand(object):
                         if not hasPath(self._net, origin, destination):
                             self.setValue(timeLabel, originId, destinationId, 0) 
                         
+    def getTotalDemand(self):
+        """
+        Return the total number of trips
+        """
+        return self._la.sum() 

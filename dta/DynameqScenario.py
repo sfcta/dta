@@ -39,6 +39,15 @@ class DynameqScenario(Scenario):
 * CREATED by DTA Anyway http://code.google.com/p/dta/    
 """ 
 
+    @classmethod
+    def read(cls, dir, prefix):
+        """
+        Read the scenario file from disk and return the corresponding
+        scnario object.
+        """
+        sc = Scenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+        sc.read(dir, prefix)        
+
     def __init__(self, startTime, endTime):
         """
         Constructor. Creates empty Dynameq scenario

@@ -18,6 +18,7 @@ __license__     = """
 
 import os
 import datetime
+import nose 
 
 from dta.Scenario import Scenario
 from dta.DynameqScenario import DynameqScenario 
@@ -25,8 +26,8 @@ from dta.Network import Network
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork 
 
-from dta.Algorithms import dfs, hasPath 
-from dta.Utils import getReverseNetwork
+from dta.Algorithms import dfs, hasPath, getConvexHull, getConvexHull2, getTightHull, getConvexHull3
+from dta.Utils import *
 
 def getTestNet():
 
@@ -73,4 +74,72 @@ class TestAlgorithms:
         rNet.getNumNodes() == net.getNumNodes() 
         rNet.getNumLinks() == net.getNumLinks() 
 
+    def test_lexicographicSort(self):
 
+        elements = [[1,2], [3,4], [0, 3], [0,4], [1,7], [2,3], [2,1], [3,2]]
+
+        def predicate(elem1, elem2):
+
+            if elem1[0] == elem2[0]:                
+                if elem1[1] < elem2[1]:
+                    return -1 
+                elif elem1[1] == elem2[1]:
+                    return 0
+                else:
+                    return 1
+            else:
+                if elem1[0] < elem2[0]:
+                    return -1
+                else:
+                    return 1
+
+        answer = [[0, 3], [0, 4], [1, 2], [1, 7], [2, 1], [2, 3], [3, 2], [3, 4]]
+        result = sorted(elements, cmp=predicate)
+        assert result == answer 
+
+    def test_getConvexHull(self):
+        
+        data = [[0,0], [5, -1], [0, 10], [5,10], [8,10], [10, 10], [3,10], 
+                [3,3], [4,4], [5,5], [10, 0], [11,0]] 
+
+
+        #writePoints(data, "test/covHullPoints") 
+        result = getConvexHull(data)
+        print 
+        print result 
+        #writePolygon(result, "test/conHull") 
+
+        net = getTestNet() 
+
+        points = [[n.getX(), n.getY()] for n in net.iterNodes()]
+        #writePoints(points, "test/gearySubset")
+                    
+        hull = getConvexHull(points)
+        #writePolygon(hull, "test/gearySubsetHull")
+
+    def test_convexHull2(self):
+        
+        data = [[0,0], [5, -1], [0, 10], [5,10], [8,10], [10, 10], [3,10], 
+                [3,3], [4,4], [5,5], [10, 0], [11,0]] 
+
+        result = getConvexHull2(data)
+        print 
+        print result 
+
+    def test_getTightHull(self):
+
+        data = [[0,0], [5, -1], [0, 10], [5,10], [8,10], [10, 10], [3,10], 
+                [3,3], [4,4], [5,5], [10, 0], [11,0]] 
+
+
+        result = getTightHull(data, 2)
+
+        print result 
+
+    def test_getConvexHull3(self):
+        
+        data = [[0,0], [5, -1], [0, 10], [5,10], [8,10], [10, 10], [3,10], 
+                [3,3], [4,4], [5,5], [10, 0], [11,0]] 
+
+        hull = getConvexHull3(data, 2) 
+        #writePolygon(hull, "test/gearySubsetHull3")

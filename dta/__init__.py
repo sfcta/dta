@@ -43,10 +43,12 @@ from .VehicleType import VehicleType
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 
+#from .demand import Demand
+from .Algorithms import dfs 
 
 __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Network', 'DynameqNetwork', 'CubeNetwork',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
-           'Link', 'RoadLink', 'Connector', 'VirtualLink'
+           'Link', 'RoadLink', 'Connector', 'VirtualLink', "Demand"
 ]

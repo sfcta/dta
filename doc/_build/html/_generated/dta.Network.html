@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.DynameqNetwork" href="dta.DynameqNetwork.html" />
+    <link rel="next" title="dta.Algorithms" href="dta.Algorithms.html" />
     <link rel="prev" title="dta.Movement" href="dta.Movement.html" /> 
   </head>
   <body>
@@ -34,7 +34,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+          <a href="dta.Algorithms.html" title="dta.Algorithms"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="dta.Movement.html" title="dta.Movement"
@@ -74,7 +74,7 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Network.__init__" title="dta.Network.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 </tbody>
 </table>
@@ -160,6 +160,13 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Network.getNumOverlappingConnectors">
+<tt class="descname">getNumOverlappingConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumOverlappingConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of connectors that overlap with a RoadLink or 
+another connector</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Network.getNumRoadLinks">
 <tt class="descname">getNumRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumRoadLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of RoadLinks in the Network(excluding connectors)</p>
@@ -169,6 +176,12 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dt id="dta.Network.getNumRoadNodes">
 <tt class="descname">getNumRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumRoadNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of roadnodes in the network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getNumVirtualLinks">
+<tt class="descname">getNumVirtualLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNumVirtualLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of connectors in the Network</p>
 </dd></dl>
 
 <dl class="method">
@@ -212,6 +225,12 @@ virtual links from startVirtualLinkId</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Network.iterConnectors">
+<tt class="descname">iterConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all the connectors in the network</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Network.iterLinks">
 <tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the link collection</p>
@@ -224,11 +243,50 @@ virtual links from startVirtualLinkId</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Network.mergeSecondaryNetwork">
-<tt class="descname">mergeSecondaryNetwork</tt><big>(</big><em>secondaryNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.mergeSecondaryNetwork" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.Network.iterRoadLinks">
+<tt class="descname">iterRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterRoadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all the RoadLinks in the network (that are not connectors)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.iterRoadNodes">
+<tt class="descname">iterRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.iterRoadNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the road node collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.mergeLinks">
+<tt class="descname">mergeLinks</tt><big>(</big><em>link1</em>, <em>link2</em><big>)</big><a class="headerlink" href="#dta.Network.mergeLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge the two input sequential links. If any of the characteristics of the 
+two links are different (except their length) the method will throw an 
+error</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.mergeSecondaryNetworkBasedOnLinkIds">
+<tt class="descname">mergeSecondaryNetworkBasedOnLinkIds</tt><big>(</big><em>secondaryNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.mergeSecondaryNetworkBasedOnLinkIds" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method will create copies of all the elements of the 
 secondary network that do not exist in the current network 
-and add them to the current network.</p>
+and add them to the current network. The method will merge the 
+networks using node and link ids. Elements of the secondary 
+network having an id that exists in this network will not be 
+coppied.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.moveVirtualNodesToAvoidOverlappingLinks">
+<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Virtual nodes are being moved + or minus 100 feet in either the X or the Y
+dimension to avoid overapping links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.moveVirtualNodesToAvoidShortConnectors">
+<tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connectors are sometimes too short. This method tries to move 
+the virtual node attached to the connector in the vicinity 
+of the current virtual node so that the connector length is 
+greater than Link.MIN_LENGTH_IN_MILES</p>
 </dd></dl>
 
 <dl class="method">
@@ -244,11 +302,29 @@ and add them to the current network.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Network.removeShapePoints">
+<tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.removeShapePoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove shape points from the network</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Network.splitLink">
-<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em><big>)</big><a class="headerlink" href="#dta.Network.splitLink" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em>, <em>splitReverseLink=False</em><big>)</big><a class="headerlink" href="#dta.Network.splitLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.writeLinksToShp">
+<tt class="descname">writeLinksToShp</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#dta.Network.writeLinksToShp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export all the links to a shapefile with the given name (without the shp extension)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.writeNodesToShp">
+<tt class="descname">writeNodesToShp</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#dta.Network.writeNodesToShp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export all the nodes to a shapefile with the given name (without the shp extension)&#8221;</p>
 </dd></dl>
 
 </dd></dl>
@@ -265,8 +341,8 @@ opposing direction then split that too.</p>
   <p class="topless"><a href="dta.Movement.html"
                         title="previous chapter">dta.Movement</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="dta.DynameqNetwork.html"
-                        title="next chapter">dta.DynameqNetwork</a></p>
+  <p class="topless"><a href="dta.Algorithms.html"
+                        title="next chapter">dta.Algorithms</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/_generated/dta.Network.txt"
@@ -296,7 +372,7 @@ opposing direction then split that too.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="dta.DynameqNetwork.html" title="dta.DynameqNetwork"
+          <a href="dta.Algorithms.html" title="dta.Algorithms"
              >next</a> |</li>
         <li class="right" >
           <a href="dta.Movement.html" title="dta.Movement"
