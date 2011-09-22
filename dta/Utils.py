@@ -60,7 +60,7 @@ def crossProduct(p1, p2):
     """ 
     return p1[0]*p2[1] - p2[0]*p1[1]
 
-def lineSegmentsCross(p1, p2, p3, p4):
+def lineSegmentsCross(p1, p2, p3, p4, checkBoundryConditions=False):
     """
     Helper function that determines if line segments, 
     defined as a sequence of pairs 
@@ -78,8 +78,27 @@ def lineSegmentsCross(p1, p2, p3, p4):
     if ((d1 > 0 and d2 < 0) or (d1 < 0 and d2 > 0)) and \
             ((d3 > 0 and d4 < 0) or (d3 < 0 and d4 > 0)):
         return True
-    else:
+    if not checkBoundryConditions:
         return False
+    if d1 == 0 and onSegment(p3, p4, p1):
+        return True
+    elif d2 == 0 and onSegment(p3, p4, p2):
+        return True
+    elif d3 == 0 and onSegment(p1, p2, p3):
+        return True
+    elif d4 == 0 and onSegment(p1, p2, p4):
+        return True
+    return False
+
+def onSegment(pi, pj, pk):
+    """
+    Determines whether a point known to be colinear with a segment lies on that
+    segment
+    """
+    if min(pi[0], pj[0]) <= pk[0] <= min(pi[0], pj[0]) and \
+            min(pi[1], pj[1]) <= pk[1] <= min(pi[1], pj[1]):
+        return True
+    return False
     
 def getMidPoint(p1, p2):
     """

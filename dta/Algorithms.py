@@ -18,9 +18,16 @@ __license__     = """
 
 import sys
 import pdb 
-from dta.Utils import isRightTurn
-from itertools import izip
+from dta.Utils import isRightTurn, lineSegmentsCross
+from itertools import izip, tee, cycle
 
+def pairwise(iterable):
+    
+    a, b = tee(iterable)
+    b = cycle(b) 
+    b.next()
+    return izip(a, b)
+    
 def dfs(net, root=None):
     """
     Non-Recursive depth first search algorithm with 
@@ -237,6 +244,28 @@ def getConvexHull(setOfPoints):
     upper.extend(lower)
     return upper 
 
+def isPointInPolygon(point, polygon):
+    """
+    Returns true if the point is inside the polygon 
+    Point should be a (x,y) tuple or list
+    Polygon is a list of points in clockwise order
+    """
+
+    x, y = point
+    p1 = [0, y]
+    p2 = [x, y]
+    
+    numIntersections = 0
+    for polyPoint1, polyPoint2 in pairwise(polygon):        
+        if lineSegmentsCross(p1, p2, polyPoint1, polyPoint2, checkBoundryConditions=True):
+            numIntersections += 1
+
+    if numIntersections == 0:
+        return False
+    elif numIntersections % 2 == 0:
+        return False
+    return True 
+            
     
     
             

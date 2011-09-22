@@ -26,8 +26,11 @@ from dta.Network import Network
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork 
 
-from dta.Algorithms import dfs, hasPath, getConvexHull, getConvexHull2, getTightHull, getConvexHull3
 from dta.Utils import *
+
+from dta.Algorithms import dfs, hasPath, getConvexHull, \
+    getConvexHull2, getTightHull, getConvexHull3, pairwise, isPointInPolygon
+
 
 def getTestNet():
 
@@ -143,3 +146,42 @@ class TestAlgorithms:
 
         hull = getConvexHull3(data, 2) 
         #writePolygon(hull, "test/gearySubsetHull3")
+
+    def test_pairwise(self):
+        
+        it = range(5)
+
+        result = [(i,j) for i, j in pairwise(it)] 
+        answer = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
+        assert result == answer
+
+    def test_pointInPolygon(self):
+        
+
+        polygon = [[1, 0], [1, 1], [2, 1], [2, 0]] 
+
+        point = (0.5, 0.5)
+        assert not isPointInPolygon(point, polygon)
+        point = (1.5, 0.5)
+        assert isPointInPolygon(point, polygon)
+        point = (2.5, 0.5) 
+        assert not isPointInPolygon(point, polygon)        
+        point = (2.5, 2) 
+        assert not isPointInPolygon(point, polygon)        
+        point = (2.5, -2) 
+        assert not isPointInPolygon(point, polygon)        
+
+
+        #boundary to the right 
+        point = (2, 0.5) 
+        #assert not isPointInPolygon(point, polygon)        
+        #boundary to the left 
+        point = (1, 0.5) 
+        #assert not isPointInPolygon(point, polygon)        
+
+
+
+        polygon = [[0,0], [0, 1], [1, 1], [1, 0]]
+        point = [0.5, 0.5]
+
+        #assert isPointInPolygon(point, polygon)

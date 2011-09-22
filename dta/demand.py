@@ -100,6 +100,8 @@ class Demand(object):
         
         demand = Demand(net, vehClassName, startTime, endTime, timeStep)
 
+        timeStepInMin = self._timeInMin(timeStep)
+
         for i, timePeriod in enumerate(demand.iterTimePeriods()):
 
             timeLabel = demand._datetimeToMilitaryTime(timePeriod) 
@@ -111,7 +113,7 @@ class Demand(object):
             destinations = map(int, input.next().strip().split())
             for j, origin in enumerate(range(net.getNumCentroids())):
                 fields = map(float, input.next().strip().split()) 
-                demand._la[i, j, :] = np.array(fields[1:])
+                demand._la[i, j, :] = np.array(fields[1:]) / ( 60.0 / timeStepInMin)
 
         return demand
 
@@ -234,7 +236,9 @@ class Demand(object):
         outputStream.write('%s\n' % Demand.DATA_SECTION)
         outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
                                          self.endTime.strftime("%H:%M")))
-        
+
+        timeStepInMin = self._timeInMin(self.timeStep)
+
         for i, timePeriod in enumerate(self._timePeriods):
             outputStream.write("SLICE\n%s\n" % timePeriod.strftime("%H:%M"))
             outputStream.write("\t%s\n" % '\t'.join(map(str, self._centroidIds)))
@@ -242,8 +246,7 @@ class Demand(object):
             timeLabel = self._datetimeToMilitaryTime(timePeriod)             
 
             for j, cent in enumerate(self._centroidIds):
-
-                outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % elem for elem in self._la[i, j, :])))
+                outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % (elem / (60.0 / timeStepInMin)) for elem in self._la[i, j, :])))
 
         outputStream.close()
 
