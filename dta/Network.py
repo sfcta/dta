@@ -33,6 +33,7 @@ from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 from .VehicleClassGroup import VehicleClassGroup
 from .Movement import Movement
+from .Algorithms import * 
 
 class Network(object):
     """
@@ -442,18 +443,28 @@ class Network(object):
         """
         Remove the input node from the network
         """
-        #TODO: if you remove a centroid you should remove all virtual links and connectors
-        iLinks = [link for link in nodeToRemove.iterIncomingLinks()]
-        oLinks = [link for link in nodeToRemove.iterOutgoingLinks()]
 
-        for link in iLinks:
-            self.removeLink(link)
+        nodesToRemove = [nodeToRemove]
+        linksToRemove = []
 
-        for link in oLinks:
-            self.removeLink(link)
+        if nodeToRemove.isCentroid():
+            nodesToRemove.extend(nodeToRemove.iterAdjacentNodes())
 
-        del self._nodes[nodeToRemove.getId()] 
+        if nodeToRemove.isCentroid():
+            for link in nodeToRemove.iterAdjacentConnectors():
+                linksToRemove.append(link)
 
+        for link in nodeToRemove.iterAdjacentLinks():
+            linksToRemove.append(link)
+
+        for link in linksToRemove:
+            print "deleting link", link.getId()
+            self.removeLink(link) 
+        
+        for node in nodesToRemove:
+            print "deleting node_", node.getId() 
+            del self._nodes[node.getId()] 
+        
         #TODO: do you want to update the maxIds? 
 
     def splitLink(self, linkToSplit, splitReverseLink=False):
@@ -1000,5 +1011,119 @@ class Network(object):
                             self.mergeLinks(link1, link2) 
                             DtaLogger.info("Merged links  %8d and %8d" % (link1.getId(), link2.getId()))
 
-    
+    def renameLink(self, oldLinkId, newLinkId):
+        """
+        Give the newLinkId to the link with oldLinkId
+        """
+        if self.hasLinkForId(newLinkId):
+            raise DtaError("A link with id %d already exists in the network" % newLinkId)
+        
+        linkToRename = self.getLinkForId(oldLinkId)
 
+        linkToRename._id = newLinkId 
+        del self._linksById[oldLinkId]
+        self._linksById[newLinkId] = linkToRename 
+
+        if newLinkId > self._maxLinkId:
+            self._maxLinkId = newLinkId 
+
+    def renameNode(self, oldNodeId, newNodeId):
+        """
+        Give the node with oldNodeId the new id 
+        """
+        if self.hasNodeForId(newNodeId):
+            raise DtaError("A node with id %d already exists in the network" % newNodeId) 
+        
+        nodeToRename = self.getNodeForId(oldNodeId)
+        if nodeToRename.isCentroid():
+            raise DtaError("I cannot rename centroid %d" % newNodeId) 
+
+        nodeToRename._id = newNodeId 
+
+        if self._maxNodeId < newNodeId:
+            self._maxNodeId = newNodeId 
+
+        del self._nodes[oldNodeId] 
+
+        self._nodes[newNodeId] = nodeToRename 
+
+        for oLink in nodeToRename.iterOutgoingLinks():
+            del self._linksByNodeIdPair[oldNodeId, oLink.getEndNode().getId()]
+            self._linksByNodeIdPair[(oLink.getStartNode().getId(), oLink.getEndNode().getId())] = oLink
+
+        for iLink in nodeToRename.iterIncomingLinks():
+            del self._linksByNodeIdPair[iLink.getStartNode().getId(), oldNodeId]
+            self._linksByNodeIdPair[(iLink.getStartNode().getId(), iLink.getEndNode().getId())] = iLink
+
+
+    def getMaxLinkId(self):
+        """
+        Return the max link Id in the network
+        """
+        return self._maxLinkId
+
+    def getMaxNodeId(self):
+        """
+        REturn the max noe id in the network
+        """
+        return self._maxNodeId
+
+    def mergeSecondaryNetwork(self, secondaryNetwork):
+        """
+        This method will create a polygon around the current 
+        (primary network). Every node or link of the secondary network 
+        that is not in the polygon will be copied. 
+        """ 
+        print "\n\n*********************\nStarting network merge" 
+        primaryPolygon = getConvexHull([(node.getX(), node.getY()) for node in self.iterNodes()])
+
+        sNodesToDelete = []
+        for node in secondaryNetwork.iterNodes():
+
+            #p1 = (link.getStartNode.getX(), link.getStartNode.getY())
+            #p2 = (link.getEndNode.getX(), link.getEndNode.getY())
+
+            point = (node.getX(), node.getY())
+            
+            if isPointInPolygon(point, primaryPolygon):
+                sNodesToDelete.append(node)
+    
+        pdb.set_trace()
+        for sNode in sNodesToDelete:
+            print "deleting node", sNode.getId() 
+            self.removeNode(sNode)
+        
+        """
+        linksToDelete = []
+        for link in secondaryNetwork.iterLinks():
+            if link.isRoadLink():
+                continue
+            linksToDelete.append(link)
+        
+        for l in linksToDelete:
+            secondaryNetwork.removeLink(l)
+
+
+        for sNodeToDelete in sNodesToDelete:
+            if sNodeToDelete.isCentroid():
+                continue
+            secondaryNetwork.removeNode(sNodeToDelete)
+
+        """
+
+    def checkAdjacentNodesExist(self):
+
+        for aNode in self._nodes.itervalues():
+            for aNode in aNode.iterAdjacentNodes():
+                assert self.hasNodeForId(aNode.getId())
+
+    def checkAdjacentLinksExist(self):
+        
+        for aNode in self._nodes.itervalues():
+            for aLink in aNode.iterAdjacentLinks():
+                assert self.hasLinkForId(aLink.getId()) 
+            
+
+
+
+        

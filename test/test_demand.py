@@ -144,8 +144,8 @@ class TestDemand:
         demand = Demand.read(net, fileName)
         assert demand.getNumSlices() == 4
 
-        assert demand.getValue(15, 56, 8) == 4000
-        assert demand.getValue(45, 8, 2) == 34
+        assert demand.getValue(15, 56, 8) == 1000
+        assert demand.getValue(45, 8, 2) == 8.5
 
         demand.setValue(45, 8, 2, 35)
         assert demand.getValue(45, 8, 2) == 35

@@ -100,7 +100,7 @@ class Demand(object):
         
         demand = Demand(net, vehClassName, startTime, endTime, timeStep)
 
-        timeStepInMin = self._timeInMin(timeStep)
+        timeStepInMin = demand._timeInMin(timeStep)
 
         for i, timePeriod in enumerate(demand.iterTimePeriods()):
 

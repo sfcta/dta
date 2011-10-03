@@ -94,5 +94,20 @@ class Centroid(Node):
         #            yield con
         
             
+    def iterAdjacentConnectors(self):
+        """
+        Return True if there is a virtual link and a connetor that 
+        connect to the roadNode
+        """
+        connectors = set()
+        for vLink in self.iterAdjacentLinks():
+            vNode = vLink.getOtherEnd(self)
+            for con in vNode.iterAdjacentLinks():
+                if con.isVirtualLink():
+                    continue
+                connectors.add(con)
+        return iter(connectors) 
+
+
             
         
