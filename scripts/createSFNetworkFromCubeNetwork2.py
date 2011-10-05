@@ -31,7 +31,13 @@ USAGE = """
  """
 
 def writeFeasibleDestinations(net):
-    
+    """
+    This function runs a Depth First Tree to find the 
+    which destinations are feasible from a given origin.
+    This function was used to check the synthetic OD 
+    matrix that was created (function writeDemandTable) 
+    for testing purposes
+    """
     output = open("feasibleDestinations.txt", "w")
     for cen in net.iterCentroids():
         dfs(net, cen)
@@ -50,7 +56,9 @@ def writeFeasibleDestinations(net):
     output.close()
 
 def writeDemandTable(net):
-
+    """
+    This function creates a uniform OD table demand is about 600K vehicles 
+    """
     startTime = datetime.datetime(2010, 1, 1, 6, 30)
     endTime = datetime.datetime(2010, 1, 1, 9, 30)
     timeStep = datetime.timedelta(minutes=15) 
@@ -65,7 +73,11 @@ def writeDemandTable(net):
     return demand
     
 def removePartOfTheNetwork(net):
-
+    """
+    This function removes all the nodes that are south of 
+    node 4761. This function was used earlier in the 
+    development process
+    """
     n = net.getNodeForId(4761)
     nodesToDelete = []
     for node in net.iterNodes():
@@ -76,7 +88,10 @@ def removePartOfTheNetwork(net):
         net.removeNode(node)
 
 def removeVerySmallLinks(net):
-
+    """
+    This function removes very small links from the 
+    network to avoid Dynameq errors 
+    """
     linksToDelete = []
     for link in net.iterLinks():
         if link.isRoadLink():
@@ -92,7 +107,9 @@ def removeVerySmallLinks(net):
     print "Number of links to delete", len(linksToDelete)
 
 def collectStats(net):
-
+    """
+    This function prints the number of shape points in the network
+    """
     numShapePoints = 0
     for node in sanfranciscoCubeNet.iterNodes():
         if node.isShapePoint():
@@ -120,7 +137,10 @@ def collectStats(net):
             
 
 def removeOverlappingRoadLinks(net):
-
+    """
+    this function removes the overlapping links from the 
+    network. Used in the earlier steps of the development
+    """
     linksToDelete = []
     for node in net.iterNodes():
         if not node.isRoadNode():
@@ -146,9 +166,10 @@ def removeOverlappingRoadLinks(net):
         net.removeLink(link) 
 
 def getTestScenario(): 
-
-    projectFolder = os.path.join(os.path.dirname(__file__), 
-                  '..', 'testdata', 'dynameqNetwork_gearySubset')
+    """
+    return a test scenario
+    """
+    projectFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_gearySubset"
     prefix = 'smallTestNet' 
 
     scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
@@ -162,6 +183,7 @@ if __name__ == '__main__':
     
     dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
 
+    #this is just a test scenario that will be used for multiple networks
     sanfranciscoScenario = getTestScenario() 
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
@@ -170,12 +192,10 @@ if __name__ == '__main__':
     #                                    endTime=datetime.time(hour=1))
     #gearyScenario.read(dir=".", file_prefix="Base_Final")
     #gearyScenario.write(dir="test", file_prefix="geary")
-    
-    gearynetDta = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-    gearynetDta.read(dir="../testdata/dynameqNetwork_geary", file_prefix="Base")
 
-    gearynetDta.checkAdjacentNodesExist()
-    gearynetDta.checkAdjacentLinksExist()
+    #read the gearyDTA network    
+    gearynetDta = dta.DynameqNetwork(scenario=sanfranciscoScenario)
+    gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
 
     #gearynetDta.write(dir="test", file_prefix="geary")
     
@@ -183,13 +203,12 @@ if __name__ == '__main__':
     # the Cube network files (which have been exported to dbfs.)
 
                            
-
     #projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_downtownSF" 
     projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty" 
     #sanfranciscoScenario.read(dir=os.path.join(projectFolder2, "dynameqNetwork"), file_prefix="sf") 
-        
-    sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
 
+            
+    sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
 
     sanfranciscoCubeNet.readCSVs(
       nodesCsvFilename=os.path.join(projectFolder2, "nodes.csv"), 
@@ -226,19 +245,16 @@ if __name__ == '__main__':
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
        )
 
-
-    sanfranciscoCubeNet.checkAdjacentNodesExist()
-    sanfranciscoCubeNet.checkAdjacentLinksExist() 
     
+    #create the San Francisco network 
     sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-
-
+    #copy the Cube SF network to a dynameq one
     sanfrancsicoDynameqNet.deepcopy(sanfranciscoCubeNet)
+    
+    #remove the shapepoints from the network
     sanfrancsicoDynameqNet.removeShapePoints()
 
-    sanfrancsicoDynameqNet.checkAdjacentNodesExist()
-    sanfrancsicoDynameqNet.checkAdjacentLinksExist() 
-
+    #this is not necessary
     #removePartOfTheNetwork(sanfrancsicoDynameqNet)
     
     #writeFeasibleDestinations(sanfrancsicoDynameqNet)
@@ -250,6 +266,7 @@ if __name__ == '__main__':
     # add virtual nodes and links between Centroids and RoadNodes
     sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
 
+    #remove nodes from the network that are not connected to the network
     nodes = [node for node in sanfrancsicoDynameqNet.iterRoadNodes() if node.getCardinality() == (0,0)]
     for node in nodes:
         sanfrancsicoDynameqNet.removeNode(node)
@@ -257,13 +274,16 @@ if __name__ == '__main__':
 
     sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
     sanfrancsicoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks()
+   
     #removeOverlappingRoadLinks(sanfrancsicoDynameqNet)
+    
     removeVerySmallLinks(sanfrancsicoDynameqNet)
     sanfrancsicoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
 
     outputFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty"
 
-    gearynetDta.mergeSecondaryNetwork(sanfrancsicoDynameqNet)
+    #This is not ready yet and will throw and excep
+    #gearynetDta.mergeSecondaryNetwork(sanfrancsicoDynameqNet)
 
     sanfrancsicoDynameqNet.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")
     sanfranciscoScenario.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")   

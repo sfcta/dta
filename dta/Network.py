@@ -458,11 +458,9 @@ class Network(object):
             linksToRemove.append(link)
 
         for link in linksToRemove:
-            print "deleting link", link.getId()
             self.removeLink(link) 
         
         for node in nodesToRemove:
-            print "deleting node_", node.getId() 
             del self._nodes[node.getId()] 
         
         #TODO: do you want to update the maxIds? 
