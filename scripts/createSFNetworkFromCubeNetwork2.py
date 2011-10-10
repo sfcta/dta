@@ -15,6 +15,8 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import shapefile
+
 import pdb 
 import random 
 import datetime
@@ -29,6 +31,54 @@ USAGE = """
  python createSFNetworkFromCubeNetwork.py
  
  """
+
+def readShapefiles(): 
+    """
+    Read the nodes and links from the shapefiles below
+    """
+
+    linkShapefile = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/SanFranciscoSubArea_2010_Link"
+    nodeShapefile = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/SanFranciscoSubArea_2010_Nodes"
+
+    sanfranciscoScenario = getTestScenario() 
+    cubeNetwork = dta.CubeNetwork(sanfranciscoScenario)
+    
+    cubeNetwork.readFromShapefiles(
+        nodesShpFilename=nodeShapefile,
+        nodeVariableNames=["N","X","Y"],
+        linksShpFilename=linkShapefile,
+        linkVariableNames=["A","B","TOLL","USE",
+                           "CAP","AT","FT","STREETNAME","TYPE",
+                           "MTYPE","SPEED","DISTANCE","TIME",
+                           "LANE_AM","LANE_OP","LANE_PM",
+                           "BUSLANE_AM","BUSLANE_OP","BUSLANE_PM",
+                           "TOLLAM_DA","TOLLAM_SR2","TOLLAM_SR3",
+                           "TOLLPM_DA","TOLLPM_SR2","TOLLPM_SR3",
+                           "TOLLEA_DA","TOLLEA_SR2","TOLLEA_SR3",
+                           "TOLLMD_DA","TOLLMD_SR2","TOLLMD_SR3",
+                           "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3",
+                           "VALUETOLL_FLAG","PASSTHRU",
+                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
+                           ],
+        centroidIds                      = range(1,999),
+        nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
+        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_UNSIGNALIZED",
+        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
+        nodeLabelEvalStr                 = "None",
+        nodeLevelEvalStr                 = "None",
+        linkReverseAttachedIdEvalStr     = "None", #TODO: fix?
+        linkFacilityTypeEvalStr          = "int(FT)",
+        linkLengthEvalStr                = "float(DISTANCE)",
+        linkFreeflowSpeedEvalStr         = "float(SPEED)",
+        linkEffectiveLengthFactorEvalStr = "1",
+        linkResponseTimeFactorEvalStr    = "1.05",
+        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
+        linkRoundAboutEvalStr            = "False",
+        linkLevelEvalStr                 = "None",
+        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
+        )
+
+    #cubeNetwork.applyTurnProhibitions("/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/turnsam.pen")
 
 def writeFeasibleDestinations(net):
     """

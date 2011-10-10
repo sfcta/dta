@@ -15,6 +15,8 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import shapefile
+
 import math
 import os
 import sys, csv
@@ -54,7 +56,6 @@ class DynameqNetwork(Network):
 <ADVN_NETWORK_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/    
 """
-
 
     def __init__(self, scenario):
         """
@@ -731,7 +732,7 @@ class DynameqNetwork(Network):
         ycoord      = float(fields[3])
         
         link = self.getLinkForId(linkId)
-        link.addShapePoint(sequenceNum, xcoord, ycoord)
+        link.addShapePoint(xcoord, ycoord)
 
     def _writeShapePointsToAdvancedFile(self, advancedfile_object):
         """
@@ -746,12 +747,12 @@ class DynameqNetwork(Network):
             link = self._linksById[linkId]
             
             if isinstance(link, RoadLink) or isinstance(link, Connector):
-                for seqnum in sorted(link._shapePoints.keys()):
+                for seqnum, (x,y) in enumerate(link._shapePoints):
                     advancedfile_object.write("%9d %14d %32f %32f\n" % 
                                               (linkId, 
                                                seqnum,
-                                               link._shapePoints[seqnum][0],
-                                               link._shapePoints[seqnum][1]))
+                                               x,
+                                               y))
                     
                     count += 1
         DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))

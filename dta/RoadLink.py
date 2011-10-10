@@ -82,7 +82,7 @@ class RoadLink(Link):
         self._incomingMovements         = []  #: list of incoming Movements
         self._startShift                = None
         self._endShift                  = None
-        self._shapePoints               = {}  #: sequenceNum -> (x,y)
+        self._shapePoints               = []  #: sequenceNum -> (x,y)
         self._centerline                = self.getCenterLine()
     
     def addLanePermission(self, laneId, vehicleClassGroup):
@@ -121,11 +121,11 @@ class RoadLink(Link):
         """
         return (self._startShift, self._endShift)
     
-    def addShapePoint(self, sequenceNum, x, y):
+    def addShapePoint(self, x, y):
         """
-        Adds a shape point to the link for the given sequenceNum
+        Append a shape point to the link
         """
-        self._shapePoints[sequenceNum] = (x,y)
+        self._shapePoints.append((x,y))
 
     def hasOutgoingMovement(self, nodeId):
         """

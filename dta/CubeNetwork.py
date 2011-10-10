@@ -15,11 +15,16 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+import pdb
+import shapefile
+
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
+from itertools import izip 
+
 from .Centroid import Centroid
 from .Connector import Connector
 from .DtaError import DtaError
@@ -46,6 +51,7 @@ NETI[1]=%s
  LINKO=%s\links.csv ,FORMAT=SDF, INCLUDE=%s
 ENDRUN    
 """
+    
     def __init__(self, scenario):
         """
         Constructor.  Initializes to an empty network.
@@ -284,3 +290,133 @@ ENDRUN
         DtaLogger.info("Read  %8d %-16s from %s" % (countConnectors, "connectors", linksCsvFilename))
         DtaLogger.info("Read  %8d %-16s from %s" % (countRoadLinks, "roadlinks", linksCsvFilename))
         linksFile.close()
+        
+    def readFromShapefiles(self, nodesShpFilename, nodeVariableNames,
+                 linksShpFilename, linkVariableNames,
+                 centroidIds,
+                 nodeGeometryTypeEvalStr,
+                 nodeControlEvalStr,
+                 nodePriorityEvalStr,
+                 nodeLabelEvalStr,
+                 nodeLevelEvalStr,
+                 linkReverseAttachedIdEvalStr,
+                 linkFacilityTypeEvalStr,
+                 linkLengthEvalStr,
+                 linkFreeflowSpeedEvalStr,
+                 linkEffectiveLengthFactorEvalStr,
+                 linkResponseTimeFactorEvalStr,
+                 linkNumLanesEvalStr,
+                 linkRoundAboutEvalStr,
+                 linkLevelEvalStr,
+                 linkLabelEvalStr):
+
+        sf = shapefile.Reader(nodesShpFilename)
+        shapes = sf.shapes()
+        records = sf.records()
+
+        fields = [field[0] for field in sf.fields[1:]]
+        for shape, recordValues in izip(shapes, records):
+            x, y = shape.points[0]
+            localsdict = dict(izip(fields, recordValues))
+            n = int(localsdict["N"])
+            
+            newNode = None
+            if n in centroidIds:
+                newNode = Centroid(id=n,x=x,y=y,
+                                   label=eval(nodeLabelEvalStr, globals(), localsdict),
+                                   level=eval(nodeLevelEvalStr, globals(), localsdict))
+            else:
+                newNode = RoadNode(id=n,x=x,y=y,
+                                   geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
+                                   control=eval(nodeControlEvalStr, globals(), localsdict),
+                                   priority=eval(nodePriorityEvalStr, globals(), localsdict),
+                                   label=eval(nodeLabelEvalStr, globals(), localsdict),
+                                   level=eval(nodeLevelEvalStr, globals(), localsdict))
+            try:
+                self.addNode(newNode)
+            except DtaError, e:
+                print e
+
+        sf = shapefile.Reader(linksShpFilename)
+        shapes = sf.shapes()
+        records = sf.records()
+
+        fields = [field[0] for field in sf.fields[1:]]
+        for shape, recordValues in izip(shapes, records):
+
+            localsdict = dict(zip(fields, recordValues))
+            startNodeId = int(localsdict["A"])
+            endNodeId = int(localsdict["B"])
+
+            try:
+                startNode = self.getNodeForId(startNodeId)
+                endNode = self.getNodeForId(endNodeId)
+            except DtaError, e:
+                print e 
+                continue
+
+            newLink = None
+            if isinstance(startNode, Centroid) or isinstance(endNode, Centroid):
+                localsdict['isConnector'] = True
+                try: 
+                    newLink = Connector \
+                        (id                      = self.getMaxLinkId() + 1,
+                        startNode               = startNode,
+                        endNode                 = endNode,
+                        reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
+                        #facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
+                        length                  = -1, # eval(linkLengthEvalStr, globals(), localsdict),
+                        freeflowSpeed           = 30, #eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
+                        effectiveLengthFactor   = 1.0, #eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),
+                        responseTimeFactor      = 1.0, # eval(linkResponseTimeFactorEvalStr, globals(), localsdict),
+                        numLanes                = 1, # eval(linkNumLanesEvalStr, globals(), localsdict),
+                        roundAbout              = 0, # eval(linkRoundAboutEvalStr, globals(), localsdict),
+                        level                   = 0, #eval(linkLevelEvalStr, globals(), localsdict),
+                        label                   = "") # eval(linkLabelEvalStr, globals(), localsdict))
+                except DtaError, e:
+                    DtaLogger.error("%s" % str(e))
+                    continue
+            else:
+                localsdict['isConnector'] = False
+                try: 
+                    newLink = RoadLink \
+                       (id                      = self.getMaxLinkId()+1,
+                        startNode               = startNode,
+                        endNode                 = endNode,
+                        reverseAttachedLinkId   = eval(linkReverseAttachedIdEvalStr, globals(), localsdict),
+                        facilityType            = eval(linkFacilityTypeEvalStr, globals(), localsdict),
+                        length                  = -1, # eval(linkLengthEvalStr, globals(), localsdict),
+                        freeflowSpeed           = 30, #eval(linkFreeflowSpeedEvalStr, globals(), localsdict),
+                        effectiveLengthFactor   = 1.0, #eval(linkEffectiveLengthFactorEvalStr, globals(), localsdict),
+                        responseTimeFactor      = 1.0, #eval(linkResponseTimeFactorEvalStr, globals(), localsdict),
+                        numLanes                = 1, #eval(linkNumLanesEvalStr, globals(), localsdict),
+                        roundAbout              = 0, #eval(linkRoundAboutEvalStr, globals(), localsdict),
+                        level                   = 0, #eval(linkLevelEvalStr, globals(), localsdict),
+                        label                   = 0) #eval(linkLabelEvalStr, globals(), localsdict))
+                except DtaError, e:
+                    DtaLogger.error("%s" % str(e))
+                    continue
+            newLink._shapePoints = shape.points
+            self.addLink(newLink)
+            
+    def applyTurnProhibitions(self, fileName):
+        """
+        Apply the turn prohibitions found in the filename
+        """
+        inputStream = open(fileName, 'r')
+
+        for line in inputStream:
+            fields = line.strip().split()
+            startNodeId = int(fields[0])
+            nodeId = int(fields[1])
+            endNodeId = int(fields[2])
+
+            try:
+                link = self.getLinkForNodeIdPair(startNodeId, nodeId)
+                mov = link.getOutgoingMovement(endNodeId)                
+            except DtaError, e:
+                print str(e)
+                continue
+            
+            link.deleteOutgoingMovement(mov) 
+        

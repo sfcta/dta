@@ -41,10 +41,11 @@ from dta.DtaError import DtaError
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.Utils import lineSegmentsCross
 
+mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
 
 def getTestScenario(): 
 
-    projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+    projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
     scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
@@ -54,7 +55,7 @@ def getTestScenario():
 
 def getTestNet():
 
-    projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+    projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
     scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
@@ -69,7 +70,7 @@ def getTestNet():
 
 def getDowntownSF():
 
-    projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
+    projectFolder = os.path.join(mainFolder, 'cubeSubarea_downtownSF/dynameqNetwork')
     prefix = 'sf' 
 
     scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
@@ -668,7 +669,7 @@ class TestNetwork(object):
     def test_readScenario(self):
 
         net = getTestNet()
-        projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+        projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
 
         prefix = 'smallTestNet' 
         sc = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
@@ -684,7 +685,7 @@ class TestNetwork(object):
         net = getTestNet() 
         sc = net.getScenario() 
 
-        sc.write(os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
+        sc.write(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
 
     def test_readDynameqNetwork(self):
 
@@ -697,7 +698,7 @@ class TestNetwork(object):
 
         net = getTestNet()
 
-        net.write(os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
+        net.write(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
 
               
     def test_mycopy(self):
@@ -826,7 +827,7 @@ class TestNetwork(object):
         net.moveVirtualNodesToAvoidOverlappingLinks()
         assert net.getNumOverlappingConnectors()  == 0
 
-        outputFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
+        outputFolder = os.path.join(mainFolder, 'cubeSubarea_downtownSF/dynameqNetwork')
         prefix = 'sf5' 
         net.write(dir=outputFolder, file_prefix=prefix)
 
@@ -963,7 +964,7 @@ class TestNetwork(object):
 
         net = getTestNet() 
         
-        projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
+        projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
         prefix = 'smallTestNet2' 
 
         maxLinkId = net.getMaxLinkId() 
