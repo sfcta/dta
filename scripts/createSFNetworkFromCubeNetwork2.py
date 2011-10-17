@@ -246,15 +246,35 @@ if __name__ == '__main__':
     #read the gearyDTA network    
     gearynetDta = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
-
-    #gearynetDta.write(dir="test", file_prefix="geary")
     
+    #gearynetDta.writeNodesToShp(os.path.join("/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty", "geary_nodes"))
+    #gearynetDta.writeLinksToShp(os.path.join("/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty", "geary_links"))
+
+    #projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty"
+    projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"
+
+    #projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_downtownSF" 
+    #outputFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty"
+    outputFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"
+
+    #polygon1 = dta.Algorithms.getConvexHull([(node.getX(), node.getY()) for node in gearynetDta.iterNodes()])
+    #polygon2 = dta.Algorithms.getConvexHull([link.getMidPoint() for link in gearynetDta.iterLinks() if not link.isVirtualLink()])
+    #polygon3 = dta.Algorithms.getConvexHull3([link.getMidPoint() for link in gearynetDta.iterLinks() if not link.isVirtualLink()], 100)
+
+    #dta.Utils.writePolygon(polygon1, os.path.join(projectFolder2, "cHull1"))
+    #dta.Utils.writePolygon(polygon2, os.path.join(projectFolder2, "cHull2"))
+    #dta.Utils.writePolygon(polygon3, os.path.join(projectFolder2, "cHull3"))
+    
+    #gearynetDta.write(dir="test", file_prefix="geary")
+    gearynetDta.writeNodesToShp(os.path.join(outputFolder, "geary_nodes"))
+    gearynetDta.writeLinksToShp(os.path.join(outputFolder, "geary_links"))
+
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
 
                            
-    #projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_downtownSF" 
-    projectFolder2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty" 
+
+
     #sanfranciscoScenario.read(dir=os.path.join(projectFolder2, "dynameqNetwork"), file_prefix="sf") 
 
             
@@ -295,6 +315,9 @@ if __name__ == '__main__':
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
        )
 
+    sanfranciscoCubeNet.readLinkShape("/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/stclines.shp")
+    sanfranciscoCubeNet.writeNodesToShp(os.path.join(outputFolder, "sf9_nodes"))
+    sanfranciscoCubeNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
     
     #create the San Francisco network 
     sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
@@ -330,14 +353,29 @@ if __name__ == '__main__':
     removeVerySmallLinks(sanfrancsicoDynameqNet)
     sanfrancsicoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
 
-    outputFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty"
+
 
     #This is not ready yet and will throw and excep
-    #gearynetDta.mergeSecondaryNetwork(sanfrancsicoDynameqNet)
+
+    #gearynetDta.areIDsUnique(sanfrancsicoDynameqNet)
+    gearynetDta.mergeSecondaryNetwork(sanfrancsicoDynameqNet)
+    
 
     sanfrancsicoDynameqNet.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")
     sanfranciscoScenario.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")   
 
+    sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(outputFolder, "sf12_nodes"))
+    sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(outputFolder, "sf12_links"))
+
+    #gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
+    
+    gearynetDta.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf13")
+    #"/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
+    gearynetDta.writeNodesToShp(os.path.join(outputFolder, "sf13_nodes"))
+    gearynetDta.writeLinksToShp(os.path.join(outputFolder, "sf13_links"))
+
+
+    
     exit(0)
     
     # Merge them together

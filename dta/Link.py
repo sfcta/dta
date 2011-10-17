@@ -166,4 +166,15 @@ class Link(object):
             return True 
         return False 
         
-        
+    def getStartNodeId(self):
+        """
+        Return the id of the start node
+        """
+        return self.getStartNode().getId()
+
+    def getEndNodeId(self):
+        """
+        Return the id of the end node
+        """
+        return self.getEndNode().getId()
+    

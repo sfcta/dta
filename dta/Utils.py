@@ -16,6 +16,7 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import copy  
+import sys
 
 import dta
 import shapefile 
@@ -129,5 +130,3 @@ def getReverseNetwork(net):
         rNet.addLink(rLink)
         
     return rNet 
-
-

@@ -420,3 +420,27 @@ ENDRUN
             
             link.deleteOutgoingMovement(mov) 
         
+    def readLinkShape(self, linkShapefile):
+        """
+        Read the link shape for each link in the input shapefile 
+        and apply it to the cube link
+        """ 
+
+        sf = shapefile.Reader(linkShapefile)
+        shapes = sf.shapes()
+        records = sf.records()
+
+        fields = [field[0] for field in sf.fields]
+        for shape, recordValues in izip(shapes, records):
+
+            localsdict = dict(zip(fields, recordValues))
+            #startNodeId = int(localsdict["A"])
+            #endNodeId = int(localsdict["B"])
+            startNodeId = int(recordValues[-2])
+            endNodeId = int(recordValues[-1])
+
+            if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
+                link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
+                link._shapePoints = shape.points
+       
+

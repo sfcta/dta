@@ -18,6 +18,8 @@ __license__     = """
 
 import sys
 import pdb 
+import math 
+
 from dta.Utils import isRightTurn, lineSegmentsCross
 from itertools import izip, tee, cycle
 
@@ -172,8 +174,8 @@ def getConvexHull3(points, step):
     bigHull = []
     for i, j in izip(hullIndices, hullIndices[1:]):
         
-        print i, j
-        print points[i:j+1]
+        #print i, j
+       # print points[i:j+1]
         partialHull = getHull(points[i:j+1])
         partialHull.pop()
         bigHull.extend(partialHull)
@@ -266,6 +268,21 @@ def isPointInPolygon(point, polygon):
         return False
     return True 
             
+def getClosestNode(net, inputNode):
+    """
+    Return the closest node in the input network
+    """
+    minDist = sys.maxint 
+    closestNode = None
+    for node in net.iterNodes():
+        dist = (node.getX() - inputNode.getX()) ** 2 + (node.getY() - inputNode.getY()) ** 2
+        if dist < minDist:
+            minDist = dist 
+            closestNode = node 
+
+    return closestNode, math.sqrt(minDist) 
+            
+    
     
     
             

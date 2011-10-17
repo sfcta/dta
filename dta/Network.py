@@ -418,7 +418,6 @@ class Network(object):
         """
         Remove the input link from the network
         """
-
         #remove all incoming and ougoing movements from the link 
         if not linkToRemove.isVirtualLink():
             outMovsToRemove = [mov for mov in linkToRemove.iterOutgoingMovements()]
@@ -430,7 +429,6 @@ class Network(object):
             for mov in inMovsToRemove:
                 mov.getIncomingLink().removeOutgoingMovement(mov)
 
-        #TODO: ugly code below 
         linkToRemove.getStartNode()._removeOutgoingLink(linkToRemove)
         linkToRemove.getEndNode()._removeIncomingLink(linkToRemove)
 
@@ -443,25 +441,17 @@ class Network(object):
         """
         Remove the input node from the network
         """
-
-        nodesToRemove = [nodeToRemove]
+        if not self.hasNodeForId(nodeToRemove.getId()):
+            raise DtaError("Network does not have node %d" % nodeToRemove.getId())
+        
         linksToRemove = []
-
-        if nodeToRemove.isCentroid():
-            nodesToRemove.extend(nodeToRemove.iterAdjacentNodes())
-
-        if nodeToRemove.isCentroid():
-            for link in nodeToRemove.iterAdjacentConnectors():
-                linksToRemove.append(link)
-
         for link in nodeToRemove.iterAdjacentLinks():
             linksToRemove.append(link)
 
         for link in linksToRemove:
             self.removeLink(link) 
         
-        for node in nodesToRemove:
-            del self._nodes[node.getId()] 
+        del self._nodes[nodeToRemove.getId()] 
         
         #TODO: do you want to update the maxIds? 
 
@@ -614,22 +604,115 @@ class Network(object):
         """
         return self._scenario 
 
-    def _areIDsUnique(self, net1, net2):
+    def areIDsUnique(self, net2):
         """
         Returns True if the node and link Ids are unique 
         """
-        nodeIds1 = set([node.getId() for node in net1.iterNodes()])
-        nodeIds2 = set([node.getId() for node in net2.iterNodes()])
+        areIDsUnique = True
+        #RoadNodes 
+        nodeIds1 = set([node.getId() for node in self.iterRoadNodes()])
+        nodeIds2 = set([node.getId() for node in net2.iterRoadNodes()])
+        commonNodeIds = ",".join(["%d" % node
+                                for node in nodeIds1.intersection(nodeIds2)])
+        if commonNodeIds != "":            
+            DtaLogger.error("The two networks have the following road nodes with a common id: %s" % commonNodeIds)
+            areIDsUnique = False            
 
-        linkIds1 = set([link.getId() for link in net1.iterLinks()])
-        linkIds2 = set([linkl.getId() for link in net2.iterLinks()])
+        #Virtual nodes
+        nodeIds1 = set([node.getId() for node in self.iterVirtualNodes()])
+        nodeIds2 = set([node.getId() for node in net2.iterVirtualNodes()])
+        commonNodeIds = ",".join(["%d" % node
+                                for node in nodeIds1.intersection(nodeIds2)])
+        if commonNodeIds != "":            
+            DtaLogger.error("The two networks have the following virtual nodes with a common id: %s" % commonNodeIds)
+            areIDsUnique = False 
 
-        if nodeIds1.intersection(nodeIds2) == set() and \
-                linkIds1.intersection(linkIds2) == set():
-            return True
-        return False 
+        #centroids
+        nodeIds1 = set([node.getId() for node in self.iterCentroids()])
+        nodeIds2 = set([node.getId() for node in net2.iterCentroids()])
+        commonNodeIds = ",".join(["%d" % node
+                                for node in nodeIds1.intersection(nodeIds2)]) 
+        if commonNodeIds != "":            
+            DtaLogger.error("The two networks have the following virtual nodes with a common id: %s" % commonNodeIds)
+            areIDsUnique = False 
         
+        #RoadLinks
+        linkIds1 = set([link.getId() for link in self.iterRoadLinks()])
+        linkIds2 = set([link.getId() for link in net2.iterRoadLinks()])
+
+        commonLinkIds = ",".join(["%d" % link for link in linkIds1.intersection(linkIds2)])
+        if commonLinkIds != "":
+            DtaLogger.error("The two networks have the following common roadlinks %s" % commonLinkIds)
+            areIDsUnique = False                          
+
+        #virtual links
+        linkIds1 = set([link.getId() for link in self.iterRoadLinks()])
+        linkIds2 = set([link.getId() for link in net2.iterRoadLinks()])
+
+        commonLinkIds = ",".join(["%d" % link for link in linkIds1.intersection(linkIds2)])
+        
+        if commonLinkIds != "":
+            DtaLogger.error("The two networks have the following common virtual links %s" % commonLinkIds)
+            areIDsUnique = False                          
+
+        #connectors 
+        linkIds1 = set([link.getId() for link in self.iterConnectors()])
+        linkIds2 = set([link.getId() for link in net2.iterConnectors()])
+
+        commonLinkIds = ",".join(["%d" % link for link in linkIds1.intersection(linkIds2)])
+        
+        if commonLinkIds != "":
+            DtaLogger.error("The two networks have the following common connectors %s" % commonLinkIds)
+            areIDsUnique = False
+
+        return areIDsUnique
+
     def mergeSecondaryNetworkBasedOnLinkIds(self, secondaryNetwork):
+        """
+        This method will add all the elements of the secondary
+        network to the current one. The method will throw an
+        exception if there is an element of the current and
+        secondary network have a common id
+        """ 
+
+        if not self.areIDsUnique(secondaryNetwork):
+            raise DtaError("The two networks cannot be merge because they "
+                           "have conflicting node and/or link ids") 
+
+        #copy the secondary network 
+        for node in secondaryNetwork.iterNodes():            
+            cNode = copy.copy(node) 
+            cNode._incomingLinks = []
+            cNode._outgoingLinks = []
+            self.addNode(cNode)
+
+        for link in secondaryNetwork.iterLinks():
+            cLink = copy.copy(link)
+            cLink._startNode = self.getNodeForId(link._startNode.getId())
+            cLink._endNode = self.getNodeForId(link._endNode.getId())
+            if link.isRoadLink() or link.isConnector():
+                cLink._outgoingMovements = []
+                cLink._incomingMovements = [] 
+            self.addLink(cLink) 
+
+        for link in secondaryNetwork.iterLinks():
+            if link.isRoadLink() or link.isConnector():
+                for mov in link.iterOutgoingMovements():
+                    cLink = self.getLinkForId(link.getId())
+                    cMov = copy.copy(mov)
+                    cMov._node = self.getNodeForId(mov._node.getId())
+                    try: 
+                        cMov._incomingLink = self.getLinkForId(mov._incomingLink.getId())                    
+                        cMov._outgoingLink = self.getLinkForId(mov._outgoingLink.getId())
+                        cLink.addOutgoingMovement(cMov) 
+                    except DtaError, e:
+                        DtaLogger.error(str(e))
+
+
+
+    
+        
+    def mergeSecondaryNetworkBasedOnLinkIds2(self, secondaryNetwork):
         """
         This method will create copies of all the elements of the 
         secondary network that do not exist in the current network 
@@ -670,7 +753,7 @@ class Network(object):
 
         nodesToSkip = set()
         linksToSkip = set()
-
+        
         #first find the common centroids and skip all the links associated with them
         for node in secondaryNetwork.iterNodes():
 
@@ -1073,55 +1156,140 @@ class Network(object):
         that is not in the polygon will be copied. 
         """ 
         print "\n\n*********************\nStarting network merge" 
-        primaryPolygon = getConvexHull([(node.getX(), node.getY()) for node in self.iterNodes()])
+        #primaryPolygon = getConvexHull([(node.getX(), node.getY()) for node in self.iterNodes()])
+        primaryPolygon = getConvexHull([link.getMidPoint() for link in self.iterLinks() if not link.isVirtualLink()])        
 
+        exitConnectors = []
+        entryConnectors = []
+        #the follwoing code will identify external links. Some of those links will be connectors
+        # in the primary network and some of them may be roadway links. You do not need to add 
+        # roadway links
+        for sLink in secondaryNetwork.iterLinks():
+            if not sLink.isRoadLink():
+                continue
+            point1 = (sLink.getStartNode().getX(), sLink.getStartNode().getY())
+            point2 = (sLink.getEndNode().getX(), sLink.getEndNode().getY())
+            if isPointInPolygon(point1, primaryPolygon) and not isPointInPolygon(point2, primaryPolygon):
+                exitConnectors.append(sLink)
+            if not isPointInPolygon(point1, primaryPolygon) and isPointInPolygon(point2, primaryPolygon):
+                entryConnectors.append(sLink)
+
+        #print "\nEntryConnectors", [(link.getStartNodeId(), link.getEndNodeId()) for link in entryConnectors]
+        #print "\nExit connectors", [(link.getStartNodeId(), link.getEndNodeId()) for link in exitConnectors]
+       
+        #delete all the centroids in the primary polygon
         sNodesToDelete = []
-        for node in secondaryNetwork.iterNodes():
-
-            #p1 = (link.getStartNode.getX(), link.getStartNode.getY())
-            #p2 = (link.getEndNode.getX(), link.getEndNode.getY())
-
-            point = (node.getX(), node.getY())
+        numCentroidsToDelete = 0
+        for sCentroid in secondaryNetwork.iterCentroids():
+            point = (sCentroid.getX(), sCentroid.getY())
             
             if isPointInPolygon(point, primaryPolygon):
-                sNodesToDelete.append(node)
-    
-        pdb.set_trace()
+                sNodesToDelete.append(sCentroid)
+                numCentroidsToDelete += 1
+                for vNode in sCentroid.iterAdjacentNodes():
+                    sNodesToDelete.append(vNode)
+
         for sNode in sNodesToDelete:
-            print "deleting node", sNode.getId() 
-            self.removeNode(sNode)
-        
-        """
-        linksToDelete = []
-        for link in secondaryNetwork.iterLinks():
-            if link.isRoadLink():
-                continue
-            linksToDelete.append(link)
-        
-        for l in linksToDelete:
-            secondaryNetwork.removeLink(l)
-
-
-        for sNodeToDelete in sNodesToDelete:
-            if sNodeToDelete.isCentroid():
-                continue
-            secondaryNetwork.removeNode(sNodeToDelete)
-
-        """
-
-    def checkAdjacentNodesExist(self):
-
-        for aNode in self._nodes.itervalues():
-            for aNode in aNode.iterAdjacentNodes():
-                assert self.hasNodeForId(aNode.getId())
-
-    def checkAdjacentLinksExist(self):
-        
-        for aNode in self._nodes.itervalues():
-            for aLink in aNode.iterAdjacentLinks():
-                assert self.hasLinkForId(aLink.getId()) 
+            secondaryNetwork.removeNode(sNode)
             
+        DtaLogger.info("Deleted %d centroids from the secondary network" % numCentroidsToDelete)
 
+        #delete all the nodes and their associated links in the primary region
+        sNodesToDelete = set()
+        for sRoadNode in secondaryNetwork.iterRoadNodes():
+            point = (sRoadNode.getX(), sRoadNode.getY())
+            if isPointInPolygon(point, primaryPolygon):
+                sNodesToDelete.add(sRoadNode)
 
-
+                #TODO: why do I need this/ 
+                for link in sRoadNode.iterAdjacentLinks():
+                    if link.isConnector():
+                        sNodesToDelete.add(link.getOtherEnd(sRoadNode))
         
+        for sNode in sNodesToDelete:
+            secondaryNetwork.removeNode(sNode)
+
+        DtaLogger.info("Deleted %d roadNodes from the secondary network" % len(sNodesToDelete))            
+        
+        #rename all the nodes in the secondary network that conflict with primary nodes
+        for sNode in secondaryNetwork.iterNodes():
+            if self.hasNodeForId(sNode.getId()):
+                secondaryNetwork.renameNode(sNode.getId(), max(secondaryNetwork.getMaxNodeId() + 1, self.getMaxNodeId() + 1))
+                
+        #rename all the links in the secondary network that conflict with primary links
+        for sLink in secondaryNetwork.iterLinks():
+            if self.hasLinkForId(sLink.getId()):
+                secondaryNetwork.renameLink(sLink.getId(), max(secondaryNetwork.getMaxLinkId() + 1, self.getMaxLinkId() + 1))
+
+        #identify external centroids
+        externalCentroids = {}
+        for centroid in self.iterCentroids():
+            point = (centroid.getX(), centroid.getY())
+            if not isPointInPolygon(point, primaryPolygon):
+                externalCentroids[centroid.getId()] = centroid
+
+        #delete externalCentroids
+        for centroid in externalCentroids.itervalues():
+            for vNode in centroid.iterAdjacentNodes():
+                self.removeNode(vNode)
+            self.removeNode(centroid)
+        
+        self.mergeSecondaryNetworkBasedOnLinkIds(secondaryNetwork)
+    
+
+        #add external links 
+        for sLink in exitConnectors:            
+            if not sLink.isRoadLink():
+                continue
+
+
+            pNode1, dist = getClosestNode(self, sLink.getStartNode())
+            if dist > 10:
+                continue 
+            pNode2, dist = getClosestNode(self, sLink.getEndNode())
+            if dist > 10:
+                continue 
+            print "Adding exit connector", pNode1.getId(), pNode2.getId() 
+
+            pLink = copy.copy(sLink)
+
+            if self.hasLinkForId(pLink.getId()):
+                pLink._id = self.getMaxLinkId() + 1
+
+            pLink._startNode = pNode1
+            pLink._endNode = pNode2
+        
+            pLink._outgoingMovements = []
+            pLink._incomingMovements = [] 
+            
+            if not self.hasLinkForNodeIdPair(pLink.getStartNodeId(), pLink.getEndNodeId()):
+                self.addLink(pLink) 
+                
+        for sLink in entryConnectors:
+
+            if not sLink.isRoadLink():
+                continue
+            
+            pNode1, dist = getClosestNode(self, sLink.getStartNode())
+            if dist > 50:
+                continue 
+            pNode2, dist = getClosestNode(self, sLink.getEndNode())
+            if dist > 50:
+                continue 
+            
+            print "Adding entry connector", pNode1.getId(), pNode2.getId() 
+
+            pLink = copy.copy(sLink)
+            pLink._startNode = pNode1
+            pLink._endNode = pNode2
+
+            if self.hasLinkForId(pLink.getId()):
+                pLink._id = self.getMaxLinkId() + 1
+
+            pLink._outgoingMovements = []
+            pLink._incomingMovements = [] 
+
+            if not self.hasLinkForNodeIdPair(pLink.getStartNodeId(), pLink.getEndNodeId()):                   
+                self.addLink(pLink) 
+
+                
