@@ -936,8 +936,10 @@ class Network(object):
                 centerline = ((link._startNode.getX(), link._startNode.getY()),
                             (link._endNode.getX(), link._endNode.getY()))
                 w.line(parts=[centerline])
-            else:
+            elif link.getNumShapePoints() == 0:                
                 w.line(parts=[link.getCenterLine()])
+            else:
+                w.line(parts=[link._shapePoints])
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),
                      str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()))
 
@@ -1174,9 +1176,11 @@ class Network(object):
             if not isPointInPolygon(point1, primaryPolygon) and isPointInPolygon(point2, primaryPolygon):
                 entryConnectors.append(sLink)
 
-        #print "\nEntryConnectors", [(link.getStartNodeId(), link.getEndNodeId()) for link in entryConnectors]
-        #print "\nExit connectors", [(link.getStartNodeId(), link.getEndNodeId()) for link in exitConnectors]
-       
+        print "\nEntryConnectors", [(link.getStartNodeId(), link.getEndNodeId()) for link in entryConnectors]
+        print "\nExit connectors", [(link.getStartNodeId(), link.getEndNodeId()) for link in exitConnectors]
+
+
+
         #delete all the centroids in the primary polygon
         sNodesToDelete = []
         numCentroidsToDelete = 0

@@ -441,6 +441,8 @@ ENDRUN
 
             if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
                 link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
+                if len(shape.points) == 2:
+                    continue
                 link._shapePoints = shape.points
        
 

@@ -220,7 +220,20 @@ class Node(object):
             if link.getEndNode(). getId() == nodeId:
                 return True
         return False
-            
+
+    def hasMovement(self, startNodeId, endNodeId):
+        """
+        Return True if the node has movement from 
+        startNodeId to endNodeId
+        """
+        for ilink in self.iterIncomingLinks():
+            if ilink.getStartNodeId() == startNodeId:
+                for mov in ilink.iterOutgoingMovements():
+                    if mov.getEndNodeId() == endNodeId:
+                        return True
+
+        return False
+                   
     def getNumAdjacentLinks(self):
         """
         Return the number of links adjacent to this node (either incoming or outgoing) 

@@ -127,6 +127,12 @@ class RoadLink(Link):
         """
         self._shapePoints.append((x,y))
 
+    def getNumShapePoints(self):
+        """
+        Return the number of shapepoints this link has
+        """
+        return len(self._shapePoints)
+
     def hasOutgoingMovement(self, nodeId):
         """
         Return True if the link has an outgoing movement towards nodeId
@@ -260,7 +266,7 @@ class RoadLink(Link):
         """
         for mov in self.iterOutgoingMovements():
             if mov.getDestinationNode().getId() == nodeId:
-                mov
+                return mov
         raise DtaError("RoadLink from %d to %d does not have a movement to node %d" % (self._startNode.getId(),
                                                                                        self._endNode.getId(),
                                                                                        nodeId))

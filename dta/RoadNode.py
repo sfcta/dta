@@ -104,6 +104,8 @@ class RoadNode(Node):
 
         self._control    = control
         self._priority   = priority
+        
+        self._timePlans = []
 
     def isRoadNode(self):
         """
@@ -208,7 +210,6 @@ class RoadNode(Node):
             else:
                 return 0
 
-
     def isOverlapping(self, link, minAngle):
         """
         Returns true if the minimum angle between the input link and any similarly 
@@ -241,8 +242,23 @@ class RoadNode(Node):
         else:
             raise DtaError("Link %d is not adjacent to node %d" % (link.getId(), node.getId()))
 
-            
+    def addTimePlan(self, timePlan):
+        """
+        Add the input time plan to the current collection
+        """
+        self._timePlans.append(timePlan)
         
+    def hasTimePlan(self):
+        """
+        Return true if the node has at least one time plan
+        """
+        return True if self._timePlans else False 
+
+    def iterTimePlans(self):
+        """
+        Return an iterator over the timeplans of this node
+        """
+        return iter(self._timePlans)
         
 
         

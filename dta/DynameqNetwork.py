@@ -16,11 +16,14 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import shapefile
+import pdb
 
 import math
 import os
 import sys, csv
-import pdb
+
+from collections import defaultdict 
+
 from itertools import chain 
 from .Centroid import Centroid
 from .Connector import Connector
@@ -54,6 +57,11 @@ class DynameqNetwork(Network):
     ADVANCED_HEADER     = """<DYNAMEQ>
 <VERSION_1.5>
 <ADVN_NETWORK_FILE>
+* CREATED by DTA Anyway http://code.google.com/p/dta/    
+"""
+    CTRL_HEADER        = """<DYNAMEQ>
+<VERSION_1.7>
+<CONTROL_PLANS_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/    
 """
 
@@ -186,6 +194,13 @@ class DynameqNetwork(Network):
         self._writeShiftsToAdvancedFile(advancedfile_object)
         self._writeShapePointsToAdvancedFile(advancedfile_object)
         advancedfile_object.close()
+
+        ctrlfile = os.path.join(dir, DynameqNetwork.CONTROL_FILE % file_prefix)
+        ctrl_object = open(ctrlfile, "w")
+        ctrl_object.write(DynameqNetwork.CTRL_HEADER)
+        self._writeControlFile(ctrl_object)
+        ctrl_object.close() 
+        
         
     def _readSectionFromFile(self, filename, sectionName, nextSectionName):
         """
@@ -757,6 +772,24 @@ class DynameqNetwork(Network):
                     count += 1
         DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
 
+    def _writeControlFile(self, ctrl_object):
+        
+        ctrl_object.write("PLAN_INFO")
+
+        #collect all the plan info objects 
+        planInfo = defaultdict(list)
+        for node in self.iterNodes():
+            if node.isCentroid() or node.isVirtualNode():
+                continue
+            if node.hasTimePlan():
+                for tp in node.iterTimePlans():
+                    planInfo[tp.getPlanInfo()].append(tp)
+
+        for planInfo, plans in planInfo.iteritems():
+            ctrl_object.write(str(planInfo))
+            for plan in plans:
+                ctrl_object.write(str(plan))
+                              
 
     def removeCentroidConnectorsFromIntersections(self, splitReverseLinks=False):
         """
@@ -779,12 +812,13 @@ class DynameqNetwork(Network):
 
             if not node.hasConnector():
                 continue 
-
+            
             connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
         
             for con in connectors:
                 try:
                     self.removeCentroidConnectorFromIntersection(node, con, splitReverseLink=splitReverseLinks) 
+                    #DtaLogger.info("Removed centroid connectors from intersection %d" % node.getId())
                 except DtaError, e:
                     DtaLogger.error("%s" % str(e))
 
@@ -806,9 +840,13 @@ class DynameqNetwork(Network):
             for ilink in node.iterIncomingLinks():                
                 for olink in node.iterOutgoingLinks():
                     if ilink.isConnector() and olink.isConnector():
-                        prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
-                           self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
-                        ilink.addOutgoingMovement(prohibitedMovement) 
+                        if ilink.hasOutgoingMovement(olink.getEndNodeId()):
+                            mov = ilink.getOutgoingMovement(olink.getEndNodeId())
+                            ilink.removeOutgoingMovement(mov)
+                        else:
+                            prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
+                                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                            ilink.addOutgoingMovement(prohibitedMovement) 
                     else:
                         if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
                             
@@ -948,9 +986,7 @@ class DynameqNetwork(Network):
         for link in self.iterLinks():
             if isinstance(link, Connector):
                 yield link 
-                
-
-
+    
 
 
                     

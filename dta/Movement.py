@@ -135,3 +135,28 @@ class Movement(object):
         """
         self._countsList = countsListFromCountDracula
         
+    def getStartNode(self):
+        """
+        Returns the start node of incomingLink, a :py:class:`Link` instance
+        """
+        return self._incomingLink.getStartNode()
+    
+    def getEndNode(self):
+        """
+        Returns the end node of outgoingLink, a :py:class:`Link` instance
+        """
+        
+        return self._outgoingLink.getEndNode()
+
+    def getStartNodeId(self):
+        """
+        Returns the start node of incomingLink, a :py:class:`Link` instance
+        """
+        return self._incomingLink.getStartNodeId()
+    
+    def getEndNodeId(self):
+        """
+        Returns the end node of outgoingLink, a :py:class:`Link` instance
+        """
+        
+        return self._outgoingLink.getEndNodeId()
