@@ -234,6 +234,35 @@ class RoadLink(Link):
 
         return self._centerline
 
+    def getOutline(self, scale=1):
+        """
+        Return the outline of the link as a linearRing of points
+        in clockwise order. If scale the pysical outline of the link
+        will be return using the number of lanes attribute to determine
+        the boundries of the outline.
+        """
+
+        dx = self._endNode.getX() - self._startNode.getX()
+        dy = self._endNode.getY() - self._startNode.getY() 
+
+        length = self.euclideanLength() # dx ** 2 + dy ** 2
+
+        if length == 0:
+            length = 1
+
+        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH_FEET / length * scale
+
+        xOffset = dy * scale
+        yOffset = - dx * scale 
+
+        outline = ((self._startNode.getX(), self._startNode.getY()),
+                   (self._endNode.getX(), self._endNode.getY()),
+                   (self._endNode.getX() + xOffset, self._endNode.getY() + yOffset),
+                   (self._startNode.getX() + xOffset, self._startNode.getY() + yOffset))
+
+        return outline
+
+
     def getMidPoint(self):
         """
         Return the midpoint of the link's centerline as a tuple of two floats

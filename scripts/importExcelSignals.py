@@ -29,8 +29,7 @@ from itertools import izip, chain
 import logging
 import datetime
 
-from odict import OrderedDict
-from newMultiArray import MultiArray
+from MultiArray import MultiArray
 
 from dta.DynameqScenario import DynameqScenario
 from dta.DynameqNetwork import DynameqNetwork
@@ -110,7 +109,7 @@ class SignalData(object):
         self.gMov8 = ""
 
         self.phasingData = None
-        self.sIntervals = OrderedDict() # indexed by the CSO value
+        self.sIntervals = {}
 
     def toDict(self):
 
@@ -357,7 +356,8 @@ def getOperationTimes(sheet, signalData):
 #        myValues = [sheet.cell_value(x, y) for y in range(j, j + 13)]
 #        print "\t", myValues
         for y in range(j, j + 13):
-            if sheet.cell_value(x, y) == "CYCLE":
+            #print x, y, str(sheet.cell_value(x, y)).strip().upper()
+            if str(sheet.cell_value(x, y)).strip().upper() == "CYCLE":
                 found = True
                 for k in range(x + 1, x + 6):
                     cso = []
@@ -521,10 +521,19 @@ def fillPhaseInfo(phaseInfo):
                 
 def getPhasingData(sheet, signalData):
 
-    if not signalData.phaseSeqCell or not signalData.sigInterCell \
-            or not signalData.colPhaseData or not signalData.lastColPhaseData:
-        raise ParsingCardError("I cannot parse its phasing data.")
+    if not signalData.phaseSeqCell:
+        raise ParsingCardError("I cannot parse its phasing data1.")
+    
+    if not signalData.sigInterCell:
+        raise ParsingCardError("I cannot parse its phasing data2.")
 
+    if not signalData.colPhaseData:
+        raise ParsingCardError("I cannot parse its phasing data3.")
+
+    if not signalData.lastColPhaseData:
+        raise ParsingCardError("I cannot parse its phasing data4.")        
+
+    
     #pdb.set_trace()
     startX, startY = signalData.phaseSeqCell 
 
@@ -554,7 +563,7 @@ def getPhasingData(sheet, signalData):
             allIntervalStatesValid = True
             for j in range(signalData.colPhaseData, signalData.lastColPhaseData + 1):
                 intervalState = str(sheet.cell_value(rowx=i, colx=j)).upper().strip()
-
+                #print i, j, intervalState
                 if intervalState == "":
                     singleMovementData.append("")
                 elif intervalState in intervalStateGreen:
@@ -562,7 +571,7 @@ def getPhasingData(sheet, signalData):
                 elif intervalState in intervalStateYellow:
                     singleMovementData.append("Y")
                 elif intervalState in intervalStateRed or "-R-" in intervalStateRed:
-                    singleMovementData.append("R")                    
+                    singleMovementData.append("R")
                 else:
                     allIntervalStatesValid = False
                     break
@@ -602,7 +611,7 @@ def getPhasingData(sheet, signalData):
     if signalData.getNumTimeIntervals() != len(phasingData[0]):
         raise ParsingCardError("The number of phase states %d is not the same "
                                "with the number of its signal intervals %d" % 
-                               (len(phasingData), 
+                               (len(phasingData[0]), 
                                 signalData.getNumTimeIntervals()))
 
     ma = MultiArray("S1", [movementNames, range(1, numIntervals + 1)])
@@ -1249,22 +1258,17 @@ if __name__ == "__main__":
     #print "Num excel files", len(excelFileNames)
     #pCardsFile = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards.pkl"
 
-
     cards = excelCards
     assignCardNames(cards)
     mapIntersectionsByName(net, cards)
-
-
 
     #output = open("excelSignals.json", "w")
     #for card in cards:
     #    output.write(json.dumps(card.toDict(),separators=(',',':'), indent=4))
     #output.close()
 
-
     output = open("mappedIntersections.txt", "w")
     
-
     for card in excelCards:
         print "%s\t%s\t%s\t%s" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName)
         output.write("%s\t%s\t%s\t%s\n" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName))

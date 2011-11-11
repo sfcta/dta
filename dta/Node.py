@@ -386,3 +386,20 @@ class Node(object):
                 return True
  
         return False
+    
+    def getName(self):
+        """
+        Return the name of the intersection as a string consisting of the labels 
+        of the incoming links in sorted order. 
+        """
+        return " AND ".join(self.getStreetNames())
+
+    def getStreetNames(self):
+        """
+        Return the street names of the incoming links as a list
+        """
+        names = set()
+        for ilink in self.iterIncomingLinks():
+            if ilink.getLabel():
+                names.add(ilink.getLabel().upper())
+        return sorted(names)
