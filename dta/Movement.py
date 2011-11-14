@@ -27,6 +27,14 @@ class Movement(object):
     """
     Base class that represents a movement.
     """
+
+    DIR_UTURN = "UTURN"
+    DIR_RT = 'RT'
+    DIR_RT2 = 'RT2'
+    DIR_LT2 = 'LT2'
+    DIR_LT = 'LT'
+    DIR_TH = 'TH'
+    
     @classmethod
     def simpleMovementFactory(cls, incomingLink, outgoingLink, vehicleClassGroup):
         """
@@ -160,3 +168,50 @@ class Movement(object):
         """
         
         return self._outgoingLink.getEndNodeId()
+
+    def getId(self):
+        """
+        Return a string containing the three node ids that define the movement
+        """
+        return "%d %d %d" % (self.getStartNodeId(), self.getAtNode().getId(), self.getEndNodeId())
+
+    def isUTurn(self):
+        """
+        Return True if the movement is a U-Turn
+        """
+        return True if self._incomingLink.getStartNode() == self._outgoingLink.getEndNode() else False
+
+    def getDirection(self):
+        """
+        Return the direction of the movement as a string
+        """
+        dx1 = self._incomingLink.getEndNode().getX() - self._incomingLink.getStartNode().getX()
+        dy1 = self._incomingLink.getEndNode().getY() - self._incomingLink.getStartNode().getY()
+
+        dx2 = self._outgoingLink.getEndNode().getX() - self._outgoingLink.getStartNode().getX()
+        dy2 = self._outgoingLink.getEndNode().getY() - self._outgoingLink.getStartNode().getY()
+           
+        angle = (math.atan2(dy2, dx2) - math.atan2(dy1, dx1)) * 180 / math.pi
+        if angle < 0:
+            angle += 360
+
+        turnType = None
+        if self.isUTurn():
+            turnType =  Movement.DIR_UTURN
+        elif 135 <= angle < 180:
+            turnType =  Movement.DIR_LT2
+        elif 45 <= angle < 135:
+            turnType =  Movement.DIR_LT
+        elif 0 <= angle  < 45:
+            turnType =  Movement.DIR_TH
+        elif 315 <= angle < 360:
+            turnType =  Movement.DIR_TH
+        elif 225 <= angle < 315:
+            turnType =  Movement.DIR_RT
+        else:
+            turnType =  Movement.DIR_RT2
+
+        linkDir = self._incomingLink.getDirection()
+        return linkDir + turnType
+        
+        

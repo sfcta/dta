@@ -31,6 +31,7 @@ import datetime
 
 from MultiArray import MultiArray
 
+import dta
 from dta.DynameqScenario import DynameqScenario
 from dta.DynameqNetwork import DynameqNetwork
 
@@ -782,7 +783,7 @@ def parseExcelCardsToSignalObjects(directory):
 #        if numFiles == 10:
 #            break
     logging.info("Number of excel cards succesfully parsed = %d" % len(excelCards))
-    return excelCards, problemCards
+    return excelCards
 
 def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
 
@@ -834,9 +835,6 @@ def mapMovements(excelCards, baseNetwork):
         direction of the movment and returns the result(=the direction of the movement)
         Returns a string representing the direction: WB, EB, NB, SB
         """
-#        if "CALIFORNIA (EB/WB)" in gMovName:
-#            pdb.set_trace()
-
         wbIndicators = ["WB,", ",WB", "WB/", "/WB", "WB&", "&WB", " WB", "WB ", "W/B", "(WB", "WB)", "(WESTBOUND)", "WESTBOUND", "WEST "]
         ebIndicators = ["EB,", ",EB", "EB/", "/EB","EB&", "&EB", " EB", "EB ", "E/B", "(EB", "EB)", "(EASTBOUND)", "EASTBOUND", "EAST "]
         nbIndicators = ["NB,", ",NB", "NB/", "/NB","NB&", "&NB", " NB", "NB ", "N/B", "(NB", "NB)", "(NORTHBOUND)", "NORTHBOUND", "NORTH "]
@@ -880,11 +878,9 @@ def mapMovements(excelCards, baseNetwork):
 
     def mapGroupMovements(mec, groupMovementNames, bNode):
         """
-        Output: populate the mappedMovements attribute of the mec
-        with keys the movement name and value the iid of all the movements 
-        that correspond to it
-        
-
+        Output: populate the mappedMovements dictonary of the excelCard object.
+        The keys of the dictonary are the movement names and its values are
+        all the iids of the corresponding movemens
         """
         streetNames = list(mec.streetNames)
         for gMovName in groupMovementNames:
@@ -909,9 +905,9 @@ def mapMovements(excelCards, baseNetwork):
             bStName = mec.mappedStreet[stName]
             #collect all the links of the approach that have the same direction
             gLinks = []
-            for candLink in [link for link in bNode.iterIncidentLinks() if link.name == bStName]:
+            for candLink in [link for link in bNode.iterIncomingLinks() if link.getLabel() == bStName]:
                 if gDirections:
-                    if set(candLink.directions) & set(gDirections):
+                    if set(getPossibleLinkDirections(candLink)) & set(gDirections):
                         gLinks.append(candLink)
                 else:
                     gLinks.append(candLink)
@@ -923,11 +919,11 @@ def mapMovements(excelCards, baseNetwork):
 
             gMovements = []
             if gTurnTypes:
-                for mov in chain(*[link.iterMovements() for link in gLinks]): 
+                for mov in chain(*[link.iterOutgoingMovements() for link in gLinks]): 
                    if mov.turnType in gTurnTypes:
                        gMovements.append(mov)
             else:    
-                gMovements = list(chain(*[link.iterMovements() for link in gLinks]))
+                gMovements = list(chain(*[link.iterOutgoingMovements() for link in gLinks]))
 
             if len(gMovements) == 0:
                 raise MovementMappingError("I cannot identify the movements for the group"
@@ -938,10 +934,11 @@ def mapMovements(excelCards, baseNetwork):
 #                                                 (gMovName, mec.iName, mec.iiName, gDirections, gTurnTypes))
                 
 
-            gMovements = sorted(gMovements, key = lambda elem: elem.iid)
+            gMovements = sorted(gMovements, key = lambda elem: elem.getId())
 
             for mov in gMovements:
-                mec.mappedMovements[gMovName].append(mov.iid)        
+                mec.mappedMovements[gMovName].append(mov.getId())
+
 
     index = defaultdict(int)
     excelCardsWithMovements = []
@@ -955,11 +952,11 @@ def mapMovements(excelCards, baseNetwork):
             bNode = baseNetwork.getNodeForId(int(mec.mappedNodeId))
             #get the groupMovementNames
             groupMovementNames = mec.phasingData.getElementsOfDimention(0)
-            
+
             numGroupMovements = len(groupMovementNames)
             numSteps = len(mec.phasingData.getElementsOfDimention(1))
             index[numGroupMovements] += 1
-        
+
 #            if numGroupMovements == len(mec.streetNames):
                 #for each group movement get the approach's street name
             try:
@@ -979,7 +976,7 @@ def mapMovements(excelCards, baseNetwork):
             logging.error("Signal %s. No mapped movements" % mec.fileName)
             continue
             #raise MovementMappingError("Signal %s. No mapped movements" % mec.fileName)
-        
+
         if len(mec.mappedMovements) == 1:
             logging.error("Signal %s. Only one of the group movements has been mapped" %
                           mec.fileName)
@@ -991,7 +988,7 @@ def mapMovements(excelCards, baseNetwork):
         if len(mec.mappedMovements) != len(groupMovements):
             logging.error("Signal %s. Not all movements have been mapped" % mec.fileName)
             continue
-            
+
 #            raise MovementMappingError("Signal %s. Not all movements have been mapped" %
 #                                    mec.fileName)
         for gMov in groupMovements:
@@ -1004,12 +1001,6 @@ def mapMovements(excelCards, baseNetwork):
         excelCardsWithMovements.append(mec)
 
     return excelCardsWithMovements
-    #outputStream = open("mappedExcelCardsWithMovements.pkl", "wb")
-    #pickle.dump(excelCardsWithMovements, outputStream)
-    #outputStream.close()
-    #logging.info("Number of cards with all group movements mapped %d" % len(excelCardsWithMovements))
-#    writeExtendedSummary(excelCards)
-#    return excelCards
 
 def selectCSO(excelCard, startHour, endHour):
     """
@@ -1052,11 +1043,7 @@ def excel2Dynameq():
     for excelCard in excelCards:
         nodeId = excelCard.mappedNodeId
         if not net.hasNode(nodeId):
-            continue
-
-        if nodeId in [u'25196', u'26460', u'26466', u'26471', u'26667', u'26723', u'26727', u'26763', u'26764', u'26791', u'26796', u'26846', u'26849', u'26908', u'26915', u'26920', u'26938', u'26943', u'26999', u'27023', u'27231', u'27243', u'27245', u'27271', u'27286', u'27290', u'27444', u'27462', u'27510', u'27519', u'27587', u'27599', u'27607', u'27611', u'27628', u'27813', u'27830', u'27981', u'28013']:
-            continue
-        
+            continue        
 
         node = net.getNode(nodeId)
         print '\n', excelCard.fileName, excelCard.iName, excelCard.iiName
@@ -1240,43 +1227,87 @@ def mapIntersectionsByName(network, excelCards):
 
     print "Number of cards are", len(excelCards), " Number of mapped nodes are ", len(mappedNodes)
 
+def getPossibleLinkDirections(link):
+    """Return a two element tuple containing the possible directions of the link.
+    Example (NB, WB)"""
+
+    result = []
+
+    orientation = link.getOrientation()
+    if orientation >= 270 or orientation < 90:
+        result.append("NB")
+    else:
+        result.append("SB")
+
+    if orientation >= 0 and orientation < 180:
+        result.append("EB")
+    else:
+        result.append("WB")
+
+    return tuple(result)
+
+def simpleMovementFactory(incomingLink, outgoingLink):
+
+    mov = dta.Movement(incomingLink.getEndNode(),
+                   incomingLink,
+                   outgoingLink,
+                   30,
+                   dta.VehicleClassGroup("all", "-", "#ffff00"))
+
+    return mov                                                                                           
+
+def addAllMovements(net):
+    
+    for node in net.iterNodes():
+        for incomingLink in node.iterIncomingLinks():
+            if incomingLink.isVirtualLink():
+                continue
+            for outgoingLink in node.iterOutgoingLinks():
+                if outgoingLink.isVirtualLink():
+                    continue
+                if not incomingLink.hasOutgoingMovement(outgoingLink.getEndNodeId()) and \
+                   not incomingLink.getStartNodeId() == outgoingLink.getEndNodeId():
+                    mov = simpleMovementFactory(incomingLink, outgoingLink)
+                    incomingLink.addOutgoingMovement(mov) 
+
+
+
     
 if __name__ == "__main__":
       
 
-    #net = getNet()    
-    #for link in net.iterLinks():
-    #    if link._label:
-    #        link._label = cleanStreetName(link._label)
+    net = getNet()
+    addAllMovements(net)
 
     cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards/"
-    excelCards, problemCards = parseExcelCardsToSignalObjects(cardsDirectory)
+    #excelCards = parseExcelCardsToSignalObjects(cardsDirectory)
 
-
-    exit()
     #excelFileNames = getExcelFileNames(directory)
     #print "Num excel files", len(excelFileNames)
     #pCardsFile = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards.pkl"
+    pCardsFile2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards2.pkl"
 
-    cards = excelCards
-    assignCardNames(cards)
-    mapIntersectionsByName(net, cards)
+    #cards = excelCards
+    #assignCardNames(cards)
+    #mapIntersectionsByName(net, cards)
 
     #output = open("excelSignals.json", "w")
     #for card in cards:
     #    output.write(json.dumps(card.toDict(),separators=(',',':'), indent=4))
     #output.close()
 
-    output = open("mappedIntersections.txt", "w")
+    #output = open("mappedIntersections.txt", "w")
     
-    for card in excelCards:
-        print "%s\t%s\t%s\t%s" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName)
-        output.write("%s\t%s\t%s\t%s\n" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName))
+    #for card in excelCards:
+    #    print "%s\t%s\t%s\t%s" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName)
+    #    output.write("%s\t%s\t%s\t%s\n" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName))
 
-    output.close()
+    #output.close()
 
-    #cards = unPickleCards(pCardsFile)     
-    #mapMovements(cards, net)
+    #pickleCards(pCardsFile2, cards)
+    
+    cards = unPickleCards(pCardsFile2)
+    mapMovements(cards, net)
 
 #    mapMovements(network)    
     

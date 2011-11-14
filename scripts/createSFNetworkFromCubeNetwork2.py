@@ -248,7 +248,6 @@ if __name__ == '__main__':
     gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
 
     gearynetDta.write(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test", file_prefix="Base")
-
     
     #gearynetDta.writeNodesToShp(os.path.join("/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty", "geary_nodes"))
     #gearynetDta.writeLinksToShp(os.path.join("/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty", "geary_links"))
@@ -322,6 +321,9 @@ if __name__ == '__main__':
     sanfranciscoCubeNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
 
 
+
+
+
     #create the San Francisco network 
     sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     #copy the Cube SF network to a dynameq one
@@ -343,6 +345,9 @@ if __name__ == '__main__':
     assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
     sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
 
+    sanfrancsicoDynameqNet.write(outputFolder, "sf9")
+    exit()
+
     #remove nodes from the network that are not connected to the network
     nodes = [node for node in sanfrancsicoDynameqNet.iterRoadNodes() if node.getCardinality() == (0,0)]
     for node in nodes:
@@ -356,6 +361,7 @@ if __name__ == '__main__':
 
     sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(outputFolder, "sf9_nodes"))
     sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
+    sanfranciscoDynameqNet.write
     assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
    
     #removeOverlappingRoadLinks(sanfrancsicoDynameqNet)
@@ -397,6 +403,7 @@ if __name__ == '__main__':
     
     gearynetDta.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf13")
     #"/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
+
     gearynetDta.writeNodesToShp(os.path.join(outputFolder, "sf13_nodes"))
     gearynetDta.writeLinksToShp(os.path.join(outputFolder, "sf13_links"))
 

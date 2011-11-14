@@ -33,6 +33,11 @@ class RoadLink(Link):
     #: default level value
     DEFAULT_LEVEL = 0
     DEFAULT_LANE_WIDTH_FEET = 12
+
+    DIR_EB = "EB"
+    DIR_WB = "WB"
+    DIR_NB = "NB"
+    DIR_SB = "SB"
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
@@ -354,6 +359,48 @@ class RoadLink(Link):
         if self.getAcuteAngle(other) <= 1.0:
             return True
         return False
+
+    def getOrientation(self):
+        """
+        Returns the angle of the link in degrees from the North
+        measured clockwise. The link shape is taken into account.
+        """
+        if self._shapePoints:
+            x1, y1 = self._shapePoints[-2]
+            x2, y2 = self._shapePoints[-1]
+        else:
+            x1 = self.getStartNode().getX()
+            y1 = self.getStartNode().getY()
+            x2 = self.getEndNode().getX()
+            y2 = self.getEndNode().getY()
+
+        if x2 > x1 and y2 <= y1:   # 2nd quarter
+            orientation = math.atan(math.fabs(y2-y1)/math.fabs(x2-x1)) + math.pi/2
+        elif x2 <= x1 and y2 < y1:   # 3th quarter
+            orientation = math.atan(math.fabs(x2-x1)/math.fabs(y2-y1)) + math.pi
+        elif x2 < x1 and y2 >= y1:  # 4nd quarter 
+            orientation = math.atan(math.fabs(y2-y1)/math.fabs(x2-x1)) + 3 * math.pi/2
+        elif x2 >= x1 and y2 > y1:  # 1st quarter
+            orientation = math.atan(math.fabs(x2-x1)/math.fabs(y2-y1))
+        else:
+            orientation = 0.0
+
+        return orientation * 180 / math.pi
+        
+    def getDirection(self):
+        """Return the direction of the link as one of 
+        EB, NB, WB, EB"""
+
+        orientation = self.getOrientation()
+        if 315 <= orientation or orientation < 45:
+            return RoadLink.DIR_NB
+        elif 45 <= orientation < 135:
+            return RoadLink.DIR_EB
+        elif 135 <= orientation < 225:
+            return RoadLink.DIR_SB
+        else:
+            return RoadLink.DIR_WB
+        
         
         
 
