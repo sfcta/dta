@@ -929,7 +929,8 @@ class Network(object):
 
         w.field("IsRoad", "C", 10) 
         w.field("IsConn", "C", 10) 
-        w.field("IsVirtual", "C", 10) 
+        w.field("IsVirtual", "C", 10)
+        w.field("Label", "C", 60)
 
         for link in self.iterLinks():
             if link.isVirtualLink():
@@ -940,8 +941,12 @@ class Network(object):
                 w.line(parts=[link.getCenterLine()])
             else:
                 w.line(parts=[link._shapePoints])
-            w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()))
+            if link.isVirtualLink():
+                label = ""
+            else:
+                label = link.getLabel()
+            w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
+                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label)
 
         w.save(name)
         

@@ -63,8 +63,8 @@ def getTestNet():
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
     
-    net.checkAdjacentNodesExist()
-    net.checkAdjacentLinksExist() 
+    #net.checkAdjacentNodesExist()
+    #net.checkAdjacentLinksExist() 
 
     return net 
 
@@ -78,12 +78,7 @@ def getDowntownSF():
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
 
-    net.checkAdjacentNodesExist()
-    net.checkAdjacentLinksExist() 
-
     return net 
-
-
 
 def simpleRoadNodeFactory(id_, x, y):
 
@@ -193,8 +188,8 @@ def getSimpleNet():
     net.addLink(e46)
     net.addLink(e64)
 
-    net.checkAdjacentNodesExist()
-    net.checkAdjacentLinksExist() 
+    #net.checkAdjacentNodesExist()
+    #net.checkAdjacentLinksExist() 
 
     return net
 
@@ -280,8 +275,8 @@ class TestNetwork(object):
         assert link_15.getNumOutgoingMovements() == 0
         assert link_52.getNumIncomingMovements() == 0
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_5node_has(self):
 
@@ -312,8 +307,8 @@ class TestNetwork(object):
         assert not net.hasLinkForNodeIdPair(1, 5) 
         assert net.getNumLinks() == 13
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
         
     def test_7removeLink2(self):
 
@@ -328,8 +323,8 @@ class TestNetwork(object):
         assert link_15.hasOutgoingMovement(4)
         assert link_15.hasOutgoingMovement(3)
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_removeConnector(self):
 
@@ -357,8 +352,8 @@ class TestNetwork(object):
         assert n5.getNumAdjacentLinks() == 8 
         assert n5.getNumAdjacentNodes() == 4
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_8removeNode(self):
 
@@ -373,8 +368,8 @@ class TestNetwork(object):
         assert not net.hasLinkForNodeIdPair(1, 5)
         assert not net.hasLinkForNodeIdPair(5, 2)
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
         
     def test_9splitLink(self):
 
@@ -400,8 +395,8 @@ class TestNetwork(object):
         assert link2.hasOutgoingMovement(4)
         assert link2.hasOutgoingMovement(3)
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     
     def test_10link_getCenterline(self):
@@ -464,8 +459,8 @@ class TestNetwork(object):
         assert n1.getNumAdjacentLinks() == 2
         assert n1.getNumAdjacentNodes() == 1
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_13IsShapePoint(self):
 
@@ -504,8 +499,8 @@ class TestNetwork(object):
 
         assert n5.hasConnector()
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_getCandidateLinks(self):
 
@@ -580,8 +575,8 @@ class TestNetwork(object):
         assert net.getNumNodes() == 10  #same nodes as before. No new link was split
 
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
         
     def test_removeAllCentroidConnectorsFromIntersections(self):
         
@@ -628,8 +623,8 @@ class TestNetwork(object):
         assert not n5.hasConnector()         #there is no connector at intersection 5
 
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_insertVirtualNodes(self):
 
@@ -663,8 +658,8 @@ class TestNetwork(object):
         net = DynameqNetwork(scenario) 
         net.read("test", "test") 
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_readScenario(self):
 
@@ -831,8 +826,8 @@ class TestNetwork(object):
         prefix = 'sf5' 
         net.write(dir=outputFolder, file_prefix=prefix)
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_isConnectedToRoadNode(self):
 
@@ -901,8 +896,8 @@ class TestNetwork(object):
         numShapePoints = sum([1 for node in net.iterNodes() if node.isShapePoint() and node.isRoadNode()])        
         assert numShapePoints == 40
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_1renameLink(self):
 
@@ -927,8 +922,8 @@ class TestNetwork(object):
         assert link_15.hasOutgoingMovement(4)
         assert link_15.hasOutgoingMovement(3)
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
 
     def test_1renameNode(self):
 
@@ -956,8 +951,8 @@ class TestNetwork(object):
         for link in net.getNodeForId(101).iterAdjacentLinks():
             assert net.hasLinkForNodeIdPair(*link.getIid())
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
         
 
     def test_renameNodesAndLinks(self):
@@ -984,8 +979,8 @@ class TestNetwork(object):
 
         net.write(projectFolder, prefix)
 
-        net.checkAdjacentNodesExist()
-        net.checkAdjacentLinksExist() 
+        #net.checkAdjacentNodesExist()
+        #net.checkAdjacentLinksExist() 
         
     def test_deleteCentroid(self):
 
@@ -999,4 +994,32 @@ class TestNetwork(object):
         assert not net.hasLinkForId(104867)
         assert not net.hasLinkForId(104940)
 
+    def test_linkOrientation(self):
+
+        net = getSimpleNet()
+
+        link15 = net.getLinkForNodeIdPair(1, 5)
+        assert link15.getOrientation() == 90
+        assert link15.getDirection() == "EB"
+
+        link25 = net.getLinkForNodeIdPair(2, 5)
+        assert link25.getOrientation() == 180
+        assert link25.getDirection() == "SB"
+
+        link52 = net.getLinkForNodeIdPair(5, 2)
+        assert link52.getOrientation() == 0
+        assert link52.getDirection() == "NB"
+        
+    def test_movementDirection(self):
+
+        net = getSimpleNet()
+        addAllMovements(net)
+
+        link15 = net.getLinkForNodeIdPair(1, 5)
+        mov152 = link15.getOutgoingMovement(2)
+        mov154 = link15.getOutgoingMovement(4)
+        mov153 = link15.getOutgoingMovement(3)
+
+        print mov152.getDirection()
+        
 

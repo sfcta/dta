@@ -308,7 +308,7 @@ class Node(object):
         """
         for link in self.iterIncomingLinks():
             if link.getStartNode().getId() == nodeId:
-                return True
+                return link
         raise DtaError("Node %d does not have an incoming link starting from" % (self._id, nodeId)) 
 
     def getNumIncomingLinks(self):
@@ -403,3 +403,20 @@ class Node(object):
             if ilink.getLabel():
                 names.add(ilink.getLabel().upper())
         return sorted(names)
+
+    def iterMovements(self):
+        """
+        Return an iterator to all the movements going
+        through the node
+        """
+        return (mov for iLink in self.iterIncomingLinks() for mov in
+                iLink.iterOutgoingMovements())
+        
+    def getMovement(self, upNodeId, downNodeId):
+        """
+        Return the movement from upNodeId to downNodeId that goes through
+        this node
+        """
+        iLink = self.getIncomingLinkForNodeId(upNodeId)
+        return iLink.getOutgoingMovement(downNodeId)
+        

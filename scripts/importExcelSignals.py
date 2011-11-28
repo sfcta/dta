@@ -17,11 +17,12 @@ __license__     = """
 """
 
 #import json
+import pdb
+
 import csv 
 import difflib
 from collections import defaultdict
 import os
-import pdb
 import pickle
 import re
 import xlrd
@@ -34,7 +35,10 @@ from MultiArray import MultiArray
 import dta
 from dta.DynameqScenario import DynameqScenario
 from dta.DynameqNetwork import DynameqNetwork
-
+from dta.Algorithms import pairwise, any2, all2 
+from dta.TimePlan import TimePlan, PlanCollectionInfo
+from dta.Phase import Phase
+from dta.PhaseMovement import PhaseMovement
 
 logging.basicConfig(filename = "logParse.txt",\
                         level = logging.DEBUG, \
@@ -64,9 +68,9 @@ GREEN = 0
 YELLOW = 1
 RED = 2
 
-TURN_LEFT = 0
-TURN_THRU = 1
-TURN_RIGHT = 2
+TURN_LEFT = ("LT", "LT2")
+TURN_THRU = ("TH")
+TURN_RIGHT = ("RT", "RT2")
 
 class SignalData(object):
 
@@ -147,7 +151,10 @@ class SignalData(object):
         
         result = "\n\n%30s=%30s\n%30s=%30s\n%30s=%30s" % ("FileName", 
                      self.fileName, "Intersection Name", 
-                       self.iName, "Internal Intersection Name", self.iiName)                                                                                       
+                       self.iName, "Internal Intersection Name", self.iiName)
+
+        result += "\n%30s=%30s\n%30s=%30s" % ("mappedNodeName", self.mappedNodeName, "mappedNodeId", self.mappedNodeId)
+        
         result += "\n\nPhasing Data\n"
         result += self.phasingData.asPrettyString()
         
@@ -168,6 +175,111 @@ class SignalData(object):
         """
         if self.signalTiming:
             return len(self.signalTiming.values()[0])
+
+    def getPhases(self, startHour, endHour):
+        """
+        Get the phases as list of dictionaries. By combining phasing data information
+        such as the one in the following table 
+        
+        Phasing Data
+                           1  2  3  4  5  6  7  8
+          GEARY BLVD (EB)  G  G  Y  R  R  R  R  R
+            10TH AVE (SB)  R  R  R  R  G  G  Y  R
+          GEARY BLVD (WB)  G  G  Y  R  R  R  R  R
+            10TH AVE (NB)  R  R  R  R  G  G  Y  R
+
+        And the signal interval data for the time of day that is specified
+        by the startHour and endHour input arguments
+ 
+	Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]
+        
+        """
+
+        pPhase = {}
+        phases = []
+        allRed = 0
+
+        phasingData = self.phasingData
+        groupMovements = phasingData.getElementsOfDimention(0)
+        timeIndices = phasingData.getElementsOfDimention(1)
+        timeIntervals = selectCSO(self, startHour, endHour).times
+
+
+        for (timeIndex1, timeIndex2), (dur1, dur2) in izip(pairwise(timeIndices), pairwise(timeIntervals)):
+            try:
+                states1 = list(iter(phasingData[:, timeIndex1]))
+                states2 = list(iter(phasingData[:, timeIndex2]))
+            except ValueError, e:
+                print e
+                raise SignalConversionError(str(e))
+            statePairs = list(izip(states1, states2))
+
+            cPhase = {} # the current Phase
+
+            activeMovs = [gMov for gMov in  groupMovements if phasingData[gMov, timeIndex1] == "G"]    
+            if any2(statePairs, lambda pair: pair == ("G", "R")):
+                #collect all the green movements
+                cPhase["Movs"] = activeMovs
+                cPhase["green"] = dur1
+                cPhase["yellow"] = 0
+
+                if pPhase:
+                    if pPhase["Movs"] == activeMovs:
+                        cPhase["green"] += pPhase["green"]
+                        phases.append(cPhase)
+                    else:
+                        phases.append(pPhase)
+                        phases.append(cPhase)
+                    pPhase = {}
+                else:
+                    phases.append(cPhase)
+            elif any2(statePairs, lambda pair: pair == ("G", "Y")):
+                cPhase["Movs"] = activeMovs
+                cPhase["green"] = dur1
+                cPhase["yellow"] = dur2
+
+                if pPhase:
+                    if pPhase["Movs"] == activeMovs:
+                        cPhase["green"] += pPhase["green"]
+                        phases.append(cPhase)
+                    else:
+                        phases.append(pPhase)
+                        phases.append(cPhase)
+                    pPhase = {}
+                else:
+                    phases.append(cPhase)
+            elif all2(states1, lambda state: state == "R"):
+                allRed += dur1
+                phases[-1]['yellow'] += dur1
+            elif any2(statePairs, lambda pair: pair == ("G", "G")):
+                if not pPhase:
+                    pPhase["Movs"] = activeMovs
+                    pPhase["green"] = dur1
+                    pPhase["yellow"] = 0
+                else:
+                    pPhase["green"] += dur1
+
+        lastIndex = list(timeIndices)[-1]
+        lastStates = list(iter(phasingData[:, lastIndex]))    
+        if all2(lastStates, lambda state: state == 'R'):
+            phases[-1]['yellow'] += timeIntervals[-1]
+
+        return phases
+
+    def selectCSO(self, startHour, endHour):
+        """
+        returns the ExcelSignalTiming if there is one that is in operation during the 
+        input hours. Otherwise it returns none
+        """
+        for cso, signalTiming in self.signalTiming.iteritems(): 
+
+            if startHour >= signalTiming.startTime[0] and endHour <= signalTiming.endTime[0]:
+                return cso
+
+        for cso, signalTiming in self.signalTiming.iteritems(): 
+            if signalTiming.startTime == (0, 0) and signalTiming.endTime == (0,0):
+                return cso
+        return None
 
 class PhaseState(object):
     """Represents the state of a phase for a specfic duration
@@ -826,17 +938,17 @@ def mapMovements(excelCards, baseNetwork):
             bestMatchedStreetName = matches[0]
             return bestMatchedStreetName
         else:
-            raise StreetNameMappingError("The group movement %s is not associated with any of the "
-                                         "street names %s that identify the intersection." % 
+            raise StreetNameMappingError("The group movement is not associated with any of the "
+                                         "street names that identify the intersection.#%s#%s" % 
                                          (gMovName, str(streetNames)))
             
     def getDirections(gMovName):
-        """Searches the movement name for a known set of strings that indicate the 
+        """Searches the movement name for a known set of strings that indicate the
         direction of the movment and returns the result(=the direction of the movement)
         Returns a string representing the direction: WB, EB, NB, SB
         """
-        wbIndicators = ["WB,", ",WB", "WB/", "/WB", "WB&", "&WB", " WB", "WB ", "W/B", "(WB", "WB)", "(WESTBOUND)", "WESTBOUND", "WEST "]
-        ebIndicators = ["EB,", ",EB", "EB/", "/EB","EB&", "&EB", " EB", "EB ", "E/B", "(EB", "EB)", "(EASTBOUND)", "EASTBOUND", "EAST "]
+        wbIndicators = ["WB,", ",WB", "WB/", "/WB", "WB&", "&WB", " WB", "WB ", "W/B", "(WB", "WB)", "(WB)", "(WESTBOUND)", "WESTBOUND", "WEST "]
+        ebIndicators = ["EB,", ",EB", "EB/", "/EB","EB&", "&EB", " EB", "EB ", "E/B", "(EB", "(EB)", "EB)", "(EASTBOUND)", "EASTBOUND", "EAST "]        
         nbIndicators = ["NB,", ",NB", "NB/", "/NB","NB&", "&NB", " NB", "NB ", "N/B", "(NB", "NB)", "(NORTHBOUND)", "NORTHBOUND", "NORTH "]
         sbIndicators = ["SB,", ",SB", "SB/", "/SB","SB&", "&SB", " SB", "SB ", "S/B", "(SB", "SB)", "(SOUTHBOUND)", "SOUTHBOUND", "SOUTH "]
         
@@ -862,7 +974,7 @@ def mapMovements(excelCards, baseNetwork):
         result = []
 
         #todo ends with LT
-        leftTurnIndicators = ["-L", "LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT"]
+        leftTurnIndicators = ["-L", "LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
 #        rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
@@ -871,7 +983,7 @@ def mapMovements(excelCards, baseNetwork):
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
                 if indicator in gMovName:
-                   result.append(dir)
+                   result.extend(dir)
                    break
 
         return result
@@ -888,7 +1000,7 @@ def mapMovements(excelCards, baseNetwork):
             try:
                 stName = getStreetName(gMovName, streetNames)
             except StreetNameMappingError, e:
-                raise
+                raise StreetNameMappingError("%s#%d#%s" % (mec.fileName, mec.mappedNodeId, str(e)))
                 
             gTurnTypes = getTurnType(gMovName)
             gDirections = getDirections(gMovName)
@@ -897,6 +1009,8 @@ def mapMovements(excelCards, baseNetwork):
             f.write("%25s%20s%20s\n" % (gMovName, str(gTurnTypes), str(gDirections)))
             f.close()
 
+            #if mec.fileName == "Fell_Pierce_Ch_18.xls":
+            #    pdb.set_trace()
 
             if not stName:
                 raise MovementMappingError("I cannot identify the approach of the group "
@@ -904,8 +1018,10 @@ def mapMovements(excelCards, baseNetwork):
                                                  % (gMovName, mec.iName, mec.iiName))
             bStName = mec.mappedStreet[stName]
             #collect all the links of the approach that have the same direction
+
             gLinks = []
-            for candLink in [link for link in bNode.iterIncomingLinks() if link.getLabel() == bStName]:
+            candLinks = [link for link in bNode.iterIncomingLinks() if link.getLabel() == bStName]
+            for candLink in candLinks:
                 if gDirections:
                     if set(getPossibleLinkDirections(candLink)) & set(gDirections):
                         gLinks.append(candLink)
@@ -913,22 +1029,30 @@ def mapMovements(excelCards, baseNetwork):
                     gLinks.append(candLink)
 
             if len(gLinks) == 0:
-                raise MovementMappingError("I cannot identify the links for the group "
-                               "movement %s in node %s stored as %s" %
-                                                 (gMovName, mec.iName, mec.iiName))
+                raise MovementMappingError("%s#%d#I cannot identify the links for the group "
+                               "movement #%s# in node #%s# stored as #%s# candidate links are # %s" %
+                                                 (mec.fileName, mec.mappedNodeId, gMovName, mec.iName, mec.iiName, str(["%s,%s" % (candLink.getLabel(), candLink.getDirection()) for candLink in candLinks])))
 
             gMovements = []
             if gTurnTypes:
-                for mov in chain(*[link.iterOutgoingMovements() for link in gLinks]): 
-                   if mov.turnType in gTurnTypes:
+                availableMovs = list(chain(*[link.iterOutgoingMovements() for link in gLinks]))
+                for mov in availableMovs: 
+                   if mov.getTurnType() in gTurnTypes:
                        gMovements.append(mov)
+
+                if len(gMovements) == 0:
+                    raise MovementMappingError("%s # %d # cannot identify the movements for the group "
+                  "movement %s in node %s stored as %s. The streetNames are: %s , the directions of the group are %s. The available movemements are %s" 
+                                           % (mec.fileName, mec.mappedNodeId, gMovName, mec.iName, mec.iiName, 
+                                              str(mec.streetNames), str(gDirections), str([mov.getDirection() for mov in availableMovs])))
+                       
             else:    
                 gMovements = list(chain(*[link.iterOutgoingMovements() for link in gLinks]))
 
             if len(gMovements) == 0:
-                raise MovementMappingError("I cannot identify the movements for the group"
+                raise MovementMappingError("%s#%d#I cannot identify the movements for the group "
                   "movement %s in node %s stored as %s. The streetNames are: %s , the directions of the group are %s " 
-                                           % (gMovName, mec.iName, mec.iiName, 
+                                           % (mec.fileName, mec.mappedNodeId, gMovName, mec.iName, mec.iiName, 
                                               str(mec.streetNames), str(gDirections)))
 #                    `                       "group are: %s and the turn types: %s" %     
 #                                                 (gMovName, mec.iName, mec.iiName, gDirections, gTurnTypes))
@@ -941,7 +1065,7 @@ def mapMovements(excelCards, baseNetwork):
 
 
     index = defaultdict(int)
-    excelCardsWithMovements = []
+    excelCardsWithMovements = []    
     for mec in excelCards:
 
         if mec.mappedNodeId == -9999:
@@ -1017,7 +1141,6 @@ def selectCSO(excelCard, startHour, endHour):
             return signalTiming
 
     return None
-
         
 def readNetIndex():
 
@@ -1027,87 +1150,6 @@ def readNetIndex():
         index[tuple(links[0].split())] = [tuple(link.split()) for link in links[1:]]
     
     return index
-
-def excel2Dynameq():
-
-    excelCards = loadExcelCardsFromFile("mappedExcelCardsWithMovements.pkl")
-    net = DNetwork.read('/Users/michalis/Documents/myPythonPrograms/pbTools/pbProjects/doyleDTA/Sep14/Sep13-base')
-    
-    index = readNetIndex()
-
-    net.addTimePlanCollectionInfo(1530, 1830, 
-                                  'TimePlans_for_the_PM_Peak2', 
-                                  'Time plans imported from the Excel cards')
-
-    numSignals = 0
-    for excelCard in excelCards:
-        nodeId = excelCard.mappedNodeId
-        if not net.hasNode(nodeId):
-            continue        
-
-        node = net.getNode(nodeId)
-        print '\n', excelCard.fileName, excelCard.iName, excelCard.iiName
-        
-        try:
-            ePhases = getPhases(excelCard, 16, 17)
-        except Exception, e:
-            print excelCard.iName, str(e)
-            continue
-
-        signalTiming = selectCSO(excelCard, 16, 17)
-        dPlan = DTimePlan(node, signalTiming.offset, 1530, 1830)
-
-        for ePhase in ePhases:
-            groupMovements = ePhase['Movs']
-            green = ePhase['green']
-            yellow = ePhase['yellow']
-
-
-            dPhase = dPlan.addStandardPhase(green, yellow, 0)
-
-            for gMov in groupMovements:
-
-                for dstMovementIid in excelCard.mappedMovements[gMov]:
-
-                    dstNodeAid, dstNodeBid, dstNodeCid = dstMovementIid
-
-                    if not net.hasEdge(dstNodeAid, dstNodeBid):
-                        if (dstNodeAid, dstNodeBid) in index:
-                            upLinkIid = index[dstNodeAid, dstNodeBid][-1]
-                        else:
-                            print excelCard.iName, "Cannot find equivalent edge from %s to %s" \
-                                % (dstNodeAid, dstNodeBid)
-                            upLinkIid = None
-                    else:
-                        upLinkIid = (dstNodeAid, dstNodeBid)
-                    
-
-                    if not net.hasEdge(dstNodeBid, dstNodeCid):
-                        if (dstNodeBid, dstNodeCid) in index:
-                            downLinkIid = index[dstNodeBid, dstNodeCid][0]
-                        else:
-                            print excelCard.iName, "Cannot find equivalent edge from %s to %s" \
-                                % (dstNodeAid, dstNodeBid)
-                            downLinkIid = None
-                    else:
-                        downLinkIid = (dstNodeBid, dstNodeCid)
-                
-                    if upLinkIid and downLinkIid:
-                        try:
-                            dPhase.addPermittedMovement(movementIid=(upLinkIid[0], upLinkIid[1], downLinkIid[1]))
-                        except DynameqError, e:
-                            print e
-                        
-        try:
-            dPlan.validate()
-            numSignals += 1
-        except DynameqError, e:
-            print e
-        node.setTimePlan(dPlan, validate=True)
-        
-    
-    print numSignals
-    net.writeTimePlans('timePlans2.txt')
 
 def pickleCards(outfileName, cards):
     """
@@ -1271,13 +1313,44 @@ def addAllMovements(net):
                     incomingLink.addOutgoingMovement(mov) 
 
 
+def convertSignalToDynameq(node, card, startHour, endHour):
 
+    cso = card.selectCSO(startHour, endHour)
+    
+    offset = card.signalTiming[cso].offset
+    planCollectionInfo = PlanCollectionInfo(1530, 1830, "test", "test")
+    dPlan = TimePlan(node, offset, planCollectionInfo)
+    
+    excelPhases = card.getPhases(startHour, endHour)
+    
+    for excelPhase in excelPhases:
+
+        groupMovemenents = excelPhase["Movs"]
+        green = excelPhase["green"]
+        yellow = excelPhase["yellow"]
+        red = 0
+
+        dPhase = Phase(dPlan, green, yellow, red, Phase.TYPE_STANDARD)
+
+        for groupMovement in groupMovemenents:
+            dMovsAsStr = card.mappedMovements[groupMovement]
+            for dMovStr in dMovsAsStr:
+                n1, n2, n3 = map(int, dMovStr.split())
+                dMov = node.getMovement(n1, n3)
+                phaseMovement = PhaseMovement(dMov, PhaseMovement.PERMITTED)
+                dPhase.addMovement(phaseMovement)
+                    
+        dPlan.addPhase(dPhase)
+
+    return dPlan
     
 if __name__ == "__main__":
       
 
     net = getNet()
     addAllMovements(net)
+    #net.writeLinksToShp("/Users/michalis/Dropbox/tmp/sf9_links1")
+    #net.writeNodesToShp("/Users/michalis/Dropbox/tmp/sf9_nodes1")
 
     cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards/"
     #excelCards = parseExcelCardsToSignalObjects(cardsDirectory)
@@ -1285,7 +1358,7 @@ if __name__ == "__main__":
     #excelFileNames = getExcelFileNames(directory)
     #print "Num excel files", len(excelFileNames)
     #pCardsFile = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards.pkl"
-    pCardsFile2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards2.pkl"
+    pCardsFile2 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards3.pkl"
 
     #cards = excelCards
     #assignCardNames(cards)
@@ -1307,13 +1380,25 @@ if __name__ == "__main__":
     #pickleCards(pCardsFile2, cards)
     
     cards = unPickleCards(pCardsFile2)
-    mapMovements(cards, net)
+    cardsWithMovements = mapMovements(cards, net)
+    
+    cardGearyAnd7thAve = [card for card in cardsWithMovements if card.mappedNodeId == 27285][0]
+    
+    node = net.getNodeForId(27285)
 
-#    mapMovements(network)    
+    dPlan = convertSignalToDynameq(node, cardGearyAnd7thAve, 15, 28)
+
+    print dPlan
+
+    exit()
+
+#    print cards[0]
     
 
 
+    print "Cards with movemements", len(cardsWithMovements)
 
-
+#    mapMovements(network)    
+    
 
 

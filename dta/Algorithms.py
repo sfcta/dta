@@ -21,7 +21,19 @@ import pdb
 import math 
 
 from dta.Utils import isRightTurn, lineSegmentsCross
-from itertools import izip, tee, cycle
+from itertools import izip, tee, cycle, ifilter, ifilterfalse
+
+def all2(seq, pred=None):
+    "Returns True if pred(x) is true for every element in the iterable"
+    for elem in ifilterfalse(pred, seq):
+        return False
+    return True
+
+def any2(seq, pred=None):
+    "Returns True if pred(x) is true for at least one element in the iterable"
+    for elem in ifilter(pred, seq):
+        return True
+    return False
 
 def pairwise(iterable):
     

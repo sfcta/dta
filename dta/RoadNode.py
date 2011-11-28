@@ -259,7 +259,6 @@ class RoadNode(Node):
         Return an iterator over the timeplans of this node
         """
         return iter(self._timePlans)
-        
 
         
 
