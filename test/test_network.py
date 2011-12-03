@@ -1022,4 +1022,28 @@ class TestNetwork(object):
 
         print mov152.getDirection()
         
+    def test_conflictingMovements(self):
 
+        net = getSimpleNet()
+        addAllMovements(net)
+
+        mov154 = net.getLinkForNodeIdPair(1, 5).getOutgoingMovement(4)
+        mov152 = net.getLinkForNodeIdPair(1, 5).getOutgoingMovement(2)
+        mov253 = net.getLinkForNodeIdPair(2, 5).getOutgoingMovement(3)
+        mov251 = net.getLinkForNodeIdPair(2, 5).getOutgoingMovement(1)
+        mov254 = net.getLinkForNodeIdPair(2, 5).getOutgoingMovement(4)
+        mov451 = net.getLinkForNodeIdPair(4, 5).getOutgoingMovement(1)
+
+        assert mov154.isInConflict(mov253)
+        assert not mov154.isInConflict(mov251)
+        assert mov154.isInConflict(mov254)
+        assert mov254.isInConflict(mov154)
+        assert mov152.isInConflict(mov451)
+        assert not mov154.isInConflict(mov451)
+
+        
+        
+        
+
+        
+        

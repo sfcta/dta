@@ -22,6 +22,7 @@ from .Logger import DtaLogger
 from .Node import Node
 from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
+from .Utils import getMidPoint, lineSegmentsCross, polylinesCross
 
 class Movement(object):
     """
@@ -95,7 +96,8 @@ class Movement(object):
         self._outgoingLane  = outgoingLane
         self._followupTime  = followupTime
         
-        self._countsList = []
+        self._countsList = []        
+        self._centerline = self.getCenterLine()
 
     def getIncomingLink(self):
         """
@@ -103,14 +105,12 @@ class Movement(object):
         """
         return self._incomingLink
     
-    
     def getOutgoingLink(self):
         """
         Returns the outgoung, a :py:class:`Link` instance
         """
         return self._outgoingLink
-    
-    
+        
     def getAtNode(self):
         """
         Returns the node at which the movement is happening
@@ -247,4 +247,32 @@ class Movement(object):
         linkDir = self._incomingLink.getDirection()
         return linkDir + turnType
         
+        
+    def getCenterLine(self):
+        """
+        Get a line represeting the movement
+        """
+        line1 = self._incomingLink.getCenterLine()
+        line2 = self._outgoingLink.getCenterLine()
+
+        if lineSegmentsCross(line1[0], line1[-1], line2[0], line1[-1]):
+            p1 = getMidPoint(*line1)
+            p2 = getMidPoint(*line2) 
+            self._centerLine = [line1[0], p1, p2, line2[-1]]
+        else:
+            self._centerLine = [line1[0], line1[-1], line2[0], line2[-1]]
+            
+        return self._centerLine
+
+    def isInConflict(self, other):
+
+        line1 = self.getCenterLine()
+        line2 = other.getCenterLine()
+
+        return polylinesCross(line1, line2) 
+        
+            
+            
+            
+            
         

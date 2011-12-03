@@ -23,7 +23,7 @@ from .DtaError import DtaError
 from .Link import Link
 from .Movement import Movement
 from .VehicleClassGroup import VehicleClassGroup
-
+from .Utils import polylinesCross, lineSegmentsCross
 
 class RoadLink(Link):
     """

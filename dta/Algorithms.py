@@ -293,15 +293,3 @@ def getClosestNode(net, inputNode):
             closestNode = node 
 
     return closestNode, math.sqrt(minDist) 
-            
-    
-    
-    
-            
-                
-
-        
-        
-        
-        
-

@@ -19,7 +19,8 @@ import copy
 import sys
 
 import dta
-import shapefile 
+import shapefile
+from itertools import izip
 
 def writePoints(iterPoints, fileName):
     """
@@ -91,6 +92,23 @@ def lineSegmentsCross(p1, p2, p3, p4, checkBoundryConditions=False):
         return True
     return False
 
+def polylinesCross(polyline1, polyline2):
+    """
+    Return True if the two polylines cross.
+    Each polyline is should be a list of two point tuples
+    """
+    for p1, p2 in izip(polyline1, polyline1[1:]):
+        for p3, p4 in izip(polyline2, polyline2[1:]):
+            if lineSegmentsCross(p1, p2, p3, p4):
+                return True
+    if lineSegmentsCross(polyline1[-2], polyline1[-1],
+                         polyline2[-2], polyline2[-1],
+                         checkBoundryConditions=True):
+        return True
+    
+    
+    return False
+            
 def onSegment(pi, pj, pk):
     """
     Determines whether a point known to be colinear with a segment lies on that
@@ -107,12 +125,10 @@ def getMidPoint(p1, p2):
     """
     return ((p1[0] + p2[0]) / 2.0, (p1[1] + p2[1]) / 2.0)
 
-
 def getReverseNetwork(net):
     """
     Returns a network copy that has all the links reversed
     """
-    
     rNet = dta.Network(net.getScenario())
 
     for node in net.iterNodes():
