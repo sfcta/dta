@@ -16,13 +16,17 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import pdb 
 import math
+from itertools import izip
+
 from .DtaError import DtaError
 from .Logger import DtaLogger
 from .Node import Node
 from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import getMidPoint, lineSegmentsCross, polylinesCross
+
 
 class Movement(object):
     """
@@ -48,8 +52,7 @@ class Movement(object):
                         incomingLink._freeflowSpeed, 
                         vehicleClassGroup
                         )
-                        
-        
+                                
     def __init__(self, node, incomingLink, outgoingLink, freeflowSpeed, vehicleClassGroup,
                  numLanes=None, incomingLane=None, outgoingLane=None, followupTime=0):
         """
@@ -181,6 +184,30 @@ class Movement(object):
         """
         return True if self._incomingLink.getStartNode() == self._outgoingLink.getEndNode() else False
 
+    def isThruTurn(self):
+        """
+        Return True if the movement is a Through movement
+        """
+        return True if self.getTurnType() == Movement.DIR_TH else False 
+
+    def isLeftTurn(self):
+        """
+        Return True if the movement is a left turn
+        """
+        if self.getTurnType() == Movement.DIR_LT or \
+           self.getTurnType() == Movement.DIR_LT2:
+            return True
+        return False
+
+    def isRightTurn(self):
+        """
+        Return True if the movement is a right turn
+        """
+        if self.getTurnType() == Movement.DIR_RT or \
+           self.getTurnType() == Movement.DIR_RT2:
+            return True
+        return False
+
     def getTurnType(self):
         """
         Return the type of the turn the movement makes as one of the following strings
@@ -246,8 +273,7 @@ class Movement(object):
 
         linkDir = self._incomingLink.getDirection()
         return linkDir + turnType
-        
-        
+                
     def getCenterLine(self):
         """
         Get a line represeting the movement
@@ -255,7 +281,7 @@ class Movement(object):
         line1 = self._incomingLink.getCenterLine()
         line2 = self._outgoingLink.getCenterLine()
 
-        if lineSegmentsCross(line1[0], line1[-1], line2[0], line1[-1]):
+        if lineSegmentsCross(line1[0], line1[-1], line2[0], line2[-1]):
             p1 = getMidPoint(*line1)
             p2 = getMidPoint(*line2) 
             self._centerLine = [line1[0], p1, p2, line2[-1]]
@@ -265,14 +291,25 @@ class Movement(object):
         return self._centerLine
 
     def isInConflict(self, other):
-
+         
         line1 = self.getCenterLine()
         line2 = other.getCenterLine()
+        
+        for p1, p2 in izip(line1, line1[1:]):
+            for p3, p4 in izip(line2, line2[1:]):
+                if lineSegmentsCross(p1, p2, p3, p4):
+                    return True
+                
+        if lineSegmentsCross(line1[-2], line1[-1],
+                            line2[-2], line2[-1],
+                             checkBoundryConditions=True):            
+            return True
+    
+        return False
 
-        return polylinesCross(line1, line2) 
-        
-            
-            
-            
-            
-        
+    def getNumLanes(self):
+        """
+        Return the number of lanes the movement has
+        """
+        return self._numLanes()
+    

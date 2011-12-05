@@ -32,9 +32,20 @@ class TestUtils:
         p5, p6 = [[0,0], [0, 1]]
 
         assert not lineSegmentsCross(p1, p2, p5, p6)
-        assert lineSegmentsCross(p1, p2, p5, p6, checkBoundryConditions=True)
+        assert lineSegmentsCross(p1, p2, p5, p6, checkBoundryConditions=True)        
 
-    def test_polylinesCross(self):
+    def test_lineSegmentsCross2(self):
+
+        p1, p2, p3, p4 = [(118.0, 0.0), (118.0, 50.0), (150.0, 82.0), (200.0, 82.0)]
+
+        p5, p6, p7, p8 = [(0.0, 82.0), (100.0, 82.0), (100.0, 82.0), (200.0, 82.0)]
+
+        assert not lineSegmentsCross(p3, p4, p7, p8)
+        assert onSegment(p7, p8, p3)
+        
+        assert lineSegmentsCross(p3, p4, p7, p8, checkBoundryConditions=True)
+
+    def NOtest_polylinesCross(self):
         
         line1 = [[[0,0], [1,0]], [[1,0], [1,1]]]
         line2 = [[[0,0], [1,0]], [[1,0], [1, -1]]]
@@ -49,4 +60,4 @@ class TestUtils:
 
         assert polylinesCross(line1, line4)
 
-        
+

@@ -2,7 +2,7 @@ __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
 
-    DTA is free software: you can redistribute it and/or modify
+     DTA is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -221,3 +221,35 @@ class TimePlan(object):
                                 (self.getNode().iid, "\n\t".join(map(str, nodeMovsNotInPhaseMovs)),
                                  "\n\t".join(map(str, phaseMovsNotInNodeMovs))))
         
+    def setPermittedMovements(self):
+        """
+        Goes over the movements of the phase. If two protected movements
+        conflict with each other it sets the one with the fewer number of
+        lanes as a permitted one unless if both movements are
+        through movmeents. In this case it raises an error. 
+        """
+        for phase in self.iterPhases():
+            for mov1 in phase.iterMovements():
+                for mov2 in phase.iterMovements():
+                   if mov1.getId() == mov2.getId():
+                       continue
+                   if not mov1.isInConflict(mov2):
+                       continue
+                   print mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()
+                   if mov1.isThruTurn() and mov2.isThruTurn():
+                       pdb.set_trace()
+                       raise DtaError("Movements %s and %s are in coflict and are both protected "
+                                      " and thru movements" %
+                                      (mov1.getId(), mov2.getId()))
+                   else:
+                       if mov1.isLeftTurn():
+                           if mov2.isThruTurn():
+                               mov1.setPermitted()
+                           elif mov2.isRightTurn():
+                               mov2.setPermitted()
+                           elif mov2.isLeftTurn():
+                               mov2.setPermitted()
+
+
+
+                       #if mov1.getNumLanes() <= mov2.getNumLanes():                               

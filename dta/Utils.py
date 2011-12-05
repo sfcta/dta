@@ -105,17 +105,16 @@ def polylinesCross(polyline1, polyline2):
                          polyline2[-2], polyline2[-1],
                          checkBoundryConditions=True):
         return True
-    
-    
     return False
             
 def onSegment(pi, pj, pk):
     """
-    Determines whether a point known to be colinear with a segment lies on that
-    segment
+    Determines whether point k known to be colinear with a segment pi pj
+    segment lies inside segment pi pj. It does so by examining if
+    point k is inside the boundary box of segment pi, pj
     """
-    if min(pi[0], pj[0]) <= pk[0] <= min(pi[0], pj[0]) and \
-            min(pi[1], pj[1]) <= pk[1] <= min(pi[1], pj[1]):
+    if min(pi[0], pj[0]) <= pk[0] <= max(pi[0], pj[0]) and \
+            min(pi[1], pj[1]) <= pk[1] <= max(pi[1], pj[1]):
         return True
     return False
     
@@ -141,8 +140,7 @@ def getReverseNetwork(net):
         rLink = dta.Link(link._id,
                      rNet.getNodeForId(link.getEndNode().getId()),
                      rNet.getNodeForId(link.getStartNode().getId()), 
-                     "")
-                                       
+                     "")                                       
         rNet.addLink(rLink)
         
     return rNet 

@@ -199,6 +199,8 @@ class SignalData(object):
         phases = []
         allRed = 0
 
+        #pdb.set_trace()
+        
         phasingData = self.phasingData
         groupMovements = phasingData.getElementsOfDimention(0)
         timeIndices = phasingData.getElementsOfDimention(1)
@@ -216,7 +218,8 @@ class SignalData(object):
 
             cPhase = {} # the current Phase
 
-            activeMovs = [gMov for gMov in  groupMovements if phasingData[gMov, timeIndex1] == "G"]    
+            activeMovs = [gMov for gMov in  groupMovements if
+                          phasingData[gMov, timeIndex1] == "G"]    
             if any2(statePairs, lambda pair: pair == ("G", "R")):
                 #collect all the green movements
                 cPhase["Movs"] = activeMovs
@@ -237,6 +240,7 @@ class SignalData(object):
                 cPhase["Movs"] = activeMovs
                 cPhase["green"] = dur1
                 cPhase["yellow"] = dur2
+                cPhase["allRed"] = 0                
 
                 if pPhase:
                     if pPhase["Movs"] == activeMovs:
@@ -249,13 +253,18 @@ class SignalData(object):
                 else:
                     phases.append(cPhase)
             elif all2(states1, lambda state: state == "R"):
-                allRed += dur1
-                phases[-1]['yellow'] += dur1
+                #pdb.set_trace()                
+                #allRed += dur1
+                #phases[-1]['yellow'] += dur1
+                phases[-1]['allRed'] += dur1
+                
             elif any2(statePairs, lambda pair: pair == ("G", "G")):
                 if not pPhase:
                     pPhase["Movs"] = activeMovs
                     pPhase["green"] = dur1
                     pPhase["yellow"] = 0
+                    pPhase["allRed"] = 0
+                    #allRed = 0
                 else:
                     pPhase["green"] += dur1
 
@@ -264,6 +273,7 @@ class SignalData(object):
         if all2(lastStates, lambda state: state == 'R'):
             phases[-1]['yellow'] += timeIntervals[-1]
 
+        print phases
         return phases
 
     def selectCSO(self, startHour, endHour):
@@ -1213,7 +1223,6 @@ def mapIntersections(excelCards, mappedingFile):
             output.write("%s\t%s\n" % (card.fileName, card.mappedNodeId))            
             
     output.close()
-
     return excelCards
 
 def getTestScenario(): 
@@ -1297,7 +1306,6 @@ def simpleMovementFactory(incomingLink, outgoingLink):
                    dta.VehicleClassGroup("all", "-", "#ffff00"))
 
     return mov                                                                                           
-
 def addAllMovements(net):
     
     for node in net.iterNodes():
@@ -1328,7 +1336,7 @@ def convertSignalToDynameq(node, card, startHour, endHour):
         groupMovemenents = excelPhase["Movs"]
         green = excelPhase["green"]
         yellow = excelPhase["yellow"]
-        red = 0
+        red = excelPhase["allRed"]
 
         dPhase = Phase(dPlan, green, yellow, red, Phase.TYPE_STANDARD)
 
@@ -1337,7 +1345,7 @@ def convertSignalToDynameq(node, card, startHour, endHour):
             for dMovStr in dMovsAsStr:
                 n1, n2, n3 = map(int, dMovStr.split())
                 dMov = node.getMovement(n1, n3)
-                phaseMovement = PhaseMovement(dMov, PhaseMovement.PERMITTED)
+                phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
                 dPhase.addMovement(phaseMovement)
                     
         dPlan.addPhase(dPhase)
@@ -1346,7 +1354,6 @@ def convertSignalToDynameq(node, card, startHour, endHour):
     
 if __name__ == "__main__":
       
-
     net = getNet()
     addAllMovements(net)
     #net.writeLinksToShp("/Users/michalis/Dropbox/tmp/sf9_links1")
@@ -1386,9 +1393,17 @@ if __name__ == "__main__":
     
     node = net.getNodeForId(27285)
 
+    pdb.set_trace()
     dPlan = convertSignalToDynameq(node, cardGearyAnd7thAve, 15, 28)
 
     print dPlan
+
+    dPlan.setPermittedMovements()
+
+    print dPlan
+
+    for mov in node.iterMovements():
+        print mov.getIncomingLink().getId(), mov.getOutgoingLink().getId(), mov.getTurnType()
 
     exit()
 

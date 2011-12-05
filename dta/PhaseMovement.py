@@ -41,6 +41,12 @@ class PhaseMovement(object):
         movement"""
         return self.__repr__()
 
+    def getId(self):
+        """
+        Return the id of the movement as a sequence of three node ids
+        """
+        return self._movement.getId()
+
     def getIncomingLink(self):
         """
         Returns the incomingLink, a :py:class:`Link` instance
@@ -115,3 +121,55 @@ class PhaseMovement(object):
         Returns the end node of outgoingLink, a :py:class:`Link` instance
         """        
         return self._movement._outgoingLink.getEndNodeId()
+
+    def isUTurn(self):
+        """
+        Return True if the movement is a U-Turn
+        """
+        return self._movement.isUTurn()
+
+    def isThruTurn(self):
+        """
+        Return True if the movement is a Through movement
+        """
+        return self._movement.isThruTurn()
+
+    def isLeftTurn(self):
+        """
+        Return True if the movement is a left turn
+        """
+        return self._movement.isLeftTurn()
+
+    def isRightTurn(self):
+        """
+        Return True if the movement is a right turn
+        """
+        return self._movement.isRightTurn()
+
+    def getNumLanes(self):
+        """
+        Return the number of lanes the movement has
+        """
+        return self._movement.getNumLanes()
+
+    def isInConflict(self, other):
+        """
+        Return True if the current movement and the input one are in conflict
+        """
+        return self._movement.isInConflict(other)
+
+    def getCenterLine(self):
+        """
+        Return a polyline representing the movement
+        """
+        return self._movement.getCenterLine()
+
+    def getTurnType(self):
+        """
+        Return the type of the turn the movement makes as one of the following strings
+        UTURN, RT, RT2, LT2, LT, TH
+        """
+        return self._movement.getTurnType()
+        
+
+        

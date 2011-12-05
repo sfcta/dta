@@ -139,8 +139,7 @@ def getSimpleNet():
     net.addNode(v5)
     net.addNode(v6)
     net.addNode(v7)
-    net.addNode(v8)
-
+    net.addNode(v8) 
 
 #
 #                2         6
@@ -1021,6 +1020,22 @@ class TestNetwork(object):
         mov153 = link15.getOutgoingMovement(3)
 
         print mov152.getDirection()
+
+    def test_movementGetCenterLine(self):
+
+        net = getSimpleNet()
+        addAllMovements(net)
+
+        l35 = net.getLinkForNodeIdPair(3,5)
+        l54 = net.getLinkForNodeIdPair(5, 4)
+        
+        mov354 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(4)
+        mov351 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(1)
+        mov352 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(2)
+
+        print l35.getCenterLine()
+        print l54.getCenterLine()
+        print mov354.getCenterLine()
         
     def test_conflictingMovements(self):
 
@@ -1033,16 +1048,33 @@ class TestNetwork(object):
         mov251 = net.getLinkForNodeIdPair(2, 5).getOutgoingMovement(1)
         mov254 = net.getLinkForNodeIdPair(2, 5).getOutgoingMovement(4)
         mov451 = net.getLinkForNodeIdPair(4, 5).getOutgoingMovement(1)
+        
+        mov354 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(4)
+        mov351 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(1)
+        mov352 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(2)
 
+        #thru mov with thru 
         assert mov154.isInConflict(mov253)
+        #thru mov with left turn 
         assert not mov154.isInConflict(mov251)
+        #thru mov with left turn of same dest 
         assert mov154.isInConflict(mov254)
+        #thru mov with left turn of same dest         
         assert mov254.isInConflict(mov154)
+        #left turn with opposing thru 
         assert mov152.isInConflict(mov451)
+        #thru with opposing thru 
         assert not mov154.isInConflict(mov451)
 
-        
-        
+        #right turn with left turn with same dest 
+        assert mov354.isInConflict(mov154)
+        #right turn with left turn with same dest 
+        assert mov354.isInConflict(mov254)
+        #left turn with thru from same link 
+        assert not mov351.isInConflict(mov352)
+        #left turn with right from same link 
+        assert not mov351.isInConflict(mov354)
+       
         
 
         
