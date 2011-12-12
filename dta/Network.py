@@ -28,6 +28,7 @@ from .Link import Link
 from .RoadLink import RoadLink
 from .Logger import DtaLogger
 from .RoadNode import RoadNode
+from .TimePlan import PlanCollectionInfo
 from .Scenario import Scenario
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
@@ -71,6 +72,7 @@ class Network(object):
                            str(scenario))
             
         self._scenario = scenario
+        self._planInfo = {}
         
     def __del__(self):
         pass
@@ -109,7 +111,35 @@ class Network(object):
                     cMov._incomingLink = self.getLinkForId(mov._incomingLink.getId())
                     cMov._outgoingLink = self.getLinkForId(mov._outgoingLink.getId())
 
-                    cLink.addOutgoingMovement(cMov) 
+                    cLink.addOutgoingMovement(cMov)
+
+    def addPlanCollectionInfo(self, militaryStartTime, militaryEndTime, name, description):
+        """
+        Add a time plan colection wth the given characteristics
+        """
+        if self.hasPlanCollectionInfo(militaryStartTime, militaryEndTime):
+            raise DtaError("The network already has a plan collection info from %d to %d"
+                           % (militaryStartTime, militaryEndTime))
+        planInfo = PlanCollectionInfo(militaryStartTime, militaryEndTime, name, description)   
+        self._planInfo[militaryStartTime, militaryEndTime] = planInfo
+        return planInfo
+
+    def hasPlanCollectionInfo(self, militaryStartTime, militaryEndTime):
+        """
+        Return True if the network has a time plan connection for the given
+        start and end times
+        """
+        return True if (militaryStartTime, militaryEndTime) in self._planInfo else False
+
+    def getPlanCollectionInfo(self, militaryStartTime, militaryEndTime):
+        """
+        Return the plan collection info for the given input times
+        """
+        if self.hasPlanCollectionInfo(militaryStartTime, militaryEndTime):
+            return self._planInfo[militaryStartTime, militaryEndTime]
+        else:
+            raise DtaError("The network already has a plan collection info from %d to %d"
+                           % (militaryStartTime, militaryEndTime))                    
         
     def addNode(self, newNode):
         """

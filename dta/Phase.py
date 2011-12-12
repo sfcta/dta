@@ -104,7 +104,7 @@ class Phase(object):
                                                                                    self.getAtNode().getId()))
         if self.hasMovement(movement.getStartNodeId(), 
                             movement.getEndNodeId()):
-            raise DtaError("Movement %s already belongs to this phase" % movement.getIid())
+            raise DtaError("Movement %s already belongs to this phase" % movement.getId())
         
         self._movements.append(movement)
     

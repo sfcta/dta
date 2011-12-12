@@ -208,7 +208,7 @@ class RoadLink(Link):
 
     def getLength(self):
         """
-        Return the  length of the link in feetk 
+        Return the  length of the link in feet
         """
         if self._length != -1:
             return self._length 

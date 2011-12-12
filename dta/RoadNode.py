@@ -20,6 +20,7 @@ import pdb
 import math
 from .DtaError import DtaError
 from .Node import Node
+
 from .Utils import lineSegmentsCross, getMidPoint
 
 
@@ -105,7 +106,7 @@ class RoadNode(Node):
         self._control    = control
         self._priority   = priority
         
-        self._timePlans = []
+        self._timePlans = {}
 
     def isRoadNode(self):
         """
@@ -246,20 +247,26 @@ class RoadNode(Node):
         """
         Add the input time plan to the current collection
         """
-        self._timePlans.append(timePlan)
+        self._timePlans[timePlan.getPlanInfo()] = timePlan
         
-    def hasTimePlan(self):
+    def hasTimePlan(self, planInfo=None):
         """
         Return true if the node has at least one time plan
         """
-        return True if self._timePlans else False 
+        if not planInfo:
+            return True if self._timePlans else False
+        return True if self._timePlans[planInfo] else False 
 
     def iterTimePlans(self):
         """
         Return an iterator over the timeplans of this node
         """
-        return iter(self._timePlans)
+        return iter(self._timePlans.itervalues())
 
+
+
+        
+        
         
 
 

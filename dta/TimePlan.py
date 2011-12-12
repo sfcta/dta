@@ -27,32 +27,38 @@ class PlanCollectionInfo(object):
     """Contains user information for a collection of signals belonging to the
     same time period"""
     def __init__(self, militaryStartTime, militaryEndTime, name, description):
+
         self._startTime = militaryStartTime
         self._endTime = militaryEndTime
         self._name = name
         self._description = description
 
     def __str__(self):
-        """Return the string representation of the oject"""
+        """
+        Return the string representing the plan collection
+        """            
         return self.__repr__()
 
     def __repr__(self):
-        """Return the parseable string representaton of the object"""
-        #stInMin = getTimeInMin(self._startTime)
-        #endInMin = getTimeInMin(self._endTime) 
-        #startTime = getMilitaryTimeAsString(stInMin)
-        #endTime = getMilitaryTimeAsString(endInMin) 
-
+        """
+        Return the string representing the plan collection
+        """    
         return ("<DYNAMEQ>\n<VERSION_1.5>\n<CONTROL_PLANS_FILE>\n* %s\nPLAN_INFO\n%s %s\n%s\n%s" %  
                 (time.ctime(), self._startTime.strftime("%H:%M"), 
                  self._endTime.strftime("%H:%M"),
                  self._name, self._description))
                     
     def getTimePeriod(self):
+        """
+        Return a tuple representing the time period
+        of the plan collection
+        """
         return self._startTime, self._endTime
 
 class TimePlan(object):
-    """Represents a Dynameq timeplan"""
+    """
+    Represents a Dynameq timeplan
+    """
 
     CONTROL_TYPE_CONSTANT = 0
     CONTROL_TYPE_PRETIMED = 1
@@ -81,9 +87,12 @@ class TimePlan(object):
                 description += currentLine
                 currentLine = lineIter.next()
 
-            planCollectionInfo = PlanCollectionInfo(startTime, endTime,
+            if not net.hasPlanCollectionInfo(startTime, endTime):                
+                planCollectionInfo = net.addPlanCollectionInfo(startTime, endTime,
                                                     name, description)
-                        
+            else:
+                planCollectionInfo = net.getPlanCollectionInfo(startTime, endTime)
+                                                                                         
             while True:
                 currentLine = lineIter.next().strip()
                 if currentLine == "":
@@ -103,9 +112,8 @@ class TimePlan(object):
         except StopIteration:
             lineIter.close()
                     
-    #TODO if I enter TimePlan.TURN_ON_RED_YES in the constructor I get an error??????
     def __init__(self, node, offset, planCollectionInfo,
-                 syncPhase=1, turnOnRed=1):
+                 syncPhase=1, turnOnRed=TURN_ON_RED_YES):
 
         self._node = node
         self._planCollectionInfo = planCollectionInfo
@@ -117,27 +125,37 @@ class TimePlan(object):
         self._phases = []
 
     def __repr__(self):
-
+        """
+        Return a Dynameq parsable string that represents the time plan
+        """
         nodeInfo = "NODE\n%s\n" % self.getNode().getId()
         planInfo = "PLAN\n%d %d %d %d\n" % (self._type, self._offset, self._syncPhase, self._turnOnRed)
         phases = "\n".join([repr(phase) for phase in self.iterPhases()])
         return "%s%s%s\n" % (nodeInfo, planInfo, phases)
 
     def __str__(self):
-        
+        """
+        Return a Dynameq parsable string that represents the time plan
+        """        
         return self.__repr__()
 
     def addPhase(self, phase):
-        """Add the input phase instance to the timeplan's phases"""
+        """
+        Add the input phase instance to the timeplan's phases
+        """
         assert isinstance(phase, Phase)
         self._phases.append(phase)
 
     def iterPhases(self):
-        """Return an iterator to the phases in the timeplan"""
+        """
+        Return an iterator to the phases in the timeplan
+        """
         return iter(self._phases)
 
     def isValid(self):
-         """Return True if the plan is valid otherwise return false"""
+         """
+         Return True if the plan is valid otherwise return false
+         """
          try:
              self.validate()
              return True
@@ -145,26 +163,36 @@ class TimePlan(object):
              return False
 
     def getNodeId(self):
-        """Return the id of the node the timeplan applies"""
+        """
+        Return the id of the node the timeplan applies
+        """
         return self._node.id
 
     def getNumPhases(self):
-        """Return the number of phases"""
+        """
+        Return the number of phases
+        """
         return len(self._phases)
 
     def getNode(self):
-        """Return the node the timeplan applies"""
+        """
+        Return the node the timeplan applies
+        """
         return self._node
 
     def getPhase(self, phaseNum):
-        """Return the phase with the given index"""
+        """
+        Return the phase with the given index
+        """
         if phaseNum <= 0 or phaseNum > self.getNumPhases():
             return DtaError("Timeplan for node %s does not have a phase "
                                  "with index %d" % (self._node.id, phaseNum))
         return self._phases[phaseNum - 1]
 
     def getCycleLength(self):
-        """Return the cycle length in seconds"""
+        """
+        Return the cycle length in seconds
+        """
         return sum([phase.green + phase.yellow + phase.red for phase in self.iterPhases()])
 
     def getPlanInfo(self):
@@ -174,20 +202,30 @@ class TimePlan(object):
         return self._planCollectionInfo
 
     def setSyncPhase(self, syncPhase):
-        
+        """
+        Set the syncing phase to the input value
+        """
         if syncPhase <= 0:
             raise DtaError("Node %s. The sync phase %d cannot be less than 1 or greater than "
                                "the number of phases %d" % (self.getNodeId(), syncPhase, self.getNumPhases()))
         self._syncPhase = syncPhase 
 
     def validate(self):
-        """If the timeplan is not valide raise DtaError"""
+        """
+        Make the following checks to the timeplan. If any of them fails raise an error
+        1. Sync Phase is a valid phase
+        2. Number of phases is equal or greater than two
+        3. The number of movements each phase has should be greater than zero
+        4. The phase movements are exactly the same with the node movements:
+               there is no node movement that is not served by a phase and there is
+               not a phase movement that does not exist in the node. 
+        5. If two movements conflict with each other then one of them is permitted and the other is protected
+        """
 
         if self._syncPhase <= 0 or self._syncPhase > self.getNumPhases():
             raise DtaError("Node %s. The sync phase %d cannot be less than 1 or greater than "
                                "the number of phases %d" % (self.getNodeId(), self._syncPhase, self.getNumPhases()))
             
-
         if self.getNumPhases() < 2:
             raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.iid)
 
@@ -196,31 +234,43 @@ class TimePlan(object):
                 raise DtaError("Node %s The number of movements in a phase "
                                     "cannot be less than one" % self._node.iid)
 
-        for phase in self.iterPhases():
-            for movement in phase.iterMovements():
-                if movement.isUTurn():
-                    raise DtaError("Node %s. The movement %s is a UTurn and should not have been "
-                                        "entered as a phase movement" % (self.getNode().iid, 
-                                                                         str(movement.iid)))
-
         phaseMovements = set([mov.iid for phase in self.iterPhases() 
                                 for mov in phase.iterMovements()]) 
 
-        if self._turnOnRed == 1:
+        #if right turns on red add the right turns 
+        if self._turnOnRed == TimePlan.TURN_ON_RED_YES:
             for mov in self._node.iterMovements():
                 if mov.isRightTurn():
                     phaseMovements.add(mov.iid)
 
-        nodeMovements = set([mov.iid for mov in self._node.iterMovements() if not mov.isUTurn()])
+        nodeMovements = set([mov.iid for mov in self._node.iterMovements()])
         if phaseMovements != nodeMovements:
             nodeMovsNotInPhaseMovs = nodeMovements.difference(phaseMovements)
             phaseMovsNotInNodeMovs = phaseMovements.difference(nodeMovements)
             raise DtaError("Node %s. The phase movements are not the same with node movements."
-                                "\nNode movements missing from the phase movements: \n\t%s"
-                                "\nPhase movements not registered as node movements: \n\t%s" % 
-                                (self.getNode().iid, "\n\t".join(map(str, nodeMovsNotInPhaseMovs)),
-                                 "\n\t".join(map(str, phaseMovsNotInNodeMovs))))
+                                "\tNode movements missing from the phase movements: \t%s"
+                                "\tPhase movements not registered as node movements: \t%s" % 
+                                (self.getNode().iid, "\t".join(map(str, nodeMovsNotInPhaseMovs)),
+                                 "\t".join(map(str, phaseMovsNotInNodeMovs))))
         
+       #check that if two conflicting movements exist one of them is permitted or right turn
+        for phase in self.iterPhases():
+            for mov1 in phase.iterMovements():
+                for mov2 in phase.iterMovements():
+                   if mov1.getId() == mov2.getId():
+                       continue
+                   if not mov1.isInConflict(mov2):
+                       continue
+                   if mov1.isProtected() and mov2.isProtected():
+                       if mov1.isRightTurn() or mov2.isRightTurn():
+                           continue
+                       raise DtaError("Movements %s and %s are in coflict and are both protected "
+                                      " and thru movements" %
+                                      (mov1.getId(), mov2.getId()))
+
+        #does it make sense to check there is no case where you have 3 simulataneous conflicting movements
+        #permitted or protected? Probably
+                               
     def setPermittedMovements(self):
         """
         Goes over the movements of the phase. If two protected movements
@@ -235,9 +285,7 @@ class TimePlan(object):
                        continue
                    if not mov1.isInConflict(mov2):
                        continue
-                   print mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()
                    if mov1.isThruTurn() and mov2.isThruTurn():
-                       pdb.set_trace()
                        raise DtaError("Movements %s and %s are in coflict and are both protected "
                                       " and thru movements" %
                                       (mov1.getId(), mov2.getId()))
@@ -250,6 +298,3 @@ class TimePlan(object):
                            elif mov2.isLeftTurn():
                                mov2.setPermitted()
 
-
-
-                       #if mov1.getNumLanes() <= mov2.getNumLanes():                               
