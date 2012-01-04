@@ -21,6 +21,9 @@ import sys
 import dta
 import shapefile
 from itertools import izip
+from collections import defaultdict
+import xml.etree.ElementTree as ET
+from xml.dom.minidom import parseString
 
 def writePoints(iterPoints, fileName):
     """
@@ -144,3 +147,184 @@ def getReverseNetwork(net):
         rNet.addLink(rLink)
         
     return rNet 
+
+class MappingError(Exception):
+    pass
+
+class NetworkMapping(object):
+    """
+    Contains the node and link mappings of two network objects
+    """
+    def __init__(self, netOne, netTwo):
+        """
+        netOne and netTwo are the two network objects to be mapped
+        """
+        self._netOne = netOne
+        self._netTwo = netTwo
+
+        self._mapNodesOneToTwo = dict()
+        self._mapNodesTwoToOne = dict() 
+        self._mapLinksOneToTwo = defaultdict(dict)
+        self._mapLinksTwoToOne = defaultdict(dict)
+
+    def mapNodesById(self):
+        """
+        Map the nodes of the two objects based on node ids
+        """
+        for nodeOne in self._netOne.iterNodes():
+            if self._netTwo.hasNodeForId(nodeOne.getId()):
+                nodeTwo = self._netTwo.getNodeForId(nodeOne.getId())
+                self.setMappedNode(nodeOne, nodeTwo)
+
+    def mapLinksByOrientation(self, maxAngle):
+        """
+        Map the links based on the input maxAngle for all the
+        pair of nodes that have already been mapped
+        """
+        def getMinAngle(node1, edge1, node2, edge2):
+            """
+            Returns a positive number in degrees always in [0, 180]
+            that corresponds to the
+            acute angle between the two edges
+            """
+            orientation1 = node1.getOrientation(edge1.getMidPoint())
+            orientation2 = node2.getOrientation(edge2.getMidPoint())
+            if orientation2 > orientation1:
+                angle1 = orientation2 - orientation1
+                angle2 = 360 - orientation2 + orientation1
+                return min(angle1, angle2)
+            elif orientation1 > orientation2:
+                angle1 = orientation1 - orientation2 
+                angle2 = 360 - orientation1 + orientation2
+                return min(angle1, angle2)
+            else:
+                return 0
+            
+        for nodeOne, nodeTwo in self._mapNodesOneToTwo.iteritems():            
+            #incoming edges
+            edges2 = list(nodeTwo.iterIncomingEdges())
+            for edge1 in nodeOne.iterIncomingEdges():
+                #pick the closest
+                if len(edges2) == 0:
+                    break 
+                edges2 = sorted(edges2, key = lambda edge2: getMinAngle(nodeOne, edge1, nodeTwo, edge2))
+                closestEdge = edges2[0]
+
+                if getMinAngle(nodeOne, edge1, nodeTwo, closestEdge) < maxAngle:
+                    self.setMappedLink(nodeOne, edge1, nodeTwo, closestEdge)
+                    edges2.pop(0)
+                
+            #outgoing edges
+            edges2 = list(nodeTwo.iterOutgoingEdges())
+            for edge1 in nodeOne.iterOutgoingEdges():
+                if len(edges2) == 0:
+                    break
+                edges2 = sorted(edges2, key = lambda edge2: getMinAngle(nodeOne, edge1, nodeTwo, edge2))
+                closestEdge = edges2[0]
+                if getMinAngle(nodeOne, edge1, nodeTwo, closestEdge) < maxAngle:
+                    self.setMappedLink(nodeOne, edge1, nodeTwo, closestEdge)
+                    edges2.pop(0)
+            
+    def setMappedNode(self, nodeOne, nodeTwo):
+        """
+        Map the two input nodes to each other. A one to one mapping is
+        being created for the two nodes.
+        """
+        if nodeOne in self._mapNodesOneToTwo:
+            raise DtaError("Node one %s has already been mapped to a node"
+                               % nodeOne.id)
+        if nodeTwo in self._mapNodesTwoToOne:
+            raise DtaError("Node two %s has already been mapped to a node"
+                               % nodeTwo.id)
+        
+        self._mapNodesOneToTwo[nodeOne] = nodeTwo
+        self._mapNodesTwoToOne[nodeTwo] = nodeOne
+        #TODO: consider
+        #self._mapLinksOneToTwo[nodeOne] = {}
+            
+    def getMappedNode(self, node):
+        """
+        Return the mapped node. If the input node is from networkOne the
+        corresponding node from network two is being returned and vice
+        versa 
+        """        
+        if isinstance(node, self._netOne.getNodeType()):
+            if node not in self._mapNodesOneToTwo:
+                raise DtaError("Node %s does not have a mapped node" % node.id)
+            return self._mapNodesOneToTwo[node]            
+        elif isinstance(node, self._netTwo.getNodeType()):
+            if node not in self._mapNodesTwoToOne:
+                raise DtaError("Node %s does not have a mapped node" % node.id)
+            return self._mapNodesTwoToOne[node]
+        else:
+            raise DtaError("Node %s should belong to one of the mapped networks"
+                               % node.id)
+           
+    def setMappedLink(self, nodeOne, linkOne, nodeTwo, linkTwo):
+        """
+        Map linkOne attached to nodeOne to linkTwo attached to nodeTwo
+        """
+        assert isinstance(nodeOne, self._netOne.getNodeType())
+        assert isinstance(linkOne, self._netOne.getLinkType())
+
+        assert isinstance(nodeTwo, self._netTwo.getNodeType())
+        assert isinstance(linkTwo, self._netTwo.getLinkType())
+
+        if nodeOne is not linkOne.startVertex and nodeOne is not linkOne.endVertex:
+            raise DtaError("Node %s is not connected to link %s" %
+                               (nodeOne.id, linkTwo.iid_))
+
+        if nodeTwo is not linkTwo.startVertex and nodeTwo is not linkTwo.endVertex:
+            raise DtaError("Node %s is not connected to link %s" %
+                               (nodeTwo.id, linkTwo.iid_))
+        
+        if nodeOne not in self._mapNodesOneToTwo:
+            raise DtaError("Node %s has not been mapped"
+                               % nodeOne.id)
+        
+        if self._mapNodesOneToTwo[nodeOne] != nodeTwo:
+            raise DtaError("Node %s is not mapped to node %s"
+                               % nodeTwo.id) 
+                                      
+        if nodeOne in self._mapLinksOneToTwo and linkOne in self._mapLinksOneToTwo[nodeOne]:
+            raise DtaError("Node %s and link %s have already been mapped" %
+                               (nodeOne.id, linkOne.iid))
+
+        if nodeTwo in self._mapLinksTwoToOne and linkTwo in self._mapLinksTwoToOne[nodeTwo]:
+            raise DtaError("Node two %s and link two %s have already been mapped" %
+                               (nodeTwo.id, linkTwo.iid))
+
+        self._mapLinksOneToTwo[nodeOne][linkOne] = linkTwo
+        #TODO: more error checks 
+        self._mapLinksTwoToOne[nodeTwo][linkTwo] = linkOne
+
+    def getMappedLink(self, node, link):
+
+        if isinstance(node, self._netOne.getNodeType()) and \
+           isinstance(link, self._netOne.getLinkType()):
+
+            if node is not link.startVertex and node is not link.endVertex:
+                raise DtaError("Node %s is not connected to link %s" %
+                                   (node.id, linkTwo.iid_))        
+
+            if node not in self._mapLinksOneToTwo or link not in self._mapLinksOneToTwo[node]:
+                raise DtaError("Node %s and link %s have not been mapped" %
+                                   (node.id, link.iid))
+
+            return self._mapLinksOneToTwo[node][link]
+        elif isinstance(node, self._netTwo.getNodeType()) and \
+           isinstance(link, self._netTwo.getLinkType()):
+
+            if node is not link.startVertex and node is not link.endVertex:
+                raise DtaError("Node %s is not connected to link %s" %
+                                   (node.id, linkTwo.iid_))        
+
+            if node not in self._mapLinksTwoToOne or link not in self._mapLinksTwoToOne[node]:
+                raise DtaError("Node %s and link %s have not been mapped" %
+                                   (node.id, link.iid))
+
+            return self._mapLinksTwoToOne[node][link]
+        else:
+            raise DtaError("Node %s and Link %s must belong to the same network"
+                               % (node.id, link.iid_))
+

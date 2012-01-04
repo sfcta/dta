@@ -1301,7 +1301,7 @@ def mapIntersectionsByName(network, excelCards):
 
         if findNodeWithSameStreetNames(network, sd, 0.9, mappedNodes):
             mappedExcelCards.append(sd)
-            print "Mapped ", sd.fileName
+            print "Mapped ", sd.fileName, "to", sd.mappedNodeId
         else:
             print "Failed to map ", sd.fileName
 
@@ -1436,9 +1436,8 @@ def manuallyDetermineMappedNodeId(net, cardsDirectory):
 
     return result 
 
-def getMappedCards(net): 
+def getMappedCards(net, cardsDirectory): 
 
-    cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
     excelCards = parseExcelCardsToSignalObjects(cardsDirectory)
 
     cards = excelCards
@@ -1476,9 +1475,12 @@ def exportToJSON(cards):
         output.write(json.dumps(card.toDict(),separators=(',',':'), indent=4))
     output.close()
 
-def createDynameqSignals(net, cardsWithMovements):
-
-    planInfo = net.addPlanCollectionInfo(1500, 1800, "test", "excelSignalsToDynameq")
+def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
+    """
+    Create a dynameq signal for each excel card object for
+    the specified input preriod
+    """
+    planInfo = net.addPlanCollectionInfo(startTime, endTime, "test", "excelSignalsToDynameq")
     allPlans = []
     for card in cardsWithMovements:
         nodeId = card.mappedNodeId
@@ -1491,15 +1493,30 @@ def createDynameqSignals(net, cardsWithMovements):
         #dPlan.setPermittedMovements()
         allPlans.append(dPlan)
 
-    print "all time plans", len(allPlans)
 
-    output = open("tmp5.txt", "w")
-    for tp in allPlans:
-        output.write(str(tp))
-    output.close()
-    
-    net.write(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/ConvertedExcelSignals", file_prefix="Base")
-    
+def verifySingleSignal(net, fileName):
+
+    directory, fn = os.path.split(fileName)
+    sd = parseExcelCardFile(directory, fn)
+    cards = [sd]
+    assignCardNames(cards)
+    mapIntersectionsByName(net, cards)
+
+    if not sd.mappedNodeId:
+        print "The card was not mapped to a Cube node" 
+    else:
+        node = net.getNodeForId(sd.mappedNodeId)
+        print "%20s,%s" % ("Cube int name", node.getStreetNames())
+        print "%20s,%s" % ("Excel card name", str(sd.streetNames))
+        mapMovements(cards, net)
+
+        for movDir, nodeTriplets in sd.mappedMovements.iteritems():
+            print movDir            
+            for nodeTriplet in nodeTriplets:
+                print "\t\t%s" % nodeTriplet
+
+
+        
 def plotSignalTimes(net):
 
     pass 
@@ -1507,10 +1524,12 @@ def plotSignalTimes(net):
 if __name__ == "__main__":
       
     net = getNet()
-    net.writeNodesToShp("sf9nodes_2")
-    net.writeLinksToShp("sf9links_2")
-
     addAllMovements(net)
+
+    #cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
+    #fileName = os.path.join(cardsDirectory, "10th Ave_California_Ch_12.xls") 
+    #verifySingleSignal(net, fileName)
+
 
     #cards = getMappedCards(net)
 
@@ -1526,7 +1545,7 @@ if __name__ == "__main__":
     #print len(cards)
 
     cardsWithMovements = mapAllMovements(net, cards)
-    createDynameqSignals(net, cardsWithMovements)
+    #createDynameqSignals(net, cardsWithMovements)
 
     
 

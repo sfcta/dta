@@ -74,6 +74,9 @@ class Network(object):
         self._scenario = scenario
         self._planInfo = {}
         
+        self._nodeType = random.randint(0, 100000)
+        self._linkType = random.randint(0, 100000)
+        
     def __del__(self):
         pass
     
@@ -1329,6 +1332,19 @@ class Network(object):
             pLink._incomingMovements = [] 
 
             if not self.hasLinkForNodeIdPair(pLink.getStartNodeId(), pLink.getEndNodeId()):                   
-                self.addLink(pLink) 
+                self.addLink(pLink)
+
+    def getNodeType(self):
+        """
+        Return a unique integer representing the node type
+        """
+        return self._nodeType
+
+    def getLinkType(self):
+        """
+        REturn a unique integer representing the link type
+        """
+        return self._linkType 
+    
 
                 

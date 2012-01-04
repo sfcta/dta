@@ -420,3 +420,9 @@ class Node(object):
         iLink = self.getIncomingLinkForNodeId(upNodeId)
         return iLink.getOutgoingMovement(downNodeId)
         
+    def getNumMovements(self):
+        """
+        Return the number of movements associated with this node
+        """
+        return sum(link.getNumOutgoingMovements() for link in self.iterIncomingLinks())
+        

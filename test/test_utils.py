@@ -16,8 +16,25 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import datetime
+import os
+
+from dta.DynameqScenario import DynameqScenario 
+from dta.DynameqNetwork import DynameqNetwork 
 
 from dta.Utils import *
+
+def getTestNet():
+
+    mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+    projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
+    prefix = 'smallTestNet' 
+
+    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+    scenario.read(projectFolder, prefix) 
+    net = DynameqNetwork(scenario) 
+    net.read(projectFolder, prefix)     
+    return net 
 
 class TestUtils:
 
@@ -60,4 +77,13 @@ class TestUtils:
 
         assert polylinesCross(line1, line4)
 
+class TestMapping:
 
+    def test_mapNodes(self):
+
+        net1 = getTestNet()
+        net2 = getTestNet()
+
+        nm = NetworkMapping(net1, net2)
+
+        nm.mapNodesById()

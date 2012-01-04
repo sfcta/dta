@@ -87,12 +87,15 @@ def verifySingleSignal(net, fileName):
 if __name__ == "__main__":
 
     net = getNet()
+
+    pdb.set_trace()
     addAllMovements(net)
     
     cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
 
     if len(sys.argv) > 1:
-        fileName = sys.argv[1]
+        fName = sys.argv[1]
+        fileName = os.path.join(cardsDirectory, fName)
     else:
         fileName = os.path.join(cardsDirectory, "10th Ave_California_Ch_12.xls")
         #fileName = os.path.join(cardsDirectory, "15th St_Market_Sanchez_Ch_32.xls")

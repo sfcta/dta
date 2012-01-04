@@ -134,6 +134,30 @@ def predicate(elem1, elem2):
         else:
             return 1
 
+def nodesInLexicographicOrder(node1, node2):
+    """
+    Compare the two input elements and return a positive 
+    integer if node2 is greater than node1. If the first
+    two coordinates of the input elments are the 
+    comparisson is made using the second ones
+    >>> node1 = (1,4)
+    >>> node2 = (1,3) 
+    >>> predicate(node1, node2)
+    >>> -1    
+    """ 
+    if node1.getX() == node2.getX():                
+        if node1.getY() < node2.getY():
+            return -1 
+        elif node1.getY() == node2.getY():
+            return 0
+        else:
+            return 1
+    else:
+        if node1.getX() < node2.getX():
+            return -1
+        else:
+            return 1
+
 def getTightHull(setOfPoints, step):
     """
     Return the points and and their corresponding 
@@ -216,6 +240,40 @@ def getHull(points, upper=True):
             hull.pop(len(hull) - 2)
 
     return hull
+
+def getSmallestPolygonContainingNetwork(network):
+    """
+    treat all the links as bidirectional
+    """
+
+    nodes = list(net.iterRoadNodes())
+    sorted(nodes, nodesInLexicographicOrder)
+    
+    #make a direct copy of the network
+    #add the opposing links if they do not exist
+    #add all the movements
+
+    #find the left most node
+    #if the leftmost node does not have any incoming or outgoing links then
+    #move to the next one
+    #by making the links bydirectional you are also making the network connected
+    #if you remove the connectors you are also removing the external links 
+
+    
+
+
+
+
+    
+    
+
+
+    
+    
+
+    
+    
+    
 
 def getConvexHull2(setOfPoints):
     """
