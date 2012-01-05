@@ -257,7 +257,10 @@ class SignalData(object):
                 #pdb.set_trace()                
                 #allRed += dur1
                 #phases[-1]['yellow'] += dur1
-                phases[-1]['allRed'] += dur1
+                if phases:
+                    phases[-1]['allRed'] += dur1
+                else:
+                    raise dta.DtaError("Signal starts with all red")
                 
             elif any2(statePairs, lambda pair: pair == ("G", "G")):
                 if not pPhase:
@@ -273,8 +276,6 @@ class SignalData(object):
         lastStates = list(iter(phasingData[:, lastIndex]))    
         #if all2(lastStates, lambda state: state == 'R'):
         #    phases[-1]['yellow'] += timeIntervals[-1]
-
-        print phases
         return phases
 
     def selectCSO(self, startTime, endTime):
@@ -1372,6 +1373,8 @@ def convertSignalToDynameq(node, card, planInfo):
     """
     startTime, endTime = planInfo.getTimePeriod()
     cso = card.selectCSO(startTime, endTime)
+    if not cso:
+        raise dta.DtaError("Unable to find CSO")
     
     offset = card.signalTiming[cso].offset
     dPlan = TimePlan(node, offset, planInfo)
@@ -1487,12 +1490,19 @@ def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
         node = net.getNodeForId(nodeId)
         try:
             dPlan = convertSignalToDynameq(node, card, planInfo)
-        except Exception, e:
-            print str(e)
+            dPlan.setPermittedMovements()            
+            dPlan.validate()
+        except ExcelCardError, e:
+            print e
             continue
-        #dPlan.setPermittedMovements()
-        allPlans.append(dPlan)
+        except dta.DtaError, e:
+            print str(e)
+            #pdb.set_trace()
+            continue
 
+        allPlans.append(dPlan)
+        
+    return allPlans
 
 def verifySingleSignal(net, fileName):
 
@@ -1514,8 +1524,6 @@ def verifySingleSignal(net, fileName):
             print movDir            
             for nodeTriplet in nodeTriplets:
                 print "\t\t%s" % nodeTriplet
-
-
         
 def plotSignalTimes(net):
 
@@ -1524,12 +1532,15 @@ def plotSignalTimes(net):
 if __name__ == "__main__":
       
     net = getNet()
+
+    #net.writeNodesToShp("/Users/michalis/Dropbox/tmp/nodes9_2")
+    #net.writeLinksToShp("/Users/michalis/Dropbox/tmp/links9_2")
+    
     addAllMovements(net)
 
     #cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
     #fileName = os.path.join(cardsDirectory, "10th Ave_California_Ch_12.xls") 
     #verifySingleSignal(net, fileName)
-
 
     #cards = getMappedCards(net)
 
@@ -1537,7 +1548,7 @@ if __name__ == "__main__":
     pCardsFile4 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards4.pkl"    
 
     #pickleCards(pCardsFile4, cards)
-    cards = unPickleCards(pCardsFile4)
+    cards = unPickleCards(pCardsFile4)    
 
     #
     #for card in cards:
@@ -1545,7 +1556,10 @@ if __name__ == "__main__":
     #print len(cards)
 
     cardsWithMovements = mapAllMovements(net, cards)
-    #createDynameqSignals(net, cardsWithMovements)
+    allPlans = createDynameqSignals(net, cardsWithMovements, 1530, 1830)
+    pdb.set_trace()
+    net.write("test", "test")
+    
 
     
 

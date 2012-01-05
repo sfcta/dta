@@ -227,30 +227,30 @@ class TimePlan(object):
                                "the number of phases %d" % (self.getNodeId(), self._syncPhase, self.getNumPhases()))
             
         if self.getNumPhases() < 2:
-            raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.iid)
+            raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.getId())
 
         for phase in self.iterPhases():
             if phase.getNumMovements() < 1:
                 raise DtaError("Node %s The number of movements in a phase "
-                                    "cannot be less than one" % self._node.iid)
+                                    "cannot be less than one" % self._node.getId())
 
-        phaseMovements = set([mov.iid for phase in self.iterPhases() 
+        phaseMovements = set([mov.getId() for phase in self.iterPhases() 
                                 for mov in phase.iterMovements()]) 
 
         #if right turns on red add the right turns 
         if self._turnOnRed == TimePlan.TURN_ON_RED_YES:
             for mov in self._node.iterMovements():
                 if mov.isRightTurn():
-                    phaseMovements.add(mov.iid)
+                    phaseMovements.add(mov.getId())
 
-        nodeMovements = set([mov.iid for mov in self._node.iterMovements()])
+        nodeMovements = set([mov.getId() for mov in self._node.iterMovements()])
         if phaseMovements != nodeMovements:
             nodeMovsNotInPhaseMovs = nodeMovements.difference(phaseMovements)
             phaseMovsNotInNodeMovs = phaseMovements.difference(nodeMovements)
             raise DtaError("Node %s. The phase movements are not the same with node movements."
                                 "\tNode movements missing from the phase movements: \t%s"
                                 "\tPhase movements not registered as node movements: \t%s" % 
-                                (self.getNode().iid, "\t".join(map(str, nodeMovsNotInPhaseMovs)),
+                                (self.getNode().getId(), "\t".join(map(str, nodeMovsNotInPhaseMovs)),
                                  "\t".join(map(str, phaseMovsNotInNodeMovs))))
         
        #check that if two conflicting movements exist one of them is permitted or right turn
@@ -264,9 +264,8 @@ class TimePlan(object):
                    if mov1.isProtected() and mov2.isProtected():
                        if mov1.isRightTurn() or mov2.isRightTurn():
                            continue
-                       raise DtaError("Movements %s and %s are in coflict and are both protected "
-                                      " and thru movements" %
-                                      (mov1.getId(), mov2.getId()))
+                       raise DtaError("Movements %s, %s and %s, %s are in coflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))
+                                       
 
         #does it make sense to check there is no case where you have 3 simulataneous conflicting movements
         #permitted or protected? Probably
@@ -285,16 +284,17 @@ class TimePlan(object):
                        continue
                    if not mov1.isInConflict(mov2):
                        continue
-                   if mov1.isThruTurn() and mov2.isThruTurn():
-                       raise DtaError("Movements %s and %s are in coflict and are both protected "
-                                      " and thru movements" %
-                                      (mov1.getId(), mov2.getId()))
+                   if mov1.isThruTurn() and mov2.isThruTurn():                       
+                       message =  ("Movements %s and %s are in coflict and are both protected "
+                                   " and thru movements" %
+                                   (mov1.getId(), mov2.getId()))
+                       print message
                    else:
                        if mov1.isLeftTurn():
                            if mov2.isThruTurn():
                                mov1.setPermitted()
                            elif mov2.isRightTurn():
-                               mov2.setPermitted()
+                               mov1.setPermitted()
                            elif mov2.isLeftTurn():
                                mov2.setPermitted()
 

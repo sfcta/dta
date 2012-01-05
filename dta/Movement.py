@@ -294,6 +294,9 @@ class Movement(object):
          
         line1 = self.getCenterLine()
         line2 = other.getCenterLine()
+
+        if self.getIncomingLink() == other.getIncomingLink():
+            return False 
         
         for p1, p2 in izip(line1, line1[1:]):
             for p3, p4 in izip(line2, line2[1:]):

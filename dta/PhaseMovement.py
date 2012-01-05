@@ -89,6 +89,12 @@ class PhaseMovement(object):
         """
         return self._capacityTag == PhaseMovement.PERMITTED
 
+    def isProtected(self):
+        """
+        Return True if the movement is protected otherwise False
+        """
+        return self._capacityTag == PhaseMovement.PROTECTED
+
     def setProtected(self):
         """
         Set the movement as protected
