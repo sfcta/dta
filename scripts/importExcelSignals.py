@@ -1499,7 +1499,7 @@ def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
             print str(e)
             #pdb.set_trace()
             continue
-
+        node.addTimePlan(dPlan) 
         allPlans.append(dPlan)
         
     return allPlans

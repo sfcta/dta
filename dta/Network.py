@@ -142,8 +142,17 @@ class Network(object):
             return self._planInfo[militaryStartTime, militaryEndTime]
         else:
             raise DtaError("The network already has a plan collection info from %d to %d"
-                           % (militaryStartTime, militaryEndTime))                    
-        
+                           % (militaryStartTime, militaryEndTime))
+
+    def iterPlanCollectionInfo(self):
+        """
+        Return an iterator to the planInfo objects
+        """
+        for sTime, eTime in sorted(self._planInfo.keys()):
+            yield self.getPlanCollectionInfo(sTime, eTime)
+
+        #return iter(sorted(self._planInfo.values(), key=lambda pi:pi._startTime))
+                        
     def addNode(self, newNode):
         """
         Verifies that *newNode* is a :py:class:`RoadNode`, :py:class:`VirtualNode` or :py:class:`Centroid`

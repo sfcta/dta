@@ -22,6 +22,7 @@ import time
 
 from .Phase import Phase
 from .DtaError import DtaError 
+from .Utils import militaryTimeToDateTime
 
 class PlanCollectionInfo(object):
     """Contains user information for a collection of signals belonging to the
@@ -42,11 +43,18 @@ class PlanCollectionInfo(object):
     def __repr__(self):
         """
         Return the string representing the plan collection
-        """    
+        """
+        if isinstance(self._startTime, int) and isinstance(self._endTime, int):
+            startTime = militaryTimeToDateTime(self._startTime)
+            endTime = militaryTimeToDateTime(self._endTime)
+        else:
+            startTime = self._startTime
+            endTime = self._endTime
+            
         return ("<DYNAMEQ>\n<VERSION_1.5>\n<CONTROL_PLANS_FILE>\n* %s\nPLAN_INFO\n%s %s\n%s\n%s" %  
-                (time.ctime(), self._startTime.strftime("%H:%M"), 
-                 self._endTime.strftime("%H:%M"),
-                 self._name, self._description))
+                (time.ctime(), startTime.strftime("%H:%M"), 
+                               endTime.strftime("%H:%M"),
+                               self._name, self._description))
                     
     def getTimePeriod(self):
         """
@@ -264,7 +272,7 @@ class TimePlan(object):
                    if mov1.isProtected() and mov2.isProtected():
                        if mov1.isRightTurn() or mov2.isRightTurn():
                            continue
-                       raise DtaError("Movements %s, %s and %s, %s are in coflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))
+                       raise DtaError("Movements %s, %s and %s, %s are in coflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))  
                                        
 
         #does it make sense to check there is no case where you have 3 simulataneous conflicting movements

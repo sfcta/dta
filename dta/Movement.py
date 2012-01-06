@@ -39,6 +39,7 @@ class Movement(object):
     DIR_LT2 = 'LT2'
     DIR_LT = 'LT'
     DIR_TH = 'TH'
+    PROTECTED_CAPACITY_PER_HOUR_PER_LANE = 1900
     
     @classmethod
     def simpleMovementFactory(cls, incomingLink, outgoingLink, vehicleClassGroup):
@@ -131,7 +132,6 @@ class Movement(object):
         """
         Returns the end node of outgoingLink, a :py:class:`Link` instance
         """
-        
         return self._outgoingLink.getEndNode()
     
     def getCountList(self):
@@ -156,7 +156,6 @@ class Movement(object):
         """
         Returns the end node of outgoingLink, a :py:class:`Link` instance
         """
-        
         return self._outgoingLink.getEndNode()
 
     def getStartNodeId(self):
@@ -169,7 +168,6 @@ class Movement(object):
         """
         Returns the end node of outgoingLink, a :py:class:`Link` instance
         """
-        
         return self._outgoingLink.getEndNodeId()
 
     def getId(self):
@@ -291,7 +289,9 @@ class Movement(object):
         return self._centerLine
 
     def isInConflict(self, other):
-         
+        """
+        Return true if the current movement is conflicting with the other one
+        """
         line1 = self.getCenterLine()
         line2 = other.getCenterLine()
 
@@ -307,7 +307,6 @@ class Movement(object):
                             line2[-2], line2[-1],
                              checkBoundryConditions=True):            
             return True
-    
         return False
 
     def getNumLanes(self):
@@ -315,4 +314,21 @@ class Movement(object):
         Return the number of lanes the movement has
         """
         return self._numLanes()
+
+    def getProtectedCapacity(self, militaryStartTime, militaryEndTime):
+        """
+        Return the capacity of the movement in vehicles per hour
+        """
+        if self._node.hasTimePlan(militaryStartTime, militaryEndTime):
+            tp = self._node.getTimePlan(militaryStartTime, militaryEndTime)
+            greenTime = 0
+            for phase in tp.iterPhases():
+                if phase.hasMovement(self):
+                    greenTime += phase.getGreenTime()
+
+            return greenTime / tp.getCycleTime() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+        else:
+            return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+        
+        
     

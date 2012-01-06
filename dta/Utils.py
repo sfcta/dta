@@ -17,13 +17,31 @@ __license__     = """
 """
 import copy  
 import sys
+import datetime
 
 import dta
 import shapefile
+
 from itertools import izip
 from collections import defaultdict
 import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
+
+def militaryTimeToDateTime(militaryTime):
+
+    mTime = str(militaryTime)
+    if len(mTime) == 4:
+        hours = int(mTime[:2])
+        minutes = int(mTime[2:])
+        return datetime.time(hours, minutes)
+    
+    elif len(mTime) == 3:
+        hours = int(mTime[0])
+        minutes = int(mTime[1:])
+        return datetime.time(hours, minutes)
+    else:
+        raise dta.DtaError('Unknown military time format %d' % militaryTime)
+
 
 def writePoints(iterPoints, fileName):
     """
@@ -146,8 +164,43 @@ def getReverseNetwork(net):
                      "")                                       
         rNet.addLink(rLink)
         
-    return rNet 
+    return rNet
 
+def plotSignalAttributes(net, militaryStartTime, militaryEndTime, outputFile):
+    """
+    plot signal attributes
+    """
+
+    w = shapefile.Writer(shapefile.POINT)
+    
+    w.field("ID", "N", 10)
+    w.field("Cycle", "N", 10)
+    w.field("NumPhas", "N", 10)
+    w.field("allRed", "N", 10)
+    w.field("yellow", "N", 10)
+    w.field("green", "N", 10)
+    w.field("minGreen", "N", 10)
+    w.field("maxGreen", "N", 10)
+
+    for node in net.iterRoadNodes():
+        if node.hasTimePlan(militaryStartTime, militaryEndTime):
+            tp = node.getTimePlan(militaryStartTime, militaryEndTime)
+            node.getCycleLength()
+            node.getNumPhases()
+
+            allRed = sum([phase.getAllRed() for phase in tp.iterPhases()])
+            yellow = sum([phase.getYellow() for phase in tp.iterPhases()])
+            green = cycleLength - yellow - allRed
+            
+            minGreen = min([phase.getGreen() for phase in tp.iterPhases()])
+            maxGreen = max([phase.getGreen() for phase in tp.iterPhases()])
+
+            w.point(node.getX(), node.getY())
+            w.record(node.getX(), node.getY())
+
+    w.save(outputFile)
+            
+            
 class MappingError(Exception):
     pass
 

@@ -73,7 +73,8 @@ class DynameqNetwork(Network):
         for :py:class:`VehicleClassGroup` lookups        
         """ 
         Network.__init__(self, scenario)
-
+        self._planCollectionInfo = {}
+        
         
     def read(self, dir, file_prefix):
         """
@@ -773,23 +774,16 @@ class DynameqNetwork(Network):
         DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
 
     def _writeControlFile(self, ctrl_object):
-        
+        """
+        Output the control plans to disk
+        """
         ctrl_object.write("PLAN_INFO")
 
-        #collect all the plan info objects 
-        planInfo = defaultdict(list)
-        for node in self.iterNodes():
-            if node.isCentroid() or node.isVirtualNode():
-                continue
-            if node.hasTimePlan():
-                for tp in node.iterTimePlans():
-                    planInfo[tp.getPlanInfo()].append(tp)
-
-        for planInfo, plans in planInfo.iteritems():
-            ctrl_object.write(str(planInfo))
-            for plan in plans:
-                ctrl_object.write(str(plan))
-                              
+        for planInfo in self.iterPlanCollectionInfo():
+            for node in self.iterRoadNodes():
+                if node.hasTimePlan(planInfo):
+                    tp = node.getTimePlan(planInfo)
+                    ctrl_object.write(str(tp))                              
 
     def removeCentroidConnectorsFromIntersections(self, splitReverseLinks=False):
         """

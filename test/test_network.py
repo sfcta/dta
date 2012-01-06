@@ -62,10 +62,6 @@ def getTestNet():
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
-    
-    #net.checkAdjacentNodesExist()
-    #net.checkAdjacentLinksExist() 
-
     return net 
 
 def getDowntownSF():
@@ -202,7 +198,15 @@ def addAllMovements(net):
 
 class TestNetwork(object):
 
+    def test_1iterPlanInfo(self):
 
+        net = getSimpleNet()
+        net.addPlanCollectionInfo(700, 900, "test1", "test1")
+        net.addPlanCollectionInfo(600, 800, "test2", "test2")
+
+        for pInfo in net.iterPlanCollectionInfo():
+            pInfo
+        
     def test_1getNum(self):
 
         net = getSimpleNet() 
@@ -212,7 +216,6 @@ class TestNetwork(object):
         assert net.getNumRoadNodes() == 8
         assert net.getNumCentroids() == 0
         assert net.getNumVirtualNodes() == 0
-
 
     def test_2hasMethods(self):
 
@@ -746,13 +749,6 @@ class TestNetwork(object):
                 assert id(mov2._node) == id(net2.getNodeForId(mov2._node.getId()))
                 assert id(mov2._incomingLink) == id(net2.getLinkForId(mov2._incomingLink.getId()))
                 assert id(mov2._outgoingLink) == id(net2.getLinkForId(mov2._outgoingLink.getId()))
-
-
-        net1.checkAdjacentNodesExist()
-        net1.checkAdjacentLinksExist() 
-
-        net2.checkAdjacentNodesExist()
-        net2.checkAdjacentLinksExist() 
                 
     def test_readWrite(self):
 
@@ -977,19 +973,20 @@ class TestNetwork(object):
             net.renameNode(node.getId(), maxNodeId + counter)
 
         net.write(projectFolder, prefix)
-
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
         
     def test_deleteCentroid(self):
 
         net = getTestNet()
-
+        
+        net.writeNodesToShp("/Users/michalis/Dropbox/tmp/testNodes")
+        net.writeLinksToShp("/Users/michalis/Dropbox/tmp/testLinks")
+         
         cent = net.getNodeForId(9)
         net.removeNode(cent) 
 
-        assert not net.hasLinkForId(16432)
-        assert not net.hasLinkForId(16425)
+        #the following two are the connectors
+        #assert net.hasLinkForId(16432)
+        #assert net.hasLinkForId(16425)
         assert not net.hasLinkForId(104867)
         assert not net.hasLinkForId(104940)
 
