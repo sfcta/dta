@@ -34,6 +34,7 @@ from .Network import Network
 from .Node import Node
 from .RoadLink import RoadLink
 from .RoadNode import RoadNode
+from .TimePlan import TimePlan
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 from .VehicleClassGroup import VehicleClassGroup
@@ -74,8 +75,7 @@ class DynameqNetwork(Network):
         """ 
         Network.__init__(self, scenario)
         self._planCollectionInfo = {}
-        
-        
+                
     def read(self, dir, file_prefix):
         """
         Reads the network in the given *dir* with the given *file_prefix*.
@@ -137,6 +137,9 @@ class DynameqNetwork(Network):
             #way in one of my implementation but I would suggest that the network does not deal with 
             #movements as it is two levels up in the object hierarchy 
 
+            mov = self._parseMovementFromFields(fields)
+            if mov._permission.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
+                continue                               
             self.addMovement(self._parseMovementFromFields(fields))
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))
@@ -163,9 +166,17 @@ class DynameqNetwork(Network):
                 self._addShapePointsToLink(fields)
                 count += 1
             DtaLogger.info("Read  %8d %-16s from %s" % (count, "VERTICES", advancedfile))
-        
-        #TODO: what about the custom priorities file?  I don't see that in pbtools
-        #TODO: what about the control plans file?
+
+        # control file Processing
+        controlFile = os.path.join(dir, DynameqNetwork.CONTROL_FILE % file_prefix)
+        #The structure of the code is different than the previous read ones
+        #Reason 1: The control file does not contain a signal for each line
+        #Reason 2: If multiple time periods exist one more nesting level is added 
+        if os.path.exists(controlFile):
+            for tp in TimePlan.read(self, controlFile):
+                tp.getNode().addTimePlan(tp)
+                        
+        #TODO: what about the custom priorities file?  I don't see that in pbtools               
         ## TODO - what about the public transit file?
         
     def write(self, dir, file_prefix):
@@ -699,7 +710,6 @@ class DynameqNetwork(Network):
         filewriter.writerow("*atNode FromNode toNode starttime="+str(starttime)+" period="+str(period)+" number="+str(number))
         filewriter.writerows(countList2write)
         
-
     def _writeMovementEventsToBaseFile(self, basefile_object):
         """
         *basefile_object* is the file object, ready for writing.
@@ -777,12 +787,11 @@ class DynameqNetwork(Network):
         """
         Output the control plans to disk
         """
-        ctrl_object.write("PLAN_INFO")
-
         for planInfo in self.iterPlanCollectionInfo():
-            for node in self.iterRoadNodes():
+            ctrl_object.write(str(planInfo))            
+            for node in sorted(self.iterRoadNodes(), key=lambda node: node.getId()):
                 if node.hasTimePlan(planInfo):
-                    tp = node.getTimePlan(planInfo)
+                    tp = node.getTimePlan(planInfo)                    
                     ctrl_object.write(str(tp))                              
 
     def removeCentroidConnectorsFromIntersections(self, splitReverseLinks=False):
@@ -796,9 +805,7 @@ class DynameqNetwork(Network):
            :height: 300px
            
         .. image:: /images/removeCentroidConnectors2.png
-           :height: 300px
-        
-        
+           :height: 300px                
         """
 
         allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]

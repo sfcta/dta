@@ -255,7 +255,7 @@ class RoadNode(Node):
         """
         if not planInfo:
             return True if self._timePlans else False
-        return True if self._timePlans[planInfo] else False
+        return True if planInfo in self._timePlans else False
 
     def getTimePlan(self, planInfo):
         """
@@ -266,7 +266,7 @@ class RoadNode(Node):
         except KeyError:
             raise DtaError("Node %d does not have a timeplan between %d and %d" %
                            (self.getId(), planInfo.getTimePeriod()[0],
-                            planInfo.getTimePeriod()[0]))
+                            planInfo.getTimePeriod()[1]))
 
     def iterTimePlans(self):
         """

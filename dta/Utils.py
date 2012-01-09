@@ -28,7 +28,10 @@ import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
 
 def militaryTimeToDateTime(militaryTime):
-
+    """
+    Return a datetime.time object that corresponds
+    to the military time
+    """
     mTime = str(militaryTime)
     if len(mTime) == 4:
         hours = int(mTime[:2])
@@ -41,7 +44,6 @@ def militaryTimeToDateTime(militaryTime):
         return datetime.time(hours, minutes)
     else:
         raise dta.DtaError('Unknown military time format %d' % militaryTime)
-
 
 def writePoints(iterPoints, fileName):
     """
@@ -170,7 +172,6 @@ def plotSignalAttributes(net, militaryStartTime, militaryEndTime, outputFile):
     """
     plot signal attributes
     """
-
     w = shapefile.Writer(shapefile.POINT)
     
     w.field("ID", "N", 10)
@@ -182,21 +183,23 @@ def plotSignalAttributes(net, militaryStartTime, militaryEndTime, outputFile):
     w.field("minGreen", "N", 10)
     w.field("maxGreen", "N", 10)
 
-    for node in net.iterRoadNodes():
-        if node.hasTimePlan(militaryStartTime, militaryEndTime):
-            tp = node.getTimePlan(militaryStartTime, militaryEndTime)
-            node.getCycleLength()
-            node.getNumPhases()
+    pi = net.getPlanCollectionInfo(militaryStartTime, militaryEndTime)
 
-            allRed = sum([phase.getAllRed() for phase in tp.iterPhases()])
+    for node in net.iterRoadNodes():
+        if node.hasTimePlan(pi):
+            tp = node.getTimePlan(pi)
+            cycle = tp.getCycleLength()
+            numPhas = tp.getNumPhases()
+
+            allRed = sum([phase.getRed() for phase in tp.iterPhases()])
             yellow = sum([phase.getYellow() for phase in tp.iterPhases()])
-            green = cycleLength - yellow - allRed
+            green = cycle - yellow - allRed
             
             minGreen = min([phase.getGreen() for phase in tp.iterPhases()])
             maxGreen = max([phase.getGreen() for phase in tp.iterPhases()])
 
             w.point(node.getX(), node.getY())
-            w.record(node.getX(), node.getY())
+            w.record(node.getId(), cycle, numPhas, allRed, yellow, green, minGreen, maxGreen)
 
     w.save(outputFile)
             

@@ -314,12 +314,13 @@ class ExcelSignalTiming(object):
 
     """
     DEFAULT_VALUE = -1
+    DEFAULT_OFFSET = 0
 
     def __init__(self):
 
         self.cso = ExcelSignalTiming.DEFAULT_VALUE   # string the cso value
         self.cycle = ExcelSignalTiming.DEFAULT_VALUE  #float the cycle length 
-        self.offset = ExcelSignalTiming.DEFAULT_VALUE  # float the offset
+        self.offset = ExcelSignalTiming.DEFAULT_OFFSET  # float the offset
 #        self.interval = [] # floats the interval values 
 
         self.isActuated = False
@@ -1268,6 +1269,15 @@ def getTestScenario():
     return scenario 
 
 def getNet():
+
+    testScenario = getTestScenario()
+    folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"
+    net = DynameqNetwork(scenario=testScenario)
+    net.read(dir=folder, file_prefix="sf9")
+    net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
+    return net 
+    
+def getNet2():
     
     testScenario = getTestScenario()
     folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"
@@ -1478,11 +1488,13 @@ def exportToJSON(cards):
         output.write(json.dumps(card.toDict(),separators=(',',':'), indent=4))
     output.close()
 
-def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
+def createDynameqSignals(net, cardsWithMovements, startTime, endTime, reportFile):
     """
     Create a dynameq signal for each excel card object for
     the specified input preriod
     """
+    output = open(reportFile, "w")
+    
     planInfo = net.addPlanCollectionInfo(startTime, endTime, "test", "excelSignalsToDynameq")
     allPlans = []
     for card in cardsWithMovements:
@@ -1492,6 +1504,9 @@ def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
             dPlan = convertSignalToDynameq(node, card, planInfo)
             dPlan.setPermittedMovements()            
             dPlan.validate()
+            
+            output.write("%s,%s,%d,%d\n" % (card.iName, node.getId(), dPlan.getCycleLength(), dPlan.getOffset()))
+            
         except ExcelCardError, e:
             print e
             continue
@@ -1501,7 +1516,7 @@ def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
             continue
         node.addTimePlan(dPlan) 
         allPlans.append(dPlan)
-        
+    output.close()
     return allPlans
 
 def verifySingleSignal(net, fileName):
@@ -1533,22 +1548,27 @@ if __name__ == "__main__":
       
     net = getNet()
 
+    net.writeLinksToShp("links_sf9")
+    net.writeNodesToShp("nodes_sf9")
+    
+    pdb.set_trace()
+
     #net.writeNodesToShp("/Users/michalis/Dropbox/tmp/nodes9_2")
     #net.writeLinksToShp("/Users/michalis/Dropbox/tmp/links9_2")
     
-    addAllMovements(net)
+    #addAllMovements(net)
 
-    #cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
+    cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
     #fileName = os.path.join(cardsDirectory, "10th Ave_California_Ch_12.xls") 
     #verifySingleSignal(net, fileName)
 
-    #cards = getMappedCards(net)
+    #cards = getMappedCards(net, cardsDirectory)
 
     #print "Num excel files", len(excelFileNames)
-    pCardsFile4 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards4.pkl"    
+    pCardsFile5 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards5.pkl"    
 
-    #pickleCards(pCardsFile4, cards)
-    cards = unPickleCards(pCardsFile4)    
+    #pickleCards(pCardsFile5, cards)
+    cards = unPickleCards(pCardsFile5)    
 
     #
     #for card in cards:
@@ -1556,20 +1576,11 @@ if __name__ == "__main__":
     #print len(cards)
 
     cardsWithMovements = mapAllMovements(net, cards)
-    allPlans = createDynameqSignals(net, cardsWithMovements, 1530, 1830)
+    #allPlcans = createDynameqSignals(net, cardsWithMovements, 1530, 1830)
+    allPlans = createDynameqSignals(net, cardsWithMovements, 630, 930, "test/report_am.csv")    
     pdb.set_trace()
-    net.write("test", "test")
-    
 
-    
+    net.write("test", "test_AM")
 
-    
-
-              
-    
-
-    
-
-
-    
-
+#    dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes")
+    dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_am")

@@ -18,6 +18,7 @@ __license__     = """
 
 from itertools import chain 
 from .DtaError import DtaError
+from .VehicleClassGroup import VehicleClassGroup
 
 # from .Link import Link
 
@@ -229,7 +230,9 @@ class Node(object):
         for ilink in self.iterIncomingLinks():
             if ilink.getStartNodeId() == startNodeId:
                 for mov in ilink.iterOutgoingMovements():
-                    if mov.getEndNodeId() == endNodeId:
+                    if mov.getEndNodeId() == endNodeId \
+                       and mov._permission.classDefinitionString != \
+                       VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
                         return True
 
         return False

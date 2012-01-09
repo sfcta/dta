@@ -16,7 +16,9 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
+import pdb
 import datetime
+import difflib 
 
 from dta.Scenario import Scenario
 from dta.DynameqScenario import DynameqScenario 
@@ -46,13 +48,28 @@ def getGearyNet():
 
 class TestControl:
 
-
     def test_one(self):
 
         net = getGearyNet()
-        fileName = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/Base_ctrl.dqt"       
-        for tp in TimePlan.read(net, fileName):
-            tp.getNode().addTimePlan(tp)
-        
-        projectFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test"       
+
+        #pdb.set_trace() 
+
+        fileName = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/Base_ctrl.dqt"               
+        projectFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test"
         net.write(dir=projectFolder, file_prefix="Test")
+
+        #The following code finds the differences between the two control files the original and
+        #the one created by the code 
+        
+        originalFile = os.path.join(fileName)
+        copyFile = os.path.join(projectFolder, "Test_ctrl.dqt")
+        original = open(fileName, "r").readlines()
+        copy = open(copyFile, "r").readlines()
+        if original != copy:
+            htmldiff = difflib.HtmlDiff()
+            diff = htmldiff.make_file(original, copy)
+            output = open("ctrl_diff.html", "w")
+            output.write(diff)
+            output.close()
+                
+        #assert original == copy

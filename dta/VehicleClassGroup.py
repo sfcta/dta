@@ -22,7 +22,10 @@ class VehicleClassGroup:
     """
     ALL = "All"
     PROHIBITED = "Prohibited"
-    TRANSIT = "Transit" 
+    TRANSIT = "Transit"
+
+    CLASSDEFINITION_PROHIBITED = "-"
+    CLASSDEFINITION_ALL = "*" 
 
     def __init__(self, name, classDefinitionString, colorCode):
         """

@@ -28,7 +28,9 @@ class PlanCollectionInfo(object):
     """Contains user information for a collection of signals belonging to the
     same time period"""
     def __init__(self, militaryStartTime, militaryEndTime, name, description):
-
+        """
+        militaryStartTime,militaryEndtime should be integers such as 700, 1500
+        """
         self._startTime = militaryStartTime
         self._endTime = militaryEndTime
         self._name = name
@@ -50,11 +52,12 @@ class PlanCollectionInfo(object):
         else:
             startTime = self._startTime
             endTime = self._endTime
-            
-        return ("<DYNAMEQ>\n<VERSION_1.5>\n<CONTROL_PLANS_FILE>\n* %s\nPLAN_INFO\n%s %s\n%s\n%s" %  
-                (time.ctime(), startTime.strftime("%H:%M"), 
-                               endTime.strftime("%H:%M"),
-                               self._name, self._description))
+
+        #<DYNAMEQ>\n<VERSION_1.5>\n<CONTROL_PLANS_FILE>\n* %s\n
+        return ("PLAN_INFO\n%s %s\n%s\n%s" %  
+                (startTime.strftime("%H:%M"), 
+                 endTime.strftime("%H:%M"),
+                 self._name, self._description))
                     
     def getTimePeriod(self):
         """
@@ -176,6 +179,12 @@ class TimePlan(object):
         """
         return self._node.id
 
+    def getOffset(self):
+        """
+        Return the offset
+        """
+        return self._offset
+
     def getNumPhases(self):
         """
         Return the number of phases
@@ -201,7 +210,7 @@ class TimePlan(object):
         """
         Return the cycle length in seconds
         """
-        return sum([phase.green + phase.yellow + phase.red for phase in self.iterPhases()])
+        return sum([phase._green + phase._yellow + phase._red for phase in self.iterPhases()])
 
     def getPlanInfo(self):
         """
@@ -229,7 +238,9 @@ class TimePlan(object):
                not a phase movement that does not exist in the node. 
         5. If two movements conflict with each other then one of them is permitted and the other is protected
         """
-
+        if self._offset < 0:
+            raise DtaError("Node %s. The offset cannot be less than 0" % self.getNode().getId())
+                   
         if self._syncPhase <= 0 or self._syncPhase > self.getNumPhases():
             raise DtaError("Node %s. The sync phase %d cannot be less than 1 or greater than "
                                "the number of phases %d" % (self.getNodeId(), self._syncPhase, self.getNumPhases()))

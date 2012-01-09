@@ -639,7 +639,17 @@ class Network(object):
         Return the number of RoadLinks in the Network(excluding connectors)
         """
         return sum([1 for link in self.iterLinks() if link.isRoadLink()])
-        
+
+    def getNumTimePlans(self):
+        """
+        Return the number of nodes with a time plan
+        """
+        num = 0
+        for node in self.iterRoadNodes():
+            if node.hasTimePlan():
+                num += 1
+        return num
+               
     def getScenario(self):
         """
         Return the scenario object associated with this network

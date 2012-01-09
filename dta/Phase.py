@@ -86,7 +86,22 @@ class Phase(object):
         """
         Return the string representation of the phase
         """
-        header = "PHASE\n%.1f %.1f %.1f %d" % (self._green, self._yellow, self._red, self._phaseType)
+        if int(self._green) == self._green:
+            green = str(int(self._green))
+        else:
+            green = str(self._green)
+
+        if int(self._yellow) == self._yellow:
+            yellow = str(int(self._yellow))
+        else:
+            yellow = str(self._yellow)
+
+        if int(self._red) == self._red:
+            red = str(int(self._red))
+        else:
+            red = str(self._red)
+                    
+        header = "PHASE\n%s %s %s %d" % (green, yellow, red, self._phaseType)
         body = "\n".join([repr(mov) for mov in self.iterMovements()]) 
         return "%s\n%s" % (header, body)
 
@@ -185,3 +200,20 @@ class Phase(object):
         """Return an iterator the the phase movements"""
         return iter(self._movements)
 
+    def getGreen(self):
+        """
+        Return the green time
+        """
+        return self._green
+
+    def getYellow(self):
+        """
+        Return the yellow time
+        """
+        return self._yellow
+
+    def getRed(self):
+        """
+        Return the red time
+        """
+        return self._red 
