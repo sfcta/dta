@@ -418,7 +418,7 @@ ENDRUN
                 print str(e)
                 continue
             
-            link.deleteOutgoingMovement(mov) 
+            link.removeOutgoingMovement(mov) 
         
     def readLinkShape(self, linkShapefile):
         """

@@ -115,8 +115,8 @@ class Phase(object):
         
         if not self.getTimePlan().getNode().hasMovement(movement.getStartNode().getId(),
                                           movement.getEndNode().getId()):
-            raise DtaError("Movement %s is not does not belong to node node %d" % (movement.getIid(),
-                                                                                   self.getAtNode().getId()))
+            raise DtaError("Movement %s is not does not belong to node node %d" % (movement.getId(),
+                                                                                   movement.getAtNode().getId()))
         if self.hasMovement(movement.getStartNodeId(), 
                             movement.getEndNodeId()):
             raise DtaError("Movement %s already belongs to this phase" % movement.getId())
