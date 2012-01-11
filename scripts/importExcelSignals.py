@@ -1342,12 +1342,15 @@ def simpleMovementFactory(incomingLink, outgoingLink):
                    incomingLink,
                    outgoingLink,
                    30,
-                   dta.VehicleClassGroup("all", "-", "#ffff00"))
+                   dta.VehicleClassGroup("all", "*", "#ffff00"))
 
     return mov                                                                                           
+
 def addAllMovements(net):
     
     for node in net.iterNodes():
+        if node.isCentroid():
+            continue
         for incomingLink in node.iterIncomingLinks():
             if incomingLink.isVirtualLink():
                 continue
@@ -1390,6 +1393,8 @@ def convertSignalToDynameq(node, card, planInfo):
 
     startTime, endTime= planInfo.getTimePeriod() 
     excelPhases = card.getPhases(startTime, endTime)
+    
+    pdb.set_trace()
     
     for excelPhase in excelPhases:
 
