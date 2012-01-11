@@ -19,6 +19,7 @@ __license__     = """
 import pdb
 import nose.tools
 import math
+import difflib 
 
 import os
 import datetime
@@ -693,9 +694,40 @@ class TestNetwork(object):
 
     def test_writeDynameqNetwork(self): 
 
+        mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+        projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
+        
         net = getTestNet()
 
+        before = (net.getNumNodes(), net.getNumRoadNodes(), net.getNumCentroids(), net.getNumVirtualNodes(),
+                  net.getNumLinks(), net.getNumRoadLinks(), net.getNumConnectors(), net.getNumVirtualLinks())
+        
         net.write(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
+
+        net2 = DynameqNetwork(net.getScenario()) 
+        net2.read(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'), "smallTestNet") 
+
+        after = (net2.getNumNodes(), net2.getNumRoadNodes(), net2.getNumCentroids(), net2.getNumVirtualNodes(),
+                  net2.getNumLinks(), net2.getNumRoadLinks(), net2.getNumConnectors(), net2.getNumVirtualLinks())
+        
+        assert before == after 
+        return
+    
+        originalFile = os.path.join(os.path.join(projectFolder, "smallTestNet_base.dqt"))
+        copyFile = os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy', 'smallTestNet_base.dqt')
+        original = open(originalFile, "r").readlines()
+        copy = open(copyFile, "r").readlines()
+        if original != copy:
+            htmldiff = difflib.HtmlDiff()
+            diff = htmldiff.make_file(original, copy)
+            output = open("base_diff.html", "w")
+            output.write(diff)
+            output.close()
+            
+        assert original == copy 
+                               
+
+
 
               
     def test_mycopy(self):
@@ -1072,7 +1104,3 @@ class TestNetwork(object):
         #left turn with right from same link 
         assert not mov351.isInConflict(mov354)
        
-        
-
-        
-        

@@ -20,7 +20,7 @@ import os
 import sys
 import pdb
 
-from importExcelSignals import getNet, parseExcelCardFile,\
+from importExcelSignals import getNet2, parseExcelCardFile,\
      convertSignalToDynameq, assignCardNames, mapIntersectionsByName, \
      mapMovements, addAllMovements
      
@@ -86,7 +86,7 @@ def verifySingleSignal(net, fileName):
 
 if __name__ == "__main__":
 
-    net = getNet()
+    net = getNet2()
 
     pdb.set_trace()
     addAllMovements(net)

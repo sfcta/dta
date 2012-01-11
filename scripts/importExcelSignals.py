@@ -1268,10 +1268,9 @@ def getTestScenario():
 
     return scenario 
 
-def getNet():
+def getNet(folder):
 
     testScenario = getTestScenario()
-    folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"
     net = DynameqNetwork(scenario=testScenario)
     net.read(dir=folder, file_prefix="sf9")
     net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
@@ -1545,8 +1544,11 @@ def plotSignalTimes(net):
     pass 
 
 if __name__ == "__main__":
-      
-    net = getNet()
+
+    folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"
+    net = getNet(folder)
+
+    
 
     net.writeLinksToShp("links_sf9")
     net.writeNodesToShp("nodes_sf9")
@@ -1576,11 +1578,11 @@ if __name__ == "__main__":
     #print len(cards)
 
     cardsWithMovements = mapAllMovements(net, cards)
-    #allPlcans = createDynameqSignals(net, cardsWithMovements, 1530, 1830)
-    allPlans = createDynameqSignals(net, cardsWithMovements, 630, 930, "test/report_am.csv")    
+    allPlcans = createDynameqSignals(net, cardsWithMovements, 1530, 1830, "test/report_pm.csv")    
+    #allPlans = createDynameqSignals(net, cardsWithMovements, 630, 930, "test/report_am.csv")    
     pdb.set_trace()
 
-    net.write("test", "test_AM")
+    net.write(folder, "test_AM")
 
-#    dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes")
-    dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_am")
+    dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes")
+    #dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_am")
