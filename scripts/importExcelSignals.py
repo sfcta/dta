@@ -1273,7 +1273,7 @@ def getNet(folder):
     testScenario = getTestScenario()
     net = DynameqNetwork(scenario=testScenario)
     net.read(dir=folder, file_prefix="sf9")
-    net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
+    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
     return net 
     
 def getNet2():
@@ -1284,7 +1284,7 @@ def getNet2():
     net = DynameqNetwork(scenario=testScenario)
     net.read(dir=folder, file_prefix="sf9")
     #net.removeShapePoints()    
-    net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
+    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
     return net 
 
 def assignCardNames(excelCards): 
@@ -1394,7 +1394,7 @@ def convertSignalToDynameq(node, card, planInfo):
     startTime, endTime= planInfo.getTimePeriod() 
     excelPhases = card.getPhases(startTime, endTime)
     
-    pdb.set_trace()
+    #pdb.set_trace()
     
     for excelPhase in excelPhases:
 
@@ -1555,8 +1555,9 @@ if __name__ == "__main__":
 
     
 
-    net.writeLinksToShp("links_sf9")
-    net.writeNodesToShp("nodes_sf9")
+    net.writeLinksToShp(os.path.join(folder, "links_sf9"))
+    net.writeNodesToShp(os.path.join(folder, "nodes_sf9"))
+    net.writeMovementsToShp(os.path.join(folder, "movs_sf9"))
     
     pdb.set_trace()
 
@@ -1583,11 +1584,11 @@ if __name__ == "__main__":
     #print len(cards)
 
     cardsWithMovements = mapAllMovements(net, cards)
-    allPlcans = createDynameqSignals(net, cardsWithMovements, 1530, 1830, "test/report_pm.csv")    
+    allPlans = createDynameqSignals(net, cardsWithMovements, 1530, 1830, "test/report_pm.csv")    
     #allPlans = createDynameqSignals(net, cardsWithMovements, 630, 930, "test/report_am.csv")    
     pdb.set_trace()
 
     net.write(folder, "test_AM")
 
-    dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes")
-    #dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_am")
+    #dta.Utils.plotSignalAttributes(net, 1530, 1830, os.path.join(folder, "signalAttributes"))
+    dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_am")

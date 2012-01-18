@@ -248,6 +248,7 @@ class RoadNode(Node):
         Add the input time plan to the current collection
         """
         self._timePlans[timePlan.getPlanInfo()] = timePlan
+        self._control = RoadNode.CONTROL_TYPE_SIGNALIZED
         
     def hasTimePlan(self, planInfo=None):
         """

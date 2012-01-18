@@ -141,7 +141,7 @@ class Network(object):
         if self.hasPlanCollectionInfo(militaryStartTime, militaryEndTime):
             return self._planInfo[militaryStartTime, militaryEndTime]
         else:
-            raise DtaError("The network already has a plan collection info from %d to %d"
+            raise DtaError("The network does not have a plan collection from %d to %d"
                            % (militaryStartTime, militaryEndTime))
 
     def iterPlanCollectionInfo(self):
@@ -233,7 +233,8 @@ class Network(object):
         self._linksById[newLink.getId()] = newLink
         self._linksByNodeIdPair[(newLink.getStartNode().getId(), newLink.getEndNode().getId())] = newLink
         
-        if newLink.getId() > self._maxLinkId: self._maxLinkId = newLink.getId()
+        if newLink.getId() > self._maxLinkId:
+            self._maxLinkId = newLink.getId()
         
         newLink.getStartNode()._addOutgoingLink(newLink)
         newLink.getEndNode()._addIncomingLink(newLink)
@@ -1001,7 +1002,32 @@ class Network(object):
                      str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label)
 
         w.save(name)
-        
+
+    def writeMovementsToShp(self, name, planInfo=None):
+        """
+        Export all the movements to a shapefile with the given name
+        """
+        w = shapefile.Writer(shapefile.POLYLINE)
+        w.field("Start", "N", 10)
+        w.field("Middle", "N", 10)
+        w.field("End", "N", 10)
+        w.field("NumLanes", "N", 10)
+        w.field("Capacity", "N", 10)
+        w.field("TurnType", "C", 10)
+
+        if not planInfo and self._planInfo.values():
+            planInfo = self._planInfo.values()[0]
+            
+        for link in self.iterLinks():
+            if link.isVirtualLink():
+                continue
+            for mov in link.iterOutgoingMovements():
+                w.line(parts=[mov.getCenterLine()])
+                w.record(mov.getStartNodeId(), mov.getAtNode().getId(), mov.getEndNodeId(),
+                         mov.getNumLanes(), mov.getProtectedCapacity(planInfo),
+                         mov.getTurnType())
+        w.save(name)
+                
     def mergeLinks(self, link1, link2):
         """
         Merge the two input sequential links. If any of the characteristics of the 
@@ -1361,7 +1387,7 @@ class Network(object):
 
     def getLinkType(self):
         """
-        REturn a unique integer representing the link type
+        Return a unique integer representing the link type
         """
         return self._linkType 
     

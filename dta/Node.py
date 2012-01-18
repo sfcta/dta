@@ -46,7 +46,7 @@ class Node(object):
     GEOMETRY_TYPES                  = [GEOMETRY_TYPE_INTERSECTION,
                                        GEOMETRY_TYPE_JUNCTION,
                                        GEOMETRY_TYPE_VIRTUAL]
-    
+
     def __init__(self, id, x, y, geometryType, label=None, level=None):
         """
         Constructor.

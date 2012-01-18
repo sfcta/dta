@@ -274,7 +274,7 @@ class Movement(object):
                 
     def getCenterLine(self):
         """
-        Get a line represeting the movement
+        Get a list of points represeting the movement
         """
         line1 = self._incomingLink.getCenterLine()
         line2 = self._outgoingLink.getCenterLine()
@@ -313,20 +313,20 @@ class Movement(object):
         """
         Return the number of lanes the movement has
         """
-        return self._numLanes()
+        return self._numLanes
 
-    def getProtectedCapacity(self, militaryStartTime, militaryEndTime):
+    def getProtectedCapacity(self, planInfo=None):
         """
         Return the capacity of the movement in vehicles per hour
         """
-        if self._node.hasTimePlan(militaryStartTime, militaryEndTime):
-            tp = self._node.getTimePlan(militaryStartTime, militaryEndTime)
+        if self._node.hasTimePlan(planInfo=planInfo):
+            tp = self._node.getTimePlan(planInfo=planInfo)
             greenTime = 0
             for phase in tp.iterPhases():
-                if phase.hasMovement(self):
-                    greenTime += phase.getGreenTime()
+                if phase.hasMovement(self.getStartNodeId(), self.getEndNodeId()):
+                    greenTime += phase.getGreen()
 
-            return greenTime / tp.getCycleTime() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+            return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
         else:
             return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
         

@@ -74,7 +74,6 @@ class DynameqNetwork(Network):
         for :py:class:`VehicleClassGroup` lookups        
         """ 
         Network.__init__(self, scenario)
-        self._planCollectionInfo = {}
                 
     def read(self, dir, file_prefix):
         """

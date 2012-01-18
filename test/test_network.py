@@ -41,8 +41,17 @@ from dta.VehicleClassGroup import VehicleClassGroup
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.Utils import lineSegmentsCross
+from dta.Utils import militaryTimeToDateTime
+
 
 mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+
+def getGearyNet():
+
+    gearynetDta = DynameqNetwork(scenario=getTestScenario())
+    gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
+    
+    return gearynetDta
 
 def getTestScenario(): 
 
@@ -1103,4 +1112,21 @@ class TestNetwork(object):
         assert not mov351.isInConflict(mov352)
         #left turn with right from same link 
         assert not mov351.isInConflict(mov354)
-       
+
+    def test_movementCapacity(self):
+
+        net = getGearyNet()
+
+        pi = net._planInfo.values()[0]
+        
+        sTime = militaryTimeToDateTime(1530)
+        eTime = militaryTimeToDateTime(1830)
+            
+
+        node = net.getNodeForId(24467)
+
+        for mov in node.iterMovements():
+            print "protected capacity", mov.getTurnType(), mov.getProtectedCapacity(pi)
+        
+        print "num time plans", net.getNumTimePlans()
+        
