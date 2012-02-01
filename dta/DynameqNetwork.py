@@ -370,12 +370,12 @@ class DynameqNetwork(Network):
         lanes   = int(fields[9])
         rabout  = int(fields[10])
         level   = int(fields[11])
-        tmplabel= fields[12]
+        tmplabel= fields[12:]
 
         if tmplabel == '""':
             label = ""
         else:
-            label = tmplabel[1:]
+            label = " ".join(tmplabel)[1:-1]
             
         startNode = self.getNodeForId(startid)
         endNode = self.getNodeForId(endid)

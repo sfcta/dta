@@ -19,6 +19,7 @@ __license__     = """
 import pdb 
 import math
 from itertools import izip
+from collections import defaultdict
 
 from .DtaError import DtaError
 from .Logger import DtaLogger
@@ -102,7 +103,16 @@ class Movement(object):
         
         self._countsList = []        
         self._centerline = self.getCenterLine()
-
+        
+        self._simVolume = defaultdict(int)   # indexed by timeperiod
+        self._simMeanTT = defaultdict(float)                   # indexed by timeperiod
+        self._penalty = 0
+        self._timeVaryingCosts = []
+        self._timeStep = None
+        self.simTimeStepInMin = None
+        self.simStartTimeInMin = None
+        self.simEndTimeInMin = None
+        
     def getIncomingLink(self):
         """
         Returns the incomingLink, a :py:class:`Link` instance
@@ -329,6 +339,174 @@ class Movement(object):
             return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
         else:
             return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+                
+    def _checkInputTimeStep(self, startTimeInMin, endTimeInMin):
+        """The input time step should always be equal to the sim time step"""
+        if endTimeInMin - startTimeInMin != self.simTimeStepInMin:
+            raise SimMovementError('Time period from %d to %d is not '
+                                   'equal to the simulation time step %d'
+                                   % (startTimeInMin, endTimeInMin, 
+                                      self.simTimeStepInMin))
+            
+
+    def _checkOutputTimeStep(self, startTimeInMin, endTimeInMin):
+        """Checks that the difference in the input times is in multiples 
+        of the simulation time step"""
+        if (endTimeInMin - startTimeInMin) % self.simTimeStepInMin != 0:
+            raise SimMovementError('Time period from %d to %d is not '
+                                   'is a multiple of the simulation time step ' 
+                                    '%d' % (startTimeInMin, endTimeInMin,
+                                                    self.simTimeStepInMin))
+
+
+    def _validateInputTimes(self, startTimeInMin, endTimeInMin):
+        """Checks that the start time is less than the end time and that both 
+        times are in the simulation time window"""
         
+        if startTimeInMin >= endTimeInMin:
+            raise SimMovementError("Invalid time bin (%d %s). The end time cannot be equal or less "
+                                "than the end time" % (startTimeInMin, endTimeInMin))
+
+        if startTimeInMin < self.simStartTimeInMin or endTimeInMin > \
+                self .simEndTimeInMin:
+            raise SimMovementError('Time period from %d to %d is out of '
+                                   'simulation time' % (startTimeInMin, endTimeInMin))
         
+    def getSimVolume(self, startTimeInMin, endTimeInMin):
+        """Return the flow from the start to end"""
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        result = 0
+        for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
+                                             self.simTimeStepInMin)):
+            result += self._simVolume[stTime, enTime]
+
+        return result
+
+    def getSimFlow(self, startTimeInMin, endTimeInMin):
+        """Get the simulated flow for the specified time period 
+        in vph"""
+        volume = self.getSimVolume(startTimeInMin, endTimeInMin)
+        return  60.0 / (endTimeInMin - startTimeInMin) * volume
+
+    def getSimTTInMin(self, startTimeInMin, endTimeInMin):
+        """Return the mean movement travel time in minutes of 
+        for all the vehicles that entered the link between the 
+        input times
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        totalFlow = 0
+        totalTime = 0
+        
+        if (startTimeInMin, endTimeInMin) in self._simMeanTT:
+            return self._simMeanTT[startTimeInMin, endTimeInMin]
+
+        for (stTime, enTime), flow in self._simVolume.iteritems():
+            if stTime >= startTimeInMin and enTime <= endTimeInMin:
+                binTT = self._simMeanTT[(stTime, enTime)]
+
+                if binTT > 0 and flow > 0:
+                    totalFlow += flow
+                    totalTime += self._simMeanTT[(stTime, enTime)] * flow
+                elif binTT == 0 and flow == 0:
+                    continue
+                else:
+                    raise SimMovementError("Movement %s has flow:%f and TT:%f "
+                                           "for time period from %d to %d"  % 
+                                           (self.iid, flow, binTT, 
+                                            startTimeInMin, endTimeInMin))
+
+        if totalFlow > 0:
+            return totalTime / float(totalFlow) + self._penalty
+        else:
+            return (self.upLink.getLengthInMiles() / 
+                float(self.upLink.getFreeFlowSpeedInMPH()) * 60 + self._penalty)
+
+    def getSimSpeedInMPH(self, startTimeInMin, endTimeInMin):
+        """
+        Return the travel time of the first edge of the movement in 
+        miles per hour
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        ttInMin = self.getSimTTInMin(startTimeInMin, endTimeInMin)
+        lengthInMiles = self.upLink.getLengthInMiles()
+        return lengthInMiles / (ttInMin / 60.)
+
+    def getFreeFlowSpeedInMPH(self):
+        """
+        Return the free flow travel speed in mph
+        """
+        return self.incomingLink.getFreeFlowSpeedInMPH()
+
+    def getFreeFlowTTInMin(self):
+        """
+        Return the free flow travel time in minutes
+        """
+        return self.incomingLink.getFreeFlowTTInMin()
+
+    def getTimeVaryingCostAt(self, timeInMin):
+        """Return the cost (in min) for the time period begining at the 
+        input time"""
+
+        period = int((timeInMin - self.simStartTimeInMin) // self._timeStep)
+        return self._timeVaryingCosts[period]
+
+    def getTimeVaryingCostTimeStep(self):
+        """Return the time step that is used for the time varying costs"""
+        return self._timeStep
+    
+    def setSimVolume(self, startTimeInMin, endTimeInMin, flow):
+        """Specify the simulated flow (vehicles per HOUR) for the supplied time period"""
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkInputTimeStep(startTimeInMin, endTimeInMin)
+
+        self._simVolume[startTimeInMin, endTimeInMin] = flow
+
+    def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
+        """Specify the simulated average travel time for the 
+        input time period"""
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkInputTimeStep(startTimeInMin, endTimeInMin)
+
+        if averageTTInMin < 0:
+            raise SimMovementError("The travel time on movement cannot be negative" %
+                                   self.iid)
+        if averageTTInMin == 0:
+            if self.getSimFlow(startTimeInMin, endTimeInMin) > 0:
+                raise SimMovementError("The travel time on movement %s with flow %d from %d to %d "
+                                       "cannot be 0" % (self.iid, 
+                                                        self.getSimFlow(startTimeInMin, endTimeInMin),
+                                                        startTimeInMin, endTimeInMin))
+            else:
+                return
+
+        if self.getSimFlow(startTimeInMin, endTimeInMin) == 0:
+            raise SimMovementError('Cannot set the travel time on a movement with zero flow')
+
+        self._simMeanTT[startTimeInMin, endTimeInMin] = averageTTInMin
+
+    def setTimeVaryingCosts(self, timeVaryingCosts, timeStep):
+        """Inputs:timeVaryingCosts is an array containing the cost 
+        of the edge in each time period. timeStep is the interval 
+        length in minutes"""
+        #make sure the costs are positive. 
+        self._timeStep = timeStep
+        for cost in timeVaryingCosts:
+            assert cost > 0
+        self._timeVaryingCosts = timeVaryingCosts
+
+    def setPenaltyInMin(self, penalty):
+        """Add the input penalty to the simulated movement travel time"""
+        self._penalty = penalty
+
+
+
+
     

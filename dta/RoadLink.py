@@ -18,6 +18,7 @@ __license__     = """
 
 import pdb 
 import math
+from collections import defaultdict 
 
 from .DtaError import DtaError
 from .Link import Link
@@ -89,7 +90,192 @@ class RoadLink(Link):
         self._endShift                  = None
         self._shapePoints               = []  #: sequenceNum -> (x,y)
         self._centerline                = self.getCenterLine()
+
+        self._simVolume = defaultdict(int)
+        self._simMeanTT = defaultdict(float)
+
+    def _validateInputTimes(self, startTimeInMin, endTimeInMin):
+        """Checks that the input times belong to the simulation window"""
+        if startTimeInMin >= endTimeInMin:
+            raise DtaError("Invalid time bin (%d %s). The end time cannot be equal or less "
+                                "than the end time" % (startTimeInMin, endTimeInMin))
+
+        if startTimeInMin < self.simStartTimeInMin or endTimeInMin > \
+                self.simEndTimeInMin:
+            raise DtaError('Time period from %d to %d is out of '
+                                   'simulation time' % (startTimeInMin, endTimeInMin))
+
+    def _checkInputTimeStep(self, startTimeInMin, endTimeInMin):
+        """Checks if the difference of the input times is equal to the simulation time step"""
+        #TODO which check should I keep
+        if endTimeInMin - startTimeInMin != self.simTimeStepInMin:
+            raise DtaError('Time period from %d to %d is not '
+                                   'is not in multiple simulation '
+                                   'time steps %d' % (startTimeInMin, endTimeInMin,
+                                                    self.simTimeStepInMin))
+            
+
+    def _checkOutputTimeStep(self, startTimeInMin, endTimeInMin):
+        """Check that the difference of the input times is in multiples of the simulation time step"""
+        if (endTimeInMin - startTimeInMin) % self.simTimeStepInMin != 0:
+            raise DtaError('Time period from %d to %d is not '
+                                   'is not in multiple simulation '
+                                   'time steps %d' % (startTimeInMin, endTimeInMin,
+                                                    self.simTimeStepInMin))
+
+    def _hasMovementVolumes(self, startTimeInMin, endTimeInMin):
+        """Return True if at least one movement has a volume 
+        greater than 0"""
+        for mov in self.iterOutgoingMovements():
+            if mov.getSimVolume(startTimeInMin, endTimeInMin) > 0:
+                return True
+        return False
+
+    def getSimFlow(self, startTimeInMin, endTimeInMin):
+        """Get the simulated flow in vph"""
+        volume = self.getSimVolume(startTimeInMin, endTimeInMin)        
+        return int(float(volume) / (endTimeInMin - startTimeInMin) * 60)
+
+    def getSimVolume(self, startTimeInMin, endTimeInMin):
+        """Return the volume on the link from startTimeInMin to endTimeInMin"""
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        if self.getNumOutgoingMovements() > 0:
+            return sum([mov.getSimVolume(startTimeInMin, endTimeInMin) 
+                        for mov in self.iterOutgoingMovements()])
+        else:
+            result = 0
+            for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
+                                                 self.simTimeStepInMin)):
+                result += self._simVolume[stTime, enTime]
+            return result
+
+    def getSimTTInMin(self, startTimeInMin, endTimeInMin):
+        """Get the average travel time of the vehicles traversing the link"""
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        start = startTimeInMin
+        end = endTimeInMin
+
+        totalFlow = self.getSimVolume(start, end)
+        if totalFlow == 0:
+            return self.getFreeFlowTTInMin()
+
+        if not self._simMeanTT and not self._simVolume:
+            totalTime = sum([ mov.getSimTTInMin(start, end) * mov.getSimVolume(start, end)
+                          for mov in self.iterOutgoingMovements()])
+            return totalTime / float(totalFlow)
+        elif self._simMeanTT and self._simVolume:
+            totalTime = 0
+            totalFlow = 0
+            for (stTime, enTime), flow in self._simVolume.iteritems():
+                if stTime >= startTimeInMin and enTime <= endTimeInMin:
+
+                    binTT = self._simMeanTT[(stTime, enTime)]
+
+                    if flow == 0 and binTT == 0:
+                        continue
+                    elif flow > 0 and binTT > 0:
+                        totalFlow += flow
+                        totalTime += binTT * flow
+                    else:                        
+                        raise SimMovementError("Movement %s has flow: %f and TT: %f "
+                                               "for time period from %d to %d"  % 
+                                               (self.iid, flow, binTT, 
+                                                startTimeInMin, endTimeInMin))
+
+            return totalTime / float(totalFlow)
+            
+            if endTimeInMin - startTimeInMin != self.simTimeStepInMin:
+                raise DtaError("Not implemeted yet")
+
+            return self._simMeanTT[start, end]
+        else:
+            return self.lengthInMiles / float(self.vfree) * 60
+
+    def getSimSpeedInMPH(self, startTimeInMin, endTimeInMin):
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+        
+        #TODO if the coordinate system is not in feet 
+        # you are going to have a problem
+        tt = self.getSimTTInMin(startTimeInMin, endTimeInMin)
+        speedInMPH = self.getLengthInMiles() / (tt / 60.)
+        return speedInMPH
+
+    def getObsMeanTT(self, startTimeInMin, endTimeInMin):
+        """Get the observed mean travel time of the link in minutes"""
+        raise Exception("Not implemented yet")
+        return self._obsMeanTT[startTimeInMin, endTimeInMin]
+            
+    def getObsSpeedInMPH(self, startTimeInMin, endTimeInMin):
+        """Get the observed speed of specified time period"""
+        raise Exception("Not implemented yet")
+        return self._obsSpeed[startTimeInMin, endTimeInMin]
     
+    def setSimVolume(self, startTimeInMin, endTimeInMin, volume):
+        """
+        Set the simulated volume on the edge provided that the edge 
+        does not have any emanating movements
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkInputTimeStep(startTimeInMin, endTimeInMin)
+
+        if self._hasMovementVolumes(startTimeInMin, endTimeInMin):
+            raise DtaError('Cannoot set the simulated volume on the edge %s'
+                               'because there is at least one emanating '
+                               'movement with volume greater than zero ' %
+                               str(self.iid))
+
+        if self.getNumOutgoingMovements() > 1:
+            raise DtaError('Cannot set the simulated volume of the edge %s'
+                               'with one or more emanating movements. Please'
+                               ' set the volume of the movements' % str(self.iid))
+        elif self.getNumOutgoingMovements() == 1:
+            for emanatingMovement in self.iterOutgoingMovements():
+                emanatingMovement.setSimVolume(startTimeInMin, endTimeInMin, volume)
+        else:
+            self._simVolume[startTimeInMin, endTimeInMin] = volume
+        
+    def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
+        """
+        Set the simulated travel time on the link for the particular input period
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkInputTimeStep(startTimeInMin, endTimeInMin)
+
+        #TODO the input period should be in multiples of the simTimeStep        
+        if startTimeInMin < self.simStartTimeInMin or endTimeInMin > \
+                self.simEndTimeInMin:
+            raise DtaError('Time period from %d to %d is out of '
+                                   'simulation time' % (startTimeInMin, endTimeInMin))
+
+        if endTimeInMin - startTimeInMin != self.simTimeStepInMin:
+            raise DtaError('Not implemetd yet. Time period is different than the time step.')
+
+
+        if self.getNumOutgoingMovements() > 1:
+            raise DtaError('Cannot set the simulated travel time of the edge %s'
+                               'with one or more emanating movements. Please'
+                               ' set the time of the movements instead' % str(self.iid))
+        elif self.getNumOutgoingMovements() == 1:
+            if averageTTInMin == 0:
+                return
+            for emanatingMovement in self.iterOutgoingMovements():
+                emanatingMovement.setSimTTInMin(startTimeInMin, endTimeInMin, averageTTInMin)
+        else:
+            if averageTTInMin == 0:
+                return
+            if self.getSimVolume(startTimeInMin, endTimeInMin) == 0:
+                raise DtaError('Cannot set the travel time on edge %s because it has zero flow' % self.iid_)
+
+            self._simMeanTT[startTimeInMin, endTimeInMin] = averageTTInMin
+                        
     def addLanePermission(self, laneId, vehicleClassGroup):
         """
         Adds the lane permissions for the lane numbered by *laneId* (outside lane is lane 0, increases towards inside edge.)

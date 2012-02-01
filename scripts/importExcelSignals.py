@@ -1284,7 +1284,10 @@ def getNet2():
     net = DynameqNetwork(scenario=testScenario)
     net.read(dir=folder, file_prefix="sf9")
     #net.removeShapePoints()    
-    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
+    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
+
+    for link in net.iterLinks():
+        link._label = cleanStreetName(link._label)
     return net 
 
 def assignCardNames(excelCards): 
@@ -1313,7 +1316,7 @@ def mapIntersectionsByName(network, excelCards):
             mappedExcelCards.append(sd)
             print "Mapped ", sd.fileName, "to", sd.mappedNodeId
         else:
-            print "Failed to map ", sd.fileName
+            print "Failed to map,", sd.fileName
 
     print "Number of cards are", len(excelCards), " Number of mapped nodes are ", len(mappedNodes)
 
@@ -1551,32 +1554,37 @@ def plotSignalTimes(net):
 if __name__ == "__main__":
 
     folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"
-    net = getNet(folder)
+    #net = getNet(folder)
+    net = getNet2()
 
+    #net.writeLinksToShp(os.path.join(folder, "links_sf9"))
+    #net.writeNodesToShp(os.path.join(folder, "nodes_sf9"))
+    #net.writeMovementsToShp(os.path.join(folder, "movs_sf9"))
     
-
-    net.writeLinksToShp(os.path.join(folder, "links_sf9"))
-    net.writeNodesToShp(os.path.join(folder, "nodes_sf9"))
-    net.writeMovementsToShp(os.path.join(folder, "movs_sf9"))
-    
-    pdb.set_trace()
+    #pdb.set_trace()
 
     #net.writeNodesToShp("/Users/michalis/Dropbox/tmp/nodes9_2")
     #net.writeLinksToShp("/Users/michalis/Dropbox/tmp/links9_2")
     
-    #addAllMovements(net)
+    addAllMovements(net)
 
     cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
+    #cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/unmapped"
+    
     #fileName = os.path.join(cardsDirectory, "10th Ave_California_Ch_12.xls") 
     #verifySingleSignal(net, fileName)
 
-    #cards = getMappedCards(net, cardsDirectory)
+    cards = getMappedCards(net, cardsDirectory)
+
+    #pdb.set_trace()
+    #exit()
 
     #print "Num excel files", len(excelFileNames)
-    pCardsFile5 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards5.pkl"    
+    #pCardsFile5 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards5.pkl"
+    pCardsFile6 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards6.pkl"        
 
-    #pickleCards(pCardsFile5, cards)
-    cards = unPickleCards(pCardsFile5)    
+    pickleCards(pCardsFile6, cards)
+    cards = unPickleCards(pCardsFile6)    
 
     #
     #for card in cards:
@@ -1588,7 +1596,7 @@ if __name__ == "__main__":
     #allPlans = createDynameqSignals(net, cardsWithMovements, 630, 930, "test/report_am.csv")    
     pdb.set_trace()
 
-    net.write(folder, "test_AM")
+    net.write(folder, "test_PM")
 
     #dta.Utils.plotSignalAttributes(net, 1530, 1830, os.path.join(folder, "signalAttributes"))
-    dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_am")
+    dta.Utils.plotSignalAttributes(net, 630, 930, "signalAttributes_pm")

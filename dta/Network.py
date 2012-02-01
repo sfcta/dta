@@ -417,7 +417,7 @@ class Network(object):
         """
         for link in self.iterLinks():
             if link.isRoadLink():
-                return link
+                yield link
 
     def iterConnectors(self):
         """
