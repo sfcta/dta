@@ -19,6 +19,7 @@ import shapefile
 import pdb
 
 import math
+from itertools import izip, imap
 import os
 import sys, csv
 
@@ -63,9 +64,16 @@ class DynameqNetwork(Network):
     CTRL_HEADER        = """<DYNAMEQ>
 <VERSION_1.7>
 <CONTROL_PLANS_FILE>
-* CREATED by DTA Anyway http://code.google.com/p/dta/    
+* CREATED by DTA Anyway http://code.google.com/p/dta/
 """
 
+    MOVEMENT_FLOW_OUT = 'movement_aflowo.dqt'
+    MOVEMENT_TIME_OUT = 'movement_atime.dqt'
+    MOVEMENT_SPEED_OUT = "movement_aspeed.dqt"
+    LINK_FLOW_OUT = 'link_aflowo.dqt'
+    LINK_TIME_OUT = 'link_atime.dqt'
+    LINK_SPEED_OUT = "link_aspeed.dqt"
+    
     def __init__(self, scenario):
         """
         Constructor.  Initializes to an empty network.
@@ -74,6 +82,7 @@ class DynameqNetwork(Network):
         for :py:class:`VehicleClassGroup` lookups        
         """ 
         Network.__init__(self, scenario)
+        self._dir = None 
                 
     def read(self, dir, file_prefix):
         """
@@ -85,6 +94,7 @@ class DynameqNetwork(Network):
         if not os.path.exists(basefile):
             raise DtaError("Base network file %s does not exist" % basefile)
         
+        self._dir = dir 
         count = 0
         for fields in self._readSectionFromFile(basefile, "NODES", "CENTROIDS"):
             self.addNode(self._parseNodeFromFields(fields))
@@ -131,11 +141,6 @@ class DynameqNetwork(Network):
             
         count = 0                        
         for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
-            #TODO: I suggest we write here newMovement.getIncomingLink().addOutgoingMovement(newMovement)
-            #and do not have a .addMovement method in the network object. I too have done it the same 
-            #way in one of my implementation but I would suggest that the network does not deal with 
-            #movements as it is two levels up in the object hierarchy 
-
             mov = self._parseMovementFromFields(fields)
             if mov._permission.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
                 continue                               
@@ -985,8 +990,106 @@ class DynameqNetwork(Network):
         """
         for link in self.iterLinks():
             if isinstance(link, Connector):
-                yield link 
-    
+                yield link
 
+    def _readMovementOutFlowsAndTTs(self):
+        """
+        Read the movement travel times (in seconds) add assign them 
+        to the corresponding movement
+        """
+        if not self._dir:
+            raise DtaError("The network directory has not been defined")
+        
+        movementFlowFileName = os.path.join(self._dir, 
+                                            DynameqNetwork.MOVEMENT_FLOW_OUT)
+        movementTimeFileName = os.path.join(self._dir,
+                                            DynameqNetwork.MOVEMENT_TIME_OUT)
+
+        inputStream1 = open(movementFlowFileName, 'r')
+        inputStream2 = open(movementTimeFileName, 'r')
+
+        for flowLine, timeLine in izip(inputStream1, inputStream2):
+            
+            flowFields = flowLine.strip().split()
+            timeFields = timeLine.strip().split()
+
+            nodeBid, nodeAid, nodeCid = map(int, flowFields[:3])
+
+            if [nodeBid, nodeAid, nodeCid] != map(int, timeFields[:3]):
+                raise DtaError('The files %s and %s are not in sync. '
+                                      'Movement through %s from %s to %s in the first file is not '
+                                      'in the same line position in the second '
+                                      'file' % (movementFlowFileName,
+                                                movementTimeFileName,
+                                                nodeBid, nodeAid, nodeCid))
+
+            try:
+                link = self.getLinkForNodeIdPair(nodeAid, nodeBid)
+                movement = link.getOutgoingMovement(nodeCid)
+            except DtaError, e:
+                #if the movement does not exist. It could be a prohibited movement
+                #perhaps you need to do more error checking there 
+                if nodeAid == nodeCid:
+                    continue
+                continue
+
+            simFlows = imap(int, flowFields[3:])
+            simTTs = imap(float, timeFields[3:])
+            timePeriodStart = self._simStartTimeInMin
+                    
+            for simFlow, simTT in izip(simFlows, simTTs):
+
+                if simFlow == 0 and simTT > 0:
+                    raise DtaError('Movement %s has zero flow in the '
+                                   'time period begining %d and a '
+                                   'positive travel time' % 
+                                   (movement.getId(), timePeriodStart))
+                elif simFlow > 0 and simTT == 0:
+                    raise DtaError('Movement %s has positive flow in '
+                                   'the time period begining %d and a '
+                                   'zero travel time' % 
+                                   (movement.getId(), timePeriodStart))
+                
+                elif simFlow == 0 and simTT == 0:
+                    #simTT = movement.getFreeFlowTTInMin()
+                    timePeriodStart += self._simTimeStepInMin
+                    if timePeriodStart >= self._simEndTimeInMin:
+                        break
+                else:
+                    movement.setSimVolume(timePeriodStart, timePeriodStart + 
+                                        self._simTimeStepInMin, simFlow / (60 / self._simTimeStepInMin))
+
+                    movement.setSimTTInMin(timePeriodStart, timePeriodStart + 
+                                          self._simTimeStepInMin, simTT / 60.0)
+                                      
+                    timePeriodStart += self._simTimeStepInMin
+                    if timePeriodStart >= self._simEndTimeInMin:
+                        break
+
+        inputStream1.close()
+        inputStream2.close()
+        
+    def readSimResults(self, simStartTimeInMin, simEndTimeInMin, simTimeStepInMin):
+        """
+        Read the movement and link travel times and flows
+        """
+        self._simStartTimeInMin = simStartTimeInMin
+        self._simEndTimeInMin = simEndTimeInMin
+        self._simTimeStepInMin = simTimeStepInMin
+
+
+        for link in self.iterLinks():
+            if link.isVirtualLink():
+                continue
+            for mov in link.iterOutgoingMovements():
+                mov.simTimeStepInMin = simTimeStepInMin
+                mov.simStartTimeInMin = simStartTimeInMin
+                mov.simEndTimeInMin = simEndTimeInMin
+
+        self._readMovementOutFlowsAndTTs()
+
+        
+        
+        
 
                     

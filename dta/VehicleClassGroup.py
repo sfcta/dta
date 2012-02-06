@@ -39,3 +39,20 @@ class VehicleClassGroup:
         self.name                   = name
         self.classDefinitionString  = classDefinitionString
         self.colorCode              = colorCode
+
+    def __str__(self):
+
+        return "%s,%s,%s" % (self.name, self.classDefinitionString, self.colorCode)
+
+    def allowsAll(self):
+        """
+        Return True if the vehicle class group allows all vehicle classes
+        """
+        return self.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_ALL
+
+    def allowsNone(self):
+        """
+        Return True if the vehicle class group allows all vehicle classes
+        """
+        return self.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_PROHIBITED
+        

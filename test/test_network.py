@@ -53,6 +53,12 @@ def getGearyNet():
     
     return gearynetDta
 
+def getTestNet2():
+    
+    net = DynameqNetwork(scenario=getTestScenario())
+    net.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/sf9", file_prefix="sf9")
+    return net
+
 def getTestScenario(): 
 
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
@@ -1129,4 +1135,13 @@ class TestNetwork(object):
             print "protected capacity", mov.getTurnType(), mov.getProtectedCapacity(pi)
         
         print "num time plans", net.getNumTimePlans()
+
+    def test_1readSimResults(self):
+
+        net = getTestNet2()
+        print net.getNumNodes()
+        print net.getNumLinks()
+        net.readSimResults(0, 6*60, 5)
+
+        pdb.set_trace()
         

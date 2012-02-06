@@ -68,7 +68,7 @@ class Link(object):
         """
         return self._endNode
 
-    def getEuclidianLengthInMiles(self):
+    def getEuclideanLengthInMiles(self):
         """
         Returns the length between the start node and end node
         """

@@ -27,7 +27,7 @@ from .Node import Node
 from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import getMidPoint, lineSegmentsCross, polylinesCross
-
+from .Algorithms import pairwise 
 
 class Movement(object):
     """
@@ -109,6 +109,7 @@ class Movement(object):
         self._penalty = 0
         self._timeVaryingCosts = []
         self._timeStep = None
+        
         self.simTimeStepInMin = None
         self.simStartTimeInMin = None
         self.simEndTimeInMin = None
@@ -128,8 +129,7 @@ class Movement(object):
     def getAtNode(self):
         """
         Returns the node at which the movement is happening
-        """
-        
+        """        
         return self._node  
     
     def getOriginNode(self):
@@ -451,27 +451,33 @@ class Movement(object):
         return self.incomingLink.getFreeFlowTTInMin()
 
     def getTimeVaryingCostAt(self, timeInMin):
-        """Return the cost (in min) for the time period begining at the 
-        input time"""
-
+        """
+        Return the cost (in min) for the time period begining at the 
+        input time
+        """
         period = int((timeInMin - self.simStartTimeInMin) // self._timeStep)
         return self._timeVaryingCosts[period]
 
     def getTimeVaryingCostTimeStep(self):
-        """Return the time step that is used for the time varying costs"""
+        """
+        Return the time step that is used for the time varying costs
+        """
         return self._timeStep
     
     def setSimVolume(self, startTimeInMin, endTimeInMin, flow):
-        """Specify the simulated flow (vehicles per HOUR) for the supplied time period"""
-
+        """
+        Specify the simulated flow (vehicles per HOUR) for the supplied time period
+        """
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
         self._simVolume[startTimeInMin, endTimeInMin] = flow
 
     def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
-        """Specify the simulated average travel time for the 
-        input time period"""
+        """
+        Specify the simulated average travel time for the 
+        input time period
+        """
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
@@ -493,9 +499,11 @@ class Movement(object):
         self._simMeanTT[startTimeInMin, endTimeInMin] = averageTTInMin
 
     def setTimeVaryingCosts(self, timeVaryingCosts, timeStep):
-        """Inputs:timeVaryingCosts is an array containing the cost 
+        """
+        Inputs:timeVaryingCosts is an array containing the cost 
         of the edge in each time period. timeStep is the interval 
-        length in minutes"""
+        length in minutes
+        """
         #make sure the costs are positive. 
         self._timeStep = timeStep
         for cost in timeVaryingCosts:
@@ -503,9 +511,16 @@ class Movement(object):
         self._timeVaryingCosts = timeVaryingCosts
 
     def setPenaltyInMin(self, penalty):
-        """Add the input penalty to the simulated movement travel time"""
+        """
+        Add the input penalty to the simulated movement travel time
+        """
         self._penalty = penalty
 
+    def getVehicleClassGroup(self):
+        """
+        Return the vehicle class group
+        """
+        return self._permission 
 
 
 

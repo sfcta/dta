@@ -346,7 +346,12 @@ class RoadLink(Link):
         if self.hasOutgoingMovement(movement.getDestinationNode().getId()):
             raise DtaError("RoadLink %s addOutgoingMovement() called to add already "
                            "existing movement" % str(movement))
-        
+
+        #if not movement.getVehicleClassGroup().allowsAll():
+        #    raise DtaError("RoadLink %s addOutgoingMovement() called to add movement "
+        #                   "with lane permissions %s" % (str(movement),
+        #                                                 str(movement.getVehicleClassGroup())))
+                    
         self._outgoingMovements.append(movement)
         movement.getOutgoingLink()._incomingMovements.append(movement)
     

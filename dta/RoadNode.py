@@ -149,7 +149,7 @@ class RoadNode(Node):
 
             #if connector.getCentroid().isConnectedToRoadNode(candidateLink.getOtherEnd(self)):
             #    continue
-            if candidateLink.getEuclidianLengthInMiles() < MIN_LENGTH_IN_MILES:
+            if candidateLink.getEuclideanLengthInMiles() < MIN_LENGTH_IN_MILES:
                 continue
 
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()

@@ -145,11 +145,11 @@ def removeVerySmallLinks(net):
     linksToDelete = []
     for link in net.iterLinks():
         if link.isRoadLink():
-            if link.getEuclidianLengthInMiles() < 0.004:
+            if link.getEuclideanLengthInMiles() < 0.004:
                 #print link.getId() 
                 linksToDelete.append(link) 
     
-    #tmp = sorted([link.getEuclidianLengthInMiles() for link in net.iterLinks() if link.isRoadLink()])
+    #anLengthInMiles() for link in net.iterLinks() if link.isRoadLink()])
     
     for link in linksToDelete:
         net.removeLink(link)
@@ -226,7 +226,15 @@ def getTestScenario():
                                datetime.datetime(2010,1,1,4,0,0))
     scenario.read(projectFolder, prefix) 
 
-    return scenario 
+    return scenario
+
+def removeStrayNodes(net):
+
+    #remove nodes from the network that are not connected to the network
+    nodes = [node for node in net.iterRoadNodes() if node.getCardinality() == (0,0)]
+    for node in nodes:
+        net.removeNode(node)
+    
 
  
 if __name__ == '__main__':
@@ -244,10 +252,10 @@ if __name__ == '__main__':
     #gearyScenario.write(dir="test", file_prefix="geary")
 
     #read the gearyDTA network    
-    gearynetDta = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-    gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
+    #gearynetDta = dta.DynameqNetwork(scenario=sanfranciscoScenario)
+    #gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
 
-    gearynetDta.write(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test", file_prefix="Base")
+    #gearynetDta.write(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test", file_prefix="Base")
     
     #gearynetDta.writeNodesToShp(os.path.join("/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty", "geary_nodes"))
     #gearynetDta.writeLinksToShp(os.path.join("/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty", "geary_links"))
@@ -268,8 +276,8 @@ if __name__ == '__main__':
     #dta.Utils.writePolygon(polygon3, os.path.join(projectFolder2, "cHull3"))
     
     #gearynetDta.write(dir="test", file_prefix="geary")
-    gearynetDta.writeNodesToShp(os.path.join(outputFolder, "geary_nodes"))
-    gearynetDta.writeLinksToShp(os.path.join(outputFolder, "geary_links"))
+    #gearynetDta.writeNodesToShp(os.path.join(outputFolder, "geary_nodes"))
+    #gearynetDta.writeLinksToShp(os.path.join(outputFolder, "geary_links"))
 
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
@@ -315,18 +323,15 @@ if __name__ == '__main__':
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
        )
     
-
+    #pdb.set_trace()
+    
     sanfranciscoCubeNet.readLinkShape("/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/stclines.shp")
-    sanfranciscoCubeNet.writeNodesToShp(os.path.join(outputFolder, "sf9_nodes"))
-    sanfranciscoCubeNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
-
-
-
-
+    #sanfranciscoCubeNet.writeNodesToShp(os.path.join(outputFolder, "sf9_nodes"))
+    #sanfranciscoCubeNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
 
     #create the San Francisco network 
     sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-    #copy the Cube SF network to a dynameq one
+    #copy the Cubse SF network to a dynameq one
     sanfrancsicoDynameqNet.deepcopy(sanfranciscoCubeNet)
     
     #remove the shapepoints from the network
@@ -345,23 +350,17 @@ if __name__ == '__main__':
     assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
     sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
 
-    sanfrancsicoDynameqNet.write(outputFolder, "sf9")
-    exit()
-
-    #remove nodes from the network that are not connected to the network
-    nodes = [node for node in sanfrancsicoDynameqNet.iterRoadNodes() if node.getCardinality() == (0,0)]
-    for node in nodes:
-        sanfrancsicoDynameqNet.removeNode(node)
+    #sanfrancsicoDynameqNet.write(outputFolder, "sf9")
 
     assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
 
-
+    
 
     assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
 
     sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(outputFolder, "sf9_nodes"))
     sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
-    sanfranciscoDynameqNet.write
+
     assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
    
     #removeOverlappingRoadLinks(sanfrancsicoDynameqNet)
@@ -371,27 +370,27 @@ if __name__ == '__main__':
     #This is not ready yet and will throw and excep
 
     #gearynetDta.areIDsUnique(sanfrancsicoDynameqNet)
-    gearynetDta.mergeSecondaryNetwork(sanfrancsicoDynameqNet)
+    #gearynetDta.mergeSecondaryNetwork(sanfrancsicoDynameqNet)
 
-    #sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
-    #sanfrancsicoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks()
+    sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
+    sanfrancsicoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks()
     #removeVerySmallLinks(sanfrancsicoDynameqNet)
-    #sanfrancsicoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
+    sanfrancsicoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
 
-    gearynetDta.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
-    gearynetDta.moveVirtualNodesToAvoidOverlappingLinks()
-    removeVerySmallLinks(gearynetDta)
-    gearynetDta.moveVirtualNodesToAvoidShortConnectors()
+    #gearynetDta.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
+    #gearynetDta.moveVirtualNodesToAvoidOverlappingLinks()
+    #removeVerySmallLinks(gearynetDta)
+    #gearynetDta.moveVirtualNodesToAvoidShortConnectors()
 
-    gearynetDta.removeLink(gearynetDta.getLinkForId(27202))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(27026))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(27207))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(20231))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(20175))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(28372))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(27012))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(26958))
-    gearynetDta.removeLink(gearynetDta.getLinkForId(25831))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(27202))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(27026))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(27207))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(20231))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(20175))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(28372))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(27012))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(26958))
+    #gearynetDta.removeLink(gearynetDta.getLinkForId(25831))
 
     #sanfrancsicoDynameqNet.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")
     #sanfranciscoScenario.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")   
@@ -401,13 +400,14 @@ if __name__ == '__main__':
 
     #gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
     
-    gearynetDta.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf13")
+    #gearynetDta.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf13")
     #"/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
 
-    gearynetDta.writeNodesToShp(os.path.join(outputFolder, "sf13_nodes"))
-    gearynetDta.writeLinksToShp(os.path.join(outputFolder, "sf13_links"))
+    #gearynetDta.writeNodesToShp(os.path.join(outputFolder, "sf13_nodes"))
+    #gearynetDta.writeLinksToShp(os.path.join(outputFolder, "sf13_links"))
 
-
+    pdb.set_trace()
+    
     exit() 
     # Merge them together
     sanfranciscoNet = gearynetDta

@@ -904,12 +904,12 @@ class Network(object):
         for link in self.iterLinks():
             if not link.isConnector():
                 continue
-            if link.getEuclidianLengthInMiles() > Link.MIN_LENGTH_IN_MILES:
+            if link.getEuclideanLengthInMiles() > Link.MIN_LENGTH_IN_MILES:
                 continue
             virtualNode = link.getVirtualNode()
             numMoves = 0
 
-            while link.getEuclidianLengthInMiles() < Link.MIN_LENGTH_IN_MILES \
+            while link.getEuclideanLengthInMiles() < Link.MIN_LENGTH_IN_MILES \
                     and numMoves < 4:
                 virtualNode._x += random.randint(0, MAX_DIST_TO_MOVE)
                 virtualNode._y += random.randint(0, MAX_DIST_TO_MOVE)
