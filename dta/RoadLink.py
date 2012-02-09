@@ -33,6 +33,7 @@ class RoadLink(Link):
     """
     #: default level value
     DEFAULT_LEVEL = 0
+    #: default lane width in feet
     DEFAULT_LANE_WIDTH_FEET = 12
 
     DIR_EB = "EB"
@@ -408,8 +409,8 @@ class RoadLink(Link):
         
     def getCenterLine(self):
         """
-        Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
-        representing the centerline. 
+        Offset the link to the right 0.5*numLanes*:py:attr:`RoadLink.DEFAULT_LANE_WIDTH_FEET` and 
+        return a tuple of two points (each one being a tuple of two floats) representing the centerline 
         """
 
         dx = self._endNode.getX() - self._startNode.getX()

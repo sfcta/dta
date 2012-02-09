@@ -29,7 +29,8 @@ import dta
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc',
 	      'sphinx.ext.autosummary',
-	      'sphinx.ext.inheritance_diagram']
+	      'sphinx.ext.inheritance_diagram',
+	      'sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -230,3 +231,4 @@ autosummary_generate = True
 
 graphviz_dot = r"C:\Program Files (x86)\Graphviz 2.28\bin\dot.exe"
 inheritance_graph_attrs = dict(rankdir="TB")
+todo_include_todos = True

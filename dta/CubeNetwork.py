@@ -263,7 +263,8 @@ ENDRUN
                         label                   = eval(linkLabelEvalStr, globals(), localsdict))
                     countConnectors += 1
                 except DtaError, e:
-                    DtaLogger.error("%s" % str(e))
+                    DtaLogger.error("Error adding Connector from %d to %d - skipping: %s" %
+                                    (nodeA.getId(), nodeB.getId(), str(e)))
                     continue
             else:
                 localsdict['isConnector'] = False
@@ -284,7 +285,8 @@ ENDRUN
                         label                   = eval(linkLabelEvalStr, globals(), localsdict))
                     countRoadLinks += 1
                 except DtaError, e:
-                    DtaLogger.error("%s" % str(e))
+                    DtaLogger.error("Error adding RoadLink from %d to %d - skipping: %s" %
+                                    (nodeA.getId(), nodeB.getId(), str(e)))
                     continue 
             self.addLink(newLink)
         DtaLogger.info("Read  %8d %-16s from %s" % (countConnectors, "connectors", linksCsvFilename))

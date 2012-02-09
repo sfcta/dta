@@ -25,10 +25,10 @@ class VehicleType:
         """
         Constructor.
         
-         *name* is the vehicle type name, e.g. ``small_truck``
-         *className* a broader class, e.g. ``truck``
-         *length* is the effective length (units?)
-         *responseTime* is ?
+        * *name* is the vehicle type name, e.g. ``small_truck``
+        * *className* a broader class, e.g. ``truck``
+        * *length* is the effective length (units?)
+        * *responseTime* is ?
          
         """
         self.name           = name

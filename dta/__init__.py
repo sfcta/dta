@@ -1,6 +1,6 @@
 """
 
-DTA is a python module that facilitates network coding, analysis and visualization for
+DTA Anyway is a python module that facilitates network coding, analysis and visualization for
 DTA (Dynamic Traffic Assignment).  This is a stub file to illustrate header convention; this
 module docstring will be improved during development.
 
@@ -27,6 +27,7 @@ __license__     = """
 from .Centroid import Centroid
 from .Connector import Connector
 from .CubeNetwork import CubeNetwork
+from .Demand import Demand
 from .DtaError import DtaError
 from .DynameqNetwork import DynameqNetwork
 from .DynameqScenario import DynameqScenario
@@ -38,6 +39,8 @@ from .Node import Node
 from .RoadLink import RoadLink
 from .RoadNode import RoadNode
 from .Scenario import Scenario
+from .TimePlan import PlanCollectionInfo, TimePlan
+from .Utils import crossProduct, direction, lineSegmentsCross, onSegment
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
 from .VirtualLink import VirtualLink
@@ -50,5 +53,7 @@ __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Network', 'DynameqNetwork', 'CubeNetwork',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
-           'Link', 'RoadLink', 'Connector', 'VirtualLink', "Demand"
+           'Link', 'RoadLink', 'Connector', 'VirtualLink', 'Demand',
+           'PlanCollectionInfo', 'TimePlan',
+           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment'
 ]

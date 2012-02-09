@@ -34,6 +34,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="dta.VirtualNode.html" title="dta.VirtualNode"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -164,11 +167,31 @@ only the minor street is stop-controlled</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.addTimePlan">
+<tt class="descname">addTimePlan</tt><big>(</big><em>timePlan</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addTimePlan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the input time plan to the current collection</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.getCandidateLinksForSplitting">
 <tt class="descname">getCandidateLinksForSplitting</tt><big>(</big><em>connector</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getCandidateLinksForSplitting" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the closest links to the virtual node the connector
-can be attached. Spitting or attaching the connector to 
-any of the returned links will not result in overlapping links.</p>
+<dd><p>Given a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instance whose start node or end node is the calling instance,
+returns a list of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances where:</p>
+<ul class="simple">
+<li>The link is at least 0.009 miles long (why?)</li>
+<li>If one were to create a new link between the <em>connector</em>&#8216;s <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> and
+the midpoint of the link, none of the other <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to the calling node
+would cross it.</li>
+</ul>
+<p>The returned list is sorted by euclidean length, longest to shortest.</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">I think a picture would be useful here</p>
+</div>
+<div class="admonition-todo admonition " id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">explain the 0.009 minimum length</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -194,6 +217,20 @@ incoming and outgoing links respectively</p>
 <dt id="dta.RoadNode.getIncomingLinkForNodeId">
 <tt class="descname">getIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if there is an incoming link starting from nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getMovement">
+<tt class="descname">getMovement</tt><big>(</big><em>upNodeId</em>, <em>downNodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the movement from upNodeId to downNodeId that goes through
+this node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the intersection as a string consisting of the labels 
+of the incoming links in sorted order.</p>
 </dd></dl>
 
 <dl class="method">
@@ -227,6 +264,12 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.getNumMovements">
+<tt class="descname">getNumMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of movements associated with this node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.getNumOutgoingLinks">
 <tt class="descname">getNumOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retruns the number of outoing links</p>
@@ -237,6 +280,18 @@ incoming and outgoing links respectively</p>
 <tt class="descname">getOrientation</tt><big>(</big><em>point</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getOrientation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the clockwise angle from the North measured in degrees of the line 
 segment that has the current node as its start and the given point as its end</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getStreetNames">
+<tt class="descname">getStreetNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getStreetNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the street names of the incoming links as a list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.getTimePlan">
+<tt class="descname">getTimePlan</tt><big>(</big><em>planInfo</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getTimePlan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the timeplan for the specific time period defined by planInfo</p>
 </dd></dl>
 
 <dl class="method">
@@ -270,6 +325,13 @@ segment that has the current node as its start and the given point as its end</p
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.hasMovement">
+<tt class="descname">hasMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node has movement from 
+startNodeId to endNodeId</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.hasOutgoingLinkForId">
 <tt class="descname">hasOutgoingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasOutgoingLinkForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if there is an outgoing link wwith the given id</p>
@@ -279,6 +341,12 @@ segment that has the current node as its start and the given point as its end</p
 <dt id="dta.RoadNode.hasOutgoingLinkForNodeId">
 <tt class="descname">hasOutgoingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasOutgoingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if there is a link towards the given node id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.hasTimePlan">
+<tt class="descname">hasTimePlan</tt><big>(</big><em>planInfo=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasTimePlan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if the node has at least one time plan</p>
 </dd></dl>
 
 <dl class="method">
@@ -315,7 +383,7 @@ oriented link of the intersection is less than the input minAngle</p>
 <dl class="method">
 <dt id="dta.RoadNode.isShapePoint">
 <tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
+<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
 following graph). 
 If countRoadNodesOnly is True the method will count only RoadLinks 
 attached to this Node and will disregard an connectors.</p>
@@ -366,9 +434,22 @@ to this node</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.iterMovements">
+<tt class="descname">iterMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all the movements going
+through the node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.iterOutgoingLinks">
 <tt class="descname">iterOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the outgoing links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.iterTimePlans">
+<tt class="descname">iterTimePlans</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterTimePlans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator over the timeplans of this node</p>
 </dd></dl>
 
 <dl class="method">
@@ -421,6 +502,9 @@ to this node</p>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="dta.VirtualNode.html" title="dta.VirtualNode"
              >next</a> |</li>

@@ -25,8 +25,11 @@ from .DtaError import DtaError
 from .Utils import militaryTimeToDateTime
 
 class PlanCollectionInfo(object):
-    """Contains user information for a collection of signals belonging to the
-    same time period"""
+    """
+    Contains user information for a collection of signals belonging to the
+    same time period
+    """
+    
     def __init__(self, militaryStartTime, militaryEndTime, name, description):
         """
         militaryStartTime,militaryEndtime should be integers such as 700, 1500
@@ -69,6 +72,9 @@ class PlanCollectionInfo(object):
 class TimePlan(object):
     """
     Represents a Dynameq timeplan
+    
+    .. todo:: Dynameq, eh?  What about just DTA?  And the Dynameq subclass?  And a holistic description
+              of what a "time plan" is, anyhow?  (No it's not obvious.)
     """
 
     CONTROL_TYPE_CONSTANT = 0

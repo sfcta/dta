@@ -128,9 +128,19 @@ class RoadNode(Node):
     
     def getCandidateLinksForSplitting(self, connector):
         """
-        Return the closest links to the virtual node the connector
-        can be attached. Spitting or attaching the connector to 
-        any of the returned links will not result in overlapping links.      
+        Given a :py:class:`Connector` instance whose start node or end node is the calling instance,
+        returns a list of :py:class:`RoadLink` instances where:
+        
+        * The link is at least 0.009 miles long (why?)
+        * If one were to create a new link between the *connector*'s :py:class:`VirtualNode` and
+          the midpoint of the link, none of the other :py:class:`RoadLink` instances adjacent to the calling node
+          would cross it.
+          
+        The returned list is sorted by euclidean length, longest to shortest.
+        
+        .. todo:: I think a picture would be useful here
+        .. todo:: explain the 0.009 minimum length
+              
         """
         MIN_LENGTH_IN_MILES = 0.009
 

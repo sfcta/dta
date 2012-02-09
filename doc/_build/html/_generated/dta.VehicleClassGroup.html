@@ -34,6 +34,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="dta.Node.html" title="dta.Node"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -60,7 +63,7 @@
 <dd><p>Constructor.</p>
 <blockquote>
 <div><ul class="simple">
-<li><em>name</em> is the vehicle class group name (e.g. All, No_Trucks)</li>
+<li><em>name</em> is the vehicle class group name (e.g. <tt class="docutils literal"><span class="pre">All</span></tt>, <tt class="docutils literal"><span class="pre">No_Trucks</span></tt>)</li>
 <li><em>classDefinitionString</em> defines the class (either <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, or a pipe-delimited set of vehicle classes</li>
 <li><em>colorCode</em> is a hex color code for drawing (e.g. <tt class="docutils literal"><span class="pre">#ffff00</span></tt>)</li>
 </ul>
@@ -75,10 +78,22 @@
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.VehicleClassGroup.__init__" title="dta.VehicleClassGroup.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see help(type(x)) for signature</td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="dta.VehicleClassGroup.allowsAll">
+<tt class="descname">allowsAll</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VehicleClassGroup.allowsAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the vehicle class group allows all vehicle classes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VehicleClassGroup.allowsNone">
+<tt class="descname">allowsNone</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VehicleClassGroup.allowsNone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the vehicle class group allows all vehicle classes</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -123,6 +138,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="dta.Node.html" title="dta.Node"
              >next</a> |</li>
