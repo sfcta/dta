@@ -92,8 +92,7 @@ class Centroid(Node):
         #    for con in vNode.iterIncomingLinks():
         #        if con.isConnector():
         #            yield con
-        
-            
+                    
     def iterAdjacentConnectors(self):
         """
         Return True if there is a virtual link and a connetor that 
@@ -108,6 +107,20 @@ class Centroid(Node):
                 connectors.add(con)
         return iter(connectors) 
 
-
+    def isConnectedTo(self, roadNodeId):
+        """
+        Return true if the centroid is connected to the
+        input RoadNode
+        """
+        for con in self.iterAdjacentConnectors():
+            if con.startIsRoadNode():
+                if con.getStartNodeId() == roadNodeId:
+                    return True
+            elif con.endIsRoadNode():
+                if con.getEndNodeId() == roadNodeId:
+                    return True                
+        return False
+        
+        
             
         

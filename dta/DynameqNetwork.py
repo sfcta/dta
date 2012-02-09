@@ -819,7 +819,7 @@ class DynameqNetwork(Network):
                 continue 
             
             connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
-        
+                        
             for con in connectors:
                 try:
                     self.removeCentroidConnectorFromIntersection(node, con, splitReverseLink=splitReverseLinks) 
@@ -859,7 +859,6 @@ class DynameqNetwork(Network):
                                self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL))
                             ilink.addOutgoingMovement(allowedMovement)
                     
-
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
         """Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
@@ -875,28 +874,34 @@ class DynameqNetwork(Network):
             raise DtaError("RoadNode %d does not have a connector attached to it"
                            % roadNode.getId())
 
+        centroid = connector.getCentroid()
         candidateLinks = roadNode.getCandidateLinksForSplitting(connector)
 
         nodeToAttachConnector = None
 
         if len(candidateLinks) >= 2: 
 
-            if candidateLinks[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
+            cNode1 = candidateLinks[0].getOtherEnd(roadNode)
+            cNode2 = candidateLinks[1].getOtherEnd(roadNode)
+            
+            #if cNode1.isShapePoint(countRoadNodesOnly=True) and not centroid.isConnectedToRoadNode(cNode1):
+            if cNode1.isShapePoint(countRoadNodesOnly=True):
                 nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode)
-            elif candidateLinks[1].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):                                        
+            elif cNode2.isShapePoint(countRoadNodesOnly=True):#  and not centroid.isConnectedToRoadNode(cNode2):            
                 nodeToAttachConnector = candidateLinks[1].getOtherEnd(roadNode)
             else:                    
                 nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink)
 
         elif len(candidateLinks) == 1:
-
-            if candidateLinks[0].getOtherEnd(roadNode).isShapePoint(countRoadNodesOnly=True):
+            
+            cNode = candidateLinks[0].getOtherEnd(roadNode)            
+            if cNode.isShapePoint(countRoadNodesOnly=True):# and not centroid.isConnectedToRoadNode(cNode):
                 nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode) 
             else:
                 nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink) 
         else:
             raise DtaError("Centroid connector(s) were not removed from intersection %d" % roadNode.getId())
-
+                    
         if connector.startIsRoadNode():
             virtualNode = connector.getEndNode() 
 
@@ -1068,7 +1073,28 @@ class DynameqNetwork(Network):
 
         inputStream1.close()
         inputStream2.close()
-        
+
+    def removeDuplicateConnectors(self):
+        """
+        Remove duplicate connectors that connect from the
+        same centroid to the same road node
+        """
+        vNodesToDelete = set()
+        for node in self.iterCentroids():
+            result = defaultdict(list)
+            for vNode in node.iterAdjacentNodes():
+                if not vNode.isVirtualNode():
+                    continue
+                rNode = vNode.getConnectedRoadNode()
+                result[rNode.getId()].append(vNode)
+            for rNode, vNodes in result.iteritems():
+                if len(vNodes) > 1:
+                   for vNodeToRemove in vNodes[1:]:
+                       vNodesToDelete.add(vNodeToRemove)
+
+        for vNodeToDelete in vNodesToDelete:
+            self.removeNode(vNodeToDelete)
+                               
     def readSimResults(self, simStartTimeInMin, simEndTimeInMin, simTimeStepInMin):
         """
         Read the movement and link travel times and flows

@@ -21,7 +21,9 @@ import pdb
 import random 
 import datetime
 import dta
-import os 
+import os
+from collections import defaultdict
+
 from dta.DynameqScenario import DynameqScenario
 from dta.Algorithms import dfs 
 from dta.demand import Demand
@@ -137,7 +139,7 @@ def removePartOfTheNetwork(net):
     for node in nodesToDelete:
         net.removeNode(node)
 
-def removeVerySmallLinks(net):
+def adjustVerySmallLinks(net):
     """
     This function removes very small links from the 
     network to avoid Dynameq errors 
@@ -146,13 +148,13 @@ def removeVerySmallLinks(net):
     for link in net.iterLinks():
         if link.isRoadLink():
             if link.getEuclideanLengthInMiles() < 0.004:
-                #print link.getId() 
-                linksToDelete.append(link) 
+                #print link.getId()                 
+                link._effectiveLengthFactor = 0.004 / link.getEuclideanLengthInMiles() 
     
     #anLengthInMiles() for link in net.iterLinks() if link.isRoadLink()])
     
-    for link in linksToDelete:
-        net.removeLink(link)
+    #for link in linksToDelete:
+    #    net.removeLink(link)
     
     print "Number of links to delete", len(linksToDelete)
 
@@ -234,9 +236,7 @@ def removeStrayNodes(net):
     nodes = [node for node in net.iterRoadNodes() if node.getCardinality() == (0,0)]
     for node in nodes:
         net.removeNode(node)
-    
-
- 
+     
 if __name__ == '__main__':
     
     dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
@@ -281,10 +281,8 @@ if __name__ == '__main__':
 
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
-
     
     #sanfranciscoScenario.read(dir=os.path.join(projectFolder2, "dynameqNetwork"), file_prefix="sf") 
-
             
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
 
@@ -336,36 +334,17 @@ if __name__ == '__main__':
     
     #remove the shapepoints from the network
     sanfrancsicoDynameqNet.removeShapePoints()
+    removeStrayNodes(sanfrancsicoDynameqNet)
 
-    #this is not necessary
-    #removePartOfTheNetwork(sanfrancsicoDynameqNet)
-    
     #writeFeasibleDestinations(sanfrancsicoDynameqNet)
     #demand = writeDemandTable(sanfrancsicoDynameqNet)    
     #demand.write("testDemand3.txt")
 
-    #exit()
-
     # add virtual nodes and links between Centroids and RoadNodes
-    assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
     sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
 
-    #sanfrancsicoDynameqNet.write(outputFolder, "sf9")
-
-    assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
-
-    
-
-    assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
-
-    sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(outputFolder, "sf9_nodes"))
-    sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(outputFolder, "sf9_links"))
-
-    assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
-   
+    #sanfrancsicoDynameqNet.write(outputFolder, "sf9")   
     #removeOverlappingRoadLinks(sanfrancsicoDynameqNet)
-    assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)    
-    assert sanfrancsicoDynameqNet.hasLinkForNodeIdPair(25197, 25213)
 
     #This is not ready yet and will throw and excep
 
@@ -375,22 +354,14 @@ if __name__ == '__main__':
     sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
     sanfrancsicoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks()
     #removeVerySmallLinks(sanfrancsicoDynameqNet)
+    sanfrancsicoDynameqNet.removeDuplicateConnectors()    
     sanfrancsicoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
+    adjustVerySmallLinks(sanfrancsicoDynameqNet)
 
     #gearynetDta.removeCentroidConnectorsFromIntersections(splitReverseLinks=True) 
     #gearynetDta.moveVirtualNodesToAvoidOverlappingLinks()
     #removeVerySmallLinks(gearynetDta)
     #gearynetDta.moveVirtualNodesToAvoidShortConnectors()
-
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(27202))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(27026))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(27207))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(20231))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(20175))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(28372))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(27012))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(26958))
-    #gearynetDta.removeLink(gearynetDta.getLinkForId(25831))
 
     #sanfrancsicoDynameqNet.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")
     #sanfranciscoScenario.write(dir=os.path.join(outputFolder, "dynameqNetwork"), file_prefix="sf11")   
@@ -405,14 +376,31 @@ if __name__ == '__main__':
 
     #gearynetDta.writeNodesToShp(os.path.join(outputFolder, "sf13_nodes"))
     #gearynetDta.writeLinksToShp(os.path.join(outputFolder, "sf13_links"))
-
-    pdb.set_trace()
     
-    exit() 
+    #exit() 
     # Merge them together
-    sanfranciscoNet = gearynetDta
-    sanfranciscoNet.merge(sanfranciscoCubeNet)
+    #sanfranciscoNet = gearynetDta
+    #sanfranciscoNet.merge(sanfranciscoCubeNet)
     
     # Write the result.  sanfrancisco_dta is a DynameqNetwork
-    sanfranciscoNet.write(dir = ".", file_prefix="SanFrancisco_")
+
     
+    sanfrancsicoDynameqNet.write(dir = projectFolder2, file_prefix="SanFrancisco_24")
+
+    print "road nodes", sanfrancsicoDynameqNet.getNumRoadNodes() 
+    print "road links", sanfrancsicoDynameqNet.getNumRoadLinks()
+    
+    pdb.set_trace()
+
+    sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(projectFolder2, "sf24_nodes"))
+    sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(projectFolder2, "sf24_links"))
+ 
+    results = defaultdict(int)
+    for centroid in sanfrancsicoDynameqNet.iterCentroids():
+        results[centroid.getCardinality()] += 1
+
+    results2 = defaultdict(int)
+    for node in sanfrancsicoDynameqNet.iterNodes():
+        results2[centroid.getCardinality()] += 1
+        
+    print results2

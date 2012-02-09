@@ -172,26 +172,18 @@ class Connector(RoadLink):
         """
         return False
 
-#    def getCentroid(self):
-#        """
-#        Return the centroid accocited with this connector
-#        """
-#        pdb.set_trace()
-#        if self.startIsRoadNode():            
-#            for vLink in self.getVirtualNode().iterOutgoingLinks():
-#                if not vLink.isVirtualLink():
-#                    continue
-#                    return vLink.getCentroid()
-#            raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
-#
-#        elif not self.startIsRoadNode():
-#            for vLink in self.getVirtualNode().iterIncomingLinks():
-#                if not vLink.isVirtualLink(): 
-#                    continue
-#                    return vLink.getCentroid()
-#            raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
-#
-#        raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
+    def getCentroid(self):
+        """
+        Return the centroid associated with this connector
+        """
+        vn = self.getVirtualNode()
+        for link in vn.iterIncomingLinks():
+            if link.isVirtualLink():
+                return link.getStartNode()
+        for link in vn.iterOutgoingLinks():
+            if link.isVirtualLink():
+                return link.getEndNode()
+        raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
             
             
 

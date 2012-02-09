@@ -63,3 +63,15 @@ class VirtualNode(Node):
         for olink in self.iterOutgoingLinks():
             return olink.getEndNode() 
         raise DtaError("VirtualNode %d is not connected to a centroid" % self.getId())
+
+    def getConnectedRoadNode(self):
+        """
+        Return the connected road node
+        """
+        for ilink in self.iterIncomingLinks():
+            if ilink.isConnector():
+                return ilink.getOtherEnd(self)
+        for olink in self.iterOutgoingLinks():
+            if olink.isConnector():
+                return olink.getOtherEnd(self)            
+        raise DtaError("VirtualNode %d is not connected to a road node" % self.getId())            
