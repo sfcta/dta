@@ -34,6 +34,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="dta.VirtualLink.html" title="dta.VirtualLink"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -101,6 +104,12 @@ on the link.  May vary over time with LinkEvents</li>
 </tbody>
 </table>
 <dl class="attribute">
+<dt id="dta.RoadLink.DEFAULT_LANE_WIDTH_FEET">
+<tt class="descname">DEFAULT_LANE_WIDTH_FEET</tt><a class="headerlink" href="#dta.RoadLink.DEFAULT_LANE_WIDTH_FEET" title="Permalink to this definition">¶</a></dt>
+<dd><p>default lane width in feet</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dta.RoadLink.DEFAULT_LEVEL">
 <tt class="descname">DEFAULT_LEVEL</tt><a class="headerlink" href="#dta.RoadLink.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
 <dd><p>default level value</p>
@@ -120,8 +129,8 @@ on the link.  May vary over time with LinkEvents</li>
 
 <dl class="method">
 <dt id="dta.RoadLink.addShapePoint">
-<tt class="descname">addShapePoint</tt><big>(</big><em>sequenceNum</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a shape point to the link for the given sequenceNum</p>
+<tt class="descname">addShapePoint</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShapePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a shape point to the link</p>
 </dd></dl>
 
 <dl class="method">
@@ -152,8 +161,15 @@ are not taken into account).</p>
 <dl class="method">
 <dt id="dta.RoadLink.getCenterLine">
 <tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getCenterLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
-representing the centerline.</p>
+<dd><p>Offset the link to the right 0.5*numLanes*:py:attr:<cite>RoadLink.DEFAULT_LANE_WIDTH_FEET</cite> and 
+return a tuple of two points (each one being a tuple of two floats) representing the centerline</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getDirection">
+<tt class="descname">getDirection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the direction of the link as one of 
+EB, NB, WB, EB</p>
 </dd></dl>
 
 <dl class="method">
@@ -163,8 +179,14 @@ representing the centerline.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.RoadLink.getEuclidianLengthInMiles">
-<tt class="descname">getEuclidianLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getEuclidianLengthInMiles" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.RoadLink.getEndNodeId">
+<tt class="descname">getEndNodeId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getEndNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the id of the end node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getEuclideanLengthInMiles">
+<tt class="descname">getEuclideanLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getEuclideanLengthInMiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the length between the start node and end node</p>
 </dd></dl>
 
@@ -189,7 +211,7 @@ representing the centerline.</p>
 <dl class="method">
 <dt id="dta.RoadLink.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the  length of the link in feetk</p>
+<dd><p>Return the  length of the link in feet</p>
 </dd></dl>
 
 <dl class="method">
@@ -217,6 +239,31 @@ representing the centerline.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getNumShapePoints">
+<tt class="descname">getNumShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getNumShapePoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of shapepoints this link has</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getObsMeanTT">
+<tt class="descname">getObsMeanTT</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getObsMeanTT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the observed mean travel time of the link in minutes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getObsSpeedInMPH">
+<tt class="descname">getObsSpeedInMPH</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getObsSpeedInMPH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the observed speed of specified time period</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getOrientation">
+<tt class="descname">getOrientation</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getOrientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the angle of the link in degrees from the North
+measured clockwise. The link shape is taken into account.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getOtherEnd">
 <tt class="descname">getOtherEnd</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOtherEnd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the other end node than the one provided.</p>
@@ -226,6 +273,15 @@ representing the centerline.</p>
 <dt id="dta.RoadLink.getOutgoingMovement">
 <tt class="descname">getOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOutgoingMovement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the link has an outgoing movement towards nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getOutline">
+<tt class="descname">getOutline</tt><big>(</big><em>scale=1</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOutline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the outline of the link as a linearRing of points
+in clockwise order. If scale the pysical outline of the link
+will be return using the number of lanes attribute to determine
+the boundries of the outline.</p>
 </dd></dl>
 
 <dl class="method">
@@ -251,9 +307,38 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.getSimFlow">
+<tt class="descname">getSimFlow</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getSimFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the simulated flow in vph</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getSimSpeedInMPH">
+<tt class="descname">getSimSpeedInMPH</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getSimSpeedInMPH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getSimTTInMin">
+<tt class="descname">getSimTTInMin</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getSimTTInMin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the average travel time of the vehicles traversing the link</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getSimVolume">
+<tt class="descname">getSimVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getSimVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the volume on the link from startTimeInMin to endTimeInMin</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getStartNode">
 <tt class="descname">getStartNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getStartNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for startNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getStartNodeId">
+<tt class="descname">getStartNodeId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getStartNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the id of the start node</p>
 </dd></dl>
 
 <dl class="method">
@@ -322,6 +407,19 @@ See addShifts() for details.</p>
 <dd><p>Sets the number of lanes to the given value</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="dta.RoadLink.setSimTTInMin">
+<tt class="descname">setSimTTInMin</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>averageTTInMin</em><big>)</big><a class="headerlink" href="#dta.RoadLink.setSimTTInMin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the simulated travel time on the link for the particular input period</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.setSimVolume">
+<tt class="descname">setSimVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>volume</em><big>)</big><a class="headerlink" href="#dta.RoadLink.setSimVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the simulated volume on the edge provided that the edge 
+does not have any emanating movements</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -366,6 +464,9 @@ See addShifts() for details.</p>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="dta.VirtualLink.html" title="dta.VirtualLink"
              >next</a> |</li>

@@ -34,6 +34,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="dta.Link.html" title="dta.Link"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -113,6 +116,20 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Centroid.getMovement">
+<tt class="descname">getMovement</tt><big>(</big><em>upNodeId</em>, <em>downNodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the movement from upNodeId to downNodeId that goes through
+this node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the intersection as a string consisting of the labels 
+of the incoming links in sorted order.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Centroid.getNumAdjacentLinks">
 <tt class="descname">getNumAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of links adjacent to this node (either incoming or outgoing)</p>
@@ -155,6 +172,12 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Centroid.getNumMovements">
+<tt class="descname">getNumMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of movements associated with this node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Centroid.getNumOutgoingConnectors">
 <tt class="descname">getNumOutgoingConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumOutgoingConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of outgoing connectors</p>
@@ -164,6 +187,12 @@ incoming and outgoing links respectively</p>
 <dt id="dta.Centroid.getNumOutgoingLinks">
 <tt class="descname">getNumOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retruns the number of outoing links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.getStreetNames">
+<tt class="descname">getStreetNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getStreetNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the street names of the incoming links as a list</p>
 </dd></dl>
 
 <dl class="method">
@@ -194,6 +223,13 @@ incoming and outgoing links respectively</p>
 <dt id="dta.Centroid.hasIncomingLinkForNodeId">
 <tt class="descname">hasIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if there is an incoming link starting from nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.hasMovement">
+<tt class="descname">hasMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node has movement from 
+startNodeId to endNodeId</p>
 </dd></dl>
 
 <dl class="method">
@@ -242,7 +278,7 @@ connect to the roadNode</p>
 <dl class="method">
 <dt id="dta.Centroid.isShapePoint">
 <tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
+<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
 following graph). 
 If countRoadNodesOnly is True the method will count only RoadLinks 
 attached to this Node and will disregard an connectors.</p>
@@ -253,6 +289,13 @@ attached to this Node and will disregard an connectors.</p>
 <dt id="dta.Centroid.isVirtualNode">
 <tt class="descname">isVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isVirtualNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Node is a VirtualNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterAdjacentConnectors">
+<tt class="descname">iterAdjacentConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a virtual link and a connetor that 
+connect to the roadNode</p>
 </dd></dl>
 
 <dl class="method">
@@ -290,6 +333,13 @@ to this node</p>
 <dt id="dta.Centroid.iterIncomingLinks">
 <tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.iterMovements">
+<tt class="descname">iterMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all the movements going
+through the node</p>
 </dd></dl>
 
 <dl class="method">
@@ -348,6 +398,9 @@ to this node</p>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="dta.Link.html" title="dta.Link"
              >next</a> |</li>

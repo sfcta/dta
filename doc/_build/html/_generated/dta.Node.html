@@ -34,6 +34,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="dta.RoadNode.html" title="dta.RoadNode"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -133,6 +136,20 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Node.getMovement">
+<tt class="descname">getMovement</tt><big>(</big><em>upNodeId</em>, <em>downNodeId</em><big>)</big><a class="headerlink" href="#dta.Node.getMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the movement from upNodeId to downNodeId that goes through
+this node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Node.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the intersection as a string consisting of the labels 
+of the incoming links in sorted order.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Node.getNumAdjacentLinks">
 <tt class="descname">getNumAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getNumAdjacentLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of links adjacent to this node (either incoming or outgoing)</p>
@@ -163,9 +180,21 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Node.getNumMovements">
+<tt class="descname">getNumMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getNumMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of movements associated with this node</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Node.getNumOutgoingLinks">
 <tt class="descname">getNumOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getNumOutgoingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retruns the number of outoing links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Node.getStreetNames">
+<tt class="descname">getStreetNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.getStreetNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the street names of the incoming links as a list</p>
 </dd></dl>
 
 <dl class="method">
@@ -199,6 +228,13 @@ incoming and outgoing links respectively</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Node.hasMovement">
+<tt class="descname">hasMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.Node.hasMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node has movement from 
+startNodeId to endNodeId</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Node.hasOutgoingLinkForId">
 <tt class="descname">hasOutgoingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Node.hasOutgoingLinkForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if there is an outgoing link wwith the given id</p>
@@ -225,7 +261,7 @@ incoming and outgoing links respectively</p>
 <dl class="method">
 <dt id="dta.Node.isShapePoint">
 <tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Node.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point (e.g. Node 51546 in the 
+<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
 following graph). 
 If countRoadNodesOnly is True the method will count only RoadLinks 
 attached to this Node and will disregard an connectors.</p>
@@ -267,6 +303,13 @@ to this node</p>
 <dt id="dta.Node.iterIncomingLinks">
 <tt class="descname">iterIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.iterIncomingLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns iterator for the incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Node.iterMovements">
+<tt class="descname">iterMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Node.iterMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to all the movements going
+through the node</p>
 </dd></dl>
 
 <dl class="method">
@@ -325,6 +368,9 @@ to this node</p>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="dta.RoadNode.html" title="dta.RoadNode"
              >next</a> |</li>

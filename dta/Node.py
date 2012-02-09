@@ -367,7 +367,7 @@ class Node(object):
 
     def isShapePoint(self, countRoadNodesOnly=False):
         """
-        Return True if the node is a shape point (e.g. Node 51546 in the 
+        Return True if the node is a shape point (e.g. Node 51245 in the 
         following graph). 
         If countRoadNodesOnly is True the method will count only RoadLinks 
         attached to this Node and will disregard an connectors. 

@@ -17,14 +17,28 @@ __license__     = """
 """
 import datetime
 import dta
+import os
+import sys
 
-USAGE = """
+USAGE = r"""
 
- python createSFNetworkFromCubeNetwork.py
+ python createSFNetworkFromCubeNetwork.py geary_dynameq_net_dir geary_dynameq_net_prefix sf_cube_net_dir
+ 
+ e.g.
+ 
+ python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010\CubeNetworkSource_renumberExternalsOnly
  
  """
  
 if __name__ == '__main__':
+    
+    if len(sys.argv) != 4:
+        print USAGE
+        sys.exit(2)
+    
+    GEARY_DYNAMEQ_NET_DIR       = sys.argv[1]
+    GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
+    SF_CUBE_NET_DIR             = sys.argv[3]
     
     dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
     
@@ -33,11 +47,11 @@ if __name__ == '__main__':
     gearyScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
                                         datetime.datetime(2010,1,1,4,0,0))
 
-    gearyScenario.read(dir=".", file_prefix="Base_Final")
+    gearyScenario.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX)
     gearyScenario.write(dir="test", file_prefix="geary")
     
     gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
-    gearynetDta.read(dir=".", file_prefix="Base_Final")
+    gearynetDta.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX)
     gearynetDta.write(dir="test", file_prefix="geary")
     
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
@@ -47,7 +61,7 @@ if __name__ == '__main__':
     
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \
-      (netFile=r"Y:\dta\SanFrancisco\2010\CubeNetworkSource\SanFranciscoSubArea_2010.net",
+      (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
        nodeVariableNames=["N","X","Y"],
        linkVariableNames=["A","B","TOLL","USE",
                           "CAP","AT","FT","STREETNAME","TYPE",
@@ -81,11 +95,11 @@ if __name__ == '__main__':
        )
     
     sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-    sanfrancsicoDynameqNet.copy(sanfranciscoCubeNet)
+    sanfrancsicoDynameqNet.deepcopy(sanfranciscoCubeNet)
     
     # add virtual nodes and links between Centroids and RoadNodes
-    sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes()
-    sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections()
+    sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
+    sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
     
     sanfrancsicoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
     sanfranciscoScenario.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   

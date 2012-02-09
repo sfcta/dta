@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.DtaError" href="dta.DtaError.html" />
+    <link rel="next" title="dta.TimePlan" href="dta.TimePlan.html" />
     <link rel="prev" title="dta.VirtualLink" href="dta.VirtualLink.html" /> 
   </head>
   <body>
@@ -34,7 +34,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="dta.DtaError.html" title="dta.DtaError"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dta.TimePlan.html" title="dta.TimePlan"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="dta.VirtualLink.html" title="dta.VirtualLink"
@@ -107,8 +110,8 @@ a Centroid or a VirtualNode.</p>
 
 <dl class="method">
 <dt id="dta.Connector.addShapePoint">
-<tt class="descname">addShapePoint</tt><big>(</big><em>sequenceNum</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#dta.Connector.addShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a shape point to the link for the given sequenceNum</p>
+<tt class="descname">addShapePoint</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#dta.Connector.addShapePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a shape point to the link</p>
 </dd></dl>
 
 <dl class="method">
@@ -145,8 +148,15 @@ are not taken into account).</p>
 <dl class="method">
 <dt id="dta.Connector.getCenterLine">
 <tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getCenterLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Offset the link to the right 0.5*numLanes*lane_width and return a tuple of two points
-representing the centerline.</p>
+<dd><p>Offset the link to the right 0.5*numLanes*:py:attr:<cite>RoadLink.DEFAULT_LANE_WIDTH_FEET</cite> and 
+return a tuple of two points (each one being a tuple of two floats) representing the centerline</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getDirection">
+<tt class="descname">getDirection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the direction of the link as one of 
+EB, NB, WB, EB</p>
 </dd></dl>
 
 <dl class="method">
@@ -156,8 +166,14 @@ representing the centerline.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Connector.getEuclidianLengthInMiles">
-<tt class="descname">getEuclidianLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getEuclidianLengthInMiles" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.Connector.getEndNodeId">
+<tt class="descname">getEndNodeId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getEndNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the id of the end node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getEuclideanLengthInMiles">
+<tt class="descname">getEuclideanLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getEuclideanLengthInMiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the length between the start node and end node</p>
 </dd></dl>
 
@@ -182,7 +198,7 @@ representing the centerline.</p>
 <dl class="method">
 <dt id="dta.Connector.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the  length of the link in feetk</p>
+<dd><p>Return the  length of the link in feet</p>
 </dd></dl>
 
 <dl class="method">
@@ -210,6 +226,31 @@ representing the centerline.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getNumShapePoints">
+<tt class="descname">getNumShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getNumShapePoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of shapepoints this link has</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getObsMeanTT">
+<tt class="descname">getObsMeanTT</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getObsMeanTT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the observed mean travel time of the link in minutes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getObsSpeedInMPH">
+<tt class="descname">getObsSpeedInMPH</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getObsSpeedInMPH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the observed speed of specified time period</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getOrientation">
+<tt class="descname">getOrientation</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getOrientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the angle of the link in degrees from the North
+measured clockwise. The link shape is taken into account.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getOtherEnd">
 <tt class="descname">getOtherEnd</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#dta.Connector.getOtherEnd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the other end node than the one provided.</p>
@@ -219,6 +260,15 @@ representing the centerline.</p>
 <dt id="dta.Connector.getOutgoingMovement">
 <tt class="descname">getOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Connector.getOutgoingMovement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the link has an outgoing movement towards nodeId</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getOutline">
+<tt class="descname">getOutline</tt><big>(</big><em>scale=1</em><big>)</big><a class="headerlink" href="#dta.Connector.getOutline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the outline of the link as a linearRing of points
+in clockwise order. If scale the pysical outline of the link
+will be return using the number of lanes attribute to determine
+the boundries of the outline.</p>
 </dd></dl>
 
 <dl class="method">
@@ -250,9 +300,38 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getSimFlow">
+<tt class="descname">getSimFlow</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getSimFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the simulated flow in vph</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getSimSpeedInMPH">
+<tt class="descname">getSimSpeedInMPH</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getSimSpeedInMPH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getSimTTInMin">
+<tt class="descname">getSimTTInMin</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getSimTTInMin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the average travel time of the vehicles traversing the link</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getSimVolume">
+<tt class="descname">getSimVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getSimVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the volume on the link from startTimeInMin to endTimeInMin</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getStartNode">
 <tt class="descname">getStartNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getStartNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor for startNode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getStartNodeId">
+<tt class="descname">getStartNodeId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getStartNodeId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the id of the start node</p>
 </dd></dl>
 
 <dl class="method">
@@ -341,6 +420,19 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.setSimTTInMin">
+<tt class="descname">setSimTTInMin</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>averageTTInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.setSimTTInMin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the simulated travel time on the link for the particular input period</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.setSimVolume">
+<tt class="descname">setSimVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>volume</em><big>)</big><a class="headerlink" href="#dta.Connector.setSimVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the simulated volume on the edge provided that the edge 
+does not have any emanating movements</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.setStartNode">
 <tt class="descname">setStartNode</tt><big>(</big><em>newStartNode</em><big>)</big><a class="headerlink" href="#dta.Connector.setStartNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a dumb method which allows the caller to substitute the newStartNode for the old one.
@@ -373,8 +465,8 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
   <p class="topless"><a href="dta.VirtualLink.html"
                         title="previous chapter">dta.VirtualLink</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="dta.DtaError.html"
-                        title="next chapter">dta.DtaError</a></p>
+  <p class="topless"><a href="dta.TimePlan.html"
+                        title="next chapter">dta.TimePlan</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/_generated/dta.Connector.txt"
@@ -404,7 +496,10 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="dta.DtaError.html" title="dta.DtaError"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dta.TimePlan.html" title="dta.TimePlan"
              >next</a> |</li>
         <li class="right" >
           <a href="dta.VirtualLink.html" title="dta.VirtualLink"

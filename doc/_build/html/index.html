@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Network classes &mdash; DTA Anyway v1.0 documentation</title>
+    <title>Installation &mdash; DTA Anyway v1.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -33,6 +33,9 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="_generated/dta.Network.html" title="dta.Network"
              accesskey="N">next</a> |</li>
         <li><a href="#">DTA Anyway v1.0 documentation</a> &raquo;</li> 
@@ -44,7 +47,31 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="network-classes">
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Required python modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://numpy.scipy.org/">numpy</a> Efficient multi-dimensional container of generic data.  Used for Demand data.</li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/la">la</a> Labeled numpy arrays.  Used for Demand data.</li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/Bottleneck">Bottleneck</a> Fast NumPy array functions. Required by la.  Note: It might be easier to install a pre-compiled version of this, as directed on the documentation page.</li>
+</ul>
+</dd>
+<dt>Optional python modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://sphinx.pocoo.org">sphinx</a> Python documentation generator.</li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/nose">nose</a> For unit tests.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-dta">
+<span id="overview"></span><h1>Overview<a class="headerlink" href="#module-dta" title="Permalink to this headline">¶</a></h1>
+<p>DTA Anyway is a python module that facilitates network coding, analysis and visualization for
+DTA (Dynamic Traffic Assignment).  This is a stub file to illustrate header convention; this
+module docstring will be improved during development.</p>
+</div>
+<div class="section" id="network-classes">
 <h1>Network classes<a class="headerlink" href="#network-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
 <img src="_images/inheritance-c33d360e7d3f83bd5edd7af66b751128aaa3f1d6.png" alt="Inheritance diagram of dta.Network, dta.DynameqNetwork, dta.CubeNetwork" class="inheritance"/>
@@ -70,7 +97,7 @@
 <div class="section" id="scenario-classes">
 <h1>Scenario classes<a class="headerlink" href="#scenario-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-65f9f2a92be17e37379d09b413fc6b342c53b6be.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
+<img src="_images/inheritance-74fad0d57212b27f092c1e924fcbe4548bc79227.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -88,7 +115,7 @@
 <td>Class that represents a vehicle type.</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VehicleClassGroup</span></tt></a></td>
-<td>Represents a group (or a set) of VehicleClasses, which are the classNames in <tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt>.</td>
+<td>Represents a group (or a set) of VehicleClasses, which are the classNames in <a class="reference internal" href="_generated/dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a>.</td>
 </tr>
 </tbody>
 </table>
@@ -122,17 +149,7 @@
 <div class="section" id="link-classes">
 <h1>Link classes<a class="headerlink" href="#link-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-digraph inheritancec8654f281e {
-rankdir=TB;
-size=&quot;8.0, 12.0&quot;;
-  &quot;Link&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
-  &quot;RoadLink&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
-  &quot;Link&quot; -&gt; &quot;RoadLink&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
-  &quot;Connector&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
-  &quot;RoadLink&quot; -&gt; &quot;Connector&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
-  &quot;VirtualLink&quot; [shape=box,style=&quot;setlinewidth(0.5)&quot;,fontsize=10,fontname=Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans,height=0.25];
-  &quot;Link&quot; -&gt; &quot;VirtualLink&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
-}
+<img src="_images/inheritance-cb53b763c37049317054c794c9be4515eb2fd304.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -147,10 +164,27 @@ size=&quot;8.0, 12.0&quot;;
 <td>A RoadLink in a network.  Both nodes must be RoadNodes.</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-obj docutils literal"><span class="pre">dta.VirtualLink</span></tt></a></td>
-<td>A VirtualLink is a Link that connects a <tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt> with</td>
+<td>A VirtualLink is a Link that connects a <a class="reference internal" href="_generated/dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> with</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Connector</span></tt></a></td>
-<td>A Connector is a <tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt> that connects a RoadNode with a Centroid or a VirtualNode.</td>
+<td>A Connector is a <a class="reference internal" href="_generated/dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> that connects a RoadNode with a Centroid or a VirtualNode.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="time-plan-classes">
+<h1>Time Plan classes<a class="headerlink" href="#time-plan-classes" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="_generated/dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-obj docutils literal"><span class="pre">dta.TimePlan</span></tt></a></td>
+<td>Represents a Dynameq timeplan</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.PlanCollectionInfo.html#dta.PlanCollectionInfo" title="dta.PlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">dta.PlanCollectionInfo</span></tt></a></td>
+<td>Contains user information for a collection of signals belonging to the</td>
 </tr>
 </tbody>
 </table>
@@ -176,10 +210,13 @@ size=&quot;8.0, 12.0&quot;;
 <td>Base class that represents a DTA Network.  Networks exist on a continuum between</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.Algorithms.html#dta.Algorithms" title="dta.Algorithms"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Algorithms</span></tt></a></td>
-<td></td>
+<td>Algorithms for use throughout DTA Anyway</td>
 </tr>
-<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">dta.demand</span></tt></td>
-<td></td>
+<tr><td><a class="reference internal" href="_generated/dta.Demand.html#dta.Demand" title="dta.Demand"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Demand</span></tt></a></td>
+<td>Class that represents the demand matrix for a <a class="reference internal" href="_generated/dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a></td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.Utils.html#dta.Utils" title="dta.Utils"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Utils</span></tt></a></td>
+<td>Utility functions for use throughout DTA Anyway.</td>
 </tr>
 </tbody>
 </table>
@@ -285,7 +322,21 @@ size=&quot;8.0, 12.0&quot;;
  97
  98
  99
-100</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -304,14 +355,28 @@ size=&quot;8.0, 12.0&quot;;
 <span class="s">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">dta</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="n">USAGE</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
 
-<span class="s"> python createSFNetworkFromCubeNetwork.py</span>
+<span class="s"> python createSFNetworkFromCubeNetwork.py geary_dynameq_net_dir geary_dynameq_net_prefix sf_cube_net_dir</span>
+<span class="s"> </span>
+<span class="s"> e.g.</span>
+<span class="s"> </span>
+<span class="s"> python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010\CubeNetworkSource_renumberExternalsOnly</span>
 <span class="s"> </span>
 <span class="s"> &quot;&quot;&quot;</span>
  
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">USAGE</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">GEARY_DYNAMEQ_NET_DIR</span>       <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">GEARY_DYNAMEQ_NET_PREFIX</span>    <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">SF_CUBE_NET_DIR</span>             <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
     
     <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;dtaInfo.log&quot;</span><span class="p">,</span> <span class="s">&quot;dtaDebug.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     
@@ -320,11 +385,11 @@ size=&quot;8.0, 12.0&quot;;
     <span class="n">gearyScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> 
                                         <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
 
-    <span class="n">gearyScenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
+    <span class="n">gearyScenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">GEARY_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">GEARY_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
     <span class="n">gearyScenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary&quot;</span><span class="p">)</span>
     
     <span class="n">gearynetDta</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">gearyScenario</span><span class="p">)</span>
-    <span class="n">gearynetDta</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;Base_Final&quot;</span><span class="p">)</span>
+    <span class="n">gearynetDta</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">GEARY_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">GEARY_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
     <span class="n">gearynetDta</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;geary&quot;</span><span class="p">)</span>
     
     <span class="c"># The rest of San Francisco currently exists as a Cube network.  Initialize it from</span>
@@ -334,7 +399,7 @@ size=&quot;8.0, 12.0&quot;;
     
     <span class="n">sanfranciscoCubeNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">CubeNetwork</span><span class="p">(</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">readNetfile</span> \
-      <span class="p">(</span><span class="n">netFile</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010\CubeNetworkSource\SanFranciscoSubArea_2010.net&quot;</span><span class="p">,</span>
+      <span class="p">(</span><span class="n">netFile</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SF_CUBE_NET_DIR</span><span class="p">,</span><span class="s">&quot;SanFranciscoSubArea_2010.net&quot;</span><span class="p">),</span>
        <span class="n">nodeVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;N&quot;</span><span class="p">,</span><span class="s">&quot;X&quot;</span><span class="p">,</span><span class="s">&quot;Y&quot;</span><span class="p">],</span>
        <span class="n">linkVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;TOLL&quot;</span><span class="p">,</span><span class="s">&quot;USE&quot;</span><span class="p">,</span>
                           <span class="s">&quot;CAP&quot;</span><span class="p">,</span><span class="s">&quot;AT&quot;</span><span class="p">,</span><span class="s">&quot;FT&quot;</span><span class="p">,</span><span class="s">&quot;STREETNAME&quot;</span><span class="p">,</span><span class="s">&quot;TYPE&quot;</span><span class="p">,</span>
@@ -368,11 +433,11 @@ size=&quot;8.0, 12.0&quot;;
        <span class="p">)</span>
     
     <span class="n">sanfrancsicoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
-    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
+    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
     
     <span class="c"># add virtual nodes and links between Centroids and RoadNodes</span>
-    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">insertVirtualNodeBetweenCentroidsAndRoadNodes</span><span class="p">()</span>
-    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">removeCentroidConnectorsFromIntersections</span><span class="p">()</span>
+    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">insertVirtualNodeBetweenCentroidsAndRoadNodes</span><span class="p">(</span><span class="n">startVirtualNodeId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">,</span> <span class="n">startVirtualLinkId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">)</span>
+    <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">removeCentroidConnectorsFromIntersections</span><span class="p">(</span><span class="n">splitReverseLinks</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     
     <span class="n">sanfrancsicoDynameqNet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>
     <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;Y:\dta\SanFrancisco\2010&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>   
@@ -387,6 +452,65 @@ size=&quot;8.0, 12.0&quot;;
     
 </pre></div>
 </td></tr></table></div>
+</div>
+<div class="section" id="todo-list">
+<h1>TODO List<a class="headerlink" href="#todo-list" title="Permalink to this headline">¶</a></h1>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-0"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 232.)</p>
+<div class="admonition-todo admonition " id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-1"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 241.)</p>
+<div class="admonition-todo admonition " id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 269.)</p>
+<div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 278.)</p>
+<div class="admonition-todo admonition " id="index-4">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 287.)</p>
+<div class="admonition-todo admonition " id="index-5">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 296.)</p>
+<div class="admonition-todo admonition " id="index-6">
+<p class="first admonition-title">Todo</p>
+<p class="last">This is insufficient documentation.  I&#8217;m currently getting a lot of errors about VehicleClassGroups.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-6"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 373.)</p>
+<div class="admonition-todo admonition " id="index-7">
+<p class="first admonition-title">Todo</p>
+<p class="last">why is this in <a class="reference internal" href="#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a> rather than <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>?</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-7"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 394.)</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">I think a picture would be useful here</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadNode.html#index-0"><em>original entry</em></a> is located in  _generated\dta.RoadNode.rst, line 107.)</p>
+<div class="admonition-todo admonition " id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">explain the 0.009 minimum length</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadNode.html#index-1"><em>original entry</em></a> is located in  _generated\dta.RoadNode.rst, line 108.)</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Dynameq, eh?  What about just DTA?  And the Dynameq subclass?  And a holistic description
+of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.TimePlan.html#index-0"><em>original entry</em></a> is located in  _generated\dta.TimePlan.rst, line 7.)</p>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -405,7 +529,9 @@ size=&quot;8.0, 12.0&quot;;
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Network classes</a><ul>
+<li><a class="reference internal" href="#">Installation</a></li>
+<li><a class="reference internal" href="#module-dta">Overview</a></li>
+<li><a class="reference internal" href="#network-classes">Network classes</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#scenario-classes">Scenario classes</a><ul>
@@ -417,10 +543,14 @@ size=&quot;8.0, 12.0&quot;;
 <li><a class="reference internal" href="#link-classes">Link classes</a><ul>
 </ul>
 </li>
+<li><a class="reference internal" href="#time-plan-classes">Time Plan classes</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#misc">Misc</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#example-building-a-network-using-dta">Example: Building a network using dta</a></li>
+<li><a class="reference internal" href="#todo-list">TODO List</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
@@ -455,6 +585,9 @@ size=&quot;8.0, 12.0&quot;;
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="_generated/dta.Network.html" title="dta.Network"
              >next</a> |</li>

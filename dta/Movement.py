@@ -315,7 +315,7 @@ class Movement(object):
                 
         if lineSegmentsCross(line1[-2], line1[-1],
                             line2[-2], line2[-1],
-                             checkBoundryConditions=True):            
+                             checkBoundaryConditions=True):
             return True
         return False
 

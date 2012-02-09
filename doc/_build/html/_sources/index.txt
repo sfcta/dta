@@ -7,6 +7,24 @@
    Run "make html" to generate
    the _generated/*.rst files and _build/* 
   
+Installation
+============
+Required python modules:
+ * `numpy <http://numpy.scipy.org/>`_ Efficient multi-dimensional container of generic data.  Used for Demand data.
+ * `la <http://pypi.python.org/pypi/la>`_ Labeled numpy arrays.  Used for Demand data.
+ * `Bottleneck <http://pypi.python.org/pypi/Bottleneck>`_ Fast NumPy array functions. Required by la.  Note: It might be easier to install a pre-compiled version of this, as directed on the documentation page.
+ 
+Optional python modules:
+ * `sphinx <http://sphinx.pocoo.org>`_ Python documentation generator.
+ * `nose <http://pypi.python.org/pypi/nose>`_ For unit tests.
+
+Overview
+========
+.. automodule:: dta
+   :no-members:
+   :no-undoc-members:
+   :no-inherited-members:
+   :no-show-inheritance:
 
 Network classes
 ===============
@@ -63,6 +81,15 @@ Link classes
    dta.VirtualLink
    dta.Connector
    
+Time Plan classes
+=================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+   
+   dta.TimePlan
+   dta.PlanCollectionInfo
+   
 Misc
 ================
 .. autosummary::
@@ -74,18 +101,18 @@ Misc
    dta.Movement
    dta.Network
    dta.Algorithms
-   dta.demand
-
-
+   dta.Demand
+   dta.Utils
+   
+   
 Example: Building a network using dta
 ==========================================
 .. literalinclude:: ..\scripts\createSFNetworkFromCubeNetwork.py
    :linenos:
-   
-.. comment! .. automodule:: Wrangler
-   :members:
-   :undoc-members:
-   
+
+TODO List
+=========
+.. todolist::
          
 Indices and tables
 ==================

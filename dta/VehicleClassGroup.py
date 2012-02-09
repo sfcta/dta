@@ -31,7 +31,7 @@ class VehicleClassGroup:
         """
         Constructor.
         
-         * *name* is the vehicle class group name (e.g. All, No_Trucks)
+         * *name* is the vehicle class group name (e.g. ``All``, ``No_Trucks``)
          * *classDefinitionString* defines the class (either ``-``, ``*``, or a pipe-delimited set of vehicle classes
          * *colorCode* is a hex color code for drawing (e.g. ``#ffff00``)
          

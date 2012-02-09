@@ -49,7 +49,7 @@ class TestUtils:
         p5, p6 = [[0,0], [0, 1]]
 
         assert not lineSegmentsCross(p1, p2, p5, p6)
-        assert lineSegmentsCross(p1, p2, p5, p6, checkBoundryConditions=True)        
+        assert lineSegmentsCross(p1, p2, p5, p6, checkBoundaryConditions=True)        
 
     def test_lineSegmentsCross2(self):
 
@@ -60,7 +60,7 @@ class TestUtils:
         assert not lineSegmentsCross(p3, p4, p7, p8)
         assert onSegment(p7, p8, p3)
         
-        assert lineSegmentsCross(p3, p4, p7, p8, checkBoundryConditions=True)
+        assert lineSegmentsCross(p3, p4, p7, p8, checkBoundaryConditions=True)
 
     def NOtest_polylinesCross(self):
         

@@ -1,3 +1,9 @@
+"""
+
+Algorithms for use throughout DTA Anyway
+
+"""
+
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
@@ -329,7 +335,7 @@ def isPointInPolygon(point, polygon):
     
     numIntersections = 0
     for polyPoint1, polyPoint2 in pairwise(polygon):        
-        if lineSegmentsCross(p1, p2, polyPoint1, polyPoint2, checkBoundryConditions=True):
+        if lineSegmentsCross(p1, p2, polyPoint1, polyPoint2, checkBoundaryConditions=True):
             numIntersections += 1
 
     if numIntersections == 0:

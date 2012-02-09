@@ -219,6 +219,7 @@ class Network(object):
          * the nodepair is not already used
          
         Stores it.
+        
         """ 
 
         if not isinstance(newLink, Link):
@@ -300,8 +301,8 @@ class Network(object):
         .. image:: /images/addVirtualNode_before_after.png
            :height: 300px
 
-        If defined, the virtual nodes that will be added will begin from startVirtualNodeId and the 
-        virtual links from startVirtualLinkId
+        If defined, the virtual nodes that will be added will begin from *startVirtualNodeId* and the
+        virtual links from *startVirtualLinkId*.
            
         """
         

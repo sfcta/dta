@@ -805,11 +805,18 @@ class DynameqNetwork(Network):
         relevant links (in both directions) and attach the connector to the newly 
         created node.
         
+        Before:
+        
         .. image:: /images/removeCentroidConnectors1.png
            :height: 300px
-           
+        
+        After:
+        
         .. image:: /images/removeCentroidConnectors2.png
-           :height: 300px                
+           :height: 300px
+        
+        .. todo:: why is this in :py:class:`DynameqNetwork` rather than :py:class:`Network`?
+        
         """
 
         allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]
@@ -860,10 +867,13 @@ class DynameqNetwork(Network):
                             ilink.addOutgoingMovement(allowedMovement)
                     
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
-        """Remove the input connector for an intersection and attach it to a midblock 
+        """
+        Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
         to the connector is split in half and the connector is attached to the new 
         midblock location
+        
+        .. todo:: This is insufficient documentation.  I'm currently getting a lot of errors about VehicleClassGroups.
         """
         if not isinstance(roadNode, RoadNode):
             raise DtaError("Input Node %d is not a RoadNode" % roadNode.getId())
@@ -951,7 +961,10 @@ class DynameqNetwork(Network):
     
     def iterVirtualNodes(self):
         """
-        Return an iterator for the virtual nodes in the network
+        Return an iterator to the :py:class:`VirtualNode` instances in the network.
+        
+        .. todo:: Move this to :py:class:`Network`.
+        
         """
         for node in self.iterNodes():
             if isinstance(node, VirtualNode):
@@ -959,7 +972,10 @@ class DynameqNetwork(Network):
 
     def iterRoadNodes(self):
         """
-        Return an iterator for the roadNodes in the network
+        Return an iterator to the :py:class:`RoadNode` instances in the network.
+        
+        .. todo:: Move this to :py:class:`Network`.
+        
         """
         for node in self.iterNodes():
             if isinstance(node, RoadNode):
@@ -967,7 +983,10 @@ class DynameqNetwork(Network):
 
     def iterCentroids(self):
         """
-        Return an iterator to the centroids in the network
+        Return an iterator to the :py:class:`Centroid` instances in the network.
+
+        .. todo:: Move this to :py:class:`Network`.
+        
         """
         for node in self.iterNodes():
             if isinstance(node, Centroid):
@@ -975,7 +994,10 @@ class DynameqNetwork(Network):
 
     def iterVirtualLinks(self):
         """
-        Return an iterator for the virtual links in the network
+        Return an iterator to the :py:class:`VirtualLink` instances in the network.
+
+        .. todo:: Move this to :py:class:`Network`.
+
         """
         for link in self.iterLinks():
             if isinstance(link, VirtualLink):
@@ -983,7 +1005,11 @@ class DynameqNetwork(Network):
 
     def iterRoadLinks(self):
         """
-        Return an iterator for the RoadLinks in the network that are not connectors
+        Return an iterator for to the :py:class:`RoadLink` instances in the network that are 
+        not instances of :py:class:`Connector`.
+        
+        .. todo:: Move this to :py:class:`Network`.
+
         """
         for link in self.iterLinks():
             if link.isRoadLink():
@@ -991,7 +1017,10 @@ class DynameqNetwork(Network):
 
     def iterConnectors(self):
         """
-        Return an iterator for the Connectors in the network
+        Return an iterator to the :py:class:`Connector` instances in the network.
+
+        .. todo:: Move this to :py:class:`Network`.
+        
         """
         for link in self.iterLinks():
             if isinstance(link, Connector):

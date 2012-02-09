@@ -73,7 +73,7 @@ class Scenario(object):
         *vehicleType* is a :py:class:`VehicleType`
         """
         if not isinstance(vehicleType, VehicleType):
-            raise DtaError("Scenario addVehicleTyp() called with a non VehicleType object: %s" % 
+            raise DtaError("Scenario addVehicleType() called with a non VehicleType object: %s" % 
                            str(vehicleType))
         
         self.vehicleTypes[vehicleType.name] = vehicleType

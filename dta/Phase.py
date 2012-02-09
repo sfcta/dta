@@ -19,8 +19,6 @@ __license__     = """
 from .PhaseMovement import PhaseMovement
 from .DtaError import DtaError 
 
-import nose.tools
-
 class Phase(object):
     """Represents a dynameq phase"""
     

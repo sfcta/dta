@@ -1,3 +1,17 @@
+"""
+
+Utility functions for use throughout DTA Anyway.
+
+.. autofunction:: dta.crossProduct
+
+.. autofunction:: dta.direction
+
+.. autofunction:: dta.lineSegmentsCross
+
+.. autofunction:: dta.onSegment
+
+"""
+
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
@@ -75,24 +89,38 @@ def isRightTurn(pi, pj, pk):
     return False
 
 def direction(point0, point1, point2):
+    """
+    Returns the :py:func:`dta.crossProduct` result of the two vectors
+    <*point2*-*point0*, *point1*-*point0*>
+    e.g. the vectors emanating from point0 to point2 and point1.
     
+    All arguments should be 2-tuple points of floats.
+    """
     return crossProduct((point2[0] - point0[0], point2[1] - point0[1]),
                         (point1[0] - point0[0], point1[1] - point0[1])) 
 
-def crossProduct(p1, p2):
-    """Return the cross product of two points pl and pm 
-    each of them defined as a tuple (x, y)
-    """ 
-    return p1[0]*p2[1] - p2[0]*p1[1]
-
-def lineSegmentsCross(p1, p2, p3, p4, checkBoundryConditions=False):
+def crossProduct(v1, v2):
     """
-    Helper function that determines if line segments, 
-    defined as a sequence of pairs 
-    of points, (p1,p2) and (p3,p4) intersect. 
+    Assuming the two vectors *v1* and *v2* are on the z=0 plane, returns
+    the z-component of the cross product between *v1* and *v2*.
+    
+    The magnitude of this value is the area of the parallelogram with *v1* and *v2* as sides,
+    and is therefore 0 when the vectors are collinear.
+    """ 
+    return v1[0]*v2[1] - v2[0]*v1[1]
+
+def lineSegmentsCross(p1, p2, p3, p4, checkBoundaryConditions=False):
+    """
+    Helper function that determines if two line segments, 
+    defined as a sequence of pairs of points, (*p1*, *p2*) and (*p3*, *p4*) intersect. 
     If so it returns True, otherwise False. If the two 
     line segments touch each other the method will 
-    return False.  
+    return False.
+    
+    If *checkBoundaryConditions* is True, then if one point collinear with the other segment, we return
+    True if and only if the point is **on** the other segment.
+    
+    If *checkBoundaryConditions* is False, we don't care about this case, and return False.  
     """
     
     d1 = direction(p3, p4, p1)
@@ -103,7 +131,7 @@ def lineSegmentsCross(p1, p2, p3, p4, checkBoundryConditions=False):
     if ((d1 > 0 and d2 < 0) or (d1 < 0 and d2 > 0)) and \
             ((d3 > 0 and d4 < 0) or (d3 < 0 and d4 > 0)):
         return True
-    if not checkBoundryConditions:
+    if not checkBoundaryConditions:
         return False
     if d1 == 0 and onSegment(p3, p4, p1):
         return True
@@ -126,15 +154,17 @@ def polylinesCross(polyline1, polyline2):
                 return True
     if lineSegmentsCross(polyline1[-2], polyline1[-1],
                          polyline2[-2], polyline2[-1],
-                         checkBoundryConditions=True):
+                         checkBoundaryConditions=True):
         return True
     return False
             
 def onSegment(pi, pj, pk):
     """
-    Determines whether point k known to be colinear with a segment pi pj
-    segment lies inside segment pi pj. It does so by examining if
-    point k is inside the boundary box of segment pi, pj
+    Assuming that point *pk* is known to be collinear with a segment (*pi*, *pj*),
+    this function determines if *pk* lies **on** segment (*pi*, *pj*).
+    It does so by examining if point *pk* is inside the boundary box of segment (*pi*,*pj*)
+    
+    *pi*, *pj*, *pk* are 2-tuples of floats (x,y).
     """
     if min(pi[0], pj[0]) <= pk[0] <= max(pi[0], pj[0]) and \
             min(pi[1], pj[1]) <= pk[1] <= max(pi[1], pj[1]):
