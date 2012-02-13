@@ -161,6 +161,12 @@ class Node(object):
         """
         return iter(self._outgoingLinks)
 
+    def iterLinks(self):
+        """
+        Returns an interator to all adjacent links
+        """
+        return chain(self.iterIncomingLinks(), self.iterOutgoingLinks())
+
     def iterDownstreamNodes(self):
         """
         Returns an iterator to the downstream nodes

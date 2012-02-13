@@ -825,7 +825,6 @@ class Network(object):
             else:
                 if self.hasNodeForId(node.getId()):
                     nodesToSkip.add(node.getId())
-
                 
         #links with common ids. 
         for link in secondaryNetwork.iterLinks():
@@ -901,12 +900,12 @@ class Network(object):
         of the current virtual node so that the connector length is 
         greater than Link.MIN_LENGTH_IN_MILES
         """
-        MAX_DIST_TO_MOVE = 50
+        MAX_DIST_TO_MOVE = 100
         for link in self.iterLinks():
             if not link.isConnector():
                 continue
-            if link.getEuclideanLengthInMiles() > Link.MIN_LENGTH_IN_MILES:
-                continue
+            #if link.getEuclideanLengthInMiles() > Link.MIN_LENGTH_IN_MILES:
+            #    continue
             virtualNode = link.getVirtualNode()
             numMoves = 0
 

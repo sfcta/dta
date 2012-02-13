@@ -328,7 +328,7 @@ class Movement(object):
     def getProtectedCapacity(self, planInfo=None):
         """
         Return the capacity of the movement in vehicles per hour
-        """
+        """        
         if self._node.hasTimePlan(planInfo=planInfo):
             tp = self._node.getTimePlan(planInfo=planInfo)
             greenTime = 0

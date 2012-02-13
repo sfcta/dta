@@ -375,7 +375,8 @@ class DynameqNetwork(Network):
         lanes   = int(fields[9])
         rabout  = int(fields[10])
         level   = int(fields[11])
-        tmplabel= fields[12:]
+        tmplabel= fields[12:len(fields) - 1]
+        group = fields[len(fields) - 1]
 
         if tmplabel == '""':
             label = ""
