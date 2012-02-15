@@ -45,7 +45,6 @@ def getTestNet():
 
 class TestDemand:
 
-
     def test_time(self):
 
         d = datetime.time(8, 30)
@@ -56,12 +55,10 @@ class TestDemand:
         timeStep = datetime.timedelta(minutes=15) 
         d2 = datetime.time(9, 30)
 
-
         #d2 - timeStep
 
         d3 = datetime.datetime(2010, 1, 1, 8, 0)
         d4 = datetime.datetime(2010, 1, 1, 9, 0)
-
 
         data = {}
         date = d3

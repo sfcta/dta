@@ -32,32 +32,35 @@ USAGE = r"""
  
 if __name__ == '__main__':
     
-    if len(sys.argv) != 4:
-        print USAGE
-        sys.exit(2)
+    #if len(sys.argv) != 4:
+    #    print USAGE
+    #    sys.exit(2)
     
-    GEARY_DYNAMEQ_NET_DIR       = sys.argv[1]
-    GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
-    SF_CUBE_NET_DIR             = sys.argv[3]
-    
+    #GEARY_DYNAMEQ_NET_DIR       = sys.argv[1] 
+    #GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
+    #SF_CUBE_NET_DIR             = sys.argv[3]
+
+    #GEARY_DYNAMEQ_NET_DIR       = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
+    #GEARY_DYNAMEQ_NET_PREFIX    = "Base"
+    #SF_CUBE_NET_DIR = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"    
+
     dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
-    gearyScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
-                                        datetime.datetime(2010,1,1,4,0,0))
+    #gearyScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
+    #                                    datetime.datetime(2010,1,1,4,0,0))
 
-    gearyScenario.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX)
-    gearyScenario.write(dir="test", file_prefix="geary")
-    
-    gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
-    gearynetDta.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX)
-    gearynetDta.write(dir="test", file_prefix="geary")
+
+    #gearyScenario.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX) 
+    #gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
+    #gearynetDta.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX)
     
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
     sanfranciscoScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
                                                datetime.datetime(2010,1,1,4,0,0))
+
     
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \
@@ -72,7 +75,7 @@ if __name__ == '__main__':
                           "TOLLPM_DA","TOLLPM_SR2","TOLLPM_SR3",
                           "TOLLEA_DA","TOLLEA_SR2","TOLLEA_SR3",
                           "TOLLMD_DA","TOLLMD_SR2","TOLLMD_SR3",
-                          "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3",
+                          "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3 ",
                           "VALUETOLL_FLAG","PASSTHRU",
                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
                           ],
@@ -101,8 +104,8 @@ if __name__ == '__main__':
     sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
     sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
     
-    sanfrancsicoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
-    sanfranciscoScenario.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   
+    #sanfrancsicoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
+    #sanfranciscoScenario.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   
     exit(0)
     
     # Merge them together

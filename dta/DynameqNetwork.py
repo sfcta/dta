@@ -1043,6 +1043,10 @@ class DynameqNetwork(Network):
         inputStream1 = open(movementFlowFileName, 'r')
         inputStream2 = open(movementTimeFileName, 'r')
 
+        for i in range(9):
+            inputStream1.next()
+            inputStream2.next()
+
         for flowLine, timeLine in izip(inputStream1, inputStream2):
             
             flowFields = flowLine.strip().split()
@@ -1133,10 +1137,12 @@ class DynameqNetwork(Network):
         self._simEndTimeInMin = simEndTimeInMin
         self._simTimeStepInMin = simTimeStepInMin
 
-
         for link in self.iterLinks():
             if link.isVirtualLink():
                 continue
+            link.simTimeStepInMin = simTimeStepInMin
+            link.simStartTimeInMin = simStartTimeInMin
+            link.simEndTimeInMin = simEndTimeInMin
             for mov in link.iterOutgoingMovements():
                 mov.simTimeStepInMin = simTimeStepInMin
                 mov.simStartTimeInMin = simStartTimeInMin

@@ -35,7 +35,7 @@ class RoadNode(Node):
     CONTROL_TYPE_SIGNALIZED         = 1
     #: all control types
     CONTROL_TYPES                   = [CONTROL_TYPE_UNSIGNALIZED,
-                                       CONTROL_TYPE_SIGNALIZED]
+                                       CONTROL_TYPE_SIGNALIZED, 11]
     
 
     #: No template: either a signalized or unsignalized junction, where there is no yielding of any

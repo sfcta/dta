@@ -147,9 +147,12 @@ def adjustVerySmallLinks(net):
     linksToDelete = []
     for link in net.iterLinks():
         if link.isRoadLink():
-            if link.getEuclideanLengthInMiles() < 0.004:
+            if link.getEuclideanLengthInMiles() < 0.009:
+                print link.getIid(), link.getEuclideanLengthInMiles()
                 #print link.getId()                 
-                link._effectiveLengthFactor = 0.004 / link.getEuclideanLengthInMiles() 
+                link._effectiveLengthFactor = 0.009 / link.getEuclideanLengthInMiles()
+
+                print link.getIid(), link._effectiveLengthFactor
     
     #anLengthInMiles() for link in net.iterLinks() if link.isRoadLink()])
     
@@ -215,7 +218,7 @@ def removeOverlappingRoadLinks(net):
                 break 
 
     for link in linksToDelete:
-        net.removeLink(link) 
+        net.removeLink(link)
 
 def getTestScenario(): 
     """
@@ -383,17 +386,31 @@ if __name__ == '__main__':
     #sanfranciscoNet.merge(sanfranciscoCubeNet)
     
     # Write the result.  sanfrancisco_dta is a DynameqNetwork
-
     
-    sanfrancsicoDynameqNet.write(dir = projectFolder2, file_prefix="SanFrancisco_24")
+    sanfrancsicoDynameqNet.write(dir = projectFolder2, file_prefix="SanFrancisco_25")
 
     print "road nodes", sanfrancsicoDynameqNet.getNumRoadNodes() 
     print "road links", sanfrancsicoDynameqNet.getNumRoadLinks()
-    
-    pdb.set_trace()
 
-    sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(projectFolder2, "sf24_nodes"))
-    sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(projectFolder2, "sf24_links"))
+    sanfrancsicoDynameqNet.getNodeForId(26590)._x += 100
+    sanfrancsicoDynameqNet.getNodeForId(26590)._y += 100
+    sanfrancsicoDynameqNet.getNodeForId(33207)._x += 100
+    sanfrancsicoDynameqNet.getNodeForId(33207)._y += 100
+    sanfrancsicoDynameqNet.getNodeForId(33751)._x += 100
+    sanfrancsicoDynameqNet.getNodeForId(33751)._y += 100    
+    sanfrancsicoDynameqNet.getNodeForId(51476)._x += 100
+    sanfrancsicoDynameqNet.getNodeForId(51476)._y += 100    
+    sanfrancsicoDynameqNet.getNodeForId(52132)._x += 100
+    sanfrancsicoDynameqNet.getNodeForId(52132)._y += 100    
+    sanfrancsicoDynameqNet.getNodeForId(52305)._x += 100
+    sanfrancsicoDynameqNet.getNodeForId(52305)._y += 100    
+    
+    
+    
+    pdb.set_trace()    
+
+    sanfrancsicoDynameqNet.writeNodesToShp(os.path.join(projectFolder2, "sf25_nodes"))
+    sanfrancsicoDynameqNet.writeLinksToShp(os.path.join(projectFolder2, "sf25_links"))
  
     results = defaultdict(int)
     for centroid in sanfrancsicoDynameqNet.iterCentroids():
