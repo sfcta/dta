@@ -32,17 +32,17 @@ USAGE = r"""
  
 if __name__ == '__main__':
     
-    #if len(sys.argv) != 4:
-    #    print USAGE
-    #    sys.exit(2)
+    if len(sys.argv) != 4:
+        print USAGE
+        sys.exit(2)
     
-    #GEARY_DYNAMEQ_NET_DIR       = sys.argv[1] 
-    #GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
-    #SF_CUBE_NET_DIR             = sys.argv[3]
+    GEARY_DYNAMEQ_NET_DIR       = sys.argv[1] 
+    GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
+    SF_CUBE_NET_DIR             = sys.argv[3]
 
     #GEARY_DYNAMEQ_NET_DIR       = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
     #GEARY_DYNAMEQ_NET_PREFIX    = "Base"
-    #SF_CUBE_NET_DIR = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"    
+    #SF_CUBE_NET_DIR = r"Y:\dta\SanFrancisco\2010" # "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"    
 
     dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
     
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     sanfranciscoScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
                                                datetime.datetime(2010,1,1,4,0,0))
 
-    
+    sanfranciscoScenario.read(r"..\testdata\dynameqNetwork_gearySubset", "smallTestNet") 
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \
       (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
@@ -97,15 +97,24 @@ if __name__ == '__main__':
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
        )
     
-    sanfrancsicoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-    sanfrancsicoDynameqNet.deepcopy(sanfranciscoCubeNet)
+    sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
+    sanfranciscoDynameqNet.deepcopy(sanfranciscoCubeNet)
+    sanfranciscoDynameqNet.removeShapePoints()
+    #sanfranciscoDynameqNet.removeStrayNodes()
     
     # add virtual nodes and links between Centroids and RoadNodes
-    sanfrancsicoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
-    sanfrancsicoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-    
-    #sanfrancsicoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
-    #sanfranciscoScenario.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   
+    sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
+    sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
+
+    sanfranciscoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks()
+    #removeVerySmallLinks(sanfranciscoDynameqNet)
+    sanfranciscoDynameqNet.removeDuplicateConnectors()    
+    sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
+    print sanfranciscoDynameqNet.getNumRoadNodes()
+    print sanfranciscoDynameqNet.getNumRoadLinks()
+
+    sanfranciscoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
+    sanfranciscoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   
     exit(0)
     
     # Merge them together

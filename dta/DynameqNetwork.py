@@ -1150,6 +1150,14 @@ class DynameqNetwork(Network):
 
         self._readMovementOutFlowsAndTTs()
 
+    def removeStrayNodes(self):
+        """
+        Remove all the nodes that are not connected to a link
+        """
+        nodes = [node for node in net.iterRoadNodes() if node.getCardinality() == (0,0)]
+        for node in nodes:
+            net.removeNode(node)
+
         
         
         
