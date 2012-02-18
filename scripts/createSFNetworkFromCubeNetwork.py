@@ -26,7 +26,12 @@ USAGE = r"""
  
  e.g.
  
- python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010\CubeNetworkSource_renumberExternalsOnly
+ python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010
+ 
+ This script reads the San Francisco Cube network and converts it to a Dynameq network, writing it out to the current directory.
+ 
+  * Currently, it ignores the first two args (they are for the Geary DTA network, which we're skipping for now; leaving it there for future)
+  * The third arg is the location of the San Francisco Cube network for conversion to a Dynameq DTA network
  
  """
  
@@ -61,7 +66,35 @@ if __name__ == '__main__':
     sanfranciscoScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
                                                datetime.datetime(2010,1,1,4,0,0))
 
-    sanfranciscoScenario.read(r"..\testdata\dynameqNetwork_gearySubset", "smallTestNet") 
+    # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll because these are the demand matrices we'll provice
+    sanfranciscoScenario.addVehicleClass("Car_NoToll")
+    sanfranciscoScenario.addVehicleClass("Car_Toll")
+    sanfranciscoScenario.addVehicleClass("Truck_NoToll")
+    sanfranciscoScenario.addVehicleClass("Truck_Toll")
+    
+    # We have only 2 vehicle types                      Type        VehicleClass    Length  ResponseTime
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1))  # assuming length is in feet -?
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6))
+    # what about HOV? Taxi?
+    # Transit is implicit, doesn't require definition?
+
+    # VehicleClassGroups
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.TRANSIT,    dta.VehicleClassGroup.TRANSIT,                      "#55ff00"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
+    
+    # generalized cost
+    # TODO: Make this better!?!
+    sanfranciscoScenario.addGeneralizedCost("Expression_0", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "0",            # link_expr
+                                            ""              # descr
+                                            )
+    
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \
       (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
@@ -113,8 +146,8 @@ if __name__ == '__main__':
     print sanfranciscoDynameqNet.getNumRoadNodes()
     print sanfranciscoDynameqNet.getNumRoadLinks()
 
-    sanfranciscoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")
-    sanfranciscoDynameqNet.write(dir=r"Y:\dta\SanFrancisco\2010", file_prefix="sf")   
+    sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")
+    sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")   
     exit(0)
     
     # Merge them together

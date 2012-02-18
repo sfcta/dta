@@ -268,6 +268,11 @@ class DynameqScenario(Scenario):
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VEH_CLASS_GROUPS", scenariofile_object.name))
 
+    def addGeneralizedCost(self, name, units, turn_expr, link_expr, desc):
+        """
+        TODO: need more documentation on these terms.
+        """
+        self._generalizedCosts.append((name, units, turn_expr, link_expr, desc))
     
     def _readGeneralizedCostFromFields(self, fields):
         self._generalizedCosts.append(fields)
