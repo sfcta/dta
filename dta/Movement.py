@@ -343,7 +343,7 @@ class Movement(object):
     def _checkInputTimeStep(self, startTimeInMin, endTimeInMin):
         """The input time step should always be equal to the sim time step"""
         if endTimeInMin - startTimeInMin != self.simTimeStepInMin:
-            raise SimMovementError('Time period from %d to %d is not '
+            raise DtaError('Time period from %d to %d is not '
                                    'equal to the simulation time step %d'
                                    % (startTimeInMin, endTimeInMin, 
                                       self.simTimeStepInMin))
@@ -353,7 +353,7 @@ class Movement(object):
         """Checks that the difference in the input times is in multiples 
         of the simulation time step"""
         if (endTimeInMin - startTimeInMin) % self.simTimeStepInMin != 0:
-            raise SimMovementError('Time period from %d to %d is not '
+            raise DtaError('Time period from %d to %d is not '
                                    'is a multiple of the simulation time step ' 
                                     '%d' % (startTimeInMin, endTimeInMin,
                                                     self.simTimeStepInMin))
@@ -364,12 +364,12 @@ class Movement(object):
         times are in the simulation time window"""
         
         if startTimeInMin >= endTimeInMin:
-            raise SimMovementError("Invalid time bin (%d %s). The end time cannot be equal or less "
+            raise DtaError("Invalid time bin (%d %s). The end time cannot be equal or less "
                                 "than the end time" % (startTimeInMin, endTimeInMin))
 
         if startTimeInMin < self.simStartTimeInMin or endTimeInMin > \
                 self .simEndTimeInMin:
-            raise SimMovementError('Time period from %d to %d is out of '
+            raise DtaError('Time period from %d to %d is out of '
                                    'simulation time' % (startTimeInMin, endTimeInMin))
         
     def getSimVolume(self, startTimeInMin, endTimeInMin):
@@ -415,7 +415,7 @@ class Movement(object):
                 elif binTT == 0 and flow == 0:
                     continue
                 else:
-                    raise SimMovementError("Movement %s has flow:%f and TT:%f "
+                    raise DtaError("Movement %s has flow:%f and TT:%f "
                                            "for time period from %d to %d"  % 
                                            (self.iid, flow, binTT, 
                                             startTimeInMin, endTimeInMin))
@@ -482,11 +482,11 @@ class Movement(object):
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
         if averageTTInMin < 0:
-            raise SimMovementError("The travel time on movement cannot be negative" %
+            raise DtaError("The travel time on movement cannot be negative" %
                                    self.iid)
         if averageTTInMin == 0:
             if self.getSimFlow(startTimeInMin, endTimeInMin) > 0:
-                raise SimMovementError("The travel time on movement %s with flow %d from %d to %d "
+                raise DtaError("The travel time on movement %s with flow %d from %d to %d "
                                        "cannot be 0" % (self.iid, 
                                                         self.getSimFlow(startTimeInMin, endTimeInMin),
                                                         startTimeInMin, endTimeInMin))
@@ -494,7 +494,7 @@ class Movement(object):
                 return
 
         if self.getSimFlow(startTimeInMin, endTimeInMin) == 0:
-            raise SimMovementError('Cannot set the travel time on a movement with zero flow')
+            raise DtaError('Cannot set the travel time on a movement with zero flow')
 
         self._simMeanTT[startTimeInMin, endTimeInMin] = averageTTInMin
 
