@@ -412,6 +412,12 @@ class RoadLink(Link):
             return self._length 
         else:
             return self.euclideanLength()
+
+    def getLengthInMiles(self):
+        """
+        Return the length of the link in miles
+        """
+        return self.getLength() / 5280.0
         
     def getCenterLine(self):
         """
