@@ -1177,6 +1177,19 @@ class Network(object):
                             self.mergeLinks(link1, link2) 
                             DtaLogger.info("Merged links  %8d and %8d" % (link1.getId(), link2.getId()))
 
+    def removeUnconnectedNodes(self):
+        """
+        Removes any nodes that aren't linked to anything (have no adjacent links).
+        
+        This might be useful for networks with too many nodes for the DTA software license.
+        """
+        nodesToRemove = [node for node in self.iterNodes() if node.getNumAdjacentLinks() == 0]
+
+        for node in nodesToRemove:
+            DtaLogger.info("Removing unconnected node %d" % node.getId())                
+            self.removeNode(node)
+     
+
     def renameLink(self, oldLinkId, newLinkId):
         """
         Give the newLinkId to the link with oldLinkId
