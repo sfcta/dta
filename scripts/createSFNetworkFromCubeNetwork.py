@@ -28,12 +28,41 @@ USAGE = r"""
  
  python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010
  
- This script reads the San Francisco Cube network and converts it to a Dynameq network, writing it out to the current directory.
+ This script reads the San Francisco Cube network (SanFranciscoSubArea_2010.net) 
+ and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.
  
   * Currently, it ignores the first two args (they are for the Geary DTA network, which we're skipping for now; leaving it there for future)
   * The third arg is the location of the San Francisco Cube network for conversion to a Dynameq DTA network
  
  """
+
+def removeHOVStubs(sanfranciscoDynameqNet):
+    """
+    The San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    Find these and remove them
+    """    
+    nodesToRemove = []
+    for node in sanfranciscoDynameqNet.iterNodes():
+        # one incomine link, one outgoing link
+        if node.getNumIncomingLinks() != 1: continue
+        if node.getNumOutgoingLinks() != 1: continue
+        
+        removalCandidate = True
+        # the incoming/outgoing links must each be a road link of facility type 6
+        for link in node.iterAdjacentLinks():
+            if not link.isRoadLink(): 
+                removalCandidate = False
+                break
+            if link.getFacilityType() != 6:
+                removalCandidate = False
+                break
+        
+        if removalCandidate:
+            nodesToRemove.append(node)
+    
+    for node in nodesToRemove:
+        dta.DtaLogger.info("Removing HOV Stub node %d" % node.getId())
+        sanfranciscoDynameqNet.removeNode(node)
  
 if __name__ == '__main__':
     
@@ -72,11 +101,12 @@ if __name__ == '__main__':
     sanfranciscoScenario.addVehicleClass("Truck_NoToll")
     sanfranciscoScenario.addVehicleClass("Truck_Toll")
     
-    # We have only 2 vehicle types                      Type        VehicleClass    Length  ResponseTime
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1))  # assuming length is in feet -?
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6))
+    # length is in feet, response time is in seconds, maxSpeed is in mi/hour
+    # We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1,          100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1,          100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6,        70.0,       90.0))
     # what about HOV? Taxi?
     # Transit is implicit, doesn't require definition?
 
@@ -133,7 +163,6 @@ if __name__ == '__main__':
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfranciscoDynameqNet.deepcopy(sanfranciscoCubeNet)
     sanfranciscoDynameqNet.removeShapePoints()
-    #sanfranciscoDynameqNet.removeStrayNodes()
     
     # add virtual nodes and links between Centroids and RoadNodes
     sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
@@ -143,11 +172,14 @@ if __name__ == '__main__':
     #removeVerySmallLinks(sanfranciscoDynameqNet)
     sanfranciscoDynameqNet.removeDuplicateConnectors()    
     sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
-    print sanfranciscoDynameqNet.getNumRoadNodes()
-    print sanfranciscoDynameqNet.getNumRoadLinks()
 
+    # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    removeHOVStubs(sanfranciscoDynameqNet)
+
+    # if we have too many nodes for the license 10
+    if sanfranciscoDynameqNet.getNumRoadNodes() > 12500:
+        sanfranciscoDynameqNet.removeUnconnectedNodes()
     sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")
-    sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")   
     exit(0)
     
     # Merge them together

@@ -50,8 +50,8 @@ class Scenario(object):
         #: list of Vehicle Class Names
         self.vehicleClassNames  = []
         
-        #: Vehicle Type Name (string) -> :py:class:`VehicleType`
-        self.vehicleTypes       = {}
+        #: list of instances of :py:class:`VehicleType`
+        self.vehicleTypes       = []
         
         #: vehicle class group name (string) -> :py:class:`VehicleClassGroup`
         self.vehicleClassGroups = {}
@@ -76,7 +76,7 @@ class Scenario(object):
             raise DtaError("Scenario addVehicleType() called with a non VehicleType object: %s" % 
                            str(vehicleType))
         
-        self.vehicleTypes[vehicleType.name] = vehicleType
+        self.vehicleTypes.append(vehicleType)
         
     def addVehicleClassGroup(self, vehicleClassGroup):
         """

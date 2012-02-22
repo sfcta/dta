@@ -328,7 +328,7 @@ class Node(object):
 
     def getNumOutgoingLinks(self):
         """
-        Retruns the number of outoing links
+        Returns the number of outgoing links
         """
         return len(self._outgoingLinks)
 

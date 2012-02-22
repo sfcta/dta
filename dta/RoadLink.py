@@ -392,6 +392,12 @@ class RoadLink(Link):
         """
         return iter(self._incomingMovements)
 
+    def getFacilityType(self):
+        """
+        Returns the facility type; see :py:meth:`RoadLink.__init__` for more on that variable.
+        """
+        return self._facilityType
+
     def getNumLanes(self):
         """
         Return the number of lanes.

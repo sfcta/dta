@@ -21,17 +21,21 @@ class VehicleType:
     Class that represents a vehicle type.
     """
     
-    def __init__(self, name, className, length, responseTime):
+    def __init__(self, name, className, length, responseTime, maxSpeed, speedRatio):
         """
         Constructor.
         
         * *name* is the vehicle type name, e.g. ``small_truck``
         * *className* a broader class, e.g. ``truck``
         * *length* is the effective length (units?)
-        * *responseTime* is ?
+        * *responseTime* is the response time of the vehicle in seconds
+        * *maxSpeed* is the maximum speed of the vehicle, in km/hour or miles/hr depending on the project units.
+        * *speedRatio* is the ratio of this vehicle type's speed over the link speed (times 100?!)
          
         """
         self.name           = name
         self.className      = className
         self.length         = length
         self.responseTime   = responseTime
+        self.maxSpeed       = maxSpeed
+        self.speedRatio     = speedRatio
