@@ -58,6 +58,10 @@
 <em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadNode</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>geometryType</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Node.Node</span></tt></p>
 <p>A Node subclass that represents a road node in a network.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">lmz has read over this, so todos are marked.</p>
+</div>
 <dl class="method">
 <dt id="dta.RoadNode.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>geometryType</em>, <em>control</em>, <em>priority</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode.__init__" title="Permalink to this definition">¶</a></dt>
@@ -65,7 +69,7 @@
 <blockquote>
 <div><ul class="simple">
 <li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
-<li><em>x</em> and <em>y</em> are coordinates (what units?)</li>
+<li><em>x</em> and <em>y</em> are coordinates in the units specified by <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></li>
 <li><em>geometryType</em> is one of <a class="reference internal" href="dta.Node.html#dta.Node.GEOMETRY_TYPE_INTERSECTION" title="dta.Node.GEOMETRY_TYPE_INTERSECTION"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_INTERSECTION</span></tt></a> or 
 <a class="reference internal" href="dta.Node.html#dta.Node.GEOMETRY_TYPE_JUNCTION" title="dta.Node.GEOMETRY_TYPE_JUNCTION"><tt class="xref py py-attr docutils literal"><span class="pre">Node.GEOMETRY_TYPE_JUNCTION</span></tt></a></li>
 <li><em>control</em> is one of <a class="reference internal" href="#dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED" title="dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED"><tt class="xref py py-attr docutils literal"><span class="pre">RoadNode.CONTROL_TYPE_UNSIGNALIZED</span></tt></a> or 
@@ -94,6 +98,141 @@
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.RoadNode.__init__" title="dta.RoadNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.addTimePlan" title="dta.RoadNode.addTimePlan"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.addTimePlan</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getCandidateLinksForSplitting" title="dta.RoadNode.getCandidateLinksForSplitting"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getCandidateLinksForSplitting</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getCardinality" title="dta.RoadNode.getCardinality"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getCardinality</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getId" title="dta.RoadNode.getId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getIncomingLinkForId" title="dta.RoadNode.getIncomingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getIncomingLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getIncomingLinkForNodeId" title="dta.RoadNode.getIncomingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getIncomingLinkForNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getMovement" title="dta.RoadNode.getMovement"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getName" title="dta.RoadNode.getName"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getName</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumAdjacentLinks" title="dta.RoadNode.getNumAdjacentLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumAdjacentLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumAdjacentNodes" title="dta.RoadNode.getNumAdjacentNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumAdjacentNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumAdjacentRoadLinks" title="dta.RoadNode.getNumAdjacentRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumAdjacentRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumAdjacentRoadNodes" title="dta.RoadNode.getNumAdjacentRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumAdjacentRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumIncomingLinks" title="dta.RoadNode.getNumIncomingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumIncomingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumMovements" title="dta.RoadNode.getNumMovements"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumMovements</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getNumOutgoingLinks" title="dta.RoadNode.getNumOutgoingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getNumOutgoingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getOrientation" title="dta.RoadNode.getOrientation"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getOrientation</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getStreetNames" title="dta.RoadNode.getStreetNames"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getStreetNames</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getTimePlan" title="dta.RoadNode.getTimePlan"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getTimePlan</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getX" title="dta.RoadNode.getX"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getX</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.getY" title="dta.RoadNode.getY"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.getY</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasConnector" title="dta.RoadNode.hasConnector"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasConnector</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasIncomingLinkForId" title="dta.RoadNode.hasIncomingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasIncomingLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasIncomingLinkForNodeId" title="dta.RoadNode.hasIncomingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasIncomingLinkForNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasMovement" title="dta.RoadNode.hasMovement"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasOutgoingLinkForId" title="dta.RoadNode.hasOutgoingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasOutgoingLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasOutgoingLinkForNodeId" title="dta.RoadNode.hasOutgoingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasOutgoingLinkForNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.hasTimePlan" title="dta.RoadNode.hasTimePlan"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.hasTimePlan</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isCentroid" title="dta.RoadNode.isCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isCentroid</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isIntersection" title="dta.RoadNode.isIntersection"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isIntersection</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isJunction" title="dta.RoadNode.isJunction"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isJunction</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isOverlapping" title="dta.RoadNode.isOverlapping"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isOverlapping</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isRoadNode" title="dta.RoadNode.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isRoadNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isShapePoint" title="dta.RoadNode.isShapePoint"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isShapePoint</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isVirtualNode" title="dta.RoadNode.isVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isVirtualNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterAdjacentLinks" title="dta.RoadNode.iterAdjacentLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterAdjacentLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterAdjacentNodes" title="dta.RoadNode.iterAdjacentNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterAdjacentNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterAdjacentRoadLinks" title="dta.RoadNode.iterAdjacentRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterAdjacentRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterAdjacentRoadNodes" title="dta.RoadNode.iterAdjacentRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterAdjacentRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterDownstreamNodes" title="dta.RoadNode.iterDownstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterDownstreamNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterIncomingLinks" title="dta.RoadNode.iterIncomingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterIncomingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterLinks" title="dta.RoadNode.iterLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterMovements" title="dta.RoadNode.iterMovements"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterMovements</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterOutgoingLinks" title="dta.RoadNode.iterOutgoingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterOutgoingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterTimePlans" title="dta.RoadNode.iterTimePlans"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterTimePlans</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.iterUpstreamNodes" title="dta.RoadNode.iterUpstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterUpstreamNodes</span></tt></a></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -169,7 +308,7 @@ only the minor street is stop-controlled</p>
 <dl class="method">
 <dt id="dta.RoadNode.addTimePlan">
 <tt class="descname">addTimePlan</tt><big>(</big><em>timePlan</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addTimePlan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add the input time plan to the current collection</p>
+<dd><p>Add the given <em>timePlan</em>, an instance of <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a>, to the current collection.</p>
 </dd></dl>
 
 <dl class="method">
@@ -190,7 +329,8 @@ would cross it.</li>
 </div>
 <div class="admonition-todo admonition " id="index-1">
 <p class="first admonition-title">Todo</p>
-<p class="last">explain the 0.009 minimum length</p>
+<p class="last">explain the 0.009 minimum length &#8211; is it just to make sure resulting links aren&#8217;t too small?
+If we keep it, make it an arg, it really is in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a></p>
 </div>
 </dd></dl>
 
@@ -198,7 +338,7 @@ would cross it.</li>
 <dt id="dta.RoadNode.getCardinality">
 <tt class="descname">getCardinality</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getCardinality" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pair of numbers representing the number of 
-incoming and outgoing links respectively</p>
+incoming and outgoing links respectively.</p>
 </dd></dl>
 
 <dl class="method">
@@ -210,33 +350,35 @@ incoming and outgoing links respectively</p>
 <dl class="method">
 <dt id="dta.RoadNode.getIncomingLinkForId">
 <tt class="descname">getIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link with the given id</p>
+<dd><p>Returns an incoming link if one has an ID matching <em>linkId</em>.
+It no incoming links qualify, raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getIncomingLinkForNodeId">
 <tt class="descname">getIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+<dd><p>Returns an incoming link if one starts from <em>nodeId</em>.
+It no incoming links qualify, raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getMovement">
-<tt class="descname">getMovement</tt><big>(</big><em>upNodeId</em>, <em>downNodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the movement from upNodeId to downNodeId that goes through
-this node</p>
+<tt class="descname">getMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> from <em>startNodeId</em> to <em>endNodeId</em> that goes through
+this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getName">
 <tt class="descname">getName</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getName" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the name of the intersection as a string consisting of the labels 
-of the incoming links in sorted order.</p>
+<dd><p>Return the name of the intersection as a string consisting of the upper-cased labels 
+of the incoming links in sorted order, separated by <tt class="docutils literal"><span class="pre">AND</span></tt>.  (e.g. <tt class="docutils literal"><span class="pre">VAN</span> <span class="pre">NESS</span> <span class="pre">AVE</span> <span class="pre">AND</span> <span class="pre">MARKET</span> <span class="pre">ST</span></tt>)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getNumAdjacentLinks">
 <tt class="descname">getNumAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of links adjacent to this node (either incoming or outgoing)</p>
+<dd><p>Returns the number of links adjacent to this node (either incoming or outgoing).</p>
 </dd></dl>
 
 <dl class="method">
@@ -248,50 +390,51 @@ of the incoming links in sorted order.</p>
 <dl class="method">
 <dt id="dta.RoadNode.getNumAdjacentRoadLinks">
 <tt class="descname">getNumAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of RoadLinks adjacent to this node (either incoming or outgoing)</p>
+<dd><p>Returns the number of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to this node (either incoming or outgoing).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getNumAdjacentRoadNodes">
 <tt class="descname">getNumAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of nodes that are connected to this node.</p>
+<dd><p>Return the number of <a class="reference internal" href="#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances that share a link with this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getNumIncomingLinks">
 <tt class="descname">getNumIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumIncomingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of incoming links</p>
+<dd><p>Returns the number of incoming links.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getNumMovements">
 <tt class="descname">getNumMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumMovements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of movements associated with this node</p>
+<dd><p>Return the number of <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances associated with this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getNumOutgoingLinks">
 <tt class="descname">getNumOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getNumOutgoingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retruns the number of outoing links</p>
+<dd><p>Returns the number of outgoing links.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getOrientation">
 <tt class="descname">getOrientation</tt><big>(</big><em>point</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getOrientation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the clockwise angle from the North measured in degrees of the line 
-segment that has the current node as its start and the given point as its end</p>
+segment that has the current node as its start and the given <em>point</em> as its end.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getStreetNames">
 <tt class="descname">getStreetNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.getStreetNames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the street names of the incoming links as a list</p>
+<dd><p>Return the street names (labels) of the incoming links as a sorted upper-case list.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.getTimePlan">
 <tt class="descname">getTimePlan</tt><big>(</big><em>planInfo</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getTimePlan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the timeplan for the specific time period defined by planInfo</p>
+<dd><p>Return the <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a> for the specific time period defined by <em>planInfo</em>, an instance of
+<a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo" title="dta.PlanCollectionInfo"><tt class="xref py py-class docutils literal"><span class="pre">PlanCollectionInfo</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -309,44 +452,44 @@ segment that has the current node as its start and the given point as its end</p
 <dl class="method">
 <dt id="dta.RoadNode.hasConnector">
 <tt class="descname">hasConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.hasConnector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if there is a connector atached to the node.</p>
+<dd><p>Return True if there is a connector attached to the node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.hasIncomingLinkForId">
 <tt class="descname">hasIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link with the given id</p>
+<dd><p>Returns True if there is an incoming link with the given <em>linkId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.hasIncomingLinkForNodeId">
 <tt class="descname">hasIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+<dd><p>Returns True if there is an incoming link starting from <em>nodeId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.hasMovement">
 <tt class="descname">hasMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node has movement from 
-startNodeId to endNodeId</p>
+<dd><p>Return True if a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> exists from the node with <em>startNodeId</em> through this node
+to the node with <em>endNodeId</em>, and if that movement is <strong>not prohibited</strong>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.hasOutgoingLinkForId">
 <tt class="descname">hasOutgoingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasOutgoingLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an outgoing link wwith the given id</p>
+<dd><p>Returns True if there is an outgoing link with the given <em>linkId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.hasOutgoingLinkForNodeId">
 <tt class="descname">hasOutgoingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasOutgoingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is a link towards the given node id</p>
+<dd><p>Returns True if there is an outgoing link towards a node with the given <em>nodeId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.hasTimePlan">
 <tt class="descname">hasTimePlan</tt><big>(</big><em>planInfo=None</em><big>)</big><a class="headerlink" href="#dta.RoadNode.hasTimePlan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return true if the node has at least one time plan</p>
+<dd><p>Return True if the node has at least one <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -359,19 +502,30 @@ startNodeId to endNodeId</p>
 <dt id="dta.RoadNode.isIntersection">
 <tt class="descname">isIntersection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isIntersection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is an intersection</p>
+<div class="admonition-todo admonition " id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">And an intersection is what?  Technical definition please.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.isJunction">
 <tt class="descname">isJunction</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isJunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is a junction.</p>
+<div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">And a junction is what?  Technical definition please.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.isOverlapping">
 <tt class="descname">isOverlapping</tt><big>(</big><em>link</em>, <em>minAngle</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isOverlapping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns true if the minimum angle between the input link and any similarly 
-oriented link of the intersection is less than the input minAngle</p>
+<dd><p>Returns True if the minimum angle between the input link and any similarly 
+oriented link of the intersection is less than the input <em>minAngle</em>, which is specified in degrees.</p>
+<p>By &#8220;similarly oriented&#8221;, the method looks at all other incoming links if <em>link</em> is incoming, 
+and all other outgoing links if <em>link</em> is outgoing to this node.  If <em>link</em> is neither incoming nor
+outgoing to this node, raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -384,10 +538,19 @@ oriented link of the intersection is less than the input minAngle</p>
 <dt id="dta.RoadNode.isShapePoint">
 <tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
-following graph). 
-If countRoadNodesOnly is True the method will count only RoadLinks 
-attached to this Node and will disregard an connectors.</p>
+following graph).</p>
+<p>If <em>countRoadNodesOnly</em> is True the method will count only RoadLinks 
+attached to this Node and will disregard any connectors.</p>
 <img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
+<div class="admonition-todo admonition " id="index-4">
+<p class="first admonition-title">Todo</p>
+<p class="last">I think this documentation is insufficient; it&#8217;s just an example, it doesn&#8217;t define a &#8220;shape point.&#8221;
+Further, there are &#8220;shapepoints&#8221; that are not this, such as in those added via
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.addShapePoint" title="dta.RoadLink.addShapePoint"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.addShapePoint()</span></tt></a>, so the terminology should be more accurate &#8211;
+what we&#8217;re really checking is if this could be a shape point?
+And we&#8217;re not even doing that &#8211; this implementation would call a node a shapepoint 
+if there is a one-way loop (consisting of two links) intersecting with a one way street.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -399,32 +562,32 @@ attached to this Node and will disregard an connectors.</p>
 <dl class="method">
 <dt id="dta.RoadNode.iterAdjacentLinks">
 <tt class="descname">iterAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all links adjacent (incoming or outgoing)
+<dd><p>Return an iterator to all <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instances adjacent (incoming or outgoing)
 to this node</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.iterAdjacentNodes">
 <tt class="descname">iterAdjacentNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to the adjacent Nodes</p>
+<dd><p>Return an iterator to the adjacent <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.iterAdjacentRoadLinks">
 <tt class="descname">iterAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all RoadLinks adjacent to this Node (excluding Connectors)</p>
+<dd><p>Return an iterator to all <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to this node (excluding Connectors)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.iterAdjacentRoadNodes">
 <tt class="descname">iterAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all RoadNodes adjacent to this Node</p>
+<dd><p>Return an iterator to all <a class="reference internal" href="#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances adjacent to this Node</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.iterDownstreamNodes">
 <tt class="descname">iterDownstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterDownstreamNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator to the downstream nodes</p>
+<dd><p>Returns an iterator to the end nodes of all outgoing links.</p>
 </dd></dl>
 
 <dl class="method">
@@ -434,10 +597,15 @@ to this node</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadNode.iterLinks">
+<tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to all adjacent links.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadNode.iterMovements">
 <tt class="descname">iterMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterMovements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all the movements going
-through the node</p>
+<dd><p>Return an iterator to all the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances going through the node.</p>
 </dd></dl>
 
 <dl class="method">
@@ -449,13 +617,13 @@ through the node</p>
 <dl class="method">
 <dt id="dta.RoadNode.iterTimePlans">
 <tt class="descname">iterTimePlans</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterTimePlans" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator over the timeplans of this node</p>
+<dd><p>Return an iterator over the <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a> instances corresponding to this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.RoadNode.iterUpstreamNodes">
 <tt class="descname">iterUpstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterUpstreamNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator to the upstream nodes</p>
+<dd><p>Returns an iterator to the start nodes of all incoming links.</p>
 </dd></dl>
 
 </dd></dl>

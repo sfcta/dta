@@ -14,7 +14,63 @@ dta.Connector
    .. autosummary::
    
       ~Connector.__init__
+      ~Connector.addLanePermission
+      ~Connector.addOutgoingMovement
+      ~Connector.addShapePoint
+      ~Connector.addShifts
+      ~Connector.endIsRoadNode
       ~Connector.euclideanLength
+      ~Connector.getAngle
+      ~Connector.getCenterLine
+      ~Connector.getCentroid
+      ~Connector.getDirection
+      ~Connector.getEndNode
+      ~Connector.getEndNodeId
+      ~Connector.getFacilityType
+      ~Connector.getId
+      ~Connector.getIid
+      ~Connector.getLabel
+      ~Connector.getLength
+      ~Connector.getLengthInCoordinateUnits
+      ~Connector.getMidPoint
+      ~Connector.getNumIncomingMovements
+      ~Connector.getNumLanes
+      ~Connector.getNumOutgoingMovements
+      ~Connector.getNumShapePoints
+      ~Connector.getObsMeanTT
+      ~Connector.getObsSpeedInMPH
+      ~Connector.getOrientation
+      ~Connector.getOtherEnd
+      ~Connector.getOutgoingMovement
+      ~Connector.getOutline
+      ~Connector.getReferenceAngle
+      ~Connector.getReferenceAngleInDegrees
+      ~Connector.getRoadNode
+      ~Connector.getShifts
+      ~Connector.getSimFlow
+      ~Connector.getSimSpeedInMPH
+      ~Connector.getSimTTInMin
+      ~Connector.getSimVolume
+      ~Connector.getStartNode
+      ~Connector.getStartNodeId
+      ~Connector.getVirtualNode
+      ~Connector.hasOutgoingMovement
+      ~Connector.hasSameAttributes
+      ~Connector.isConnector
+      ~Connector.isOverlapping
+      ~Connector.isRoadLink
+      ~Connector.isVirtualLink
+      ~Connector.iterIncomingMovements
+      ~Connector.iterOutgoingMovements
+      ~Connector.removeOutgoingMovement
+      ~Connector.setEndNode
+      ~Connector.setLabel
+      ~Connector.setLength
+      ~Connector.setNumLanes
+      ~Connector.setSimTTInMin
+      ~Connector.setSimVolume
+      ~Connector.setStartNode
+      ~Connector.startIsRoadNode
    
    
 

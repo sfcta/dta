@@ -15,6 +15,23 @@ dta.VirtualLink
    
       ~VirtualLink.__init__
       ~VirtualLink.euclideanLength
+      ~VirtualLink.getAdjacentConnector
+      ~VirtualLink.getCentroid
+      ~VirtualLink.getEndNode
+      ~VirtualLink.getEndNodeId
+      ~VirtualLink.getId
+      ~VirtualLink.getIid
+      ~VirtualLink.getLabel
+      ~VirtualLink.getOtherEnd
+      ~VirtualLink.getReferenceAngle
+      ~VirtualLink.getReferenceAngleInDegrees
+      ~VirtualLink.getStartNode
+      ~VirtualLink.getStartNodeId
+      ~VirtualLink.hasSameAttributes
+      ~VirtualLink.isConnector
+      ~VirtualLink.isRoadLink
+      ~VirtualLink.isVirtualLink
+      ~VirtualLink.setLabel
    
    
 

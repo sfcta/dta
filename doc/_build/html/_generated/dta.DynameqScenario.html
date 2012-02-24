@@ -77,6 +77,9 @@
 <tr><td><a class="reference internal" href="#dta.DynameqScenario.addEvent" title="dta.DynameqScenario.addEvent"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.addEvent</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.DynameqScenario.addGeneralizedCost" title="dta.DynameqScenario.addGeneralizedCost"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.addGeneralizedCost</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqScenario.addVehicleClass" title="dta.DynameqScenario.addVehicleClass"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.addVehicleClass</span></tt></a></td>
 <td></td>
 </tr>
@@ -84,6 +87,21 @@
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqScenario.addVehicleType" title="dta.DynameqScenario.addVehicleType"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.addVehicleType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqScenario.getVehicleClassGroup" title="dta.DynameqScenario.getVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.getVehicleClassGroup</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqScenario.iterVehicleClassGroups" title="dta.DynameqScenario.iterVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.iterVehicleClassGroups</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqScenario.iterVehicleClassNames" title="dta.DynameqScenario.iterVehicleClassNames"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.iterVehicleClassNames</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqScenario.maxVehicleLength" title="dta.DynameqScenario.maxVehicleLength"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.maxVehicleLength</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqScenario.read" title="dta.DynameqScenario.read"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.read</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqScenario.write" title="dta.DynameqScenario.write"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqScenario.write</span></tt></a></td>
@@ -96,6 +114,12 @@
 <tt class="descname">addEvent</tt><big>(</big><em>eventTime</em>, <em>eventDescription</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.addEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>eventTime</em> is a datetime.datetime instance and <em>description</em> is a string.</p>
 <p>Verifies that <em>eventTime</em> is in [startTime, endTime)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqScenario.addGeneralizedCost">
+<tt class="descname">addGeneralizedCost</tt><big>(</big><em>name</em>, <em>units</em>, <em>turn_expr</em>, <em>link_expr</em>, <em>desc</em><big>)</big><a class="headerlink" href="#dta.DynameqScenario.addGeneralizedCost" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: need more documentation on these terms.</p>
 </dd></dl>
 
 <dl class="method">
@@ -130,9 +154,15 @@ found.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.DynameqScenario.iterVehicleClasses">
-<tt class="descname">iterVehicleClasses</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqScenario.iterVehicleClasses" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.DynameqScenario.iterVehicleClassNames">
+<tt class="descname">iterVehicleClassNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqScenario.iterVehicleClassNames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the vehicle classes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqScenario.maxVehicleLength">
+<tt class="descname">maxVehicleLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqScenario.maxVehicleLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum vehicle length, in <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType.LENGTH_UNITS" title="dta.VehicleType.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">VehicleType.LENGTH_UNITS</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">

@@ -87,6 +87,18 @@
 <tr><td><a class="reference internal" href="#dta.Scenario.addVehicleType" title="dta.Scenario.addVehicleType"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.addVehicleType</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.getVehicleClassGroup" title="dta.Scenario.getVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.getVehicleClassGroup</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.iterVehicleClassGroups" title="dta.Scenario.iterVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.iterVehicleClassGroups</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.iterVehicleClassNames" title="dta.Scenario.iterVehicleClassNames"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.iterVehicleClassNames</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Scenario.maxVehicleLength" title="dta.Scenario.maxVehicleLength"><tt class="xref py py-obj docutils literal"><span class="pre">Scenario.maxVehicleLength</span></tt></a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="method">
@@ -134,9 +146,15 @@ found.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Scenario.iterVehicleClasses">
-<tt class="descname">iterVehicleClasses</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Scenario.iterVehicleClasses" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.Scenario.iterVehicleClassNames">
+<tt class="descname">iterVehicleClassNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Scenario.iterVehicleClassNames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the vehicle classes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Scenario.maxVehicleLength">
+<tt class="descname">maxVehicleLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Scenario.maxVehicleLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum vehicle length, in <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType.LENGTH_UNITS" title="dta.VehicleType.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">VehicleType.LENGTH_UNITS</span></tt></a></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -154,7 +172,7 @@ found.</p>
 <dl class="attribute">
 <dt id="dta.Scenario.vehicleTypes">
 <tt class="descname">vehicleTypes</tt><a class="headerlink" href="#dta.Scenario.vehicleTypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Vehicle Type Name (string) -&gt; <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a></p>
+<dd><p>list of instances of <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a></p>
 </dd></dl>
 
 </dd></dl>

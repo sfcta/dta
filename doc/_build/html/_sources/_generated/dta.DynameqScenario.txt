@@ -15,9 +15,15 @@ dta.DynameqScenario
    
       ~DynameqScenario.__init__
       ~DynameqScenario.addEvent
+      ~DynameqScenario.addGeneralizedCost
       ~DynameqScenario.addVehicleClass
       ~DynameqScenario.addVehicleClassGroup
       ~DynameqScenario.addVehicleType
+      ~DynameqScenario.getVehicleClassGroup
+      ~DynameqScenario.iterVehicleClassGroups
+      ~DynameqScenario.iterVehicleClassNames
+      ~DynameqScenario.maxVehicleLength
+      ~DynameqScenario.read
       ~DynameqScenario.write
    
    

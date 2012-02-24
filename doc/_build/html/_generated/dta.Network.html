@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.Algorithms" href="dta.Algorithms.html" />
+    <link rel="next" title="dta.Route" href="dta.Route.html" />
     <link rel="prev" title="dta.Movement" href="dta.Movement.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dta.Algorithms.html" title="dta.Algorithms"
+          <a href="dta.Route.html" title="dta.Route"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="dta.Movement.html" title="dta.Movement"
@@ -79,8 +79,180 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <tr><td><a class="reference internal" href="#dta.Network.__init__" title="dta.Network.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Network.addAllMovements" title="dta.Network.addAllMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Network.addAllMovements</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.addLink" title="dta.Network.addLink"><tt class="xref py py-obj docutils literal"><span class="pre">Network.addLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.addMovement" title="dta.Network.addMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Network.addMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.addNode" title="dta.Network.addNode"><tt class="xref py py-obj docutils literal"><span class="pre">Network.addNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.addPlanCollectionInfo" title="dta.Network.addPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Network.addPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.areIDsUnique" title="dta.Network.areIDsUnique"><tt class="xref py py-obj docutils literal"><span class="pre">Network.areIDsUnique</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.deepcopy" title="dta.Network.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">Network.deepcopy</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getLinkForId" title="dta.Network.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getLinkForNodeIdPair" title="dta.Network.getLinkForNodeIdPair"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getLinkForNodeIdPair</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getLinkType" title="dta.Network.getLinkType"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getLinkType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getMaxLinkId" title="dta.Network.getMaxLinkId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getMaxLinkId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getMaxNodeId" title="dta.Network.getMaxNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getMaxNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNodeForId" title="dta.Network.getNodeForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNodeForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNodeType" title="dta.Network.getNodeType"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNodeType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumCentroids" title="dta.Network.getNumCentroids"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumCentroids</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumConnectors" title="dta.Network.getNumConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumLinks" title="dta.Network.getNumLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumNodes" title="dta.Network.getNumNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumOverlappingConnectors" title="dta.Network.getNumOverlappingConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumOverlappingConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumRoadLinks" title="dta.Network.getNumRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumRoadNodes" title="dta.Network.getNumRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumTimePlans" title="dta.Network.getNumTimePlans"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumTimePlans</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumVirtualLinks" title="dta.Network.getNumVirtualLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumVirtualLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getNumVirtualNodes" title="dta.Network.getNumVirtualNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getNumVirtualNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getPlanCollectionInfo" title="dta.Network.getPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.getScenario" title="dta.Network.getScenario"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getScenario</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.handleShortLinks" title="dta.Network.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.handleShortLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.hasLinkForId" title="dta.Network.hasLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.hasLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.hasLinkForNodeIdPair" title="dta.Network.hasLinkForNodeIdPair"><tt class="xref py py-obj docutils literal"><span class="pre">Network.hasLinkForNodeIdPair</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.hasNodeForId" title="dta.Network.hasNodeForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.hasNodeForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.hasPlanCollectionInfo" title="dta.Network.hasPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Network.hasPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.insertVirtualNodeBetweenCentroidsAndRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.iterConnectors" title="dta.Network.iterConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Network.iterConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.iterLinks" title="dta.Network.iterLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.iterLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.iterNodes" title="dta.Network.iterNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.iterNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.iterPlanCollectionInfo" title="dta.Network.iterPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Network.iterPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.iterRoadLinks" title="dta.Network.iterRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.iterRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.iterRoadNodes" title="dta.Network.iterRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.iterRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.mergeLinks" title="dta.Network.mergeLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.mergeLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.mergeSecondaryNetwork" title="dta.Network.mergeSecondaryNetwork"><tt class="xref py py-obj docutils literal"><span class="pre">Network.mergeSecondaryNetwork</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.mergeSecondaryNetworkBasedOnLinkIds" title="dta.Network.mergeSecondaryNetworkBasedOnLinkIds"><tt class="xref py py-obj docutils literal"><span class="pre">Network.mergeSecondaryNetworkBasedOnLinkIds</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.mergeSecondaryNetworkBasedOnLinkIds2" title="dta.Network.mergeSecondaryNetworkBasedOnLinkIds2"><tt class="xref py py-obj docutils literal"><span class="pre">Network.mergeSecondaryNetworkBasedOnLinkIds2</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.moveVirtualNodesToAvoidOverlappingLinks" title="dta.Network.moveVirtualNodesToAvoidOverlappingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.moveVirtualNodesToAvoidOverlappingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.moveVirtualNodesToAvoidShortConnectors" title="dta.Network.moveVirtualNodesToAvoidShortConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Network.moveVirtualNodesToAvoidShortConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.removeLink" title="dta.Network.removeLink"><tt class="xref py py-obj docutils literal"><span class="pre">Network.removeLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.removeNode" title="dta.Network.removeNode"><tt class="xref py py-obj docutils literal"><span class="pre">Network.removeNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.removeShapePoints" title="dta.Network.removeShapePoints"><tt class="xref py py-obj docutils literal"><span class="pre">Network.removeShapePoints</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.removeUnconnectedNodes" title="dta.Network.removeUnconnectedNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Network.removeUnconnectedNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.renameLink" title="dta.Network.renameLink"><tt class="xref py py-obj docutils literal"><span class="pre">Network.renameLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.renameNode" title="dta.Network.renameNode"><tt class="xref py py-obj docutils literal"><span class="pre">Network.renameNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.splitLink" title="dta.Network.splitLink"><tt class="xref py py-obj docutils literal"><span class="pre">Network.splitLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.writeLinksToShp" title="dta.Network.writeLinksToShp"><tt class="xref py py-obj docutils literal"><span class="pre">Network.writeLinksToShp</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.writeMovementsToShp" title="dta.Network.writeMovementsToShp"><tt class="xref py py-obj docutils literal"><span class="pre">Network.writeMovementsToShp</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.writeNodesToShp" title="dta.Network.writeNodesToShp"><tt class="xref py py-obj docutils literal"><span class="pre">Network.writeNodesToShp</span></tt></a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="dta.Network.addAllMovements">
+<tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.Network.addAllMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
+makes a movement for the given <em>vehicleClassGroup</em> (a :py:class:&#8217;VehicleClassGroup&#8217; instance) 
+from each incoming link to each outgoing link 
+(not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
+<p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.Network.addLink">
 <tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.Network.addLink" title="Permalink to this definition">¶</a></dt>
@@ -111,7 +283,7 @@ and that the id is not already used; stores it.</p>
 <dl class="method">
 <dt id="dta.Network.addPlanCollectionInfo">
 <tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.Network.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a time plan colection wth the given characteristics</p>
+<dd><p>Add a time plan collection with the given characteristics</p>
 </dd></dl>
 
 <dl class="method">
@@ -124,8 +296,8 @@ and that the id is not already used; stores it.</p>
 <dt id="dta.Network.deepcopy">
 <tt class="descname">deepcopy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.deepcopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the contents of the originNetwork by creating copies of all its 
-constituent elements into self (Nodes and Links and Movements
-, not the scenario). If the originNetwork contains an element 
+constituent elements into self (Nodes and Links and Movements, 
+not the scenario). If the originNetwork contains an element 
 with an already existing id this method will throw an exception.</p>
 </dd></dl>
 
@@ -147,6 +319,10 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dt id="dta.Network.getLinkType">
 <tt class="descname">getLinkType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getLinkType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a unique integer representing the link type</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">What is this for?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -171,7 +347,11 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dl class="method">
 <dt id="dta.Network.getNodeType">
 <tt class="descname">getNodeType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getNodeType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a unique integer representing the node type</p>
+<dd><p>Return a unique integer representing the node type.</p>
+<div class="admonition-todo admonition " id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">What is this for?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -245,6 +425,18 @@ another connector</p>
 <dt id="dta.Network.getScenario">
 <tt class="descname">getScenario</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.getScenario" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the scenario object associated with this network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.handleShortLinks">
+<tt class="descname">handleShortLinks</tt><big>(</big><em>minLength</em>, <em>warn</em>, <em>setLength</em><big>)</big><a class="headerlink" href="#dta.Network.handleShortLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Goes through the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (including <tt class="xref py py-class docutils literal"><span class="pre">Connectors</span></tt>)
+and for those with lengths less than <em>minLength</em>, do the following:</p>
+<ul class="simple">
+<li>if <em>warn</em> then issue a warning</li>
+<li>if <em>setLength</em> then adjust the length attribute to the minimum</li>
+</ul>
+<p>Note that <em>minLength</em> and <em>setLength</em> are both in the units specified by <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -332,6 +524,10 @@ error</p>
 <dd><p>This method will create a polygon around the current 
 (primary network). Every node or link of the secondary network 
 that is not in the polygon will be copied.</p>
+<div class="admonition-todo admonition " id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Code review and more detailed documentation.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -356,18 +552,28 @@ coppied.</p>
 
 <dl class="method">
 <dt id="dta.Network.moveVirtualNodesToAvoidOverlappingLinks">
-<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Virtual nodes are being moved + or minus 100 feet in either the X or the Y
-dimension to avoid overapping links</p>
+<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.Network.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
+</div>
+<p>The <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> will be moved randomly within the bounding box defined by its
+current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in the units given by 
+<a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
+<p>This will be repeated until the links do not overlap (up to 8 times).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Network.moveVirtualNodesToAvoidShortConnectors">
-<tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><em>connectorMinLength</em>, <em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.Network.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connectors are sometimes too short. This method tries to move 
 the virtual node attached to the connector in the vicinity 
 of the current virtual node so that the connector length is 
-greater than Link.MIN_LENGTH_IN_MILES</p>
+greater than <em>connectorMinLength</em>, which should be in the units given by <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a>.</p>
+<p>The <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> will be moved randomly within the bounding box defined by its
+current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in the units given by 
+<a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
+<p>This will be repeated until the connector is long enough (up to 4 times).</p>
 </dd></dl>
 
 <dl class="method">
@@ -386,6 +592,19 @@ greater than Link.MIN_LENGTH_IN_MILES</p>
 <dt id="dta.Network.removeShapePoints">
 <tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.removeShapePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove shape points from the network</p>
+<div class="admonition-todo admonition " id="index-4">
+<p class="first admonition-title">Todo</p>
+<p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
+are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
+the other kind?</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.removeUnconnectedNodes">
+<tt class="descname">removeUnconnectedNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network.removeUnconnectedNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes any nodes that aren&#8217;t linked to anything (have no adjacent links).</p>
+<p>This might be useful for networks with too many nodes for the DTA software license.</p>
 </dd></dl>
 
 <dl class="method">
@@ -406,6 +625,11 @@ greater than Link.MIN_LENGTH_IN_MILES</p>
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
+<div class="admonition-todo admonition " id="index-5">
+<p class="first admonition-title">Todo</p>
+<p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
+Currently it looks like an ALL and a PROHIBITED are required?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -440,8 +664,8 @@ opposing direction then split that too.</p>
   <p class="topless"><a href="dta.Movement.html"
                         title="previous chapter">dta.Movement</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="dta.Algorithms.html"
-                        title="next chapter">dta.Algorithms</a></p>
+  <p class="topless"><a href="dta.Route.html"
+                        title="next chapter">dta.Route</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/_generated/dta.Network.txt"
@@ -474,7 +698,7 @@ opposing direction then split that too.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dta.Algorithms.html" title="dta.Algorithms"
+          <a href="dta.Route.html" title="dta.Route"
              >next</a> |</li>
         <li class="right" >
           <a href="dta.Movement.html" title="dta.Movement"

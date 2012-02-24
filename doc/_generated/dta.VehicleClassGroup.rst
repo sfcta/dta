@@ -14,6 +14,8 @@ dta.VehicleClassGroup
    .. autosummary::
    
       ~VehicleClassGroup.__init__
+      ~VehicleClassGroup.allowsAll
+      ~VehicleClassGroup.allowsNone
    
    
 

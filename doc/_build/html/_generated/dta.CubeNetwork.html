@@ -76,6 +76,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.__init__" title="dta.CubeNetwork.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.addAllMovements" title="dta.CubeNetwork.addAllMovements"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addAllMovements</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.addLink" title="dta.CubeNetwork.addLink"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addLink</span></tt></a></td>
 <td></td>
 </tr>
@@ -85,23 +88,183 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.addNode" title="dta.CubeNetwork.addNode"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addNode</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.addPlanCollectionInfo" title="dta.CubeNetwork.addPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.addPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.applyTurnProhibitions" title="dta.CubeNetwork.applyTurnProhibitions"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.applyTurnProhibitions</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.areIDsUnique" title="dta.CubeNetwork.areIDsUnique"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.areIDsUnique</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.deepcopy" title="dta.CubeNetwork.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.deepcopy</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.getLinkForId" title="dta.CubeNetwork.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getLinkForId</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.getLinkForNodeIdPair" title="dta.CubeNetwork.getLinkForNodeIdPair"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getLinkForNodeIdPair</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getLinkType" title="dta.CubeNetwork.getLinkType"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getLinkType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getMaxLinkId" title="dta.CubeNetwork.getMaxLinkId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getMaxLinkId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getMaxNodeId" title="dta.CubeNetwork.getMaxNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getMaxNodeId</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.getNodeForId" title="dta.CubeNetwork.getNodeForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNodeForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNodeType" title="dta.CubeNetwork.getNodeType"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNodeType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumCentroids" title="dta.CubeNetwork.getNumCentroids"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumCentroids</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumConnectors" title="dta.CubeNetwork.getNumConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumLinks" title="dta.CubeNetwork.getNumLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumNodes" title="dta.CubeNetwork.getNumNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumOverlappingConnectors" title="dta.CubeNetwork.getNumOverlappingConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumOverlappingConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumRoadLinks" title="dta.CubeNetwork.getNumRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumRoadNodes" title="dta.CubeNetwork.getNumRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumTimePlans" title="dta.CubeNetwork.getNumTimePlans"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumTimePlans</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumVirtualLinks" title="dta.CubeNetwork.getNumVirtualLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumVirtualLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getNumVirtualNodes" title="dta.CubeNetwork.getNumVirtualNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getNumVirtualNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getPlanCollectionInfo" title="dta.CubeNetwork.getPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.getScenario" title="dta.CubeNetwork.getScenario"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getScenario</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.handleShortLinks" title="dta.CubeNetwork.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.handleShortLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.hasLinkForId" title="dta.CubeNetwork.hasLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.hasLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.hasLinkForNodeIdPair" title="dta.CubeNetwork.hasLinkForNodeIdPair"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.hasLinkForNodeIdPair</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.hasNodeForId" title="dta.CubeNetwork.hasNodeForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.hasNodeForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.hasPlanCollectionInfo" title="dta.CubeNetwork.hasPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.hasPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.iterConnectors" title="dta.CubeNetwork.iterConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.iterConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.iterLinks" title="dta.CubeNetwork.iterLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.iterLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.iterNodes" title="dta.CubeNetwork.iterNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.iterNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.iterPlanCollectionInfo" title="dta.CubeNetwork.iterPlanCollectionInfo"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.iterPlanCollectionInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.iterRoadLinks" title="dta.CubeNetwork.iterRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.iterRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.iterRoadNodes" title="dta.CubeNetwork.iterRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.iterRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.mergeLinks" title="dta.CubeNetwork.mergeLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.mergeLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.mergeSecondaryNetwork" title="dta.CubeNetwork.mergeSecondaryNetwork"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.mergeSecondaryNetwork</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds" title="dta.CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2" title="dta.CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors" title="dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.moveVirtualNodesToAvoidShortConnectors</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.CubeNetwork.readCSVs"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.readCSVs</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.readFromShapefiles" title="dta.CubeNetwork.readFromShapefiles"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.readFromShapefiles</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.readLinkShape" title="dta.CubeNetwork.readLinkShape"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.readLinkShape</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.readNetfile" title="dta.CubeNetwork.readNetfile"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.readNetfile</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.removeLink" title="dta.CubeNetwork.removeLink"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.removeLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.removeNode" title="dta.CubeNetwork.removeNode"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.removeNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.removeShapePoints" title="dta.CubeNetwork.removeShapePoints"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.removeShapePoints</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.removeUnconnectedNodes" title="dta.CubeNetwork.removeUnconnectedNodes"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.removeUnconnectedNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.renameLink" title="dta.CubeNetwork.renameLink"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.renameLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.renameNode" title="dta.CubeNetwork.renameNode"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.renameNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.splitLink" title="dta.CubeNetwork.splitLink"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.splitLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.writeLinksToShp" title="dta.CubeNetwork.writeLinksToShp"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.writeLinksToShp</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.writeMovementsToShp" title="dta.CubeNetwork.writeMovementsToShp"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.writeMovementsToShp</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.writeNodesToShp" title="dta.CubeNetwork.writeNodesToShp"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.writeNodesToShp</span></tt></a></td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="dta.CubeNetwork.addAllMovements">
+<tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addAllMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
+makes a movement for the given <em>vehicleClassGroup</em> (a :py:class:&#8217;VehicleClassGroup&#8217; instance) 
+from each incoming link to each outgoing link 
+(not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
+<p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.CubeNetwork.addLink">
 <tt class="descname">addLink</tt><big>(</big><em>newLink</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addLink" title="Permalink to this definition">¶</a></dt>
@@ -132,7 +295,7 @@ and that the id is not already used; stores it.</p>
 <dl class="method">
 <dt id="dta.CubeNetwork.addPlanCollectionInfo">
 <tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a time plan colection wth the given characteristics</p>
+<dd><p>Add a time plan collection with the given characteristics</p>
 </dd></dl>
 
 <dl class="method">
@@ -151,8 +314,8 @@ and that the id is not already used; stores it.</p>
 <dt id="dta.CubeNetwork.deepcopy">
 <tt class="descname">deepcopy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.deepcopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the contents of the originNetwork by creating copies of all its 
-constituent elements into self (Nodes and Links and Movements
-, not the scenario). If the originNetwork contains an element 
+constituent elements into self (Nodes and Links and Movements, 
+not the scenario). If the originNetwork contains an element 
 with an already existing id this method will throw an exception.</p>
 </dd></dl>
 
@@ -174,6 +337,10 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dt id="dta.CubeNetwork.getLinkType">
 <tt class="descname">getLinkType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getLinkType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a unique integer representing the link type</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">What is this for?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -198,7 +365,11 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dl class="method">
 <dt id="dta.CubeNetwork.getNodeType">
 <tt class="descname">getNodeType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getNodeType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a unique integer representing the node type</p>
+<dd><p>Return a unique integer representing the node type.</p>
+<div class="admonition-todo admonition " id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">What is this for?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -272,6 +443,18 @@ another connector</p>
 <dt id="dta.CubeNetwork.getScenario">
 <tt class="descname">getScenario</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getScenario" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the scenario object associated with this network</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.handleShortLinks">
+<tt class="descname">handleShortLinks</tt><big>(</big><em>minLength</em>, <em>warn</em>, <em>setLength</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.handleShortLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Goes through the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (including <tt class="xref py py-class docutils literal"><span class="pre">Connectors</span></tt>)
+and for those with lengths less than <em>minLength</em>, do the following:</p>
+<ul class="simple">
+<li>if <em>warn</em> then issue a warning</li>
+<li>if <em>setLength</em> then adjust the length attribute to the minimum</li>
+</ul>
+<p>Note that <em>minLength</em> and <em>setLength</em> are both in the units specified by <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -359,6 +542,10 @@ error</p>
 <dd><p>This method will create a polygon around the current 
 (primary network). Every node or link of the secondary network 
 that is not in the polygon will be copied.</p>
+<div class="admonition-todo admonition " id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Code review and more detailed documentation.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -383,18 +570,28 @@ coppied.</p>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks">
-<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Virtual nodes are being moved + or minus 100 feet in either the X or the Y
-dimension to avoid overapping links</p>
+<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
+</div>
+<p>The <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> will be moved randomly within the bounding box defined by its
+current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in the units given by 
+<a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
+<p>This will be repeated until the links do not overlap (up to 8 times).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors">
-<tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><em>connectorMinLength</em>, <em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connectors are sometimes too short. This method tries to move 
 the virtual node attached to the connector in the vicinity 
 of the current virtual node so that the connector length is 
-greater than Link.MIN_LENGTH_IN_MILES</p>
+greater than <em>connectorMinLength</em>, which should be in the units given by <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a>.</p>
+<p>The <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> will be moved randomly within the bounding box defined by its
+current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in the units given by 
+<a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
+<p>This will be repeated until the connector is long enough (up to 4 times).</p>
 </dd></dl>
 
 <dl class="method">
@@ -454,9 +651,12 @@ and <a class="reference internal" href="dta.Connector.html#dta.Connector" title=
 
 <dl class="method">
 <dt id="dta.CubeNetwork.readLinkShape">
-<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read the link shape for each link in the input shapefile 
-and apply it to the cube link</p>
+<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em>, <em>startNodeIdField</em>, <em>endNodeIdField</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the given <em>linkShapefile</em> to add shape points to the network, in order to more accurately
+represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
+intersections because of the angles involved.</p>
+<p><em>startNodeIdField</em> and <em>endNodeIdField</em> are the column headers (so they&#8217;re strings)
+of the start node and end node IDs within the <em>linkShapefile</em>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -484,6 +684,19 @@ See <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.Cu
 <dt id="dta.CubeNetwork.removeShapePoints">
 <tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.removeShapePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove shape points from the network</p>
+<div class="admonition-todo admonition " id="index-4">
+<p class="first admonition-title">Todo</p>
+<p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
+are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
+the other kind?</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.removeUnconnectedNodes">
+<tt class="descname">removeUnconnectedNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.removeUnconnectedNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes any nodes that aren&#8217;t linked to anything (have no adjacent links).</p>
+<p>This might be useful for networks with too many nodes for the DTA software license.</p>
 </dd></dl>
 
 <dl class="method">
@@ -504,6 +717,11 @@ See <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.Cu
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
+<div class="admonition-todo admonition " id="index-5">
+<p class="first admonition-title">Todo</p>
+<p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
+Currently it looks like an ALL and a PROHIBITED are required?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
