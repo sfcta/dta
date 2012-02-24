@@ -23,6 +23,7 @@ from collections import defaultdict
 from .DtaError import DtaError
 from .Link import Link
 from .Movement import Movement
+from .Node import Node
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import polylinesCross, lineSegmentsCross
 
@@ -31,10 +32,14 @@ class RoadLink(Link):
     A RoadLink in a network.  Both nodes must be RoadNodes.
     
     """
+    #: Static variable representing the nits of the length variable
+    #: Should be ``kilometers`` or ``miles``
+    LENGTH_UNITS = None
+    
     #: default level value
     DEFAULT_LEVEL = 0
-    #: default lane width in feet
-    DEFAULT_LANE_WIDTH_FEET = 12
+    #: default lane width in :py:attr:`Node.COORDINATE_UNITS`
+    DEFAULT_LANE_WIDTH = 12
 
     DIR_EB = "EB"
     DIR_WB = "WB"
@@ -54,7 +59,7 @@ class RoadLink(Link):
          * *facilityType* is a non-negative integer indicating the category of facility such
            as a freeway, arterial, collector, etc.  A lower number indicates a facility of
            higher priority, that is, higher capacity and speed.
-         * *length* is the link length.  Pass None to automatically calculate it.
+         * *length* is the link length, in :py:attr:`RoadLink.LENGTH_UNITS`. Pass None to automatically calculate it.
          * *freeflowSpeed* is in km/h or mi/h
          * *effectiveLengthFactor* is applied to the effective length of a vehicle while it is
            on the link.  May vary over time with LinkEvents
@@ -315,13 +320,15 @@ class RoadLink(Link):
     
     def addShapePoint(self, x, y):
         """
-        Append a shape point to the link
+        Append a shape point to the link.
+        Shape points are not actual nodes, but additional coordinates that inform the geometry of a link,
+        such as showing curvature.
         """
         self._shapePoints.append((x,y))
 
     def getNumShapePoints(self):
         """
-        Return the number of shapepoints this link has
+        Return the number of shape points this link has
         """
         return len(self._shapePoints)
 
@@ -406,34 +413,62 @@ class RoadLink(Link):
 
     def getLength(self):
         """
-        Return the  length of the link in feet
+        Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.
+        
+        Uses the asserted length, if there is one; otherwise calculates the euclidean length.        
         """
         if self._length != -1:
-            return self._length 
-        else:
-            return self.euclideanLength()
-
-    def getLengthInMiles(self):
+            return self._length
+        
+        if RoadLink.LENGTH_UNITS == "miles" and Node.COORDINATE_UNITS == "feet":
+            return (self.euclideanLength() / 5280.0)
+        
+        if RoadLink.LENGTH_UNITS == "kilometers" and Node.COORDINATE_UNITS == "meters": 
+            return (self.euclideanLength() / 1000.0)
+        
+        raise DtaError("RoadLink.getLength() doesn't support RoadLink.LENGTH_UNITS %s and Node.COORDINATE_UNITS %s" % 
+                       (str(RoadLink.LENGTH_UNITS), str(Node.COORDINATE_UNITS)))
+    
+    def getLengthInCoordinateUnits(self):
         """
-        Return the length of the link in miles
+        Returns the length of the link in :py:attr:`Node.COORDINATE_UNITS` units.
+        
+        Uses the asserted length, if there is one; otherwise calculates the euclidean length.
         """
-        return self.getLength() / 5280.0
+        if self._length != -1:
+            
+            if RoadLink.LENGTH_UNITS == "miles" and Node.COORDINATE_UNITS == "feet":
+                return (self._length * 5280.0)
+            
+            if RoadLink.LENGTH_UNITS == "kilometers" and Node.COORDINATE_UNITS == "meters": 
+                return (self._length * 1000.0)
+            
+            raise DtaError("RoadLink.getLengthInCoordinateUnits() doesn't support RoadLink.LENGTH_UNITS %s and Node.COORDINATE_UNITS %s" % 
+                           (str(RoadLink.LENGTH_UNITS), str(Node.COORDINATE_UNITS)))
+            
+        return self.euclideanLength()
+       
+    def setLength(self, newLength):
+        """
+        Sets the asserted length of this link; the *newLength* should be in units specified by `RoadLink.LENGTH_UNITS`
+        """
+        self._length = newLength 
         
     def getCenterLine(self):
         """
-        Offset the link to the right 0.5*numLanes*:py:attr:`RoadLink.DEFAULT_LANE_WIDTH_FEET` and 
+        Offset the link to the right 0.5*numLanes*:py:attr:`RoadLink.DEFAULT_LANE_WIDTH` and 
         return a tuple of two points (each one being a tuple of two floats) representing the centerline 
         """
 
         dx = self._endNode.getX() - self._startNode.getX()
         dy = self._endNode.getY() - self._startNode.getY() 
 
-        length = self.euclideanLength() # dx ** 2 + dy ** 2
+        length = self.getLengthInCoordinateUnits()
 
         if length == 0:
             length = 1
 
-        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH_FEET / 2.0 / length 
+        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH / 2.0 / length 
 
         xOffset = dy * scale
         yOffset = - dx * scale 
@@ -446,20 +481,20 @@ class RoadLink(Link):
     def getOutline(self, scale=1):
         """
         Return the outline of the link as a linearRing of points
-        in clockwise order. If scale the pysical outline of the link
+        in clockwise order. If scale the physical outline of the link
         will be return using the number of lanes attribute to determine
-        the boundries of the outline.
+        the boundaries of the outline.
         """
 
         dx = self._endNode.getX() - self._startNode.getX()
         dy = self._endNode.getY() - self._startNode.getY() 
 
-        length = self.euclideanLength() # dx ** 2 + dy ** 2
+        length = self.getLengthInCoordinateUnits()
 
         if length == 0:
             length = 1
 
-        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH_FEET / length * scale
+        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH / length * scale
 
         xOffset = dy * scale
         yOffset = - dx * scale 
@@ -475,6 +510,8 @@ class RoadLink(Link):
     def getMidPoint(self):
         """
         Return the midpoint of the link's centerline as a tuple of two floats
+        
+        .. todo:: What if the link has Shapepoints and we can do better (e.g. reflect curvature)
         """
         
         return ((self._centerline[0][0] + self._centerline[1][0]) / 2.0,
@@ -514,9 +551,11 @@ class RoadLink(Link):
         """ 
         self._numLanes = numLanes 
     
-    def getAcuteAngle(self, other):
+    def getAngle(self, other):
         """
-        Return the acute angle (0, 180) between this link and the input one.
+        Return the angle in degrees (in the range [0, 180]) between this link and *other*, 
+        an instance of :py:class:`Link`.
+        
         Both links are considered as line segments from start to finish (shapepoints 
         are not taken into account).
         """
@@ -558,9 +597,10 @@ class RoadLink(Link):
     
     def isOverlapping(self, other):
         """
-        Return True if the angle between the two links (measured using their endpoints) is less than 1 degree
+        Return True if the angle between the this link and *other* (an instance of :py:class:`Link`)
+        is less than 1 degree  (measured using their endpoints only) 
         """
-        if self.getAcuteAngle(other) <= 1.0:
+        if self.getAngle(other) <= 1.0:
             return True
         return False
 

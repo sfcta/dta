@@ -406,45 +406,70 @@ ENDRUN
         Apply the turn prohibitions found in the filename
         """
         inputStream = open(fileName, 'r')
-
+        movements_removed = 0
+        lines_read        = 0
+        
         for line in inputStream:
-            fields = line.strip().split()
+            fields      = line.strip().split()
             startNodeId = int(fields[0])
-            nodeId = int(fields[1])
-            endNodeId = int(fields[2])
-
+            nodeId      = int(fields[1])
+            endNodeId   = int(fields[2])
+            lines_read += 1
+            
             try:
                 link = self.getLinkForNodeIdPair(startNodeId, nodeId)
                 mov = link.getOutgoingMovement(endNodeId)                
             except DtaError, e:
-                print str(e)
+                DtaLogger.error("Error finding movement %d %d %d - skipping: %s" %
+                                (startNodeId, nodeId, endNodeId, str(e)))                
                 continue
             
-            link.removeOutgoingMovement(mov) 
+            # DtaLogger.info("Removing movement %d-%d-%d found in turn prohibition file" % (startNodeId, nodeId, endNodeId))
+            link.removeOutgoingMovement(mov)
+            movements_removed += 1
         
-    def readLinkShape(self, linkShapefile):
+        DtaLogger.info("Removed %d movements out of %d found in %s" % (movements_removed, lines_read, fileName))
+        
+    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField):
         """
-        Read the link shape for each link in the input shapefile 
-        and apply it to the cube link
+        Uses the given *linkShapefile* to add shape points to the network, in order to more accurately
+        represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
+        intersections because of the angles involved.
+        
+        *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
+        of the start node and end node IDs within the *linkShapefile*.
         """ 
 
-        sf = shapefile.Reader(linkShapefile)
-        shapes = sf.shapes()
+        sf      = shapefile.Reader(linkShapefile)
+        shapes  = sf.shapes()
         records = sf.records()
+        
+        links_found         = 0
+        shapepoints_added   = 0
 
         fields = [field[0] for field in sf.fields]
+        
+        # if the first field is the 'DeletionFlag' -- remove
+        if fields[0] == 'DeletionFlag':
+            fields.pop(0)
+            
         for shape, recordValues in izip(shapes, records):
 
-            localsdict = dict(zip(fields, recordValues))
-            #startNodeId = int(localsdict["A"])
-            #endNodeId = int(localsdict["B"])
-            startNodeId = int(recordValues[-2])
-            endNodeId = int(recordValues[-1])
+            assert(len(fields)==len(recordValues))
+            
+            localsdict  = dict(zip(fields, recordValues))
+            startNodeId = int(localsdict[startNodeIdField])
+            endNodeId   = int(localsdict[endNodeIdField])
+
+            # DtaLogger.debug("shape %d %d" % (startNodeId, endNodeId))
 
             if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
                 link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
+                links_found += 1
+                
                 if len(shape.points) == 2:
                     continue
-                link._shapePoints = shape.points
-       
+                link._shapePoints = shape.points[1:-1]
+                shapepoints_added += len(shape.points)-2
 
+        DtaLogger.info("Read %d shape points for %d links from %s" % (shapepoints_added, links_found, linkShapefile))

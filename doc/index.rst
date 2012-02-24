@@ -13,7 +13,8 @@ Required python modules:
  * `numpy <http://numpy.scipy.org/>`_ Efficient multi-dimensional container of generic data.  Used for Demand data.
  * `la <http://pypi.python.org/pypi/la>`_ Labeled numpy arrays.  Used for Demand data.
  * `Bottleneck <http://pypi.python.org/pypi/Bottleneck>`_ Fast NumPy array functions. Required by la.  Note: It might be easier to install a pre-compiled version of this, as directed on the documentation page.
- 
+ * `pyshp <http://code.google.com/p/pyshp/>`_ Python Shapefile Library for interpretting shapefiles for road geometry and for exporting shapefiles.
+
 Optional python modules:
  * `sphinx <http://sphinx.pocoo.org>`_ Python documentation generator.
  * `nose <http://pypi.python.org/pypi/nose>`_ For unit tests.
@@ -81,7 +82,7 @@ Link classes
    dta.VirtualLink
    dta.Connector
    
-Time Plan classes
+Signal classes
 =================
 .. autosummary::
    :nosignatures:
@@ -89,6 +90,8 @@ Time Plan classes
    
    dta.TimePlan
    dta.PlanCollectionInfo
+   dta.Phase
+   dta.PhaseMovement
    
 Misc
 ================
@@ -100,6 +103,7 @@ Misc
    dta.DtaLogger
    dta.Movement
    dta.Network
+   dta.Route
    dta.Algorithms
    dta.Demand
    dta.Utils

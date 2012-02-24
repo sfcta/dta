@@ -425,7 +425,7 @@ class DynameqNetwork(Network):
                                    link.getEndNode().getId(),
                                    link._reverseAttachedLinkId if link._reverseAttachedLinkId else -1,
                                    link._facilityType,
-                                   ("%12.3f" % -1), #link._length if link._length else "-1"),
+                                   ("%12.3f" % link._length),
                                    link._freeflowSpeed,
                                    link._effectiveLengthFactor,
                                    link._responseTimeFactor,
@@ -688,8 +688,6 @@ class DynameqNetwork(Network):
         number = total counts = (endtime-starttime)/period
         tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)        
         """
-       
-        
         movementcounter = 0
         countList2write = []
 
@@ -873,8 +871,11 @@ class DynameqNetwork(Network):
         location. If a midblock location does does not exist a RoadLink close
         to the connector is split in half and the connector is attached to the new 
         midblock location
+
+        .. todo:: why is this in :py:class:`DynameqNetwork` rather than :py:class:`Network`?
         
-        .. todo:: This is insufficient documentation.  I'm currently getting a lot of errors about VehicleClassGroups.
+        .. todo:: I would like more detail about this.  How are movements handled for VehicleClassGroups?
+                  Also, rename to "moveConnectorsFromIntersectionsToMidblocks"; this sounds like a delete operation.
         """
         if not isinstance(roadNode, RoadNode):
             raise DtaError("Input Node %d is not a RoadNode" % roadNode.getId())
@@ -916,14 +917,11 @@ class DynameqNetwork(Network):
         if connector.startIsRoadNode():
             virtualNode = connector.getEndNode() 
 
-            length = math.sqrt((nodeToAttachConnector.getX() - virtualNode.getX()) ** 2 + 
-                (nodeToAttachConnector.getY() - virtualNode.getY()) ** 2)
-
             newConnector = Connector(connector.getId(),
                                      nodeToAttachConnector,
                                      virtualNode,
                                      None,
-                                     length, 
+                                     -1,  # don't assign a length
                                      connector._freeflowSpeed,
                                      connector._effectiveLengthFactor,
                                      connector._responseTimeFactor,
@@ -939,14 +937,11 @@ class DynameqNetwork(Network):
         else:
             virtualNode = connector.getStartNode() 
 
-            length = math.sqrt((nodeToAttachConnector.getX() - virtualNode.getX()) ** 2 + 
-                (nodeToAttachConnector.getY() - virtualNode.getY()) ** 2)
-
             newConnector = Connector(connector.getId(),
                                      virtualNode,
                                      nodeToAttachConnector,
                                      None,
-                                     length, 
+                                     -1, # don't assign a length 
                                      connector._freeflowSpeed,
                                      connector._effectiveLengthFactor,
                                      connector._responseTimeFactor,

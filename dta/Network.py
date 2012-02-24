@@ -83,8 +83,8 @@ class Network(object):
     def deepcopy(self, originNetwork):
         """
         Copies the contents of the originNetwork by creating copies of all its 
-        constituent elements into self (Nodes and Links and Movements
-        , not the scenario). If the originNetwork contains an element 
+        constituent elements into self (Nodes and Links and Movements, 
+        not the scenario). If the originNetwork contains an element 
         with an already existing id this method will throw an exception. 
         """
         self._maxLinkId = originNetwork._maxLinkId
@@ -118,7 +118,7 @@ class Network(object):
 
     def addPlanCollectionInfo(self, militaryStartTime, militaryEndTime, name, description):
         """
-        Add a time plan colection wth the given characteristics
+        Add a time plan collection with the given characteristics
         """
         if self.hasPlanCollectionInfo(militaryStartTime, militaryEndTime):
             raise DtaError("The network already has a plan collection info from %d to %d"
@@ -210,6 +210,42 @@ class Network(object):
         
         raise DtaError("Network getNodeForId: none found for id %d" % nodeId)
     
+    def addAllMovements(self, vehicleClassGroup, includeUTurns=False):
+        """
+        For each :py:class:`RoadNode` and each :py:class:`VirtualNode`, 
+        makes a movement for the given *vehicleClassGroup* (a :py:class:'VehicleClassGroup' instance) 
+        from each incoming link to each outgoing link 
+        (not including :py:class:`VirtualLink` instances).
+        
+        If *includeUTurns*, includes U-Turn movements for each link as well, otherwise omits these.
+        
+        """
+        
+        movements_added = 0
+        
+        for node in self.iterNodes():
+            if node.isCentroid(): continue
+            
+            for incomingLink in node.iterIncomingLinks():
+
+                if incomingLink.isVirtualLink(): continue
+                
+                for outgoingLink in node.iterOutgoingLinks():
+                    if outgoingLink.isVirtualLink(): continue
+                
+                    #it already exists
+                    if incomingLink.hasOutgoingMovement(outgoingLink.getEndNodeId()): continue
+                
+                    mov = Movement.simpleMovementFactory(incomingLink, outgoingLink, vehicleClassGroup)
+                
+                    # if it's a U-Turn and we don't want it, move on
+                    if mov.isUTurn() and not includeUTurns: continue
+                
+                    incomingLink.addOutgoingMovement(mov)
+                    movements_added += 1
+        
+        DtaLogger.info("addAllMovements() added %d movements" % movements_added)
+        
     def addLink(self, newLink):
         """
         Verifies that:
@@ -503,7 +539,10 @@ class Network(object):
         """
         Split the input link in half. The two new links have the 
         attributes of the input link. If there is a link in the 
-        opposing direction then split that too. 
+        opposing direction then split that too.
+        
+        .. todo:: Document the how the movements are handled, especially regarding VehicleClassGroups.
+                  Currently it looks like an ALL and a PROHIBITED are required?
         """ 
         if isinstance(linkToSplit, VirtualLink):
             raise DtaError("Virtual link %s cannot be split" % linkToSplit.getId())
@@ -527,7 +566,7 @@ class Network(object):
                                 midNode, 
                                 None,
                                 linkToSplit._facilityType,
-                                linkToSplit.euclideanLength() / 2.0,
+                                linkToSplit.getLength() / 2.0,
                                 linkToSplit._freeflowSpeed,
                                 linkToSplit._effectiveLengthFactor,
                                 linkToSplit._responseTimeFactor,
@@ -544,7 +583,7 @@ class Network(object):
                                 linkToSplit.getEndNode(), 
                                 None,
                                 linkToSplit._facilityType,
-                                linkToSplit.euclideanLength() / 2.0,
+                                linkToSplit.getLength() / 2.0,
                                 linkToSplit._freeflowSpeed,
                                 linkToSplit._effectiveLengthFactor,
                                 linkToSplit._responseTimeFactor,
@@ -589,7 +628,7 @@ class Network(object):
                                    newLink1,
                                    newLink2,                               
                                    newLink1._freeflowSpeed,
-                                   VehicleClassGroup("All", "*", "#ffff00"), 
+                                   self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL), 
                                    newLink1._numLanes,
                                    0,
                                    newLink1._numLanes,
@@ -893,38 +932,46 @@ class Network(object):
                         num += 1
         return num
 
-    def moveVirtualNodesToAvoidShortConnectors(self):
+    def moveVirtualNodesToAvoidShortConnectors(self, connectorMinLength, maxDistToMove):
         """
         Connectors are sometimes too short. This method tries to move 
         the virtual node attached to the connector in the vicinity 
         of the current virtual node so that the connector length is 
-        greater than Link.MIN_LENGTH_IN_MILES
+        greater than *connectorMinLength*, which should be in the units given by :py:attr:`RoadLink.LENGTH_UNITS`.
+        
+        The :py:class:`VirtualNode` will be moved randomly within the bounding box defined by its
+        current location +/- *maxDistToMove*, where *maxDistToMove* is in the units given by 
+        :py:attr:`Node.COORDINATE_UNITS`.
+        
+        This will be repeated until the connector is long enough (up to 4 times).
         """
-        MAX_DIST_TO_MOVE = 100
         for link in self.iterLinks():
             if not link.isConnector():
                 continue
-            #if link.getEuclideanLengthInMiles() > Link.MIN_LENGTH_IN_MILES:
-            #    continue
+
             virtualNode = link.getVirtualNode()
             numMoves = 0
 
-            while link.getEuclideanLengthInMiles() < Link.MIN_LENGTH_IN_MILES \
+            while link.getLength() < connectorMinLength \
                     and numMoves < 4:
-                virtualNode._x += random.randint(0, MAX_DIST_TO_MOVE)
-                virtualNode._y += random.randint(0, MAX_DIST_TO_MOVE)
+                virtualNode._x += random.uniform(0, maxDistToMove)
+                virtualNode._y += random.uniform(0, maxDistToMove)
                 numMoves += 1
 
-            DtaLogger.info("Moved virtual node  %8d associated with connector %8d to avoid overlappig links" % (virtualNode.getId(), link.getId()))
+            DtaLogger.info("Moved virtual node %8d associated with connector %8d to avoid overlapping links" % (virtualNode.getId(), link.getId()))
                                                 
-    def moveVirtualNodesToAvoidOverlappingLinks(self):
+    def moveVirtualNodesToAvoidOverlappingLinks(self, maxDistToMove):
         """
-        Virtual nodes are being moved + or minus 100 feet in either the X or the Y
-        dimension to avoid overapping links
+        .. todo:: What overlapping links are a problem?  Why?  More explanation please.
+        
+        The :py:class:`VirtualNode` will be moved randomly within the bounding box defined by its
+        current location +/- *maxDistToMove*, where *maxDistToMove* is in the units given by 
+        :py:attr:`Node.COORDINATE_UNITS`.
+        
+        This will be repeated until the links do not overlap (up to 8 times).
         """
         
         MAX_NUM_MOVES = 8
-        MAX_DIST_TO_MOVE = 100
         
         for node in self.iterNodes():
             if not node.isRoadNode():
@@ -949,12 +996,37 @@ class Network(object):
                         vNodeNeedsToMove = False
                     
                     if vNodeNeedsToMove:
-                        virtualNode._x += random.randint(0, MAX_DIST_TO_MOVE)
-                        virtualNode._y += random.randint(0, MAX_DIST_TO_MOVE)
+                        virtualNode._x += random.uniform(0, maxDistToMove)
+                        virtualNode._y += random.uniform(0, maxDistToMove)
                         numMoves += 1
                         if numMoves > MAX_NUM_MOVES:
                             vNodeNeedsToMove = False
 
+    def handleShortLinks(self, minLength, warn, setLength):
+        """
+        Goes through the :py:class:`RoadLink` instances (including :py:class:`Connectors`)
+        and for those with lengths less than *minLength*, do the following:
+        
+        * if *warn* then issue a warning
+        * if *setLength* then adjust the length attribute to the minimum
+        
+        Note that *minLength* and *setLength* are both in the units specified by :py:attr:`RoadLink.LENGTH_UNITS`
+        
+        """
+        for link in self.iterLinks():
+            # only handle road links and connectors
+            if not link.isRoadLink() and not link.isConnector(): continue
+            # that are too short
+            if link.getLength() >= minLength: continue
+            
+            if warn:
+                DtaLogger.warn("Short link warning: %d (%d,%d) has length %.4f < %.4f" % 
+                               (link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),
+                                link.getLength(), minLength))
+            if setLength:
+                link.setLength(minLength)
+                
+            
     def writeNodesToShp(self, name):
         """
         Export all the nodes to a shapefile with the given name (without the shp extension)"
@@ -1137,7 +1209,11 @@ class Network(object):
                 
     def removeShapePoints(self):
         """
-        Remove shape points from the network 
+        Remove shape points from the network
+        
+        .. todo:: These are not the same "shape points" as the :py:class:`RoadLink._shapePoints`.  Define what these
+                  are (call them something else if they're not the same).  Also, why wouldn't we convert them to
+                  the other kind? 
         """
         for node in [node for node in self.iterRoadNodes()]:
             if node.isShapePoint():
@@ -1215,7 +1291,7 @@ class Network(object):
         
         nodeToRename = self.getNodeForId(oldNodeId)
         if nodeToRename.isCentroid():
-            raise DtaError("I cannot rename centroid %d" % newNodeId) 
+            raise DtaError("Network.renameNode(): cannot rename centroid %d" % newNodeId) 
 
         nodeToRename._id = newNodeId 
 
@@ -1252,6 +1328,8 @@ class Network(object):
         This method will create a polygon around the current 
         (primary network). Every node or link of the secondary network 
         that is not in the polygon will be copied. 
+        
+        .. todo:: Code review and more detailed documentation.
         """ 
         print "\n\n*********************\nStarting network merge" 
         #primaryPolygon = getConvexHull([(node.getX(), node.getY()) for node in self.iterNodes()])
@@ -1394,13 +1472,17 @@ class Network(object):
 
     def getNodeType(self):
         """
-        Return a unique integer representing the node type
+        Return a unique integer representing the node type.
+        
+        .. todo:: What is this for?
         """
         return self._nodeType
 
     def getLinkType(self):
         """
         Return a unique integer representing the link type
+        
+        .. todo:: What is this for?
         """
         return self._linkType 
     

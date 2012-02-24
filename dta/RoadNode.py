@@ -28,6 +28,7 @@ class RoadNode(Node):
     """
     A Node subclass that represents a road node in a network.
     
+    .. note:: lmz has read over this, so todos are marked.
     """
     #: the intersection is not signalized
     CONTROL_TYPE_UNSIGNALIZED       = 0
@@ -78,7 +79,7 @@ class RoadNode(Node):
         Constructor.
         
          * *id* is a unique identifier (unique within the containing network), an integer
-         * *x* and *y* are coordinates (what units?)
+         * *x* and *y* are coordinates in the units specified by :py:attr:`Node.COORDINATE_UNITS`
          * *geometryType* is one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION` or 
            :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`
          * *control* is one of :py:attr:`RoadNode.CONTROL_TYPE_UNSIGNALIZED` or 
@@ -106,6 +107,7 @@ class RoadNode(Node):
         self._control    = control
         self._priority   = priority
         
+        #: indexed by the :py:class:`PlanCollectionInfo`
         self._timePlans = {}
 
     def isRoadNode(self):
@@ -139,7 +141,8 @@ class RoadNode(Node):
         The returned list is sorted by euclidean length, longest to shortest.
         
         .. todo:: I think a picture would be useful here
-        .. todo:: explain the 0.009 minimum length
+        .. todo:: explain the 0.009 minimum length -- is it just to make sure resulting links aren't too small?
+                  If we keep it, make it an arg, it really is in :py:attr:`RoadLink.LENGTH_UNITS`
               
         """
         MIN_LENGTH_IN_MILES = 0.009
@@ -159,7 +162,7 @@ class RoadNode(Node):
 
             #if connector.getCentroid().isConnectedToRoadNode(candidateLink.getOtherEnd(self)):
             #    continue
-            if candidateLink.getEuclideanLengthInMiles() < MIN_LENGTH_IN_MILES:
+            if candidateLink.getLength() < MIN_LENGTH_IN_MILES:
                 continue
 
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
@@ -173,13 +176,13 @@ class RoadNode(Node):
             else:
                 result.append(candidateLink)         
         #finally sort the candidate links based on their length 
-        return  sorted(result, key = lambda l:l.euclideanLength(), reverse=True) 
+        return  sorted(result, key = lambda l:l.getLength(), reverse=True) 
                                 
 
     def getOrientation(self, point):
         """
         Return the clockwise angle from the North measured in degrees of the line 
-        segment that has the current node as its start and the given point as its end 
+        segment that has the current node as its start and the given *point* as its end. 
         """
         x1 = self.getX()
         y1 = self.getY()
@@ -201,30 +204,33 @@ class RoadNode(Node):
 
 
     def _getMinAngle(self, node1, edge1, node2, edge2):
-            """
-            Returns a positive number in degrees always in [0, 180]
-            that corresponds to the
-            acute angle between the two edges
-            """
-            orientation1 = node1.getOrientation(edge1.getMidPoint())
-            orientation2 = node2.getOrientation(edge2.getMidPoint())
-            if orientation2 > orientation1:
-                angle1 = orientation2 - orientation1
-                angle2 = 360 - orientation2 + orientation1
-                assert min(angle1, angle2) > 0
-                return min(angle1, angle2)
-            elif orientation1 > orientation2:
-                angle1 = orientation1 - orientation2 
-                angle2 = 360 - orientation1 + orientation2
-                assert min(angle1, angle2) > 0
-                return min(angle1, angle2)
-            else:
-                return 0
+        """
+        Returns a positive number in degrees within [0, 180]
+        that corresponds to the angle between the two edges.
+        """
+        orientation1 = node1.getOrientation(edge1.getMidPoint())
+        orientation2 = node2.getOrientation(edge2.getMidPoint())
+        if orientation2 > orientation1:
+            angle1 = orientation2 - orientation1
+            angle2 = 360 - orientation2 + orientation1
+            assert min(angle1, angle2) > 0
+            return min(angle1, angle2)
+        elif orientation1 > orientation2:
+            angle1 = orientation1 - orientation2 
+            angle2 = 360 - orientation1 + orientation2
+            assert min(angle1, angle2) > 0
+            return min(angle1, angle2)
+        else:
+            return 0
 
     def isOverlapping(self, link, minAngle):
         """
-        Returns true if the minimum angle between the input link and any similarly 
-        oriented link of the intersection is less than the input minAngle
+        Returns True if the minimum angle between the input link and any similarly 
+        oriented link of the intersection is less than the input *minAngle*, which is specified in degrees.
+        
+        By "similarly oriented", the method looks at all other incoming links if *link* is incoming, 
+        and all other outgoing links if *link* is outgoing to this node.  If *link* is neither incoming nor
+        outgoing to this node, raises a :py:class:`DtaError`.
         """
         #outgoing link
         if link.getEndNode() == self: 
@@ -232,7 +238,7 @@ class RoadNode(Node):
                 if ilink == link:
                     continue
                 #if self._getMinAngle(self, ilink, self, link) < minAngle:
-                if link.getAcuteAngle(ilink) < minAngle:
+                if link.getAngle(ilink) < minAngle:
                     print self.getId(),link.getId(), ilink.getId()                     
 
                     return True
@@ -243,7 +249,7 @@ class RoadNode(Node):
             for olink in self.iterOutgoingLinks():
                 if olink == link:
                     continue
-                if link.getAcuteAngle(olink) < minAngle:
+                if link.getAngle(olink) < minAngle:
                     
 #                if self._getMinAngle(self, olink, self, link) < minAngle:
                     print self.getId(),link.getId(), olink.getId() 
@@ -255,14 +261,14 @@ class RoadNode(Node):
 
     def addTimePlan(self, timePlan):
         """
-        Add the input time plan to the current collection
+        Add the given *timePlan*, an instance of :py:class:`TimePlan`, to the current collection.
         """
         self._timePlans[timePlan.getPlanInfo()] = timePlan
         self._control = RoadNode.CONTROL_TYPE_SIGNALIZED
         
     def hasTimePlan(self, planInfo=None):
         """
-        Return true if the node has at least one time plan
+        Return True if the node has at least one :py:class:`TimePlan`.
         """
         if not planInfo:
             return True if self._timePlans else False
@@ -270,7 +276,8 @@ class RoadNode(Node):
 
     def getTimePlan(self, planInfo):
         """
-        Return the timeplan for the specific time period defined by planInfo
+        Return the :py:class:`TimePlan` for the specific time period defined by *planInfo*, an instance of
+        :py:class:`PlanCollectionInfo`.
         """
         try:
             return self._timePlans[planInfo]
@@ -281,7 +288,7 @@ class RoadNode(Node):
 
     def iterTimePlans(self):
         """
-        Return an iterator over the timeplans of this node
+        Return an iterator over the :py:class:`TimePlan` instances corresponding to this node.
         """
         return iter(self._timePlans.itervalues())
 

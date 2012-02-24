@@ -98,6 +98,15 @@ class Scenario(object):
         
         raise DtaError("Scenario VehicleClassGroup named %s not found" % vehicleClassGroupName)
         
+    def maxVehicleLength(self):
+        """
+        Returns the maximum vehicle length, in :py:attr:`VehicleType.LENGTH_UNITS`
+        """
+        max_length = -1
+        for vtype in self.vehicleTypes:
+            if vtype.length > max_length: max_length = vtype.length
+        return max_length
+        
     def addEvent(self, eventTime, eventDescription):
         """
         *eventTime* is a datetime.datetime instance and *description* is a string.
@@ -121,7 +130,8 @@ class Scenario(object):
         """
         return self.vehicleClassGroups.itervalues() 
 
-    def iterVehicleClasses(self):
+    def iterVehicleClassNames(self):
         """
         Return an iterator to the vehicle classes 
         """
+        return iter(self.vehicleClassNames)

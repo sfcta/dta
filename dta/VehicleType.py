@@ -15,11 +15,16 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
+from .DtaError import DtaError
 
 class VehicleType:
     """
     Class that represents a vehicle type.
     """
+    
+    #: Static variable representing the units for length
+    #: Should be ``meters`` or ``feet``
+    LENGTH_UNITS = None
     
     def __init__(self, name, className, length, responseTime, maxSpeed, speedRatio):
         """

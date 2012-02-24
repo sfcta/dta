@@ -1350,21 +1350,6 @@ def simpleMovementFactory(incomingLink, outgoingLink):
 
     return mov                                                                                           
 
-def addAllMovements(net):
-    
-    for node in net.iterNodes():
-        if node.isCentroid():
-            continue
-        for incomingLink in node.iterIncomingLinks():
-            if incomingLink.isVirtualLink():
-                continue
-            for outgoingLink in node.iterOutgoingLinks():
-                if outgoingLink.isVirtualLink():
-                    continue
-                if not incomingLink.hasOutgoingMovement(outgoingLink.getEndNodeId()) and \
-                   not incomingLink.getStartNodeId() == outgoingLink.getEndNodeId():
-                    mov = simpleMovementFactory(incomingLink, outgoingLink)
-                    incomingLink.addOutgoingMovement(mov)
 
 def removePartOfTheNetwork(net):
     """
@@ -1562,7 +1547,7 @@ if __name__ == "__main__":
 
     net.writeLinksToShp(os.path.join(folder, "links_sf9"))
     net.writeNodesToShp(os.path.join(folder, "nodes_sf9"))
-    addAllMovements(net)    
+    net.addAllMovements(includeUTurns=False)    
     net.writeMovementsToShp(os.path.join(folder, "movs_sf9"))
     #exit()
     

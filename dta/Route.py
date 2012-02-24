@@ -19,10 +19,14 @@ __license__     = """
 from .DtaError import DtaError
 
 class Route(object):
-    """A path in the network"""
+    """
+    A path in the network
+    """
     
     def __init__(self, net, name, iterLinks):
-        """Constructor that accepts a network, the route name, and a sequence of links"""
+        """
+        Constructor that accepts a network, the route name, and a sequence of links
+        """
         self._net = net
         self._name = name
         self.visualizeInReverse = False

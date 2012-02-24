@@ -20,6 +20,12 @@ from .Node import Node
 class VirtualNode(Node):
     """
     A Node subclass that represents a virtual node in a network.
+
+    Virtual nodes typically sit between a :py:class:`Centroid` (via a :py:class:`VirtualLink` )
+    and a :py:class:`RoadNode` (via a :py:class:`Connector` ).  
+    See :py:meth:`Network.insertVirtualNodeBetweenCentroidsAndRoadNodes` for diagram.
+    
+    .. note:: lmz has read over this, so todos are marked.
     """
     
     DEFAULT_CONTROL  = 0 # value to use if we must
@@ -30,7 +36,7 @@ class VirtualNode(Node):
         Constructor.
         
          * id is a unique identifier (unique within the containing network), an integer
-         * x and y are coordinates (what units?)
+         * *x* and *y* are coordinates in the units specified by :py:attr:`Node.COORDINATE_UNITS`
          * label is a string, for readability.  If None passed, will default to "label [id]"
          * level is for vertical alignment.  More details TBD.  If None passed, will use default.  
         """        
@@ -56,7 +62,9 @@ class VirtualNode(Node):
 
     def getCentroid(self):
         """
-        Return the centoid associated with this virtual node
+        Return the :py:class:`Centroid` associated with this virtual node.
+        
+        .. todo:: what makes this a Centroid as opposed to just an adjacent node?
         """
         for ilink in self.iterIncomingLinks():
             return ilink.getStartNode() 
@@ -66,7 +74,9 @@ class VirtualNode(Node):
 
     def getConnectedRoadNode(self):
         """
-        Return the connected road node
+        Return a connected :py:class:`RoadNode`.
+        
+        .. todo:: Why is this useful, it returns one when there could be others?
         """
         for ilink in self.iterIncomingLinks():
             if ilink.isConnector():

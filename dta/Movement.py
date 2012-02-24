@@ -34,12 +34,12 @@ class Movement(object):
     Base class that represents a movement.
     """
 
-    DIR_UTURN = "UTURN"
-    DIR_RT = 'RT'
-    DIR_RT2 = 'RT2'
-    DIR_LT2 = 'LT2'
-    DIR_LT = 'LT'
-    DIR_TH = 'TH'
+    DIR_UTURN   = "UTURN"
+    DIR_RT      = 'RT'
+    DIR_RT2     = 'RT2'
+    DIR_LT2     = 'LT2'
+    DIR_LT      = 'LT'
+    DIR_TH      = 'TH'
     PROTECTED_CAPACITY_PER_HOUR_PER_LANE = 1900
     
     @classmethod
@@ -60,7 +60,7 @@ class Movement(object):
         """
         Constructor.
         
-         * *node* is a :py:class:`Node` instance (can it be a non-RoadNode?) where the movement is located
+         * *node* is a :py:class:`RoadNode` instance where the movement is located
          * *incomingLink*, *outgoingLink* are :py:class:`Link` instances
          * *freeflowSpeed* is the maximum speed of the movement; pass None to use that of the *incomingLink*
          * *vehicleClassGroup* is the allowed group of vehicles that can use this Movement; it should be an
@@ -104,11 +104,11 @@ class Movement(object):
         self._countsList = []        
         self._centerline = self.getCenterLine()
         
-        self._simVolume = defaultdict(int)   # indexed by timeperiod
-        self._simMeanTT = defaultdict(float)                   # indexed by timeperiod
-        self._penalty = 0
+        self._simVolume = defaultdict(int)      # indexed by timeperiod
+        self._simMeanTT = defaultdict(float)    # indexed by timeperiod
+        self._penalty   = 0
         self._timeVaryingCosts = []
-        self._timeStep = None
+        self._timeStep  = None
         
         self.simTimeStepInMin = None
         self.simStartTimeInMin = None
