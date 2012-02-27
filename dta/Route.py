@@ -20,7 +20,9 @@ from .DtaError import DtaError
 import shapefile 
                     
 class Route(object):
-    """A path in the network"""
+    """
+    A path in the network
+    """
 
     @classmethod
     def writeRoutesToShp(cls, routes, outFileName):

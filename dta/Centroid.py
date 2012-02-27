@@ -20,7 +20,17 @@ from .Node import Node
 
 class Centroid(Node):
     """
-    A Node subclass that represents a centroid node in a network.
+    A Node subclass that represents a centroid node in a network, which is the origin or destination
+    of :py:class:`Demand`.
+    
+    Centroids are typically separated from :py:class:`RoadNode` instances via a :py:class:`VirtualNode`,
+    with an intermediate :py:class:`VirtualLink` connecting the :py:class:`VirtualNode` to the centroid, 
+    and a :py:class:`Connector` linking the :py:class:`VirtualNode`
+    to the :py:class:`RoadNode`.
+
+    See :py:meth:`Network.insertVirtualNodeBetweenCentroidsAndRoadNodes` for diagram.
+
+    .. note:: lmz has read over this, so todos are marked.
     """        
     def __init__(self, id, x, y, label=None, level=None):
         """
@@ -41,20 +51,21 @@ class Centroid(Node):
 
     def isCentroid(self):
         """
-        Return True if this Node is a Centroid
+        Return True if this Node is a Centroid.
         """
         return True
 
     def isVirtualNode(self):
         """
-        Return True if this Node is a VirtualNode
+        Return True if this Node is a VirtualNode.
         """
         return False
         
     def isConnectedToRoadNode(self, roadNode):
         """
-        Return True if there is a virtual link and a connetor that 
-        connect to the roadNode
+        Return True if there is a :py:class:`VirtualLink` followed by a :py:class:`Connector` that 
+        connects to the given :py:class:`RoadNode`.  (It doesn't actually check the types of the links or nodes,
+        however.)
         """
         
         for vLink in self.iterAdjacentLinks():
@@ -68,19 +79,28 @@ class Centroid(Node):
         
     def getNumAttachedConnectors(self):
         """
-        Return the number of connectors attached to this Centroid
+        Return the number of connectors attached to this Centroid.
+        
+        .. todo:: again, this isn't accurate, because it's upstream nodes plus downstream nodes, confusing
+                  when they are the same...
         """
         return self.getNumOutgoingConnectors() + self.getNumIncomingConnectors()
 
     def getNumOutgoingConnectors(self):
         """
-        Return the number of outgoing connectors
+        Return the number of outgoing connectors.
+        
+        .. todo:: This is not really accurate, why not call it what it is?  Number of downstream nodes?  And put it
+                  in :py:class:`Node`?
         """
         return sum([1 for con in self.iterDownstreamNodes()]) 
 
     def getNumIncomingConnectors(self):
         """
-        Return the number of incoming connectors
+        Return the number of incoming connectors.
+        
+        .. todo:: his is not really accurate, why not call it what it is?  Number of upstream nodes?  And put it
+                  in :py:class:`Node`?
         """
         return sum([1 for con in self.iterUpstreamNodes()])
 
@@ -95,8 +115,10 @@ class Centroid(Node):
                     
     def iterAdjacentConnectors(self):
         """
-        Return True if there is a virtual link and a connetor that 
-        connect to the roadNode
+        Returns an iterator to each adjacent link of each adjacent link (e.g. each link separated from this node
+        by an intermediate link, presumably a virtual link) that are not :py:class:`VirtualLink` instances.
+        
+        .. todo:: The function definition is misleading because the results aren't verified as :py:class:`Connector` instances.
         """
         connectors = set()
         for vLink in self.iterAdjacentLinks():
@@ -109,8 +131,8 @@ class Centroid(Node):
 
     def isConnectedTo(self, roadNodeId):
         """
-        Return true if the centroid is connected to the
-        input RoadNode
+        Return True a :py:class:`RoadNode` with the given *roadNodeId* is at the other end of one of the
+        connectors returned by :py:meth:`Centroid.iterAdjacentConnectors`.
         """
         for con in self.iterAdjacentConnectors():
             if con.startIsRoadNode():

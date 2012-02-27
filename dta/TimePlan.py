@@ -24,6 +24,8 @@ from .Phase import Phase
 from .DtaError import DtaError 
 from .Utils import militaryTimeToDateTime
 
+__all__ = ["PlanCollectionInfo", "TimePlan"]
+
 class PlanCollectionInfo(object):
     """
     Contains user information for a collection of signals belonging to the
@@ -75,6 +77,7 @@ class TimePlan(object):
     
     .. todo:: Dynameq, eh?  What about just DTA?  And the Dynameq subclass?  And a holistic description
               of what a "time plan" is, anyhow?  (No it's not obvious.)
+
     """
 
     CONTROL_TYPE_CONSTANT = 0
@@ -85,6 +88,9 @@ class TimePlan(object):
 
     @classmethod
     def read(cls, net, fileName):
+        """
+        Documentation?
+        """
 
         try:
             lineIter = open(fileName, "r")
@@ -131,7 +137,11 @@ class TimePlan(object):
                     
     def __init__(self, node, offset, planCollectionInfo,
                  syncPhase=1, turnOnRed=TURN_ON_RED_YES):
-
+        """
+        Constructor.
+        
+        .. todo:: Documentation?
+        """
         self._node = node
         self._planCollectionInfo = planCollectionInfo
         self._type = TimePlan.CONTROL_TYPE_PRETIMED
@@ -220,7 +230,7 @@ class TimePlan(object):
 
     def getPlanInfo(self):
         """
-        Return the plan info associated with this time plan
+        Return the plan info associated with this time plan, an instance of :py:class:`PlanCollectionInfo`.
         """
         return self._planCollectionInfo
 

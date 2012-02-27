@@ -14,14 +14,65 @@ dta.CubeNetwork
    .. autosummary::
    
       ~CubeNetwork.__init__
+      ~CubeNetwork.addAllMovements
       ~CubeNetwork.addLink
       ~CubeNetwork.addMovement
       ~CubeNetwork.addNode
+      ~CubeNetwork.addPlanCollectionInfo
+      ~CubeNetwork.applyTurnProhibitions
+      ~CubeNetwork.areIDsUnique
+      ~CubeNetwork.deepcopy
       ~CubeNetwork.getLinkForId
       ~CubeNetwork.getLinkForNodeIdPair
+      ~CubeNetwork.getLinkType
+      ~CubeNetwork.getMaxLinkId
+      ~CubeNetwork.getMaxNodeId
       ~CubeNetwork.getNodeForId
+      ~CubeNetwork.getNodeType
+      ~CubeNetwork.getNumCentroids
+      ~CubeNetwork.getNumConnectors
+      ~CubeNetwork.getNumLinks
+      ~CubeNetwork.getNumNodes
+      ~CubeNetwork.getNumOverlappingConnectors
+      ~CubeNetwork.getNumRoadLinks
+      ~CubeNetwork.getNumRoadNodes
+      ~CubeNetwork.getNumTimePlans
+      ~CubeNetwork.getNumVirtualLinks
+      ~CubeNetwork.getNumVirtualNodes
+      ~CubeNetwork.getPlanCollectionInfo
+      ~CubeNetwork.getScenario
+      ~CubeNetwork.handleShortLinks
+      ~CubeNetwork.hasLinkForId
+      ~CubeNetwork.hasLinkForNodeIdPair
+      ~CubeNetwork.hasNodeForId
+      ~CubeNetwork.hasPlanCollectionInfo
+      ~CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes
+      ~CubeNetwork.iterConnectors
+      ~CubeNetwork.iterLinks
+      ~CubeNetwork.iterNodes
+      ~CubeNetwork.iterPlanCollectionInfo
+      ~CubeNetwork.iterRoadLinks
+      ~CubeNetwork.iterRoadNodes
+      ~CubeNetwork.mergeLinks
+      ~CubeNetwork.mergeSecondaryNetwork
+      ~CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds
+      ~CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2
+      ~CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks
+      ~CubeNetwork.moveVirtualNodesToAvoidShortConnectors
       ~CubeNetwork.readCSVs
+      ~CubeNetwork.readFromShapefiles
+      ~CubeNetwork.readLinkShape
       ~CubeNetwork.readNetfile
+      ~CubeNetwork.removeLink
+      ~CubeNetwork.removeNode
+      ~CubeNetwork.removeShapePoints
+      ~CubeNetwork.removeUnconnectedNodes
+      ~CubeNetwork.renameLink
+      ~CubeNetwork.renameNode
+      ~CubeNetwork.splitLink
+      ~CubeNetwork.writeLinksToShp
+      ~CubeNetwork.writeMovementsToShp
+      ~CubeNetwork.writeNodesToShp
    
    
 

@@ -19,6 +19,9 @@ __license__     = """
 from .DtaError import DtaError
 
 class PhaseMovement(object):
+    """
+    Documentation?
+    """
 
     CUSTOM = 0
     PROTECTED = 1

@@ -50,8 +50,8 @@ class Scenario(object):
         #: list of Vehicle Class Names
         self.vehicleClassNames  = []
         
-        #: Vehicle Type Name (string) -> :py:class:`VehicleType`
-        self.vehicleTypes       = {}
+        #: list of instances of :py:class:`VehicleType`
+        self.vehicleTypes       = []
         
         #: vehicle class group name (string) -> :py:class:`VehicleClassGroup`
         self.vehicleClassGroups = {}
@@ -76,7 +76,7 @@ class Scenario(object):
             raise DtaError("Scenario addVehicleType() called with a non VehicleType object: %s" % 
                            str(vehicleType))
         
-        self.vehicleTypes[vehicleType.name] = vehicleType
+        self.vehicleTypes.append(vehicleType)
         
     def addVehicleClassGroup(self, vehicleClassGroup):
         """
@@ -97,6 +97,15 @@ class Scenario(object):
             return self.vehicleClassGroups[vehicleClassGroupName]
         
         raise DtaError("Scenario VehicleClassGroup named %s not found" % vehicleClassGroupName)
+        
+    def maxVehicleLength(self):
+        """
+        Returns the maximum vehicle length, in :py:attr:`VehicleType.LENGTH_UNITS`
+        """
+        max_length = -1
+        for vtype in self.vehicleTypes:
+            if vtype.length > max_length: max_length = vtype.length
+        return max_length
         
     def addEvent(self, eventTime, eventDescription):
         """
@@ -121,7 +130,8 @@ class Scenario(object):
         """
         return self.vehicleClassGroups.itervalues() 
 
-    def iterVehicleClasses(self):
+    def iterVehicleClassNames(self):
         """
         Return an iterator to the vehicle classes 
         """
+        return iter(self.vehicleClassNames)

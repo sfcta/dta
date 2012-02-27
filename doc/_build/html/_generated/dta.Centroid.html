@@ -57,7 +57,17 @@
 <dt id="dta.Centroid">
 <em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Centroid</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Centroid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Node.Node</span></tt></p>
-<p>A Node subclass that represents a centroid node in a network.</p>
+<p>A Node subclass that represents a centroid node in a network, which is the origin or destination
+of <a class="reference internal" href="dta.Demand.html#dta.Demand" title="dta.Demand"><tt class="xref py py-class docutils literal"><span class="pre">Demand</span></tt></a>.</p>
+<p>Centroids are typically separated from <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances via a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>,
+with an intermediate <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> connecting the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> to the centroid, 
+and a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> linking the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>
+to the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>.</p>
+<p>See <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-meth docutils literal"><span class="pre">Network.insertVirtualNodeBetweenCentroidsAndRoadNodes()</span></tt></a> for diagram.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">lmz has read over this, so todos are marked.</p>
+</div>
 <dl class="method">
 <dt id="dta.Centroid.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.Centroid.__init__" title="Permalink to this definition">¶</a></dt>
@@ -82,10 +92,136 @@
 <tr><td><a class="reference internal" href="#dta.Centroid.__init__" title="dta.Centroid.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
-<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addIncomingLink</span></tt></td>
+<tr><td><a class="reference internal" href="#dta.Centroid.getCardinality" title="dta.Centroid.getCardinality"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getCardinality</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.addOutgoingLink</span></tt></td>
+<tr><td><a class="reference internal" href="#dta.Centroid.getId" title="dta.Centroid.getId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getIncomingLinkForId" title="dta.Centroid.getIncomingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getIncomingLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getIncomingLinkForNodeId" title="dta.Centroid.getIncomingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getIncomingLinkForNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getMovement" title="dta.Centroid.getMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getName" title="dta.Centroid.getName"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getName</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumAdjacentLinks" title="dta.Centroid.getNumAdjacentLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumAdjacentLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumAdjacentNodes" title="dta.Centroid.getNumAdjacentNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumAdjacentNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumAdjacentRoadLinks" title="dta.Centroid.getNumAdjacentRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumAdjacentRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumAdjacentRoadNodes" title="dta.Centroid.getNumAdjacentRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumAdjacentRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumAttachedConnectors" title="dta.Centroid.getNumAttachedConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumAttachedConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumIncomingConnectors" title="dta.Centroid.getNumIncomingConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumIncomingConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumIncomingLinks" title="dta.Centroid.getNumIncomingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumIncomingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumMovements" title="dta.Centroid.getNumMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumMovements</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumOutgoingConnectors" title="dta.Centroid.getNumOutgoingConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumOutgoingConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getNumOutgoingLinks" title="dta.Centroid.getNumOutgoingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getNumOutgoingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getStreetNames" title="dta.Centroid.getStreetNames"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getStreetNames</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getX" title="dta.Centroid.getX"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getX</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.getY" title="dta.Centroid.getY"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.getY</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.hasConnector" title="dta.Centroid.hasConnector"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.hasConnector</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.hasIncomingLinkForId" title="dta.Centroid.hasIncomingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.hasIncomingLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.hasIncomingLinkForNodeId" title="dta.Centroid.hasIncomingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.hasIncomingLinkForNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.hasMovement" title="dta.Centroid.hasMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.hasMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.hasOutgoingLinkForId" title="dta.Centroid.hasOutgoingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.hasOutgoingLinkForId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.hasOutgoingLinkForNodeId" title="dta.Centroid.hasOutgoingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.hasOutgoingLinkForNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isCentroid" title="dta.Centroid.isCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isCentroid</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isConnectedTo" title="dta.Centroid.isConnectedTo"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isConnectedTo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isConnectedToRoadNode" title="dta.Centroid.isConnectedToRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isConnectedToRoadNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isIntersection" title="dta.Centroid.isIntersection"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isIntersection</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isJunction" title="dta.Centroid.isJunction"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isJunction</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isRoadNode" title="dta.Centroid.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isRoadNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isShapePoint" title="dta.Centroid.isShapePoint"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isShapePoint</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.isVirtualNode" title="dta.Centroid.isVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isVirtualNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterAdjacentConnectors" title="dta.Centroid.iterAdjacentConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterAdjacentConnectors</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterAdjacentLinks" title="dta.Centroid.iterAdjacentLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterAdjacentLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterAdjacentNodes" title="dta.Centroid.iterAdjacentNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterAdjacentNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterAdjacentRoadLinks" title="dta.Centroid.iterAdjacentRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterAdjacentRoadLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterAdjacentRoadNodes" title="dta.Centroid.iterAdjacentRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterAdjacentRoadNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterDownstreamNodes" title="dta.Centroid.iterDownstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterDownstreamNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterIncomingLinks" title="dta.Centroid.iterIncomingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterIncomingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterLinks" title="dta.Centroid.iterLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterMovements" title="dta.Centroid.iterMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterMovements</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterOutgoingLinks" title="dta.Centroid.iterOutgoingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterOutgoingLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Centroid.iterUpstreamNodes" title="dta.Centroid.iterUpstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.iterUpstreamNodes</span></tt></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -94,7 +230,7 @@
 <dt id="dta.Centroid.getCardinality">
 <tt class="descname">getCardinality</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getCardinality" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pair of numbers representing the number of 
-incoming and outgoing links respectively</p>
+incoming and outgoing links respectively.</p>
 </dd></dl>
 
 <dl class="method">
@@ -106,33 +242,35 @@ incoming and outgoing links respectively</p>
 <dl class="method">
 <dt id="dta.Centroid.getIncomingLinkForId">
 <tt class="descname">getIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link with the given id</p>
+<dd><p>Returns an incoming link if one has an ID matching <em>linkId</em>.
+It no incoming links qualify, raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getIncomingLinkForNodeId">
 <tt class="descname">getIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+<dd><p>Returns an incoming link if one starts from <em>nodeId</em>.
+It no incoming links qualify, raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getMovement">
-<tt class="descname">getMovement</tt><big>(</big><em>upNodeId</em>, <em>downNodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the movement from upNodeId to downNodeId that goes through
-this node</p>
+<tt class="descname">getMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.getMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> from <em>startNodeId</em> to <em>endNodeId</em> that goes through
+this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getName">
 <tt class="descname">getName</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getName" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the name of the intersection as a string consisting of the labels 
-of the incoming links in sorted order.</p>
+<dd><p>Return the name of the intersection as a string consisting of the upper-cased labels 
+of the incoming links in sorted order, separated by <tt class="docutils literal"><span class="pre">AND</span></tt>.  (e.g. <tt class="docutils literal"><span class="pre">VAN</span> <span class="pre">NESS</span> <span class="pre">AVE</span> <span class="pre">AND</span> <span class="pre">MARKET</span> <span class="pre">ST</span></tt>)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumAdjacentLinks">
 <tt class="descname">getNumAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of links adjacent to this node (either incoming or outgoing)</p>
+<dd><p>Returns the number of links adjacent to this node (either incoming or outgoing).</p>
 </dd></dl>
 
 <dl class="method">
@@ -144,55 +282,70 @@ of the incoming links in sorted order.</p>
 <dl class="method">
 <dt id="dta.Centroid.getNumAdjacentRoadLinks">
 <tt class="descname">getNumAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of RoadLinks adjacent to this node (either incoming or outgoing)</p>
+<dd><p>Returns the number of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to this node (either incoming or outgoing).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumAdjacentRoadNodes">
 <tt class="descname">getNumAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of nodes that are connected to this node.</p>
+<dd><p>Return the number of <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances that share a link with this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumAttachedConnectors">
 <tt class="descname">getNumAttachedConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumAttachedConnectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of connectors attached to this Centroid</p>
+<dd><p>Return the number of connectors attached to this Centroid.</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">again, this isn&#8217;t accurate, because it&#8217;s upstream nodes plus downstream nodes, confusing
+when they are the same...</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumIncomingConnectors">
 <tt class="descname">getNumIncomingConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumIncomingConnectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of incoming connectors</p>
+<dd><p>Return the number of incoming connectors.</p>
+<div class="admonition-todo admonition " id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">his is not really accurate, why not call it what it is?  Number of upstream nodes?  And put it
+in <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a>?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumIncomingLinks">
 <tt class="descname">getNumIncomingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumIncomingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of incoming links</p>
+<dd><p>Returns the number of incoming links.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumMovements">
 <tt class="descname">getNumMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumMovements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of movements associated with this node</p>
+<dd><p>Return the number of <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances associated with this node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumOutgoingConnectors">
 <tt class="descname">getNumOutgoingConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumOutgoingConnectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of outgoing connectors</p>
+<dd><p>Return the number of outgoing connectors.</p>
+<div class="admonition-todo admonition " id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">This is not really accurate, why not call it what it is?  Number of downstream nodes?  And put it
+in <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a>?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getNumOutgoingLinks">
 <tt class="descname">getNumOutgoingLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getNumOutgoingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retruns the number of outoing links</p>
+<dd><p>Returns the number of outgoing links.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.getStreetNames">
 <tt class="descname">getStreetNames</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.getStreetNames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the street names of the incoming links as a list</p>
+<dd><p>Return the street names (labels) of the incoming links as a sorted upper-case list.</p>
 </dd></dl>
 
 <dl class="method">
@@ -210,63 +363,79 @@ of the incoming links in sorted order.</p>
 <dl class="method">
 <dt id="dta.Centroid.hasConnector">
 <tt class="descname">hasConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.hasConnector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if there is a connector atached to the node.</p>
+<dd><p>Return True if there is a connector attached to the node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.hasIncomingLinkForId">
 <tt class="descname">hasIncomingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasIncomingLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link with the given id</p>
+<dd><p>Returns True if there is an incoming link with the given <em>linkId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.hasIncomingLinkForNodeId">
 <tt class="descname">hasIncomingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasIncomingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an incoming link starting from nodeId</p>
+<dd><p>Returns True if there is an incoming link starting from <em>nodeId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.hasMovement">
 <tt class="descname">hasMovement</tt><big>(</big><em>startNodeId</em>, <em>endNodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node has movement from 
-startNodeId to endNodeId</p>
+<dd><p>Return True if a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> exists from the node with <em>startNodeId</em> through this node
+to the node with <em>endNodeId</em>, and if that movement is <strong>not prohibited</strong>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.hasOutgoingLinkForId">
 <tt class="descname">hasOutgoingLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasOutgoingLinkForId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is an outgoing link wwith the given id</p>
+<dd><p>Returns True if there is an outgoing link with the given <em>linkId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.hasOutgoingLinkForNodeId">
 <tt class="descname">hasOutgoingLinkForNodeId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.hasOutgoingLinkForNodeId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if there is a link towards the given node id</p>
+<dd><p>Returns True if there is an outgoing link towards a node with the given <em>nodeId</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.isCentroid">
 <tt class="descname">isCentroid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isCentroid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if this Node is a Centroid</p>
+<dd><p>Return True if this Node is a Centroid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Centroid.isConnectedTo">
+<tt class="descname">isConnectedTo</tt><big>(</big><em>roadNodeId</em><big>)</big><a class="headerlink" href="#dta.Centroid.isConnectedTo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> with the given <em>roadNodeId</em> is at the other end of one of the
+connectors returned by <a class="reference internal" href="#dta.Centroid.iterAdjacentConnectors" title="dta.Centroid.iterAdjacentConnectors"><tt class="xref py py-meth docutils literal"><span class="pre">Centroid.iterAdjacentConnectors()</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.isConnectedToRoadNode">
 <tt class="descname">isConnectedToRoadNode</tt><big>(</big><em>roadNode</em><big>)</big><a class="headerlink" href="#dta.Centroid.isConnectedToRoadNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if there is a virtual link and a connetor that 
-connect to the roadNode</p>
+<dd><p>Return True if there is a <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> followed by a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> that 
+connects to the given <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>.  (It doesn&#8217;t actually check the types of the links or nodes,
+however.)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.isIntersection">
 <tt class="descname">isIntersection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isIntersection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is an intersection</p>
+<div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">And an intersection is what?  Technical definition please.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.isJunction">
 <tt class="descname">isJunction</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isJunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is a junction.</p>
+<div class="admonition-todo admonition " id="index-4">
+<p class="first admonition-title">Todo</p>
+<p class="last">And a junction is what?  Technical definition please.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -279,54 +448,67 @@ connect to the roadNode</p>
 <dt id="dta.Centroid.isShapePoint">
 <tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isShapePoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
-following graph). 
-If countRoadNodesOnly is True the method will count only RoadLinks 
-attached to this Node and will disregard an connectors.</p>
+following graph).</p>
+<p>If <em>countRoadNodesOnly</em> is True the method will count only RoadLinks 
+attached to this Node and will disregard any connectors.</p>
 <img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
+<div class="admonition-todo admonition " id="index-5">
+<p class="first admonition-title">Todo</p>
+<p class="last">I think this documentation is insufficient; it&#8217;s just an example, it doesn&#8217;t define a &#8220;shape point.&#8221;
+Further, there are &#8220;shapepoints&#8221; that are not this, such as in those added via
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.addShapePoint" title="dta.RoadLink.addShapePoint"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.addShapePoint()</span></tt></a>, so the terminology should be more accurate &#8211;
+what we&#8217;re really checking is if this could be a shape point?
+And we&#8217;re not even doing that &#8211; this implementation would call a node a shapepoint 
+if there is a one-way loop (consisting of two links) intersecting with a one way street.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.isVirtualNode">
 <tt class="descname">isVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isVirtualNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if this Node is a VirtualNode</p>
+<dd><p>Return True if this Node is a VirtualNode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.iterAdjacentConnectors">
 <tt class="descname">iterAdjacentConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentConnectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if there is a virtual link and a connetor that 
-connect to the roadNode</p>
+<dd><p>Returns an iterator to each adjacent link of each adjacent link (e.g. each link separated from this node
+by an intermediate link, presumably a virtual link) that are not <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances.</p>
+<div class="admonition-todo admonition " id="index-6">
+<p class="first admonition-title">Todo</p>
+<p class="last">The function definition is misleading because the results aren&#8217;t verified as <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.iterAdjacentLinks">
 <tt class="descname">iterAdjacentLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all links adjacent (incoming or outgoing)
+<dd><p>Return an iterator to all <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instances adjacent (incoming or outgoing)
 to this node</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.iterAdjacentNodes">
 <tt class="descname">iterAdjacentNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to the adjacent Nodes</p>
+<dd><p>Return an iterator to the adjacent <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.iterAdjacentRoadLinks">
 <tt class="descname">iterAdjacentRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentRoadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all RoadLinks adjacent to this Node (excluding Connectors)</p>
+<dd><p>Return an iterator to all <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to this node (excluding Connectors)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.iterAdjacentRoadNodes">
 <tt class="descname">iterAdjacentRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentRoadNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all RoadNodes adjacent to this Node</p>
+<dd><p>Return an iterator to all <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances adjacent to this Node</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Centroid.iterDownstreamNodes">
 <tt class="descname">iterDownstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterDownstreamNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator to the downstream nodes</p>
+<dd><p>Returns an iterator to the end nodes of all outgoing links.</p>
 </dd></dl>
 
 <dl class="method">
@@ -336,10 +518,15 @@ to this node</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Centroid.iterLinks">
+<tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to all adjacent links.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Centroid.iterMovements">
 <tt class="descname">iterMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterMovements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator to all the movements going
-through the node</p>
+<dd><p>Return an iterator to all the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances going through the node.</p>
 </dd></dl>
 
 <dl class="method">
@@ -351,7 +538,7 @@ through the node</p>
 <dl class="method">
 <dt id="dta.Centroid.iterUpstreamNodes">
 <tt class="descname">iterUpstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterUpstreamNodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator to the upstream nodes</p>
+<dd><p>Returns an iterator to the start nodes of all incoming links.</p>
 </dd></dl>
 
 </dd></dl>

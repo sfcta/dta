@@ -18,6 +18,10 @@ dta.Scenario
       ~Scenario.addVehicleClass
       ~Scenario.addVehicleClassGroup
       ~Scenario.addVehicleType
+      ~Scenario.getVehicleClassGroup
+      ~Scenario.iterVehicleClassGroups
+      ~Scenario.iterVehicleClassNames
+      ~Scenario.maxVehicleLength
    
    
 

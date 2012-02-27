@@ -86,12 +86,64 @@ other node is a <a class="reference internal" href="dta.VirtualNode.html#dta.Vir
 <tr><td><a class="reference internal" href="#dta.VirtualLink.euclideanLength" title="dta.VirtualLink.euclideanLength"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.euclideanLength</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getAdjacentConnector" title="dta.VirtualLink.getAdjacentConnector"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getAdjacentConnector</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getCentroid" title="dta.VirtualLink.getCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getCentroid</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getEndNode" title="dta.VirtualLink.getEndNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getEndNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getEndNodeId" title="dta.VirtualLink.getEndNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getEndNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getId" title="dta.VirtualLink.getId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getIid" title="dta.VirtualLink.getIid"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getIid</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getLabel" title="dta.VirtualLink.getLabel"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getLabel</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getOtherEnd" title="dta.VirtualLink.getOtherEnd"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getOtherEnd</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getReferenceAngle" title="dta.VirtualLink.getReferenceAngle"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getReferenceAngle</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getReferenceAngleInDegrees" title="dta.VirtualLink.getReferenceAngleInDegrees"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getReferenceAngleInDegrees</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getStartNode" title="dta.VirtualLink.getStartNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getStartNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.getStartNodeId" title="dta.VirtualLink.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.getStartNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.hasSameAttributes" title="dta.VirtualLink.hasSameAttributes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.hasSameAttributes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.isConnector" title="dta.VirtualLink.isConnector"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.isConnector</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.isRoadLink" title="dta.VirtualLink.isRoadLink"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.isRoadLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.isVirtualLink" title="dta.VirtualLink.isVirtualLink"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.isVirtualLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.VirtualLink.setLabel" title="dta.VirtualLink.setLabel"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualLink.setLabel</span></tt></a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="dta.VirtualLink.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
+<p>This will be in the units specified by <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -117,12 +169,6 @@ returns the <a class="reference internal" href="dta.Connector.html#dta.Connector
 <dt id="dta.VirtualLink.getEndNodeId">
 <tt class="descname">getEndNodeId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getEndNodeId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the id of the end node</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.VirtualLink.getEuclideanLengthInMiles">
-<tt class="descname">getEuclideanLengthInMiles</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualLink.getEuclideanLengthInMiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the length between the start node and end node</p>
 </dd></dl>
 
 <dl class="method">

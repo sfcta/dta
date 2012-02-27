@@ -64,7 +64,7 @@
 <dd><p>Constructor.</p>
 <blockquote>
 <div><ul class="simple">
-<li><em>node</em> is a <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instance (can it be a non-RoadNode?) where the movement is located</li>
+<li><em>node</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance where the movement is located</li>
 <li><em>incomingLink</em>, <em>outgoingLink</em> are <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instances</li>
 <li><em>freeflowSpeed</em> is the maximum speed of the movement; pass None to use that of the <em>incomingLink</em></li>
 <li><em>vehicleClassGroup</em> is the allowed group of vehicles that can use this Movement; it should be an
@@ -93,7 +93,112 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.__init__" title="dta.Movement.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getAtNode" title="dta.Movement.getAtNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getAtNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getCenterLine" title="dta.Movement.getCenterLine"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getCenterLine</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getCountList" title="dta.Movement.getCountList"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getCountList</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getDestinationNode" title="dta.Movement.getDestinationNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getDestinationNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getDirection" title="dta.Movement.getDirection"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getDirection</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getEndNode" title="dta.Movement.getEndNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getEndNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getEndNodeId" title="dta.Movement.getEndNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getEndNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getFreeFlowSpeedInMPH" title="dta.Movement.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getFreeFlowSpeedInMPH</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getFreeFlowTTInMin" title="dta.Movement.getFreeFlowTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getFreeFlowTTInMin</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getId" title="dta.Movement.getId"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getId</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getIncomingLink" title="dta.Movement.getIncomingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getIncomingLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getNumLanes" title="dta.Movement.getNumLanes"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getNumLanes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getOriginNode" title="dta.Movement.getOriginNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getOriginNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getOutgoingLink" title="dta.Movement.getOutgoingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getOutgoingLink</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getProtectedCapacity" title="dta.Movement.getProtectedCapacity"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getProtectedCapacity</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimFlow" title="dta.Movement.getSimFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimFlow</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimSpeedInMPH" title="dta.Movement.getSimSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimSpeedInMPH</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimTTInMin" title="dta.Movement.getSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimTTInMin</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimVolume" title="dta.Movement.getSimVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimVolume</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getStartNode" title="dta.Movement.getStartNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getStartNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getStartNodeId" title="dta.Movement.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getStartNodeId</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getTimeVaryingCostAt" title="dta.Movement.getTimeVaryingCostAt"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getTimeVaryingCostAt</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getTimeVaryingCostTimeStep" title="dta.Movement.getTimeVaryingCostTimeStep"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getTimeVaryingCostTimeStep</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getTurnType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getVehicleClassGroup" title="dta.Movement.getVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getVehicleClassGroup</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.isInConflict" title="dta.Movement.isInConflict"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isInConflict</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.isLeftTurn" title="dta.Movement.isLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isLeftTurn</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.isRightTurn" title="dta.Movement.isRightTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isRightTurn</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.isThruTurn" title="dta.Movement.isThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isThruTurn</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.isUTurn" title="dta.Movement.isUTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isUTurn</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setCountsFromCountDracula" title="dta.Movement.setCountsFromCountDracula"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setCountsFromCountDracula</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setPenaltyInMin" title="dta.Movement.setPenaltyInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setPenaltyInMin</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setSimTTInMin" title="dta.Movement.setSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimTTInMin</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setSimVolume" title="dta.Movement.setSimVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimVolume</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setTimeVaryingCosts" title="dta.Movement.setTimeVaryingCosts"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setTimeVaryingCosts</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.simpleMovementFactory" title="dta.Movement.simpleMovementFactory"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.simpleMovementFactory</span></tt></a></td>
 <td></td>
 </tr>
 </tbody>

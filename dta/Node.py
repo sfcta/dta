@@ -20,14 +20,15 @@ from itertools import chain
 from .DtaError import DtaError
 from .VehicleClassGroup import VehicleClassGroup
 
-# from .Link import Link
-
-
 class Node(object):
     """
     Base class that represents a node in a network.
     
+    .. note:: lmz has read over this, so todos are marked.
     """
+    #: Static variable represengint the units of the x,y (and so therefore Euclidean length)
+    #: Should be ``meters`` or ``feet``
+    COORDINATE_UNITS = None
     
     # Defaults
     DEFAULT_LABEL = ""
@@ -52,7 +53,7 @@ class Node(object):
         Constructor.
         
          * *id* is a unique identifier (unique within the containing network), an integer
-         * *x* and *y* are coordinates (what units?)
+         * *x* and *y* are coordinates in the units specified by :py:attr:`Node.COORDINATE_UNITS`
          * *geometryType* is one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION`, :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`, or 
            :py:attr:`Node.GEOMETRY_TYPE_VIRTUAL`
          * *label* is a string, for readability.  If None passed, will use default. 
@@ -82,7 +83,7 @@ class Node(object):
     
     def __str__(self):
         """
-        String representation
+        Human-readable string representation.
         """
         return "Node of type %s, id=%s, x,y=(%f,%f)" % (self.__class__, self._id, self._x, self._y)
     
@@ -150,7 +151,7 @@ class Node(object):
 
     def iterUpstreamNodes(self):
         """
-        Returns an iterator to the upstream nodes
+        Returns an iterator to the start nodes of all incoming links.
         """
         for link in self.iterIncomingLinks():
             yield link.getStartNode()
@@ -163,13 +164,13 @@ class Node(object):
 
     def iterLinks(self):
         """
-        Returns an interator to all adjacent links
+        Returns an iterator to all adjacent links.
         """
         return chain(self.iterIncomingLinks(), self.iterOutgoingLinks())
 
     def iterDownstreamNodes(self):
         """
-        Returns an iterator to the downstream nodes
+        Returns an iterator to the end nodes of all outgoing links.
         """
         for link in self.iterOutgoingLinks():
             yield link.getEndNode() 
@@ -194,7 +195,7 @@ class Node(object):
 
     def hasIncomingLinkForId(self, linkId):
         """
-        Returns True if there is an incoming link with the given id
+        Returns True if there is an incoming link with the given *linkId*.
         """
         for link in self.iterIncomingLinks():
             if link.getId() == linkId:
@@ -203,7 +204,7 @@ class Node(object):
 
     def hasIncomingLinkForNodeId(self, nodeId):
         """
-        Returns True if there is an incoming link starting from nodeId
+        Returns True if there is an incoming link starting from *nodeId*.
         """
         for link in self.iterIncomingLinks():
             if link.getStartNode().getId() == nodeId:
@@ -212,7 +213,7 @@ class Node(object):
 
     def hasOutgoingLinkForId(self, linkId):
         """
-        Returns True if there is an outgoing link wwith the given id
+        Returns True if there is an outgoing link with the given *linkId*.
         """
         for link in self.iterIncomingLinks():
             if link.getId() == linkId:
@@ -221,7 +222,7 @@ class Node(object):
 
     def hasOutgoingLinkForNodeId(self, nodeId):
         """
-        Returns True if there is a link towards the given node id
+        Returns True if there is an outgoing link towards a node with the given *nodeId*.
         """
         for link in self.iterOutgoingLinks():
             if link.getEndNode(). getId() == nodeId:
@@ -230,34 +231,36 @@ class Node(object):
 
     def hasMovement(self, startNodeId, endNodeId):
         """
-        Return True if the node has movement from 
-        startNodeId to endNodeId
+        Return True if a :py:class:`Movement` exists from the node with *startNodeId* through this node
+        to the node with *endNodeId*, and if that movement is **not prohibited**.
         """
         for ilink in self.iterIncomingLinks():
-            if ilink.getStartNodeId() == startNodeId:
-                for mov in ilink.iterOutgoingMovements():
-                    if mov.getEndNodeId() == endNodeId \
-                       and mov._permission.classDefinitionString != \
-                       VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
-                        return True
+            if ilink.getStartNodeId() != startNodeId: continue
+
+            for mov in ilink.iterOutgoingMovements():
+                if mov.getEndNodeId() != endNodeId: continue
+                
+                # movement exists with the given start/end nodes
+                if mov._permission.classDefinitionString != VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
+                    return True
 
         return False
                    
     def getNumAdjacentLinks(self):
         """
-        Return the number of links adjacent to this node (either incoming or outgoing) 
+        Returns the number of links adjacent to this node (either incoming or outgoing).
         """
         return len(self._incomingLinks) + len(self._outgoingLinks) 
 
     def getNumAdjacentRoadLinks(self):
         """
-        Return the number of RoadLinks adjacent to this node (either incoming or outgoing)
+        Returns the number of :py:class:`RoadLink` instances adjacent to this node (either incoming or outgoing).
         """
         return sum([1 for link in self.iterAdjacentRoadLinks()])
 
     def iterAdjacentNodes(self):
         """
-        Return an iterator to the adjacent Nodes
+        Return an iterator to the adjacent :py:class:`Node` instances.
         """ 
         nodes = set()
         for link in self.iterIncomingLinks():
@@ -275,14 +278,14 @@ class Node(object):
         
     def iterAdjacentLinks(self):
         """
-        Return an iterator to all links adjacent (incoming or outgoing)
+        Return an iterator to all :py:class:`Link` instances adjacent (incoming or outgoing)
         to this node
         """
         return chain(iter(self._incomingLinks), iter(self._outgoingLinks))
 
     def iterAdjacentRoadLinks(self):
         """
-        Return an iterator to all RoadLinks adjacent to this Node (excluding Connectors)
+        Return an iterator to all :py:class:`RoadLink` instances adjacent to this node (excluding Connectors)
         """
         for link in self.iterAdjacentLinks():
             if link.isRoadLink():
@@ -290,7 +293,7 @@ class Node(object):
 
     def iterAdjacentRoadNodes(self):
         """
-        Return an iterator to all RoadNodes adjacent to this Node
+        Return an iterator to all :py:class:`RoadNode` instances adjacent to this Node
         """
         for node in self.iterAdjacentNodes():
             if node.isRoadNode():
@@ -298,13 +301,14 @@ class Node(object):
 
     def getNumAdjacentRoadNodes(self):
         """
-        Return the number of nodes that are connected to this node.
+        Return the number of :py:class:`RoadNode` instances that share a link with this node.
         """ 
         return sum([1 for node in self.iterAdjacentRoadNodes()])
 
     def getIncomingLinkForId(self, linkId):
         """
-        Returns True if there is an incoming link with the given id
+        Returns an incoming link if one has an ID matching *linkId*.
+        It no incoming links qualify, raises a :py:class:`DtaError`.
         """
         for link in self.iterIncomingLinks():
             if link.getId() == linkId:
@@ -313,7 +317,8 @@ class Node(object):
 
     def getIncomingLinkForNodeId(self, nodeId):
         """
-        Returns True if there is an incoming link starting from nodeId
+        Returns an incoming link if one starts from *nodeId*.
+        It no incoming links qualify, raises a :py:class:`DtaError`.
         """
         for link in self.iterIncomingLinks():
             if link.getStartNode().getId() == nodeId:
@@ -322,20 +327,20 @@ class Node(object):
 
     def getNumIncomingLinks(self):
         """
-        Returns the number of incoming links
+        Returns the number of incoming links.
         """
         return len(self._incomingLinks)
 
     def getNumOutgoingLinks(self):
         """
-        Retruns the number of outoing links
+        Returns the number of outgoing links.
         """
         return len(self._outgoingLinks)
 
 
     def hasConnector(self):
         """
-        Return True if there is a connector atached to the node.
+        Return True if there is a connector attached to the node.
         """
         for link in self.iterIncomingLinks():
             if link.isConnector():
@@ -350,19 +355,23 @@ class Node(object):
     def getCardinality(self):
         """
         Return a pair of numbers representing the number of 
-        incoming and outgoing links respectively
+        incoming and outgoing links respectively.
         """
         return (len(self._incomingLinks), len(self._outgoingLinks))
         
     def isIntersection(self):
         """
         Return True if this node is an intersection
+        
+        .. todo:: And an intersection is what?  Technical definition please.
         """
         return not self.isJunction() 
 
     def isJunction(self):
         """
         Return True if this node is a junction. 
+        
+        .. todo:: And a junction is what?  Technical definition please.
         """
         if self.getNumOutgoingLinks() == 1 or self.getNumIncomingLinks() == 1:
             return True
@@ -375,12 +384,19 @@ class Node(object):
         """
         Return True if the node is a shape point (e.g. Node 51245 in the 
         following graph). 
-        If countRoadNodesOnly is True the method will count only RoadLinks 
-        attached to this Node and will disregard an connectors. 
+        
+        If *countRoadNodesOnly* is True the method will count only RoadLinks 
+        attached to this Node and will disregard any connectors. 
         
         .. image:: /images/shapePoint.png
            :height: 300px
-           
+        
+        .. todo:: I think this documentation is insufficient; it's just an example, it doesn't define a "shape point."
+                  Further, there are "shapepoints" that are not this, such as in those added via
+                  :py:meth:`RoadLink.addShapePoint`, so the terminology should be more accurate --
+                  what we're really checking is if this could be a shape point?
+                  And we're not even doing that -- this implementation would call a node a shapepoint 
+                  if there is a one-way loop (consisting of two links) intersecting with a one way street. 
         """
         
         if not countRoadNodesOnly:
@@ -398,14 +414,14 @@ class Node(object):
     
     def getName(self):
         """
-        Return the name of the intersection as a string consisting of the labels 
-        of the incoming links in sorted order. 
+        Return the name of the intersection as a string consisting of the upper-cased labels 
+        of the incoming links in sorted order, separated by ``AND``.  (e.g. ``VAN NESS AVE AND MARKET ST``)
         """
         return " AND ".join(self.getStreetNames())
 
     def getStreetNames(self):
         """
-        Return the street names of the incoming links as a list
+        Return the street names (labels) of the incoming links as a sorted upper-case list.
         """
         names = set()
         for ilink in self.iterIncomingLinks():
@@ -415,23 +431,22 @@ class Node(object):
 
     def iterMovements(self):
         """
-        Return an iterator to all the movements going
-        through the node
+        Return an iterator to all the :py:class:`Movement` instances going through the node.
         """
         return (mov for iLink in self.iterIncomingLinks() for mov in
                 iLink.iterOutgoingMovements())
         
-    def getMovement(self, upNodeId, downNodeId):
+    def getMovement(self, startNodeId, endNodeId):
         """
-        Return the movement from upNodeId to downNodeId that goes through
-        this node
+        Return the :py:class:`Movement` from *startNodeId* to *endNodeId* that goes through
+        this node.
         """
-        iLink = self.getIncomingLinkForNodeId(upNodeId)
-        return iLink.getOutgoingMovement(downNodeId)
+        iLink = self.getIncomingLinkForNodeId(startNodeId)
+        return iLink.getOutgoingMovement(endNodeId)
         
     def getNumMovements(self):
         """
-        Return the number of movements associated with this node
+        Return the number of :py:class:`Movement` instances associated with this node.
         """
         return sum(link.getNumOutgoingMovements() for link in self.iterIncomingLinks())
         

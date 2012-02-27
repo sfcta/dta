@@ -28,12 +28,46 @@ USAGE = r"""
  
  python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010
  
- This script reads the San Francisco Cube network and converts it to a Dynameq network, writing it out to the current directory.
+ This script reads the San Francisco Cube network (SanFranciscoSubArea_2010.net) 
+ and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.
  
   * Currently, it ignores the first two args (they are for the Geary DTA network, which we're skipping for now; leaving it there for future)
-  * The third arg is the location of the San Francisco Cube network for conversion to a Dynameq DTA network
+  * The third arg is the location of the San Francisco Cube network for conversion to a Dynameq DTA network, this is where
+    the script finds:
+    * `SanFranciscoSubArea_2010.net`, the actual Cube network
+    * `turnspm.pen`, the prohibited turns file
+    * `trueShapeExport\SanFranciscoSubArea_2010.shp`, the shapefile version of the Cube network (for additional
+       road geometry information)
  
  """
+
+def removeHOVStubs(sanfranciscoDynameqNet):
+    """
+    The San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    Find these and remove them
+    """    
+    nodesToRemove = []
+    for node in sanfranciscoDynameqNet.iterNodes():
+        # one incomine link, one outgoing link
+        if node.getNumIncomingLinks() != 1: continue
+        if node.getNumOutgoingLinks() != 1: continue
+        
+        removalCandidate = True
+        # the incoming/outgoing links must each be a road link of facility type 6
+        for link in node.iterAdjacentLinks():
+            if not link.isRoadLink(): 
+                removalCandidate = False
+                break
+            if link.getFacilityType() != 6:
+                removalCandidate = False
+                break
+        
+        if removalCandidate:
+            nodesToRemove.append(node)
+    
+    for node in nodesToRemove:
+        dta.DtaLogger.info("Removing HOV Stub node %d" % node.getId())
+        sanfranciscoDynameqNet.removeNode(node)
  
 if __name__ == '__main__':
     
@@ -44,11 +78,15 @@ if __name__ == '__main__':
     GEARY_DYNAMEQ_NET_DIR       = sys.argv[1] 
     GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
     SF_CUBE_NET_DIR             = sys.argv[3]   # TODO: change this to cube net name 
-    SF_CUBE_TURN_PROHIBITIONS   = sys.argv[4]
+    #SF_CUBE_TURN_PROHIBITIONS   = sys.argv[4]
+    #SF_CUBE_SHAPEFILE           = ""
 
-    #GEARY_DYNAMEQ_NET_DIR       = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
-    #GEARY_DYNAMEQ_NET_PREFIX    = "Base"
-    #SF_CUBE_NET_DIR = r"Y:\dta\SanFrancisco\2010" # "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"    
+
+    
+    # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
+    dta.VehicleType.LENGTH_UNITS= "feet"
+    dta.Node.COORDINATE_UNITS   = "feet"
+    dta.RoadLink.LENGTH_UNITS   = "miles"
 
     dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
     
@@ -56,7 +94,6 @@ if __name__ == '__main__':
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
     #gearyScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
     #                                    datetime.datetime(2010,1,1,4,0,0))
-
 
     #gearyScenario.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX) 
     #gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
@@ -67,27 +104,29 @@ if __name__ == '__main__':
     sanfranciscoScenario = dta.DynameqScenario(datetime.datetime(2010,1,1,0,0,0), 
                                                datetime.datetime(2010,1,1,4,0,0))
 
-    # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll because these are the demand matrices we'll provice
+    # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll 
+    # We will provide demand matrices for each of these classes
     sanfranciscoScenario.addVehicleClass("Car_NoToll")
     sanfranciscoScenario.addVehicleClass("Car_Toll")
     sanfranciscoScenario.addVehicleClass("Truck_NoToll")
     sanfranciscoScenario.addVehicleClass("Truck_Toll")
     
-    # We have only 2 vehicle types                      Type        VehicleClass    Length  ResponseTime
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1))  # assuming length is in feet -?
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6))
-    # what about HOV? Taxi?
-    # Transit is implicit, doesn't require definition?
+    # length is in feet (from above), response time is in seconds, maxSpeed is in mi/hour
+    # We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1,          100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1,          100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6,        70.0,       90.0))
+    # Generic is an implicit type
 
     # VehicleClassGroups
-    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe"))
+    allVCG =                                  dta.VehicleClassGroup(dta.VehicleClassGroup.ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe") 
+    sanfranciscoScenario.addVehicleClassGroup(allVCG)
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.TRANSIT,    dta.VehicleClassGroup.TRANSIT,                      "#55ff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
     
-    # generalized cost
+    # Generalized cost
     # TODO: Make this better!?!
     sanfranciscoScenario.addGeneralizedCost("Expression_0", # name
                                             "Seconds",      # units
@@ -96,6 +135,7 @@ if __name__ == '__main__':
                                             ""              # descr
                                             )
     
+    # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     sanfranciscoCubeNet.readNetfile \
       (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
@@ -131,24 +171,50 @@ if __name__ == '__main__':
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
        )
     
+    # create the movements for the network for all vehicles
+    sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
+    
+    # Apply the turn prohibitions
+    sanfranciscoCubeNet.applyTurnProhibitions(os.path.join(SF_CUBE_NET_DIR, "turnspm.pen"))
+    
+    # Read the shape points so curvy streets look curvy
+    sanfranciscoCubeNet.readLinkShape(os.path.join(SF_CUBE_NET_DIR, "trueShapeExport", "SanFranciscoSubArea_2010.shp"),
+                                      "A", "B")
+    
+    # Convert the network to a Dynameq DTA network
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfranciscoDynameqNet.deepcopy(sanfranciscoCubeNet)
-    sanfranciscoDynameqNet.removeShapePoints()
-    #sanfranciscoDynameqNet.removeStrayNodes()
     
-    # add virtual nodes and links between Centroids and RoadNodes
+    # Why would we want to do this?
+    # sanfranciscoDynameqNet.removeShapePoints()
+    
+    # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq
     sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
+    
+    # Move the centroid connectors from intersection nodes to midblock locations
     sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
 
-    sanfranciscoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks()
-    #removeVerySmallLinks(sanfranciscoDynameqNet)
-    sanfranciscoDynameqNet.removeDuplicateConnectors()    
-    sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors()
-    print sanfranciscoDynameqNet.getNumRoadNodes()
-    print sanfranciscoDynameqNet.getNumRoadLinks()
+    # why is this necessary?
+    sanfranciscoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks(maxDistToMove=100)
 
+    # why is this necessary?
+    sanfranciscoDynameqNet.removeDuplicateConnectors()    
+    
+    sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),
+                                                                  maxDistToMove=100) # feet
+
+    # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    removeHOVStubs(sanfranciscoDynameqNet)
+
+    # finally -- Dynameq requires links to be longer than the longest vehicle
+    sanfranciscoDynameqNet.handleShortLinks(1.05*sanfranciscoScenario.maxVehicleLength()/5280.0,
+                                            warn=True,
+                                            setLength=True)
+
+    # if we have too many nodes for the license 10
+    if sanfranciscoDynameqNet.getNumRoadNodes() > 12500:
+        sanfranciscoDynameqNet.removeUnconnectedNodes()
     sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")
-    sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")   
     exit(0)
     
     # Merge them together

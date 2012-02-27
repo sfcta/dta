@@ -20,7 +20,11 @@ from .PhaseMovement import PhaseMovement
 from .DtaError import DtaError 
 
 class Phase(object):
-    """Represents a dynameq phase"""
+    """
+    Represents a dynameq phase.
+    
+    .. todo:: Dynameq?  There should be a Dynameq subclass.
+    """
     
     TYPE_CUSTOM = 1
     TYPE_STANDARD = 0

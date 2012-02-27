@@ -15,7 +15,55 @@ dta.RoadLink
    
       ~RoadLink.__init__
       ~RoadLink.addLanePermission
+      ~RoadLink.addOutgoingMovement
+      ~RoadLink.addShapePoint
+      ~RoadLink.addShifts
       ~RoadLink.euclideanLength
+      ~RoadLink.getAngle
+      ~RoadLink.getCenterLine
+      ~RoadLink.getDirection
+      ~RoadLink.getEndNode
+      ~RoadLink.getEndNodeId
+      ~RoadLink.getFacilityType
+      ~RoadLink.getId
+      ~RoadLink.getIid
+      ~RoadLink.getLabel
+      ~RoadLink.getLength
+      ~RoadLink.getLengthInCoordinateUnits
+      ~RoadLink.getMidPoint
+      ~RoadLink.getNumIncomingMovements
+      ~RoadLink.getNumLanes
+      ~RoadLink.getNumOutgoingMovements
+      ~RoadLink.getNumShapePoints
+      ~RoadLink.getObsMeanTT
+      ~RoadLink.getObsSpeedInMPH
+      ~RoadLink.getOrientation
+      ~RoadLink.getOtherEnd
+      ~RoadLink.getOutgoingMovement
+      ~RoadLink.getOutline
+      ~RoadLink.getReferenceAngle
+      ~RoadLink.getReferenceAngleInDegrees
+      ~RoadLink.getShifts
+      ~RoadLink.getSimFlow
+      ~RoadLink.getSimSpeedInMPH
+      ~RoadLink.getSimTTInMin
+      ~RoadLink.getSimVolume
+      ~RoadLink.getStartNode
+      ~RoadLink.getStartNodeId
+      ~RoadLink.hasOutgoingMovement
+      ~RoadLink.hasSameAttributes
+      ~RoadLink.isConnector
+      ~RoadLink.isOverlapping
+      ~RoadLink.isRoadLink
+      ~RoadLink.isVirtualLink
+      ~RoadLink.iterIncomingMovements
+      ~RoadLink.iterOutgoingMovements
+      ~RoadLink.removeOutgoingMovement
+      ~RoadLink.setLabel
+      ~RoadLink.setLength
+      ~RoadLink.setNumLanes
+      ~RoadLink.setSimTTInMin
+      ~RoadLink.setSimVolume
    
    
 

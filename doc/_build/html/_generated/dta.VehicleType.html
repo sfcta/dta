@@ -55,17 +55,19 @@
 <h1>dta.VehicleType<a class="headerlink" href="#dta-vehicletype" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.VehicleType">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VehicleType</tt><big>(</big><em>name</em>, <em>className</em>, <em>length</em>, <em>responseTime</em><big>)</big><a class="headerlink" href="#dta.VehicleType" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VehicleType</tt><big>(</big><em>name</em>, <em>className</em>, <em>length</em>, <em>responseTime</em>, <em>maxSpeed</em>, <em>speedRatio</em><big>)</big><a class="headerlink" href="#dta.VehicleType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class that represents a vehicle type.</p>
 <dl class="method">
 <dt id="dta.VehicleType.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>className</em>, <em>length</em>, <em>responseTime</em><big>)</big><a class="headerlink" href="#dta.VehicleType.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>className</em>, <em>length</em>, <em>responseTime</em>, <em>maxSpeed</em>, <em>speedRatio</em><big>)</big><a class="headerlink" href="#dta.VehicleType.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <ul class="simple">
 <li><em>name</em> is the vehicle type name, e.g. <tt class="docutils literal"><span class="pre">small_truck</span></tt></li>
 <li><em>className</em> a broader class, e.g. <tt class="docutils literal"><span class="pre">truck</span></tt></li>
 <li><em>length</em> is the effective length (units?)</li>
-<li><em>responseTime</em> is ?</li>
+<li><em>responseTime</em> is the response time of the vehicle in seconds</li>
+<li><em>maxSpeed</em> is the maximum speed of the vehicle, in km/hour or miles/hr depending on the project units.</li>
+<li><em>speedRatio</em> is the ratio of this vehicle type&#8217;s speed over the link speed (times 100?!)</li>
 </ul>
 </dd></dl>
 
@@ -81,6 +83,13 @@
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.VehicleType.LENGTH_UNITS">
+<tt class="descname">LENGTH_UNITS</tt><a class="headerlink" href="#dta.VehicleType.LENGTH_UNITS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static variable representing the units for length
+Should be <tt class="docutils literal"><span class="pre">meters</span></tt> or <tt class="docutils literal"><span class="pre">feet</span></tt></p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

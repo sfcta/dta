@@ -208,7 +208,7 @@ class DynameqScenario(Scenario):
         scenariofile_object.write("*      class_name\n")
         count = 0
         for vehicleClassName in self.vehicleClassNames:
-            scenariofile_object.write("%17s" % vehicleClassName)
+            scenariofile_object.write("%17s\n" % vehicleClassName)
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VEH_CLASSES", scenariofile_object.name))
 
@@ -233,13 +233,15 @@ class DynameqScenario(Scenario):
         ready for writing.
         """
         scenariofile_object.write("VEH_TYPES\n")
-        scenariofile_object.write("*class_name type_name   length res_time\n")
+        scenariofile_object.write("*class_name  type_name   length res_time max_speed speed_ratio\n")
         count = 0
-        for vehicleTypeName in sorted(self.vehicleTypes.keys()):
-            scenariofile_object.write("%11s %9s %8f %8f\n" % (self.vehicleTypes[vehicleTypeName].className,
-                                                              vehicleTypeName,
-                                                              self.vehicleTypes[vehicleTypeName].length,
-                                                              self.vehicleTypes[vehicleTypeName].responseTime))
+        for vehicleType in self.vehicleTypes:
+            scenariofile_object.write("%13s %9s %8.2f %8.2f %8.2f %8.2f\n" % (vehicleType.className,
+                                                                              vehicleType.name,
+                                                                              vehicleType.length,
+                                                                              vehicleType.responseTime,
+                                                                              vehicleType.maxSpeed,
+                                                                              vehicleType.speedRatio))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VEH_TYPES", scenariofile_object.name))
 
