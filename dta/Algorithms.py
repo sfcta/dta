@@ -25,7 +25,9 @@ __license__     = """
 import sys
 import pdb 
 import math 
+from collections import deque
 
+import dta
 from dta.Utils import isRightTurn, lineSegmentsCross
 from itertools import izip, tee, cycle, ifilter, ifilterfalse
 
@@ -265,22 +267,6 @@ def getSmallestPolygonContainingNetwork(network):
     #by making the links bydirectional you are also making the network connected
     #if you remove the connectors you are also removing the external links 
 
-    
-
-
-
-
-    
-    
-
-
-    
-    
-
-    
-    
-    
-
 def getConvexHull2(setOfPoints):
     """
     Refactored Graham's scan algorithm
@@ -357,3 +343,142 @@ def getClosestNode(net, inputNode):
             closestNode = node 
 
     return closestNode, math.sqrt(minDist) 
+
+def getSPRouteBetweenLinks(net, routeName, sourceLinkId, destLinkId):
+    """
+    Return a Route object containing he shortest path between the source link 
+    and then dest link
+    """
+    sourceLink = net.getLinkForId(sourceLinkId)
+    destinationLink = net.getLinkForId(destLinkId)
+    ShortestPaths.initializeMovementCostsWithLengthInFeet(net)
+    ShortestPaths.labelCorrectingWithLabelsOnLinks(net, sourceLink)
+    path = ShortestPaths.getShortestPathBetweenLinks(sourceLink, destinationLink)
+    return dta.Route(net, routeName, path)
+
+class ShortestPaths(object):
+    """
+    Shortest path algorithms and various utilities
+    """
+    @staticmethod
+    def initialiseMovementCostsWithFFTT(network):
+        """Initialize all the movement costs with the edge free flow travel time in min"""
+        for edge in network.iterLinks():
+            for movement in edge.iterOutgoingMovements():
+                movement.cost = edge.getFreeFlowTTInMin()
+
+    @staticmethod
+    def initializeMovementCostsWithLengthInFeet(network):
+        for edge in network.iterLinks():
+            if edge.isVirtualLink():
+                continue
+            for movement in edge.iterOutgoingMovements():
+                movement.cost = edge.getLength()
+
+    @staticmethod
+    def initializeEdgeCostsWithFFTT(network):
+        """Initialize all the edge costs with the edge free flow travel times in minutes"""
+        for edge in network.iterLinks():
+            if edge.isLink():
+                edge.cost = edge.getFreeFlowTTInMin()
+            else:
+                edge.cost = sys.maxint 
+            
+    @staticmethod
+    def initializeEdgeCostsWithEdgeLength(network):
+        """Initalize all the edge costs with the edge lengths in feet"""
+        for edge in network.iterLinks():
+            edge.cost = edge.getLengthInFeet()
+
+    @classmethod
+    def labelCorrectingWithLabelsOnLinks(cls, graph, sourceLink):
+        """Implementation of Pape's shortest path
+        using a deque. Links are inserted to the 
+        left of the deque if they have been already 
+        visited. Otherwise they are inserted to the
+        right of the deque
+
+        Movements need to have a cost attribute
+
+        """
+        for edge in graph.iterLinks():
+            edge.label = sys.maxint 
+            edge.alreadyVisited = False
+            edge.predEdge = None
+            
+        sourceLink.label = 0
+
+        edgesToExamine = deque()
+        edgesToExamine.appendleft(sourceLink)
+
+        while edgesToExamine:
+            pivotEdge = edgesToExamine.popleft()
+            pivotEdge.alreadyVisited = True
+            for eMovement in pivotEdge.iterOutgoingMovements():
+                newLabel = pivotEdge.label + eMovement.cost
+                downstreamEdge = eMovement.getOutgoingLink()
+                if newLabel < downstreamEdge.label:
+                    downstreamEdge.label = newLabel
+                    downstreamEdge.predEdge = pivotEdge
+                    if downstreamEdge.alreadyVisited:
+                        edgesToExamine.appendleft(downstreamEdge)
+                    else:
+                        edgesToExamine.append(downstreamEdge)        
+
+                        
+    @classmethod
+    def labelCorrectingWithLabelsOnNodes(cls, graph, sourceVertex):
+        """Implementation of Pape's shortest path
+        using a deque. Vertices are inserted to the 
+        left of the deque if they have been already 
+        visited. Otherwise they are inserted to the
+        right of the deque
+
+        To work edges should have a cost attribute
+        
+        """
+
+        for vertex in graph.iterVertices():
+            vertex.label = sys.maxint
+            vertex.alreadyVisited = False 
+            vertex.predVertex = None
+
+        sourceVertex.label = 0
+        edgesToExamine = deque()
+        edgesToExamine.appendleft(sourceVertex)
+        
+        while edgesToExamine:
+            pivotVertex = edgesToExamine.popleft()
+            pivotVertex.alreadyVisited = True
+            for edge in pivotVertex.iterEmanatingEdges():
+                #if edge.isConnector():
+                #    continue
+                newLabel = pivotVertex.label + edge.cost
+                downstreamVertex = edge.vertexB
+                if newLabel < downstreamVertex.label:
+                    downstreamVertex.label = newLabel
+                    downstreamVertex.predVertex = pivotVertex
+                    if downstreamVertex.alreadyVisited:
+                        edgesToExamine.appendleft(downstreamVertex)
+                    else:
+                        edgesToExamine.append(downstreamVertex)
+
+    @classmethod
+    def getShortestPathBetweenLinks(cls, sourceLink, destinationLink):
+        """
+        Return the path from the sourceLink to the 
+        destinationLink as a list of edges. The return list always contains the 
+        destination and the source edge
+        """
+        if sourceLink==destinationLink:
+            return []
+        edge = destinationLink
+        path = []
+        while edge != sourceLink:
+            path.insert(0, edge)
+            edge = edge.predEdge
+        path.insert(0, edge)
+        return path
+
+
+     

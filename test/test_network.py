@@ -44,7 +44,7 @@ from dta.Utils import lineSegmentsCross
 from dta.Utils import militaryTimeToDateTime
 
 
-mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"o
 
 def getGearyNet():
 

@@ -45,6 +45,7 @@ from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
+from .Route import Route 
 
 #from .demand import Demand
 from .Algorithms import dfs 

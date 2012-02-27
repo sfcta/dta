@@ -43,7 +43,8 @@ if __name__ == '__main__':
     
     GEARY_DYNAMEQ_NET_DIR       = sys.argv[1] 
     GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
-    SF_CUBE_NET_DIR             = sys.argv[3]
+    SF_CUBE_NET_DIR             = sys.argv[3]   # TODO: change this to cube net name 
+    SF_CUBE_TURN_PROHIBITIONS   = sys.argv[4]
 
     #GEARY_DYNAMEQ_NET_DIR       = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary"
     #GEARY_DYNAMEQ_NET_PREFIX    = "Base"

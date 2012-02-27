@@ -196,7 +196,7 @@ class RoadLink(Link):
 
             return self._simMeanTT[start, end]
         else:
-            return self.lengthInMiles / float(self.vfree) * 60
+            return self.lengthInMiles / float(self._freeflowSpeed) * 60
 
     def getSimSpeedInMPH(self, startTimeInMin, endTimeInMin):
 
@@ -411,8 +411,14 @@ class RoadLink(Link):
         """
         Return the length of the link in miles
         """
+        return self.getLength()
+
+    def getLengthInFeet(self):
+        """
+        Return the length of the link in feet
+        """
         return self.getLength() / 5280.0
-        
+
     def getCenterLine(self):
         """
         Offset the link to the right 0.5*numLanes*:py:attr:`RoadLink.DEFAULT_LANE_WIDTH_FEET` and 
@@ -462,15 +468,12 @@ class RoadLink(Link):
                    (self._endNode.getX(), self._endNode.getY()),
                    (self._endNode.getX() + xOffset, self._endNode.getY() + yOffset),
                    (self._startNode.getX() + xOffset, self._startNode.getY() + yOffset))
-
         return outline
-
 
     def getMidPoint(self):
         """
         Return the midpoint of the link's centerline as a tuple of two floats
-        """
-        
+        """        
         return ((self._centerline[0][0] + self._centerline[1][0]) / 2.0,
                 (self._centerline[0][1] + self._centerline[1][1]) / 2.0)
                 
@@ -598,7 +601,30 @@ class RoadLink(Link):
             return RoadLink.DIR_SB
         else:
             return RoadLink.DIR_WB
-        
-        
-        
 
+    def hasThruTurn(self):
+        """
+        Return True if the link has a through turn
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isLeftTurn():
+                return True
+        return False
+
+    def getThruTurn(self):
+        """
+        Return the thru movement of the link or raise an error if it does not exist
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isLeftTurn():
+                return mov
+        raise DtaError("Link %d does not have a thru movement" % self.getId())
+        
+    def getFreeFlowSpeedInMPH(self):
+        """
+        Return the free flow speed in MPH
+        """
+        return self._freeflowSpeed
+            
+        
+        

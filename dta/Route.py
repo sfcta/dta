@@ -15,22 +15,42 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from itertools import izip
 from .DtaError import DtaError
-
+import shapefile 
+                    
 class Route(object):
     """A path in the network"""
-    
+
+    @classmethod
+    def writeRoutesToShp(cls, routes, outFileName):
+        """
+        Write the routes as a shapefile
+        """
+        w = shapefile.Writer(shapefile.POLYLINE) 
+        w.field("NAME", "C", 40)
+        for route in routes:
+            points = []
+            for node in route.iterNodes():
+                points.append((node.getX(), node.getY()))
+            w.line(parts=[points])
+            w.record(route.getName())
+        w.save(outFileName)
+        
     def __init__(self, net, name, iterLinks):
-        """Constructor that accepts a network, the route name, and a sequence of links"""
+        """
+        Constructor that accepts a network, the route name, and a sequence of links
+        """
         self._net = net
         self._name = name
         self.visualizeInReverse = False
 
         self._links = list(iterLinks)
 
-        for linkUpstream, linkDownstream in pairwise(self._links):
-            assert linkUpstream.hasEmanatingMovement(linkDownstream.getEndNodeId())
+        for linkUpstream, linkDownstream in izip(self._links, self._links[1:]):
+            if not linkUpstream.hasOutgoingMovement(linkDownstream.getEndNodeId()):
+                raise DtaError("Link %d does not have an outgoing movement towards "
+                               "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
 
         if len(self._links) == 0:
             raise DtaError('A route cannot istantiated without any links')
@@ -63,8 +83,8 @@ class Route(object):
         """        
         simTT = 0
         if self.getNumLinks() > 1:
-            for upLink, downLink in pairwise(self.iterLinks()):
-                movement = upLink.getEmanatingMovement(downLink.nodeBid)
+            for upLink, downLink in izip(self.iterLinks(), list(self.iterLinks())[1:]):
+                movement = upLink.getOutgoingMovement(downLink.getEndNodeId())
                 movTT = movement.getSimTTInMin(startTimeInMin, endTimeInMin)            
                 simTT += movTT
         else:
@@ -163,3 +183,4 @@ class Route(object):
     
 
 
+        

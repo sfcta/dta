@@ -423,8 +423,8 @@ class Movement(object):
         if totalFlow > 0:
             return totalTime / float(totalFlow) + self._penalty
         else:
-            return (self.upLink.getLengthInMiles() / 
-                float(self.upLink.getFreeFlowSpeedInMPH()) * 60 + self._penalty)
+            return (self._incomingLink.getLengthInMiles() / 
+                float(self._incomingLink.getFreeFlowSpeedInMPH()) * 60 + self._penalty)
 
     def getSimSpeedInMPH(self, startTimeInMin, endTimeInMin):
         """
