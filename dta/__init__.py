@@ -39,7 +39,7 @@ from .Node import Node
 from .Phase import Phase
 from .RoadLink import RoadLink
 from .RoadNode import RoadNode
-from .Route import Route
+from .Path import Path
 from .Scenario import Scenario
 from .TimePlan import PlanCollectionInfo, TimePlan
 from .Utils import crossProduct, direction, lineSegmentsCross, onSegment
@@ -47,7 +47,6 @@ from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
-from .Route import Route 
 
 from .Algorithms import dfs 
 

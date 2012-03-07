@@ -16,6 +16,7 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import dta
 import datetime
 import os 
 
@@ -23,7 +24,7 @@ import la
 import nose.tools 
 import numpy as np
 
-from dta.demand import Demand
+from dta.Demand import Demand
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.DynameqScenario import DynameqScenario 
 
@@ -36,6 +37,11 @@ def getTestNet():
     scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0), datetime.datetime(2010,1,1,4,0))
     scenario.read(projectFolder, prefix) 
     #nose.tools.set_trace()
+
+    dta.VehicleType.LENGTH_UNITS= "feet"
+    dta.Node.COORDINATE_UNITS   = "feet"
+    dta.RoadLink.LENGTH_UNITS   = "miles"
+    
     net = DynameqNetwork(scenario) 
 
     net.read(projectFolder, prefix) 

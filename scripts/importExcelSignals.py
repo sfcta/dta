@@ -30,7 +30,7 @@ from itertools import izip, chain
 import logging
 import datetime
 
-from MultiArray import MultiArray
+from dta.MultiArray import MultiArray
 
 import dta
 from dta.DynameqScenario import DynameqScenario
@@ -71,6 +71,17 @@ RED = 2
 TURN_LEFT = ("LT", "LT2")
 TURN_THRU = ("TH")
 TURN_RIGHT = ("RT", "RT2")
+
+USAGE = r"""
+
+ python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix
+ 
+ e.g.
+ 
+ python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\ExcelSignals 1530 1830
+ 
+ This script reads all the excel signal cards in the excel_signal_cards dir and converts them to the dynameq network specified with the first two arguments. Only signals that are active in the given time period are converted. The script writes a new dynameq network that includes the signals to output_dynameq_dir using the prefix output_dynameq_net_prefix
+ """
 
 class SignalData(object):
 
@@ -191,15 +202,12 @@ class SignalData(object):
         And the signal interval data for the time of day that is specified
         by the startHour and endHour input arguments
  
-	Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]
-        
+	Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]        
         """
 
         pPhase = {}
         phases = []
         allRed = 0
-
-        #pdb.set_trace()
         
         phasingData = self.phasingData
         groupMovements = phasingData.getElementsOfDimention(0)
@@ -254,7 +262,6 @@ class SignalData(object):
                 else:
                     phases.append(cPhase)
             elif all2(states1, lambda state: state == "R"):
-                #pdb.set_trace()                
                 #allRed += dur1
                 #phases[-1]['yellow'] += dur1
                 if phases:
@@ -321,7 +328,6 @@ class ExcelSignalTiming(object):
         self.cso = ExcelSignalTiming.DEFAULT_VALUE   # string the cso value
         self.cycle = ExcelSignalTiming.DEFAULT_VALUE  #float the cycle length 
         self.offset = ExcelSignalTiming.DEFAULT_OFFSET  # float the offset
-#        self.interval = [] # floats the interval values 
 
         self.isActuated = False
 
@@ -337,27 +343,36 @@ class ExcelSignalTiming(object):
                 raise ExcelSignalTimingError("Time values corresponding to phase states have to be float "
                                        "values and not: %s" % str(time))
 
-#        state = times # [PhaseState(None, time) for time in times]
         self.times = times
 
     def __iter__(self):
-
+        """
+        Return an iterator over the phase states
+        """
         return iter(self.state)
 
     def __len__(self):
-
+        """
+        Return the number of intevals of the time plan
+        """
         return self.getNumIntervals()
 
     def getNumIntervals(self):
-
+        """
+        Return the number of intevals of the time plan
+        """
         return len(self.times)
 
     def __str__(self):
-
+        """
+        Return the string representation of the signal card
+        """
         return self.__repr__()
 
     def __repr__(self):
-
+        """
+        Return the string representation of the signal card
+        """
         if self.cycle == None:
             cycle = ExcelSignalTiming.DEFAULT_VALUE
         else:
@@ -367,7 +382,6 @@ class ExcelSignalTiming(object):
             offset = ExcelSignalTiming.DEFAULT_VALUE
         else:
             offset = self.offset
-
         
         result = "\ncso= %s \ncycle= %.1f \noffset= %.1f \nstartTime= %s " \
             "endtime= %s \nisActuated %s" % (self.cso, cycle, offset,
@@ -375,18 +389,7 @@ class ExcelSignalTiming(object):
         result += "\n\tTimes: %s" % str(self.times)
 
         return result
-                                          
-
-#    def setPhaseStates(self, phaseStates):
-#        if len(phaseStates) != len(self.state):
-#            raise ExcelSignalTimingError("The number of phase states: %d and the number of "
-#                                   "time steps %s are not equal" %(len(phaseStates), len(self.state)))
-#        for signalTiming, phaseState in izip(self, phaseStates):
-#            if phaseState not in [PhaseState.GREEN, PhaseState.YELLOW, PhaseState.RED]:
-#                raise ExcelSignalTimingError("I do not recognise the following phase state: %s"
-#                                       % phaseState)
-#            signalTiming.state = phaseState
-        
+                                                  
 def findTopLeftCell(sheet):
     """Find the top left cell of the signal card containing 
     the intersection name and return its coordinates"""
@@ -425,7 +428,10 @@ def findStreet(sheet, topLeftCell):
     raise ParsingCardError("I cannot find the start of the phasing section")
 
 def findPedestrianPhase(sheet, topLeftCell):
-    
+    """
+    Find the cell that corresponds to the pedestrian phase.
+    If not such cell exists it returns None
+    """
     CELLS_TO_SEARCH = 60
     for row in range(CELLS_TO_SEARCH):
         cell = (topLeftCell[0] + row, topLeftCell[1])
@@ -443,7 +449,10 @@ def findPedestrianPhase(sheet, topLeftCell):
     return None    
 
 def findSignalIntervals(sheet, topLeftCell):
-    
+    """
+    Find the cell that contains the Cycle and Offset infrmation
+    """
+    Find the cell that 
     CELLS_TO_SEARCH = 80
     for row in range(CELLS_TO_SEARCH):
         cell = (topLeftCell[0] + row, topLeftCell[1])
@@ -457,7 +466,10 @@ def findSignalIntervals(sheet, topLeftCell):
                            "marked by the keyworkd CSO or DIAL")
 
 def getFirstColumnOfPhasingData(sheet, signalData):
-    
+    """
+    Search the cells in the spreadsheet to find and return the cell that
+    contains phase state 1
+    """
     if not signalData.phaseSeqCell:
         raise ParsingCardError("I cannot locate the first column of the phasing data "
                                "because the phase data section has not been previously identified")
@@ -520,12 +532,11 @@ def getOperationTimes(sheet, signalData):
 
 def getSignalIntervalData(sheet, signalData):
     """
-    Extracts the signal interval data from the supplied excel
+    Assigns the signal interval data from the supplied excel
     spreadsheet 
     """
     if not signalData.sigInterCell or not signalData.colPhaseData:
         return
-    #pdb.set_trace()
     #begin with the signal interval data
     startX, startY = signalData.sigInterCell
     #find the first enry
@@ -546,7 +557,6 @@ def getSignalIntervalData(sheet, signalData):
 #                print "value = ", value, "at ", i, j
                 if str(value):
                     row.append(value)
-#            pdb.set_trace()
                     
             #you ought to have 3 values: CSO, CYCLE, OFFSET
             #read the rest of the row
@@ -628,10 +638,6 @@ def getSignalIntervalData(sheet, signalData):
             if finishedReadingData:
                 break
 
-#        if i > startX + 10:
-#            break
-
-
 def fillPhaseInfo(phaseInfo):
     """The a list with the phase info for a movement group such as
        ['', u'G', '', u'Y', u'R', '', '', '', '', '', '', '']
@@ -659,8 +665,6 @@ def getPhasingData(sheet, signalData):
     if not signalData.lastColPhaseData:
         raise ParsingCardError("I cannot parse its phasing data4.")        
 
-    
-    #pdb.set_trace()
     startX, startY = signalData.phaseSeqCell 
 
     endX, endY = signalData.sigInterCell
@@ -723,8 +727,6 @@ def getPhasingData(sheet, signalData):
     
     if len(phasingData) <= 1:
         raise ParsingCardError("Signal has less than two group movements")
-
-    #pdb.set_trace() 
 
     if len(phasingData) > 1:
         for i in range(len(phasingData) - 1):
@@ -880,9 +882,6 @@ def parseExcelCardsToSignalObjects(directory):
             continue
         if fileName.startswith("System"):
             continue
-
-        #if fileName == "3rd St_Innes_Ch_18.xls":
-        #    pdb.set_trace()
 
         numFiles += 1
         #print "\n\n*****************************************************\n", numFiles, fileName, "\n*****************************************************\n"
@@ -1048,7 +1047,6 @@ def mapMovements(excelCards, baseNetwork):
             f.close()
 
             #if mec.fileName == "Fell_Pierce_Ch_18.xls":
-            #    pdb.set_trace()
 
             if not stName:
                 raise MovementMappingError("I cannot identify the approach of the group "
@@ -1268,45 +1266,6 @@ def getTestScenario():
 
     return scenario 
 
-def getNet(folder):
-
-    testScenario = getTestScenario()
-    net = DynameqNetwork(scenario=testScenario)
-    net.read(dir=folder, file_prefix="sf9")
-    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)      
-    return net 
-    
-def getNet2():
-    
-    testScenario = getTestScenario()
-    folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"
-    #folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"        
-    #folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/dynameqNetwork"
-    net = DynameqNetwork(scenario=testScenario)
-    net.read(dir=folder, file_prefix="sf9")
-    #net.removeShapePoints()    
-    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-
-    for link in net.iterLinks():
-        link._label = cleanStreetName(link._label)
-    return net 
-
-def getNet3():
-    
-    testScenario = getTestScenario()
-    folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/CubeNetworkSource_renumberExternalsOnly/"
-    #folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"        
-    #folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/dynameqNetwork"
-    net = DynameqNetwork(scenario=testScenario)
-    net.read(dir=folder, file_prefix="sf25_2")
-    #net.removeShapePoints()    
-    #net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-
-    for link in net.iterLinks():
-        link._label = cleanStreetName(link._label)
-    return net 
-
-
 def assignCardNames(excelCards): 
 
     for sd in excelCards:
@@ -1316,18 +1275,15 @@ def assignCardNames(excelCards):
         sd.iiName = ",".join(sd.streetNames)
     
 def mapIntersectionsByName(network, excelCards):
-    """for each excel card in the find the node in the base network 
-    it corresponds"""
+    """
+    Map each excel card to a dynameq node
+    """
 
     mappedExcelCards = []
 
     numMappedNodesV1 = 0
     mappedNodes = {}
     for sd in excelCards:
-
-#        mappedNodeName = difflib.get_close_matches(sd.iiName, network.intersectionByName.keys(), 1, 0.85)
-#        if mappedNodeName:
-#            numMappedNodesV1 += 1
 
         if findNodeWithSameStreetNames(network, sd, 0.9, mappedNodes):
             mappedExcelCards.append(sd)
@@ -1399,8 +1355,6 @@ def convertSignalToDynameq(node, card, planInfo):
     startTime, endTime= planInfo.getTimePeriod() 
     excelPhases = card.getPhases(startTime, endTime)
     
-    #pdb.set_trace()
-    
     for excelPhase in excelPhases:
 
         groupMovemenents = excelPhase["Movs"]
@@ -1423,16 +1377,8 @@ def convertSignalToDynameq(node, card, planInfo):
         dPlan.addPhase(dPhase)
 
     return dPlan
-
-def checkType2Cards(net):
     
-    cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/type2" 
-    cards = parseExcelCardsToSignalObjects(cardsDirectory)
-    assignCardNames(cards)
-    mapIntersectionsByName(net, cards)
-    #success rate is 38 out of 122 
-    
-def manuallyDetermineMappedNodeId(net, cardsDirectory):
+def manuallyDetermineMappedNodeId(net, cardsDirectory, manuallyMappedIntersectionsFile):
 
     fileNames = os.listdir(cardsDirectory)
     
@@ -1443,7 +1389,7 @@ def manuallyDetermineMappedNodeId(net, cardsDirectory):
         cardsByName[card.fileName] = card
 
     result = []
-    for record in csv.DictReader(open("mappedIntersections_manualEdits_dt20111208.csv", "r")):
+    for record in csv.DictReader(open(manuallyMappedIntersectionsFile, "r")):
         if record["status"] == "2":
             nodeId = record["manualCubeNode"].strip()
             if nodeId:
@@ -1458,53 +1404,42 @@ def manuallyDetermineMappedNodeId(net, cardsDirectory):
 
     return result 
 
-def getMappedCards(net, cardsDirectory): 
-
+def getMappedCards(net, cardsDirectory, cardsDirectoryManuallyMapped=None): 
+    """
+    Read the cards in the cards directory and map them to network nodes.
+    Return the mapped signal objects cards in a list 
+    """
     excelCards = parseExcelCardsToSignalObjects(cardsDirectory)
 
     cards = excelCards
     assignCardNames(cards)
     mapIntersectionsByName(net, cards)
 
-    #this is the folder where cards with type 2 errors reside
-    cardsDirectoryManuallyMapped = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/type2"
-    cards2 = manuallyDetermineMappedNodeId(net, cardsDirectoryManuallyMapped)
-
-    assignCardNames(cards2)
-    cards3 = mapStreetNamesForManuallyMappedNodes(net, cards2)
-    cards.extend(cards3)
-
-    #output = open("mappedIntersections.txt", "w")
-    
-    #for card in excelCards:
-    #    print "%s\t%s\t%s\t%s" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName)
-    #    output.write("%s\t%s\t%s\t%s\n" % (card.fileName, card.streetNames, card.mappedNodeId, card.mappedNodeName))
-
-    #output.close()
-
+    if cardsDirectoryManuallyMapped:
+        raise Exception("We should not have any manually mapped nodes") 
+    if cardsDirectoryManuallyMapped:
+        cards2 = manuallyDetermineMappedNodeId(net, cardsDirectoryManuallyMapped)
+        assignCardNames(cards2)     
+        cards3 = mapStreetNamesForManuallyMappedNodes(net, cards2)
+        cards.extend(cards3)
+        
     return cards 
 
-def mapAllMovements(net, cards):
-
-    cardsWithMovements = mapMovements(cards, net)
-
-    return cardsWithMovements
-
-def exportToJSON(cards):
-
-    output = open("excelSignals.json", "w")
+def exportToJSON(cards, outFileName):
+    """
+    Export the signal cards to json format
+    """
+    output = open("outfileName.json", "w")
     for card in cards:
         output.write(json.dumps(card.toDict(),separators=(',',':'), indent=4))
     output.close()
 
-def createDynameqSignals(net, cardsWithMovements, startTime, endTime, reportFile):
+def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
     """
     Create a dynameq signal for each excel card object for
     the specified input preriod
-    """
-    output = open(reportFile, "w")
-    
-    planInfo = net.addPlanCollectionInfo(startTime, endTime, "test", "excelSignalsToDynameq")
+    """    
+    planInfo = net.addPlanCollectionInfo(startTime, endTime, "excelSignalsToDynameq", "excel_signal_cards_imported_automatically")
     allPlans = []
     for card in cardsWithMovements:
         nodeId = card.mappedNodeId
@@ -1513,23 +1448,23 @@ def createDynameqSignals(net, cardsWithMovements, startTime, endTime, reportFile
             dPlan = convertSignalToDynameq(node, card, planInfo)
             dPlan.setPermittedMovements()            
             dPlan.validate()
-            
-            output.write("%s,%s,%d,%d\n" % (card.iName, node.getId(), dPlan.getCycleLength(), dPlan.getOffset()))
-            
+                        
         except ExcelCardError, e:
             print e
             continue
         except dta.DtaError, e:
             print str(e)
-            #pdb.set_trace()
             continue
         node.addTimePlan(dPlan) 
         allPlans.append(dPlan)
-    output.close()
     return allPlans
 
 def verifySingleSignal(net, fileName):
-
+    """
+    Read the signal card stored in the fileName and verify that
+    can be imported properly to the dynameq network provided as
+    the first argument 
+    """
     directory, fn = os.path.split(fileName)
     sd = parseExcelCardFile(directory, fn)
     cards = [sd]
@@ -1548,68 +1483,25 @@ def verifySingleSignal(net, fileName):
             print movDir            
             for nodeTriplet in nodeTriplets:
                 print "\t\t%s" % nodeTriplet
-        
-def plotSignalTimes(net):
-
-    pass 
 
 if __name__ == "__main__":
 
-    folder = "/Users/michalis/Documents/workspace/dta/dev/testdata/sf9"
-    #net = getNet(folder)
-    net = getNet3()
+    if len(sys.argv) != 8:
+        print USAGE
+        sys.exit(2)
 
-    #pdb.set_trace() 
+    INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
+    INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
+    EXCEL_DIR                     = sys.argv[3]
+    START_TIME                    = sys.argv[4]
+    END_TIME                      = sys.argv[5]
+    OUTPUT_DYNAMEQ_NET_DIR        = sys.argv[6]
+    OUTPUT_DYNAMEQ_NET_PREFIX     = sys.argv[7]
 
-    #net.writeLinksToShp(os.path.join(folder, "links_sf9"))
-    #net.writeNodesToShp(os.path.join(folder, "nodes_sf9"))
-    #addAllMovements(net)    
-    #net.writeMovementsToShp(os.path.join(folder, "movs_sf9"))
+    net = dta.DynameqNetwork.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+    cards = getMappedCards(EXCEL_DIR) 
+    cardsWithMovements = mapMovements(net, cards)
+    allPlans = createDynameqSignals(net, cardsWithMovements, START_TIME, END_TIME)     
+    net.write(OUTPUT_DYNAMEQ_NET_DIR, OUTPUT_DYNAMEQ_NET_PREFIX)
 
-    #exit()
-    
-    #pdb.set_trace()
-
-    #net.writeNodesToShp("/Users/michalis/Dropbox/tmp/nodes9_2")
-    #net.writeLinksToShp("/Users/michalis/Dropbox/tmp/links9_2")
-    
-
-
-    #cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/"
-    #cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/excelSignalCards2/unmapped"
-    cardsDirectory = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/DansWork/excelSignalCards2"
-    
-    #fileName = os.path.join(cardsDirectory, "10th Ave_California_Ch_12.xls") 
-    #verifySingleSignal(net, fileName)
-
-    #cards = getMappedCards(net, cardsDirectory)
-
-    pdb.set_trace()
-    
-
-    #print "Num excel files", len(excelFileNames)
-    #pCardsFile5 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards5.pkl"
-    pCardsFile7 = "/Users/michalis/Documents/workspace/dta/dev/testdata/cubeSubarea_sfCounty/intermediateSignalFiles/excelCards7.pkl"        
-
-    #pickleCards(pCardsFile7, cards)
-    cards = unPickleCards(pCardsFile7)
-
-    #
-    #for card in cards:
-    #    print card.iName, card.streetNames, card.mappedStreet
-    #print len(cards)
-
-    cardsWithMovements = mapAllMovements(net, cards)
-    
-    pdb.set_trace()
-
-    allPlans = createDynameqSignals(net, cardsWithMovements, 1530, 1830, "test/report_pm.csv")    
-    #allPlans = createDynameqSignals(net, cardsWithMovements, 630, 930, "test/report_am.csv")    
-
-    pdb.set_trace() 
-
-    
-    net.write(folder, "test_PM")
-
-    #dta.Utils.plotSignalAttributes(net, 1530, 1830, os.path.join(folder, "signalAttributes"))
-    dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes_pm")
+    #dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes_pm")

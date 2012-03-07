@@ -344,9 +344,9 @@ def getClosestNode(net, inputNode):
 
     return closestNode, math.sqrt(minDist) 
 
-def getSPRouteBetweenLinks(net, routeName, sourceLinkId, destLinkId):
+def getSPPathBetweenLinks(net, pathName, sourceLinkId, destLinkId):
     """
-    Return a Route object containing he shortest path between the source link 
+    Return a Path object containing he shortest path between the source link 
     and then dest link
     """
     sourceLink = net.getLinkForId(sourceLinkId)
@@ -354,7 +354,7 @@ def getSPRouteBetweenLinks(net, routeName, sourceLinkId, destLinkId):
     ShortestPaths.initializeMovementCostsWithLengthInFeet(net)
     ShortestPaths.labelCorrectingWithLabelsOnLinks(net, sourceLink)
     path = ShortestPaths.getShortestPathBetweenLinks(sourceLink, destinationLink)
-    return dta.Route(net, routeName, path)
+    return dta.Path(net, pathName, path)
 
 class ShortestPaths(object):
     """

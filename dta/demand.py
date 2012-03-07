@@ -15,7 +15,6 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 import pdb
 import copy
 import csv
@@ -27,6 +26,7 @@ import numpy as np
 
 from dta.Algorithms import hasPath 
 from .DtaError import DtaError
+from dta.MultiArray import MultiArray
 
 class Demand(object):
     """
@@ -102,6 +102,7 @@ class Demand(object):
             raise DtaError("The time step defined by the first slice cannot be zero") 
         
         demand = Demand(net, vehClassName, startTime, endTime, timeStep)
+        _npyArray = demand._demandTable.getNumpyArray()
 
         timeStepInMin = demand._timeInMin(timeStep)
 
@@ -116,8 +117,7 @@ class Demand(object):
             destinations = map(int, input.next().strip().split())
             for j, origin in enumerate(range(net.getNumCentroids())):
                 fields = map(float, input.next().strip().split()) 
-                demand._la[i, j, :] = np.array(fields[1:]) / ( 60.0 / timeStepInMin)
-
+                _npyArray[i,j,:] = np.array(fields[1:]) / ( 60.0 / timeStepInMin)                
         return demand
 
     def __init__(self, net, vehClassName, startTime, endTime, timeStep):
@@ -143,9 +143,8 @@ class Demand(object):
 
         self._centroidIds = sorted([c.getId() for c in net.iterNodes() if c.isCentroid()]) 
 
-        array = np.ndarray(shape=(self.getNumSlices(), len(self._centroidIds), len(self._centroidIds)))
-        self._la = la.larry(array, [self._timeLabels, self._centroidIds, self._centroidIds], dtype=float)
-
+        self._demandTable = MultiArray("d", [self._timeLabels, self._centroidIds, self._centroidIds])
+                                             
         #TODO: what are you going to do with vehicle class names? 
         #self._vehicleClassNames = [vehClass.name for vehClass in self._net.getScenario().vehicleClassNames]
 
@@ -210,18 +209,13 @@ class Demand(object):
         """
         Set the value of the given timeLabel, origin, and destination
         """
-        
-        a = self._la.labelindex(timeLabel, axis=0)
-        b = self._la.labelindex(origin, axis=1)
-        c = self._la.labelindex(destination, axis=2) 
-        
-        self._la[a, b, c] = value 
+        self._demandTable[timeLabel, origin, destination] = value  
     
     def getValue(self, timeLabel, origin, destination):
         """
         Return the value of the given time period, origin, and destination
         """
-        return self._la.lix[[timeLabel], [origin], [destination]]
+        return self._demandTable[timeLabel, origin, destination]
 
     def write(self, fileName):
         """
@@ -242,6 +236,8 @@ class Demand(object):
 
         timeStepInMin = self._timeInMin(self.timeStep)
 
+        _npyArray = self._demandTable.getNumpyArray()
+        
         for i, timePeriod in enumerate(self._timePeriods):
             outputStream.write("SLICE\n%s\n" % timePeriod.strftime("%H:%M"))
             outputStream.write("\t%s\n" % '\t'.join(map(str, self._centroidIds)))
@@ -249,7 +245,7 @@ class Demand(object):
             timeLabel = self._datetimeToMilitaryTime(timePeriod)             
 
             for j, cent in enumerate(self._centroidIds):
-                outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % (elem / (60.0 / timeStepInMin)) for elem in self._la[i, j, :])))
+                outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % (elem / (60.0 / timeStepInMin)) for elem in _npyArray[i, j, :])))
 
         outputStream.close()
 
@@ -311,9 +307,12 @@ class Demand(object):
 
         newDemand = Demand(self._net, self.vehClassName, self.startTime, self.endTime, newTimeStep)
 
+        _npyArrayOld = self._demandTable.getNumpyArray() 
+        _npyArrayNew = newDemand._demandTable.getNumpyArray()
+
         for i in range(len(factorsInAList)):
             
-            newDemand._la[i, :, :] = self._la[0, :, :] * factorsInAList[i] 
+            _npyArrayNew[i, :, :] = _npyArrayOld[i, :, :] * factorsInAList[i] 
 
         return newDemand                            
 
@@ -337,3 +336,4 @@ class Demand(object):
         Return the total number of trips
         """
         return self._la.sum() 
+

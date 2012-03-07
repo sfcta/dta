@@ -19,29 +19,30 @@ from itertools import izip
 from .DtaError import DtaError
 import shapefile 
                     
-class Route(object):
+class Path(object):
     """
-    A path in the network
+    A path in the network represented by a sequence of links
+    that are connected to each other
     """
 
     @classmethod
-    def writeRoutesToShp(cls, routes, outFileName):
+    def writePathsToShp(cls, paths, outFileName):
         """
-        Write the routes as a shapefile
+        Write the paths as a shapefile
         """
         w = shapefile.Writer(shapefile.POLYLINE) 
         w.field("NAME", "C", 40)
-        for route in routes:
+        for path in paths:
             points = []
-            for node in route.iterNodes():
+            for node in path.iterNodes():
                 points.append((node.getX(), node.getY()))
             w.line(parts=[points])
-            w.record(route.getName())
+            w.record(path.getName())
         w.save(outFileName)
         
     def __init__(self, net, name, iterLinks):
         """
-        Constructor that accepts a network, the route name, and a sequence of links
+        Constructor that accepts a network, the path name, and a sequence of connected links
         """
         self._net = net
         self._name = name
@@ -55,19 +56,19 @@ class Route(object):
                                "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
 
         if len(self._links) == 0:
-            raise DtaError('A route cannot istantiated without any links')
+            raise DtaError('A path cannot istantiated without any links')
         self._lengthInMiles = sum([link.getLengthInMiles() for link  in self.iterLinks()])
         self._obsTTInMin = {}
 
     def getLengthInMiles(self):
         """
-        Get the length of the route in miles
+        Get the length of the path in miles
         """
         return self._lengthInMiles
 
     def getLengthInFeet(self):
         """
-        Get the length of the route in feet
+        Get the length of the path in feet
         """
         return self.getLengthInMiles() * 5280
 
@@ -127,49 +128,49 @@ class Route(object):
 
     def getNumLinks(self):
         """
-        Get the number of links in the route
+        Get the number of links in the path
         """
         return len(self._links)
 
     def getName(self):
         """
-        Get the name of the route
+        Get the name of the path
         """
         return self._name
 
     def getFirstNode(self):
         """
-        Get the first node in the route
+        Get the first node in the path
         """
         return self._links[0].nodeA
 
     def getLastNode(self):
         """
-        Return the last node in the route
+        Return the last node in the path
         """
         return self._links[-1].nodeB
 
     def getFirstLink(self):
         """
-        Return the first link in the route
+        Return the first link in the path
         """
         return self._links[0]
 
     def getLastLink(self):
         """
-        Return the last link in the route
+        Return the last link in the path
         """
         return self._links[-1]
 
     def iterLinks(self):
         """
-        Return an iterator to the edges of the route
+        Return an iterator to the edges of the path
         """
         return iter(self._links)
 
     def iterLinksInReverse(self):
         """
-        Return an iterator to the links in the route in reverse order
+        Return an iterator to the links in the path in reverse order
         """
         links = [link for link in self.iterLinks]
         rLinks = links.reverse()
@@ -177,7 +178,7 @@ class Route(object):
 
     def iterNodes(self):
         """
-        Return an iterator to the nodes in the route
+        Return an iterator to the nodes in the path
         """
         for link in self.iterLinks():
             yield link.getStartNode()
