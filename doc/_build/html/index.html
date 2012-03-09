@@ -98,7 +98,7 @@ module docstring will be improved during development.</p>
 <div class="section" id="scenario-classes">
 <h1>Scenario classes<a class="headerlink" href="#scenario-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-65f9f2a92be17e37379d09b413fc6b342c53b6be.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
+<img src="_images/inheritance-74fad0d57212b27f092c1e924fcbe4548bc79227.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -124,7 +124,7 @@ module docstring will be improved during development.</p>
 <div class="section" id="node-classes">
 <h1>Node classes<a class="headerlink" href="#node-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-14a3ec389e430f9233ab17b4bc99b679082ed9c6.png" alt="Inheritance diagram of dta.Node, dta.RoadNode, dta.VirtualNode, dta.Centroid" class="inheritance"/>
+<img src="_images/inheritance-769e4f83d4f0435f65ce53d172982920def2952a.png" alt="Inheritance diagram of dta.Node, dta.RoadNode, dta.VirtualNode, dta.Centroid" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -150,7 +150,7 @@ module docstring will be improved during development.</p>
 <div class="section" id="link-classes">
 <h1>Link classes<a class="headerlink" href="#link-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-cb53b763c37049317054c794c9be4515eb2fd304.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
+<img src="_images/inheritance-7de1cbdcbba12647c3f8e9e3946c82fa2758066b.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -213,11 +213,14 @@ module docstring will be improved during development.</p>
 <tr><td><a class="reference internal" href="_generated/dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Movement</span></tt></a></td>
 <td>Base class that represents a movement.</td>
 </tr>
+<tr><td><a class="reference internal" href="_generated/dta.MultiArray.html#dta.MultiArray" title="dta.MultiArray"><tt class="xref py py-obj docutils literal"><span class="pre">dta.MultiArray</span></tt></a></td>
+<td>Multidimentinal array of custom numpy data types supporting</td>
+</tr>
 <tr><td><a class="reference internal" href="_generated/dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Network</span></tt></a></td>
 <td>Base class that represents a DTA Network.  Networks exist on a continuum between</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.Route.html#dta.Route" title="dta.Route"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Route</span></tt></a></td>
-<td>A path in the network</td>
+<td></td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.Algorithms.html#dta.Algorithms" title="dta.Algorithms"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Algorithms</span></tt></a></td>
 <td>Algorithms for use throughout DTA Anyway</td>
@@ -452,7 +455,20 @@ module docstring will be improved during development.</p>
 217
 218
 219
-220</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -531,7 +547,11 @@ module docstring will be improved during development.</p>
     
     <span class="n">GEARY_DYNAMEQ_NET_DIR</span>       <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> 
     <span class="n">GEARY_DYNAMEQ_NET_PREFIX</span>    <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">SF_CUBE_NET_DIR</span>             <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">SF_CUBE_NET_DIR</span>             <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>   <span class="c"># TODO: change this to cube net name </span>
+    <span class="c">#SF_CUBE_TURN_PROHIBITIONS   = sys.argv[4]</span>
+    <span class="c">#SF_CUBE_SHAPEFILE           = &quot;&quot;</span>
+
+
     
     <span class="c"># The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths</span>
     <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
@@ -639,21 +659,30 @@ module docstring will be improved during development.</p>
     <span class="c"># sanfranciscoDynameqNet.removeShapePoints()</span>
     
     <span class="c"># Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">insertVirtualNodeBetweenCentroidsAndRoadNodes</span><span class="p">(</span><span class="n">startVirtualNodeId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">,</span> <span class="n">startVirtualLinkId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">)</span>
+    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">insertVirtualNodeBetweenCentroidsAndRoadNodes</span><span class="p">(</span><span class="n">startVirtualNodeId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">,</span> <span class="n">startVirtualLinkId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">,</span>
+                                                                         <span class="n">distanceFromCentroid</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
     
     <span class="c"># Move the centroid connectors from intersection nodes to midblock locations</span>
+    <span class="c"># TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">removeCentroidConnectorsFromIntersections</span><span class="p">(</span><span class="n">splitReverseLinks</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">moveVirtualNodesToAvoidOverlappingLinks</span><span class="p">()</span>
-    <span class="c">#removeVerySmallLinks(sanfranciscoDynameqNet)</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">removeDuplicateConnectors</span><span class="p">()</span>    
+    <span class="c"># TODO: Fold into handleOverlappingLinks() and revisit the way this works; not sure random movements are the way to go</span>
+    <span class="c"># sanfranciscoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks(maxDistToMove=100)</span>
+
+    <span class="c"># TODO: why is this necessary?  Where these duplicate connectors came from?</span>
+    <span class="c"># sanfranciscoDynameqNet.removeDuplicateConnectors()</span>
     
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">moveVirtualNodesToAvoidShortConnectors</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">(),</span>
-                                                                  <span class="mi">100</span><span class="p">)</span> <span class="c"># feet</span>
+    <span class="c"># TODO: I think this isn&#39;t necessary; but discuss if the soln below is ok</span>
+    <span class="c"># sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),</span>
+    <span class="c">#                                                              maxDistToMove=100) # feet</span>
 
     <span class="c"># the San Francisco network has a few &quot;HOV stubs&quot; -- links intended to facilitate future coding of HOV lanes</span>
     <span class="n">removeHOVStubs</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">)</span>
 
+    <span class="c"># right now this warns; I think some of the handling above might be joined into this (especially if this</span>
+    <span class="c"># is the problem the method is meant to solve)</span>
+    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleOverlappingLinks</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
     <span class="c"># finally -- Dynameq requires links to be longer than the longest vehicle</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleShortLinks</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">()</span><span class="o">/</span><span class="mf">5280.0</span><span class="p">,</span>
                                             <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -722,11 +751,6 @@ if there is a one-way loop (consisting of two links) intersecting with a one way
 <p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-6"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 312.)</p>
 <div class="admonition-todo admonition " id="index-0">
 <p class="first admonition-title">Todo</p>
-<p class="last">What if the link has Shapepoints and we can do better (e.g. reflect curvature)</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Connector.html#index-0"><em>original entry</em></a> is located in  _generated\dta.Connector.rst, line 222.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
 <p class="last">What is this for?</p>
 </div>
 <p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-0"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 161.)</p>
@@ -737,27 +761,40 @@ if there is a one-way loop (consisting of two links) intersecting with a one way
 <p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-1"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 188.)</p>
 <div class="admonition-todo admonition " id="index-2">
 <p class="first admonition-title">Todo</p>
+<p class="last">the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
+&#8220;ERROR - the following virtual nodes have multiple entrance/exit connector&#8221;</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 324.)</p>
+<div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 367.)</p>
-<div class="admonition-todo admonition " id="index-3">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 380.)</p>
+<div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 393.)</p>
-<div class="admonition-todo admonition " id="index-4">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 406.)</p>
+<div class="admonition-todo admonition " id="index-5">
+<p class="first admonition-title">Todo</p>
+<p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
+node should be included too.  However, if we include either the first or the last shape point below,
+everything goes crazy.  I&#8217;m not sure why?</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 498.)</p>
+<div class="admonition-todo admonition " id="index-6">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
 the other kind?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 512.)</p>
-<div class="admonition-todo admonition " id="index-5">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-6"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 529.)</p>
+<div class="admonition-todo admonition " id="index-7">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 544.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-7"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 561.)</p>
 <div class="admonition-todo admonition " id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">What is this for?</p>
@@ -770,73 +807,79 @@ Currently it looks like an ALL and a PROHIBITED are required?</p>
 <p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-1"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 188.)</p>
 <div class="admonition-todo admonition " id="index-2">
 <p class="first admonition-title">Todo</p>
-<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+<p class="last">the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
+&#8220;ERROR - the following virtual nodes have multiple entrance/exit connector&#8221;</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 321.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 324.)</p>
 <div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 330.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 334.)</p>
 <div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 358.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 343.)</p>
 <div class="admonition-todo admonition " id="index-5">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 367.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 371.)</p>
 <div class="admonition-todo admonition " id="index-6">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-6"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 376.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-6"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 380.)</p>
 <div class="admonition-todo admonition " id="index-7">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-7"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 385.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-7"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 389.)</p>
 <div class="admonition-todo admonition " id="index-8">
+<p class="first admonition-title">Todo</p>
+<p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-8"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 398.)</p>
+<div class="admonition-todo admonition " id="index-9">
 <p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-8"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 404.)</p>
-<div class="admonition-todo admonition " id="index-9">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-9"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 417.)</p>
+<div class="admonition-todo admonition " id="index-10">
 <p class="first admonition-title">Todo</p>
 <p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-9"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 430.)</p>
-<div class="admonition-todo admonition " id="index-10">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-10"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 443.)</p>
+<div class="admonition-todo admonition " id="index-11">
 <p class="first admonition-title">Todo</p>
 <p class="last">why is this in <a class="reference internal" href="#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a> rather than <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-10"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 475.)</p>
-<div class="admonition-todo admonition " id="index-11">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-11"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 488.)</p>
+<div class="admonition-todo admonition " id="index-12">
 <p class="first admonition-title">Todo</p>
 <p class="last">I would like more detail about this.  How are movements handled for VehicleClassGroups?
 Also, rename to &#8220;moveConnectorsFromIntersectionsToMidblocks&#8221;; this sounds like a delete operation.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-11"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 477.)</p>
-<div class="admonition-todo admonition " id="index-12">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-12"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 490.)</p>
+<div class="admonition-todo admonition " id="index-13">
 <p class="first admonition-title">Todo</p>
 <p class="last">why is this in <a class="reference internal" href="#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a> rather than <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-12"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 499.)</p>
-<div class="admonition-todo admonition " id="index-13">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-13"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 512.)</p>
+<div class="admonition-todo admonition " id="index-14">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
 the other kind?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-13"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 527.)</p>
-<div class="admonition-todo admonition " id="index-14">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-14"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 540.)</p>
+<div class="admonition-todo admonition " id="index-15">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-14"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 569.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-15"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 582.)</p>
 <div class="admonition-todo admonition " id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">What is this for?</p>
@@ -849,27 +892,33 @@ Currently it looks like an ALL and a PROHIBITED are required?</p>
 <p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-1"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 183.)</p>
 <div class="admonition-todo admonition " id="index-2">
 <p class="first admonition-title">Todo</p>
+<p class="last">the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
+&#8220;ERROR - the following virtual nodes have multiple entrance/exit connector&#8221;</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-2"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 319.)</p>
+<div class="admonition-todo admonition " id="index-3">
+<p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-2"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 362.)</p>
-<div class="admonition-todo admonition " id="index-3">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-3"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 375.)</p>
+<div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-3"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 388.)</p>
-<div class="admonition-todo admonition " id="index-4">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-4"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 401.)</p>
+<div class="admonition-todo admonition " id="index-5">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
 the other kind?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-4"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 429.)</p>
-<div class="admonition-todo admonition " id="index-5">
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-5"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 442.)</p>
+<div class="admonition-todo admonition " id="index-6">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-5"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 461.)</p>
+<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-6"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 474.)</p>
 <div class="admonition-todo admonition " id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">And an intersection is what?  Technical definition please.</p>
@@ -895,11 +944,6 @@ if there is a one-way loop (consisting of two links) intersecting with a one way
 <p class="last">Dynameq?  There should be a Dynameq subclass.</p>
 </div>
 <p class="todo-source">(The <a class="reference internal" href="_generated/dta.Phase.html#index-0"><em>original entry</em></a> is located in  _generated\dta.Phase.rst, line 9.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">What if the link has Shapepoints and we can do better (e.g. reflect curvature)</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadLink.html#index-0"><em>original entry</em></a> is located in  _generated\dta.RoadLink.rst, line 206.)</p>
 <div class="admonition-todo admonition " id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">I think a picture would be useful here</p>

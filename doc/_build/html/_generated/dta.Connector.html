@@ -296,6 +296,15 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.coordinatesAlongLink">
+<tt class="descname">coordinatesAlongLink</tt><big>(</big><em>fromStart</em>, <em>distance</em><big>)</big><a class="headerlink" href="#dta.Connector.coordinatesAlongLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coordinates (a 2-tuple) along this link given by <em>distance</em>, which is 
+in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.  If <em>fromStart</em>, starts at start, otherwise at end.
+Takes shape points into account.  
+If <em>distance</em> is longer than the euclidean distance of the link, raises an exception.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.endIsRoadNode">
 <tt class="descname">endIsRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.endIsRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a boolean indicating wither the end node is the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</p>
@@ -310,11 +319,14 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 
 <dl class="method">
 <dt id="dta.Connector.getAngle">
-<tt class="descname">getAngle</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.Connector.getAngle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the angle in degrees (in the range [0, 180]) between this link and <em>other</em>, 
-an instance of <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a>.</p>
-<p>Both links are considered as line segments from start to finish (shapepoints 
-are not taken into account).</p>
+<tt class="descname">getAngle</tt><big>(</big><em>other</em>, <em>usingShapepoints=False</em><big>)</big><a class="headerlink" href="#dta.Connector.getAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the angle in degrees (in the range (-180, 180]) between this link and <em>other</em>, 
+an instance of <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> (where positive angles means the other is counter-clockwise from this,
+and negative angles means the other is clockwise from self.)</p>
+<p>If <em>usingShapepoints</em>, links must have a node in common, and the section of the link involving
+that common node is examined.</p>
+<p>If <em>usingShapepoints</em> is False, both links are considered as vectors from the
+start node to end node.</p>
 </dd></dl>
 
 <dl class="method">
@@ -356,6 +368,12 @@ EB, NB, WB, EB</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getFreeFlowSpeedInMPH">
+<tt class="descname">getFreeFlowSpeedInMPH</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getFreeFlowSpeedInMPH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the free flow speed in MPH</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getId">
 <tt class="descname">getId</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the link id</p>
@@ -390,11 +408,8 @@ EB, NB, WB, EB</p>
 <dl class="method">
 <dt id="dta.Connector.getMidPoint">
 <tt class="descname">getMidPoint</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getMidPoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the midpoint of the link&#8217;s centerline as a tuple of two floats</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">What if the link has Shapepoints and we can do better (e.g. reflect curvature)</p>
-</div>
+<dd><p>Return the midpoint of the link&#8217;s centerline as a tuple of two floats
+.. todo:: What if the link has Shapepoints and we can do better (e.g. reflect curvature)</p>
 </dd></dl>
 
 <dl class="method">
@@ -525,6 +540,12 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getThruTurn">
+<tt class="descname">getThruTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getThruTurn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the thru movement of the link or raise an error if it does not exist</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getVirtualNode">
 <tt class="descname">getVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getVirtualNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the Virtual Node associated with this connector</p>
@@ -543,6 +564,12 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.hasThruTurn">
+<tt class="descname">hasThruTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.hasThruTurn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the link has a through turn</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.isConnector">
 <tt class="descname">isConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.isConnector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Link is a Connector</p>
@@ -550,9 +577,9 @@ See addShifts() for details.</p>
 
 <dl class="method">
 <dt id="dta.Connector.isOverlapping">
-<tt class="descname">isOverlapping</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#dta.Connector.isOverlapping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the angle between the this link and <em>other</em> (an instance of <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a>)
-is less than 1 degree  (measured using their endpoints only)</p>
+<tt class="descname">isOverlapping</tt><big>(</big><em>other</em>, <em>usingShapepoints=False</em><big>)</big><a class="headerlink" href="#dta.Connector.isOverlapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the given link and <em>other</em> overlap.  Assumes they share an endpoint.
+See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.getAngle" title="dta.RoadLink.getAngle"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getAngle()</span></tt></a> for explanation of <em>usingShapePoints</em>.</p>
 </dd></dl>
 
 <dl class="method">

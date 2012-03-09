@@ -102,6 +102,7 @@ Misc
    dta.DtaError
    dta.DtaLogger
    dta.Movement
+   dta.MultiArray
    dta.Network
    dta.Route
    dta.Algorithms
@@ -113,6 +114,7 @@ Example: Building a network using dta
 ==========================================
 .. literalinclude:: ..\scripts\createSFNetworkFromCubeNetwork.py
    :linenos:
+
 
 TODO List
 =========

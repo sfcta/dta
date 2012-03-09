@@ -34,6 +34,7 @@ from .DynameqScenario import DynameqScenario
 from .Link import Link
 from .Logger import DtaLogger, setupLogging
 from .Movement import Movement
+from .MultiArray import MultiArray
 from .Network import Network
 from .Node import Node
 from .Phase import Phase
@@ -55,6 +56,6 @@ __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
            'Link', 'RoadLink', 'Connector', 'VirtualLink', 'Demand',
-           'PlanCollectionInfo', 'TimePlan', 'Route', 'Phase',
+           'PlanCollectionInfo', 'TimePlan', 'Route', 'Phase', 'MultiArray',
            'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment'
 ]

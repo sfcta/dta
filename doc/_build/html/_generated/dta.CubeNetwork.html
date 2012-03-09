@@ -446,6 +446,13 @@ another connector</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.CubeNetwork.handleOverlappingLinks">
+<tt class="descname">handleOverlappingLinks</tt><big>(</big><em>warn</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.handleOverlappingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each node, checks if any incoming links overlap, and if any outoing links overlap.</p>
+<p>In the future, it might address this but for now, warn.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.CubeNetwork.handleShortLinks">
 <tt class="descname">handleShortLinks</tt><big>(</big><em>minLength</em>, <em>warn</em>, <em>setLength</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.handleShortLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Goes through the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (including <tt class="xref py py-class docutils literal"><span class="pre">Connectors</span></tt>)
@@ -484,12 +491,19 @@ start and end times</p>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes">
-<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><em>startVirtualNodeId=None</em>, <em>startVirtualLinkId=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">insertVirtualNodeBetweenCentroidsAndRoadNodes</tt><big>(</big><em>startVirtualNodeId=None</em>, <em>startVirtualLinkId=None</em>, <em>distanceFromCentroid=0</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
 <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> nodes and <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> objects.</p>
 <img alt="../_images/addVirtualNode_before_after.png" src="../_images/addVirtualNode_before_after.png" style="height: 300px;" />
 <p>If defined, the virtual nodes that will be added will begin from <em>startVirtualNodeId</em> and the
-virtual links from <em>startVirtualLinkId</em>.</p>
+virtual links from <em>startVirtualLinkId</em>.  The new virtual node will be placed along the connector
+link a distance away from the centroid specified by <em>distanceFromCentroid</em> (in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>),
+so it will be in the same location if that argument is specified as zero.</p>
+<div class="admonition-todo admonition " id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
+&#8220;ERROR - the following virtual nodes have multiple entrance/exit connector&#8221;</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -542,7 +556,7 @@ error</p>
 <dd><p>This method will create a polygon around the current 
 (primary network). Every node or link of the secondary network 
 that is not in the polygon will be copied.</p>
-<div class="admonition-todo admonition " id="index-2">
+<div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
@@ -571,7 +585,7 @@ coppied.</p>
 <dl class="method">
 <dt id="dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks">
 <tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition-todo admonition " id="index-3">
+<dd><div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
 </div>
@@ -657,6 +671,12 @@ represent the geometry of the roads.  For curvey or winding roads, this will hel
 intersections because of the angles involved.</p>
 <p><em>startNodeIdField</em> and <em>endNodeIdField</em> are the column headers (so they&#8217;re strings)
 of the start node and end node IDs within the <em>linkShapefile</em>.</p>
+<div class="admonition-todo admonition " id="index-5">
+<p class="first admonition-title">Todo</p>
+<p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
+node should be included too.  However, if we include either the first or the last shape point below,
+everything goes crazy.  I&#8217;m not sure why?</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -684,7 +704,7 @@ See <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.Cu
 <dt id="dta.CubeNetwork.removeShapePoints">
 <tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.removeShapePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove shape points from the network</p>
-<div class="admonition-todo admonition " id="index-4">
+<div class="admonition-todo admonition " id="index-6">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
@@ -717,7 +737,7 @@ the other kind?</p>
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
-<div class="admonition-todo admonition " id="index-5">
+<div class="admonition-todo admonition " id="index-7">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>
