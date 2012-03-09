@@ -332,6 +332,43 @@ class RoadLink(Link):
         """
         return len(self._shapePoints)
 
+    def coordinatesAlongLink(self, fromStart, distance):
+        """
+        Returns the coordinates (a 2-tuple) along this link given by *distance*, which is 
+        in :py:attr:`Node.COORDINATE_UNITS`.  If *fromStart*, starts at start, otherwise at end.
+        Takes shape points into account.  
+        If *distance* is longer than the euclidean distance of the link, raises an exception.
+        """
+        points = [[self._startNode.getX(),self._startNode.getY()]]
+        points.extend(self._shapePoints)
+        points.append([self._endNode.getX(), self._endNode.getY()])
+        
+        if not fromStart:
+            points.reverse()
+        
+        if distance == 0:
+            return (points[0][0], points[0][1])
+        
+        distance_left = distance
+        idx           = 0
+        total_distance= 0
+        while distance_left > 0 and (idx+1) < len(points):
+            
+            shape_dist = math.sqrt( (points[idx][0]-points[idx+1][0]) ** 2 +
+                                    (points[idx][1]-points[idx+1][1]) ** 2)
+            total_distance += shape_dist
+            # this is the right sublink
+            if distance_left <= shape_dist:
+                return (points[idx][0] + (distance_left/shape_dist)*(points[idx+1][0]-points[idx][0]),
+                        points[idx][1] + (distance_left/shape_dist)*(points[idx+1][1]-points[idx][1]))
+            
+            # next sublink
+            distance_left -= shape_dist
+            idx += 1
+        # didn't find anything
+        raise DtaError("coordinatesAlongLink: distance %.2f too long for link %d (%d-%d) with total distance %.2f" % 
+                       (distance, self._id, self._startNode.getId(), self._endNode.getId(), total_distance))
+
     def hasOutgoingMovement(self, nodeId):
         """
         Return True if the link has an outgoing movement towards nodeId
@@ -548,57 +585,117 @@ class RoadLink(Link):
         """ 
         self._numLanes = numLanes 
     
-    def getAngle(self, other):
+    def getAngle(self, other, usingShapepoints=False):
         """
-        Return the angle in degrees (in the range [0, 180]) between this link and *other*, 
-        an instance of :py:class:`Link`.
+        Return the angle in degrees (in the range (-180, 180]) between this link and *other*, 
+        an instance of :py:class:`Link` (where positive angles means the other is counter-clockwise from this,
+        and negative angles means the other is clockwise from self.)
         
-        Both links are considered as line segments from start to finish (shapepoints 
-        are not taken into account).
+        If *usingShapepoints*, links must have a node in common, and the section of the link involving
+        that common node is examined.
+        
+        If *usingShapepoints* is False, both links are considered as vectors from the
+        start node to end node.
         """
 
         if self == other:
             return 0
+        
+        # choose the start points/end points of the two vectors
+        # note: for shapepoint situation when two conditions are true, first one wins
+        if not usingShapepoints or self.getStartNode() == other.getStartNode():
+            self_at_start   = True
+            other_at_start  = True
+        elif self.getStartNode() == other.getEndNode():
+            self_at_start   = True
+            other_at_start  = False
+        elif self.getEndNode() == other.getStartNode():
+            self_at_start   = False
+            other_at_start  = True
+        elif self.getEndNode() == other.getEndNode():
+            self_at_start   = False
+            other_at_start  = False
+        else:
+            raise DtaError("RoadLink.getAngle() called on links %d and %d, which have no nodes in common" %
+                           (self.getId(), other.getId()))
+            
+        # the relevant self vector is the first link
+        if self_at_start:
+            start1 = [self.getStartNode().getX(), self.getStartNode().getY()]
+                
+            if usingShapepoints and self.getNumShapePoints() > 0:
+                end1 = self._shapePoints[0]
+            else:
+                end1 = [self.getEndNode().getX(), self.getEndNode().getY()]
+        # the relevant self vector is the last link
+        else:
+            end1 = [self.getEndNode().getX(), self.getEndNode().getY()]
+            
+            if self.getNumShapePoints() > 0:
+                start1 = self._shapePoints[-1]
+            else:
+                start1 = [self.getStartNode().getX(), self.getStartNode().getY()]
+            
+        # the relevant other vector is the first link
+        if other_at_start:
+            start2 = [other.getStartNode().getX(), other.getStartNode().getY()]
+                
+            if usingShapepoints and other.getNumShapePoints() > 0:
+                end2 = other._shapePoints[0]
+            else:
+                end2 = [other.getEndNode().getX(), other.getEndNode().getY()]
+        # the relevant other vector is the last link
+        else:
+            end2 = [other.getEndNode().getX(), other.getEndNode().getY()]
+                
+            if other.getNumShapePoints() > 0:
+                start2 = other._shapePoints[-1]
+            else:
+                start2 = [other.getStartNode().getX(), other.getStartNode().getY()]
+                    
 
-        if self.getStartNode().getX() == other.getStartNode().getX() and \
-                self.getStartNode().getY() == other.getEndNode().getY() and \
-                self.getEndNode().getX() == other.getEndNode().getX() and \
-                self.getEndNode().getY() == other.getEndNode().getY():
+        if start1 == start2 and end1 == end2:
             return 0
 
-        if self.getStartNode() == other.getEndNode() and \
-                self.getEndNode() == other.getStartNode():
+        if start1 == end2 and end1 == start2:
             return 180 
 
-        dx1 = self.getEndNode().getX() - self.getStartNode().getX()
-        dy1 = self.getEndNode().getY() - self.getStartNode().getY()
+        dx1 = end1[0] - start1[0]
+        dy1 = end1[1] - start1[1]
         
-        dx2 = other.getEndNode().getX() - other.getStartNode().getX()
-        dy2 = other.getEndNode().getY() - other.getStartNode().getY()
+        dx2 = end2[0] - start2[0]
+        dy2 = end2[1] - start2[1]
 
 
         length1 = math.sqrt(dx1 ** 2 + dy1 ** 2)
         length2 = math.sqrt(dx2 ** 2 + dy2 ** 2)
 
         if length1 == 0:
-            raise DtaError("The length of link %d cannot not be zero" % self.getId())
+            raise DtaError("The length of link %d cannot be zero" % self.getId())
         if length2 == 0:
-            raise DtaError("The length of link %d cannot not be zero" % other.getId())
+            raise DtaError("The length of link %d cannot be zero" % other.getId())
 
-        if abs((dx1 * dx2 + dy1 * dy2) / (length1 * length2)) > 1:
-            if abs((dx1 * dx2 + dy1 * dy2) / (length1 * length2)) - 1 < 0.00001:
-                return 0
-            else:
-                raise DtaError("cannot apply getAcute angle from %d to %d" % (self.getId(), other.getId()))            
-        return abs(math.acos((dx1 * dx2 + dy1 * dy2) / (length1 * length2))) / math.pi * 180.0
+        # angle relative to <1,0>
+        angle1 = math.atan2(dy1, dx1)*180.0/math.pi
+        angle2 = math.atan2(dy2, dx2)*180.0/math.pi
+        
+        angle_between = angle2 - angle1
+        if angle_between > 180: 
+            angle_between -= 360
+        elif angle_between <= -180:
+            angle_between += 360
+            
+        return angle_between
     
-    def isOverlapping(self, other):
+    def isOverlapping(self, other, usingShapepoints=False):
         """
-        Return True if the angle between the this link and *other* (an instance of :py:class:`Link`)
-        is less than 1 degree  (measured using their endpoints only) 
+        Return True if the given link and *other* overlap.  Assumes they share an endpoint.
+        See :py:meth:`RoadLink.getAngle()` for explanation of *usingShapePoints*.
         """
-        if self.getAngle(other) <= 1.0:
+        # oriented the same way -- small angle
+        if abs(self.getAngle(other, usingShapepoints)) <= 0.75:
             return True
+        
         return False
 
     def getOrientation(self):

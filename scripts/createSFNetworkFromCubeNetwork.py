@@ -189,23 +189,30 @@ if __name__ == '__main__':
     # sanfranciscoDynameqNet.removeShapePoints()
     
     # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq
-    sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000)
+    sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000,
+                                                                         distanceFromCentroid=50)
     
     # Move the centroid connectors from intersection nodes to midblock locations
+    # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
     sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
 
-    # why is this necessary?
-    sanfranciscoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks(maxDistToMove=100)
+    # TODO: Fold into handleOverlappingLinks() and revisit the way this works; not sure random movements are the way to go
+    # sanfranciscoDynameqNet.moveVirtualNodesToAvoidOverlappingLinks(maxDistToMove=100)
 
-    # why is this necessary?
-    sanfranciscoDynameqNet.removeDuplicateConnectors()    
+    # TODO: why is this necessary?  Where these duplicate connectors came from?
+    # sanfranciscoDynameqNet.removeDuplicateConnectors()
     
-    sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),
-                                                                  maxDistToMove=100) # feet
+    # TODO: I think this isn't necessary; but discuss if the soln below is ok
+    # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),
+    #                                                              maxDistToMove=100) # feet
 
     # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
     removeHOVStubs(sanfranciscoDynameqNet)
 
+    # right now this warns; I think some of the handling above might be joined into this (especially if this
+    # is the problem the method is meant to solve)
+    sanfranciscoDynameqNet.handleOverlappingLinks(warn=True)
+    
     # finally -- Dynameq requires links to be longer than the longest vehicle
     sanfranciscoDynameqNet.handleShortLinks(1.05*sanfranciscoScenario.maxVehicleLength()/5280.0,
                                             warn=True,

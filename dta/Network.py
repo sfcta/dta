@@ -329,7 +329,8 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
-    def insertVirtualNodeBetweenCentroidsAndRoadNodes(self, startVirtualNodeId=None, startVirtualLinkId=None):
+    def insertVirtualNodeBetweenCentroidsAndRoadNodes(self, startVirtualNodeId=None, startVirtualLinkId=None,
+        distanceFromCentroid=0):
         """
         In some situations (for example, for a Dynameq netork), there need to be intermediate nodes between
         :py:class:`Centroid` nodes and :py:class:`RoadNode` objects.
@@ -338,14 +339,18 @@ class Network(object):
            :height: 300px
 
         If defined, the virtual nodes that will be added will begin from *startVirtualNodeId* and the
-        virtual links from *startVirtualLinkId*.
+        virtual links from *startVirtualLinkId*.  The new virtual node will be placed along the connector
+        link a distance away from the centroid specified by *distanceFromCentroid* (in :py:attr:`Node.COORDINATE_UNITS`),
+        so it will be in the same location if that argument is specified as zero.
+        
+        .. todo:: the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
+                  "ERROR - the following virtual nodes have multiple entrance/exit connector"
            
         """
         
         allLinkNodeIDPairs = self._linksByNodeIdPair.keys()
         modifiedConnectorCount = 0
 
-                #TODO: option to start at arbitrary node id
         if startVirtualNodeId:
             if startVirtualNodeId < self._maxNodeId:
                 raise DtaError("The startVirtualNodeId %d cannot be less than equal to the current max node id %d" %
@@ -356,6 +361,7 @@ class Network(object):
                 raise DtaError("The startVirtualLinkId %d cannot be less than equal to hte current max link id %d" %
                                (startVirtualLinkId, self._maxLinkId))
             self._maxLinkId = startVirtualLinkId 
+        
         
         for idPair in allLinkNodeIDPairs:
             # if we already took care of it when we did the reverse, it's not here anymore
@@ -373,11 +379,18 @@ class Network(object):
             # Centroid => RoadNode
             if isinstance(startNode, Centroid) and connector.endIsRoadNode():
                 #DtaLogger.debug("Inserting virtualNode in Centroid(%6d) => RoadNode(%6d)" % (startNode.getId(), endNode.getId()))
-                
-                newNode = VirtualNode(id=self._maxNodeId + 1,
-                                      x=startNode.getX(),
-                                      y=startNode.getY())
+
+                try:
+                    (newX,newY) = connector.coordinatesAlongLink(fromStart=True, distance=distanceFromCentroid)
+                except DtaError, e:
+                    (newX,newY) = (startNode.getX(), startNode.getY())
+                    
+                newNode = VirtualNode(id=self._maxNodeId + 1, x=newX, y=newY)
                 self.addNode(newNode)
+
+                DtaLogger.debug("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() added virtual node %d between Centroid %d and RoadNode %d" %
+                                (newNode.getId(), startNode.getId(), endNode.getId()))
+
                 
                 # switch the node out
                 self._switchConnectorNode(connector, switchStart=True, newNode=newNode)
@@ -386,6 +399,7 @@ class Network(object):
 
                 # add the virtualLink
                 self.addLink(VirtualLink(id=self._maxLinkId + 1, startNode=startNode, endNode=newNode, label=None))
+                    
                 # tally
                 modifiedConnectorCount += 1
                 
@@ -398,15 +412,22 @@ class Network(object):
                     self.addLink(VirtualLink(id=self._maxLinkId + 1, startNode=newNode, endNode=startNode, label=None))
                     # tally
                     modifiedConnectorCount += 1
+
             
             # RoadNode => Centroid               
             elif connector.startIsRoadNode() and isinstance(endNode, Centroid):
                 #DtaLogger.debug("Inserting virtualNode in RoadNode(%6d) => Centroid(%6d)" % (startNode.getId(), endNode.getId()))
+
+                try:
+                    (newX,newY) = connector.coordinatesAlongLink(fromStart=False, distance=distanceFromCentroid)
+                except DtaError, e:
+                    (newX,newY) = (startNode.getX(), startNode.getY())                            
                 
-                newNode = VirtualNode(id=self._maxNodeId+1,
-                                      x=endNode.getX(),
-                                      y=endNode.getY())
+                newNode = VirtualNode(id=self._maxNodeId+1, x=newX, y=newY)
                 self.addNode(newNode)
+
+                DtaLogger.debug("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() added virtual node %d between RoadNode %d and Centroid %d" %
+                                (newNode.getId(), startNode.getId(), endNode.getId()))
                 
                 # switch the node out
                 self._switchConnectorNode(connector, switchStart=False, newNode=newNode)
@@ -424,6 +445,7 @@ class Network(object):
                     self.addLink(VirtualLink(id=self._maxLinkId + 1, startNode=endNode, endNode=newNode, label=None))
                     # tally
                     modifiedConnectorCount += 1
+
         
         DtaLogger.info("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() modified %d connectors" % modifiedConnectorCount)
 
@@ -1002,6 +1024,61 @@ class Network(object):
                         if numMoves > MAX_NUM_MOVES:
                             vNodeNeedsToMove = False
 
+    def handleOverlappingLinks(self, warn):
+        """
+        For each node, checks if any incoming links overlap, and if any outoing links overlap.
+        
+        In the future, it might address this but for now, warn.
+        """
+        
+        # going through the nodes in sequential order
+        nodeIds = sorted(self._nodes.keys())
+        for nodeId in nodeIds:
+            node = self._nodes[nodeId]
+            
+            # check incoming links
+            for link1 in node.iterIncomingLinks():
+                if link1.isVirtualLink(): continue
+                
+                for link2 in node.iterIncomingLinks():
+                    if link2.isVirtualLink(): continue
+                    
+                    # they're the same
+                    if link1 == link2: continue
+                    
+                    # not overlapping
+                    try:
+                        if not link1.isOverlapping(link2, usingShapepoints=True): continue
+                    except DtaError, e:
+                        # DtaLogger.warn("Couldn't determine link overlap: "+str(e))
+                        continue
+
+                    if warn:
+                        DtaLogger.warn("node %d: incoming links %d and %d are overlapping (angle=%.3f)" %
+                                       (node.getId(), link1.getId(), link2.getId(), link1.getAngle(link2, True)))
+
+            # check outgoing links
+            for link1 in node.iterOutgoingLinks():
+                if link1.isVirtualLink(): continue
+                
+                for link2 in node.iterOutgoingLinks():
+                    if link2.isVirtualLink(): continue
+                    
+                    # they're the same
+                    if link1 == link2: continue
+                    
+                    # not overlapping
+                    try:
+                        if not link1.isOverlapping(link2, usingShapepoints=True): continue
+                    except DtaError, e:
+                        # DtaLogger.warn("Couldn't determine link overlap: "+str(e))
+                        continue
+
+                    if warn:
+                        DtaLogger.warn("node %d: outgoing links %d and %d are overlapping (angle=%.3f)" %
+                                       (node.getId(), link1.getId(), link2.getId(), link1.getAngle(link2, True)))
+
+        
     def handleShortLinks(self, minLength, warn, setLength):
         """
         Goes through the :py:class:`RoadLink` instances (including :py:class:`Connectors`)

@@ -831,7 +831,8 @@ class DynameqNetwork(Network):
                     self.removeCentroidConnectorFromIntersection(node, con, splitReverseLink=splitReverseLinks) 
                     #DtaLogger.info("Removed centroid connectors from intersection %d" % node.getId())
                 except DtaError, e:
-                    DtaLogger.error("%s" % str(e))
+                    DtaLogger.error("removeCentroidConnectorsFromIntersections(node=%d, con=%d) errored: %s" % 
+                                    (node.getId(), con.getId(), str(e)))
 
         #fix the number of lanes on the new connectors
         for node in self.iterNodes():
