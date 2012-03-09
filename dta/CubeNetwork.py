@@ -438,6 +438,10 @@ ENDRUN
         
         *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
         of the start node and end node IDs within the *linkShapefile*.
+        
+        .. todo:: Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
+                  node should be included too.  However, if we include either the first or the last shape point below,
+                  everything goes crazy.  I'm not sure why?
         """ 
 
         sf      = shapefile.Reader(linkShapefile)
@@ -467,8 +471,13 @@ ENDRUN
                 link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
                 links_found += 1
                 
-                if len(shape.points) == 2:
-                    continue
+                # just a straight line - no shape points necessary
+                if len(shape.points) == 2: continue
+                
+                # Dynameq throws away a single, see todo above
+                if len(shape.points) == 3: continue
+                
+                # don't include the first and last, they're already there
                 link._shapePoints = shape.points[1:-1]
                 shapepoints_added += len(shape.points)-2
 
