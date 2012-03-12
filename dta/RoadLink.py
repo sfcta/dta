@@ -74,7 +74,6 @@ class RoadLink(Link):
         Link.__init__(self, id, startNode, endNode, label)
         self._reverseAttachedLinkId     = reverseAttachedLinkId
         self._facilityType              = facilityType
-        self._length                    = length
         self._freeflowSpeed             = freeflowSpeed
         self._effectiveLengthFactor     = effectiveLengthFactor
         self._responseTimeFactor        = responseTimeFactor
@@ -88,6 +87,13 @@ class RoadLink(Link):
             self._level                 = level
         else:
             self._level                 = RoadLink.DEFAULT_LEVEL
+
+        #TODO:you should give a warnign when the input link length is weird
+        if length is None or length is -1:
+            self._length = self._calculateEuclideanLength()
+        else:
+            self._length = length
+            
 
         self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
         self._outgoingMovements         = []  #: list of outgoing Movements
@@ -448,15 +454,11 @@ class RoadLink(Link):
         """
         return self._numLanes
 
-    def getLength(self):
+
+    def _calculateEuclideanLength(self):
         """
-        Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.
-        
-        Uses the asserted length, if there is one; otherwise calculates the euclidean length.        
+        Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.        
         """
-        if self._length != -1:
-            return self._length
-        
         if RoadLink.LENGTH_UNITS == "miles" and Node.COORDINATE_UNITS == "feet":
             return (self.euclideanLength() / 5280.0)
         
@@ -465,7 +467,19 @@ class RoadLink(Link):
         
         raise DtaError("RoadLink.getLength() doesn't support RoadLink.LENGTH_UNITS %s and Node.COORDINATE_UNITS %s" % 
                        (str(RoadLink.LENGTH_UNITS), str(Node.COORDINATE_UNITS)))
-    
+
+        
+    def getLength(self):
+        """
+        Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.
+        
+        Uses the user input length, if there is one; otherwise calculates the euclidean length.        
+        """
+        if self._length != -1:
+            return self._length
+        else:
+            return self._calculateEuclideanLength()
+                
     def getLengthInCoordinateUnits(self):
         """
         Returns the length of the link in :py:attr:`Node.COORDINATE_UNITS` units.
@@ -503,6 +517,7 @@ class RoadLink(Link):
 
         length = self.getLengthInCoordinateUnits()
 
+        #TODO: throw an error if the length is Zero. In fact, you should have thrown an error logn time ago
         if length == 0:
             length = 1
 

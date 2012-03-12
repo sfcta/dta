@@ -21,6 +21,7 @@ import os
 
 from dta.DynameqScenario import DynameqScenario 
 from dta.DynameqNetwork import DynameqNetwork 
+from dta.Utils import Time
 
 from dta.Utils import *
 
@@ -77,13 +78,50 @@ class TestUtils:
 
         assert polylinesCross(line1, line4)
 
-class TestMapping:
+class TestTime:
 
-    def test_mapNodes(self):
+    def test_cmp(self):
 
-        net1 = getTestNet()
-        net2 = getTestNet()
+        t1 = Time(7, 30)
+        t2 = Time(7, 45)
+        t3 = Time(7, 30) 
 
-        nm = NetworkMapping(net1, net2)
+        assert t1 < t2  
+        assert not t1 < t3
+        assert t1 == t3
+        assert t1 != t2
 
-        nm.mapNodesById()
+    def test_addAndSubstract(self):
+
+        t1 = Time(7, 30)
+        t2 = t1 + Time(0, 15)
+        assert t2 == Time(7, 45)
+        t3 = t2 + Time(0, 15)
+        assert t3 == Time(8, 0)
+        assert t2 == t3 - Time(0, 15)
+
+        assert t1.getMinutes() == 7 * 60 + 30
+
+    def test_hash(self):
+
+        t1 = Time(7, 30)
+        t2 = t1 + Time(0, 15)
+        t3 = Time(7, 30)
+
+        result = {}
+        result[t1] = 1
+        result[t2] = 2
+        result[t3] = 3
+
+        print result 
+
+    def test_mod(self):
+
+        t1 = Time(7, 30)
+
+        assert t1 % Time(0, 15) == 0
+        assert not t1 % Time(0, 16) == 0
+
+        
+
+        

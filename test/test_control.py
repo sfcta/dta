@@ -20,21 +20,28 @@ import pdb
 import datetime
 import difflib 
 
+import dta 
 from dta.Scenario import Scenario
 from dta.DynameqScenario import DynameqScenario 
 from dta.Network import Network
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.TimePlan import TimePlan
+from dta.Utils import Time
 
 mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+
+dta.VehicleType.LENGTH_UNITS= "feet"
+dta.Node.COORDINATE_UNITS   = "feet"
+dta.RoadLink.LENGTH_UNITS   = "miles"
+
 
 def getTestScenario(): 
 
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+    scenario = DynameqScenario(Time(0,0), Time(4,0))
     scenario.read(projectFolder, prefix) 
 
     return scenario 
@@ -65,6 +72,8 @@ class TestControl:
         copyFile = os.path.join(projectFolder, "Test_ctrl.dqt")
         original = open(fileName, "r").readlines()
         copy = open(copyFile, "r").readlines()
+        original.pop(3) # this line has the dta anyway title 
+        copy.pop(3) # this line has the dta anyway title 
         if original != copy:
             htmldiff = difflib.HtmlDiff()
             diff = htmldiff.make_file(original, copy)
@@ -72,4 +81,4 @@ class TestControl:
             output.write(diff)
             output.close()
                 
-        #assert original == copy
+        assert original == copy

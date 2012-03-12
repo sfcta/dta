@@ -17,12 +17,11 @@ __license__     = """
 """
 
 import pdb
-import datetime
-import time 
 
 from .Phase import Phase
 from .DtaError import DtaError 
-from .Utils import militaryTimeToDateTime
+from .Utils import Time
+
 
 __all__ = ["PlanCollectionInfo", "TimePlan"]
 
@@ -32,12 +31,16 @@ class PlanCollectionInfo(object):
     same time period
     """
     
-    def __init__(self, militaryStartTime, militaryEndTime, name, description):
+    def __init__(self, startTime, endTime, name, description):
         """
-        militaryStartTime,militaryEndtime should be integers such as 700, 1500
+        A PlanCollectionInfo object represents the timeplans for a particular time period
+        The inputs to the constructor are the start and end times as datetime.time objects
+        and the name and description of the timeplans
         """
-        self._startTime = militaryStartTime
-        self._endTime = militaryEndTime
+        assert isinstance(startTime, Time)
+        assert isinstance(endTime, Time)
+        self._startTime = startTime
+        self._endTime = endTime
         self._name = name
         self._description = description
 
@@ -51,17 +54,10 @@ class PlanCollectionInfo(object):
         """
         Return the string representing the plan collection
         """
-        if isinstance(self._startTime, int) and isinstance(self._endTime, int):
-            startTime = militaryTimeToDateTime(self._startTime)
-            endTime = militaryTimeToDateTime(self._endTime)
-        else:
-            startTime = self._startTime
-            endTime = self._endTime
-
         #<DYNAMEQ>\n<VERSION_1.5>\n<CONTROL_PLANS_FILE>\n* %s\n
         return ("PLAN_INFO\n%s %s\n%s\n%s" %  
-                (startTime.strftime("%H:%M"), 
-                 endTime.strftime("%H:%M"),
+                (self._startTime.strftime("%H:%M"), 
+                 self._endTime.strftime("%H:%M"),
                  self._name, self._description))
                     
     def getTimePeriod(self):
@@ -89,7 +85,8 @@ class TimePlan(object):
     @classmethod
     def read(cls, net, fileName):
         """
-        Documentation?
+        This method reads the time plans contained in the fileName
+        file and adds them to the Dynameq Network object
         """
 
         try:
@@ -100,8 +97,8 @@ class TimePlan(object):
  
             militaryStartStr, militaryEndStr = currentLine.split()
             
-            startTime = datetime.datetime.strptime(militaryStartStr, "%H:%M") 
-            endTime = datetime.datetime.strptime(militaryEndStr, "%H:%M") 
+            startTime = Time.readFromString(militaryStartStr)
+            endTime = Time.readFromString(militaryEndStr) 
 
             name = lineIter.next().strip()
             description = ""

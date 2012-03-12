@@ -16,18 +16,15 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import datetime
 from .DtaError import DtaError
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
+from .Utils import Time
 
 class Scenario(object):
     """
     Class that represents a DTA Scenario, and all that it entails.
     """
-    DEFAULT_YEAR = 2010
-    DEFAULT_MONTH = 1
-    DEFAULT_DAY = 1
     
     __all__ = ["__init__", "vehicleClassNames"]
 
@@ -40,10 +37,10 @@ class Scenario(object):
         self.startTime = startTime
         self.endTime   = endTime
 
-        if not isinstance(startTime, datetime.datetime) or not isinstance(endTime, datetime.datetime):
-            raise DtaError("Start and end times should both be datetime.datetime objects")
+        if not isinstance(startTime, Time) or not isinstance(endTime, Time):
+            raise DtaError("Start and end times should both be dta.Utils.Time objects")
         
-        if self.endTime <= self.startTime:
+        if self.endTime < self.startTime or self.endTime == self.startTime:
             raise DtaError("Scenario cannot have startTime (%s) >= endTime (%s)" %
                            (str(startTime), str(endTime)))
         

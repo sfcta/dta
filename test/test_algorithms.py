@@ -17,9 +17,9 @@ __license__     = """
 """
 
 import os
-import datetime
 import nose 
 
+import dta
 from dta.Scenario import Scenario
 from dta.DynameqScenario import DynameqScenario 
 from dta.Network import Network
@@ -37,7 +37,7 @@ def getTestNet():
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 

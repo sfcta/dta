@@ -11,6 +11,7 @@ Utility functions for use throughout DTA Anyway.
 .. autofunction:: dta.onSegment
 
 """
+import pdb
 
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
@@ -413,4 +414,102 @@ class NetworkMapping(object):
         else:
             raise DtaError("Node %s and Link %s must belong to the same network"
                                % (node.id, link.iid_))
+
+
+class Time(datetime.time):
+
+    @classmethod
+    def readFromString(cls, timeAsString):
+        """
+        Read a string representing time in the format %H:%M e.g. 16:30
+        and return a time object
+        """
+        startTimeDT = datetime.datetime.strptime(timeAsString, "%H:%M")  
+        return Time(startTimeDT.hour, startTimeDT.minute)
+
+    @classmethod
+    def fromMinutes(cls, minutes):
+        """
+        Return a Time object that has the same number of minutes and the input arguments
+        """
+        hours = minutes / 60
+        minutes = minutes % 60
+        return Time(hours, minutes) 
+    
+    def __init__(self, hours, minutes):
+
+        super(Time, self).__init__(hours, minutes)
+
+    def __lt__(self, other):
+        """
+        Implementation of the less than < operator
+        """
+        if self.hour < other.hour:
+            return True
+        elif self.hour == other.hour:
+            if self.minute < other.minute:
+                return True
+        return False
+
+    def __eq__(self, other):
+        """
+        Implementation of the == operator
+        """
+        if self.hour == other.hour and self.minute == other.minute:
+            return True
+        else:
+            return False
+
+    def __gt__(self, other):
+        """
+        Implementation of the > operator
+        """
+        return not self.__lt__(other)
+
+    def __add__(self, other):
+        """
+        Implements the addition operator
+        """
+        hour = self.hour + other.hour
+        minute = self.minute + other.minute
+        if minute >= 60:
+            minute -= 60
+            hour += 1
+        if hour >= 24:
+            hour -= 24
+        return Time(hour, minute)
+
+    def __sub__(self, other):
+        """
+        Implements the minus operator
+        """
+    
+        minute = self.minute - other.minute
+        hour = self.hour - other.hour
+        if minute < 0:
+            minute += 60
+            hour -= 1
+        if hour < 0:
+            hour += 24 
+        return Time(hour, minute)        
+
+    def __hash__(self):
+        """
+        Returns military time as an integer
+        """
+        return self.hour * 100 + self.minute
+
+    def __mod__(self, other):
+        """
+        Implementation of the modulus operator
+        """
+        return self.getMinutes() % other.getMinutes() 
+
+    def getMinutes(self):
+        """
+        Return the number of minutes from 0:00AM that
+        correspond to the hours and minutes of this
+        object.
+        """
+        return self.hour * 60 + self.minute 
 

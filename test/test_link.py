@@ -15,21 +15,27 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-import datetime
 import os 
 
 import nose.tools 
 
+import dta
 from dta.DynameqScenario import DynameqScenario 
 from dta.DynameqNetwork import DynameqNetwork
+from dta.Utils import Time
+
+
+dta.VehicleType.LENGTH_UNITS= "feet"
+dta.Node.COORDINATE_UNITS   = "feet"
+dta.RoadLink.LENGTH_UNITS   = "miles"
+
 
 def getTestNet():
 
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'cubeSubarea_downtownSF/dynameqNetwork')
     prefix = 'sf' 
 
-    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0), datetime.datetime(2010,1,1,4,0))
-
+    scenario = DynameqScenario(Time(0,0), Time(8,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 

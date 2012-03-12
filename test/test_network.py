@@ -42,9 +42,14 @@ from dta.DtaError import DtaError
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.Utils import lineSegmentsCross
 from dta.Utils import militaryTimeToDateTime
+from dta.Utils import Time
+import dta
 
+dta.VehicleType.LENGTH_UNITS= "feet"
+dta.Node.COORDINATE_UNITS   = "feet"
+dta.RoadLink.LENGTH_UNITS   = "miles"
 
-mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"o
+mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
 
 def getGearyNet():
 
@@ -106,6 +111,7 @@ def simpleRoadNodeFactory(id_, x, y):
 def simpleRoadLinkFactory(id_, startNode, endNode):
 
     length = math.sqrt((endNode.getX()  - startNode.getX()) ** 2 + (endNode.getY() - startNode.getY()) ** 2)
+    length = length / 5280.0
 
     return RoadLink(id_, startNode, endNode,
                     None, 0, length, 30, 1.0, 1.0, 3,
@@ -114,6 +120,8 @@ def simpleRoadLinkFactory(id_, startNode, endNode):
 def simpleConnectorFactory(id_, startNode, endNode):
 
     length = math.sqrt((endNode.getX()  - startNode.getX()) ** 2 + (endNode.getY() - startNode.getY()) ** 2)
+
+    length = length / 5280.0    
     return Connector(id_, startNode, endNode,
                     None, length, 30, 1.0, 1.0, 3,
                     0, 0, "")
@@ -217,8 +225,8 @@ class TestNetwork(object):
     def test_1iterPlanInfo(self):
 
         net = getSimpleNet()
-        net.addPlanCollectionInfo(700, 900, "test1", "test1")
-        net.addPlanCollectionInfo(600, 800, "test2", "test2")
+        net.addPlanCollectionInfo(Time(7, 0), Time(9, 0), "test1", "test1")
+        net.addPlanCollectionInfo(Time(6, 0), Time(8, 0), "test2", "test2")
 
         for pInfo in net.iterPlanCollectionInfo():
             pInfo
@@ -423,6 +431,8 @@ class TestNetwork(object):
 
         link = net.getLinkForNodeIdPair(1, 5) 
 
+        link.getLength()
+        
         assert link.getCenterLine() == ((0.0, 82.0), (100.0, 82.0))
 
         link = net.getLinkForNodeIdPair(3, 5) 
@@ -829,25 +839,25 @@ class TestNetwork(object):
         assert "Prohibited" in list(sc.name for sc in sc.iterVehicleClassGroups())
  
         
-    def test_getAcuteAngle(self):
+    def test_10getAcuteAngle(self):
 
         net = getSimpleNet()
 
         link1 = net.getLinkForNodeIdPair(1, 5)
         link2 = net.getLinkForNodeIdPair(5, 4)
 
-        assert link1.getAcuteAngle(link2) == 0
+        assert link1.getAngle(link2) == 0
         link3 = net.getLinkForNodeIdPair(5, 1) 
 
-        assert link3.getAcuteAngle(link1) == 180
-        assert link1.getAcuteAngle(link3) == 180
+        assert link3.getAngle(link1) == 180
+        assert link1.getAngle(link3) == 180
 
         link4 = net.getLinkForNodeIdPair(5, 2)
         
-        assert link4.getAcuteAngle(link1) == 90
-        assert link1.getAcuteAngle(link4) == 90
-        assert link3.getAcuteAngle(link3) == 0
-        assert link4.getAcuteAngle(link3) == 90
+        assert link4.getAngle(link1) == 90
+        assert link1.getAngle(link4) == 90
+        assert link3.getAngle(link3) == 0
+        assert link4.getAngle(link3) == 90
 
     def test_moveVirtualNodesToAvoidOverlappingLinks(self):
 
@@ -856,7 +866,7 @@ class TestNetwork(object):
         link1 = net.getLinkForId(904)
         link2 = net.getLinkForId(905)
 
-        assert link1.getAcuteAngle(link2) < 0.0001
+        assert link1.getAngle(link2) < 0.0001
 
 
         assert net.getNumOverlappingConnectors() > 0 
@@ -1142,6 +1152,4 @@ class TestNetwork(object):
         print net.getNumNodes()
         print net.getNumLinks()
         net.readSimResults(0, 6*60, 5)
-
-        pdb.set_trace()
         

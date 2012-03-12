@@ -45,7 +45,8 @@ class DynameqScenario(Scenario):
         Read the scenario file from disk and return the corresponding
         scnario object.
         """
-        sc = Scenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+        #TODO: this may not be the best way to instantiate the Scenario object 
+        sc = Scenario(datetime.time(0,0), datetime.time(12,0))
         sc.read(dir, prefix)        
 
     def __init__(self, startTime, endTime):
@@ -146,20 +147,14 @@ class DynameqScenario(Scenario):
 
     def _readStudyPeriodFromFields(self, fields):
         """ 
-        Reads the study period and returns the start and times as datetime.datetime objects
+        Reads the study period and returns the start and times as datetime.time objects
         """  
         time1 = fields[0].split(":")
         time2 = fields[1].split(":")
         
-        self.startTime  = datetime.datetime(year=DynameqScenario.DEFAULT_YEAR,
-                                            month=DynameqScenario.DEFAULT_MONTH,
-                                            day=DynameqScenario.DEFAULT_DAY,
-                                            hour=int(time1[0]), 
-                                            minute=int(time1[1]))
-        self.endTime    = datetime.datetime(year=DynameqScenario.DEFAULT_YEAR,
-                                            month=DynameqScenario.DEFAULT_MONTH,
-                                            day=DynameqScenario.DEFAULT_DAY, 
-                                            hour=int(time2[0]), 
+        self.startTime  = datetime.time(hour=int(time1[0]),                                                                    
+                                        minute=int(time1[1]))
+        self.endTime    = datetime.time(hour=int(time2[0]), 
                                             minute=int(time2[1]))
     
     def _writeStudyPeriodToScenarioFile(self, scenariofile_object):
@@ -177,7 +172,7 @@ class DynameqScenario(Scenario):
         Generator function, yields (eventTime, eventDescription) to the caller
         """
         timestrs = fields[0].split(":")
-        eventTime = datetime.datetime(hour=int(timestrs[0]), minute=int(timestrs[1]))
+        eventTime = datetime.time(hour=int(timestrs[0]), minute=int(timestrs[1]))
         eventDesc = fields[1]
         self.events[eventTime] = self.eventDesc
         
