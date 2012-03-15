@@ -25,7 +25,7 @@ import nose.tools
 import numpy as np
 
 import dta
-from dta.demand import Demand
+from dta.Demand import Demand
 from dta.Utils import Time
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.DynameqScenario import DynameqScenario 
@@ -121,6 +121,7 @@ class TestDemand:
         net = getTestNet() 
         demand = Demand.read(net, fileName)
 
+        # TODO: this requires subdir test to exist.  Write this to tempfile.mkdtemp()
         outFileName = "test/testDemand.dqt" 
 
         demand.write(outFileName)

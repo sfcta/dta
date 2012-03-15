@@ -27,7 +27,7 @@ __license__     = """
 from .Centroid import Centroid
 from .Connector import Connector
 from .CubeNetwork import CubeNetwork
-from .demand import Demand
+from .Demand import Demand
 from .DtaError import DtaError
 from .DynameqNetwork import DynameqNetwork
 from .DynameqScenario import DynameqScenario

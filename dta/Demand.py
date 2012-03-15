@@ -18,8 +18,6 @@ __license__     = """
 import pdb
 import copy
 import csv
-# ..todo:: remove this?
-import la
 import datetime
 from itertools import izip 
 
@@ -28,6 +26,7 @@ import numpy as np
 from dta.Algorithms import hasPath 
 from .DtaError import DtaError
 from dta.MultiArray import MultiArray
+from dta.Utils import Time
 
 class Demand(object):
     """
@@ -56,15 +55,13 @@ class Demand(object):
 
         demand = Demand(net, vehicleClassName, startTime, endTime, endTime - startTime)
 
-        timeLabel = demand._datetimeToMilitaryTime(endTime)
-
         inputStream = open(fileName, "r")
         for record in csv.DictReader(inputStream):
             
             origin = int(record["ORIGIN"])
             destination = int(record["DESTINATION"])
             
-            demand.setValue(timeLabel, origin, destination, float(record[vehicleClassName]))
+            demand.setValue(endTime, origin, destination, float(record[vehicleClassName]))
 
         return demand
 
@@ -89,28 +86,26 @@ class Demand(object):
         input.next() #DATA 
         line = input.next().strip()         
 
-        startTime = datetime.datetime.strptime(line, "%H:%M")  
-        line = input.next().strip()         
-        endTime = datetime.datetime.strptime(line, "%H:%M")
+        startTime = Time.readFromString(line)
+        line = input.next().strip()
+        endTime = Time.readFromString(line)        
     
         line = input.next().strip() #SLICE 
         assert line == "SLICE"        
-        line = input.next().strip() # first time slice 
-        timeSlice1 = datetime.datetime.strptime(line, "%H:%M") 
+        line = input.next().strip() # first time slice
+        
+        timeSlice1 = Time.readFromString(line)
 
         timeStep = timeSlice1 - startTime 
-        if timeStep.seconds == 0:
+        if timeStep.getMinutes() == 0:
             raise DtaError("The time step defined by the first slice cannot be zero") 
         
         demand = Demand(net, vehClassName, startTime, endTime, timeStep)
         _npyArray = demand._demandTable.getNumpyArray()
 
-        timeStepInMin = demand._timeInMin(timeStep)
+        timeStepInMin = timeStep.getMinutes()
 
         for i, timePeriod in enumerate(demand.iterTimePeriods()):
-
-            timeLabel = demand._datetimeToMilitaryTime(timePeriod) 
-
             if timePeriod != demand.startTime + demand.timeStep: 
                 line = input.next().strip()
                 assert line == "SLICE"
@@ -118,7 +113,9 @@ class Demand(object):
             destinations = map(int, input.next().strip().split())
             for j, origin in enumerate(range(net.getNumCentroids())):
                 fields = map(float, input.next().strip().split()) 
-                _npyArray[i,j,:] = np.array(fields[1:]) / ( 60.0 / timeStepInMin)                
+                #_npyArray[i,j,:] = np.array(fields[1:]) / ( 60.0 / timeStepInMin)
+                _npyArray[i,j,:] = np.array(fields[1:])
+                
         return demand
 
     def __init__(self, net, vehClassName, startTime, endTime, timeStep):
@@ -128,10 +125,10 @@ class Demand(object):
         if startTime >= endTime:
             raise DtaError("Start time %s is grater or equal to the end time %s" %
                            startTime, endTime)
-        if timeStep.seconds == 0:
+        if timeStep.getMinutes() == 0:
             raise DtaError("Time step %s cannot be zero" % timeStep)         
 
-        if (self._timeInMin(endTime) - self._timeInMin(startTime)) % self._timeInMin(timeStep) != 0:
+        if ((endTime - startTime) % timeStep) != 0:
             raise DtaError("Demand interval is not divisible by the demand time step") 
 
         self.startTime = startTime
@@ -140,7 +137,7 @@ class Demand(object):
         self.vehClassName = vehClassName
 
         self._timePeriods = self._getTimePeriods(startTime, endTime, timeStep)
-        self._timeLabels = map(self._datetimeToMilitaryTime, self._getTimePeriods(startTime, endTime, timeStep))
+        self._timeLabels = self._timePeriods # map(self._datetimeToMilitaryTime, self._getTimePeriods(startTime, endTime, timeStep))
 
         self._centroidIds = sorted([c.getId() for c in net.iterNodes() if c.isCentroid()]) 
 
@@ -164,13 +161,14 @@ class Demand(object):
     def _getTimePeriods(self, startTime, endTime, timeStep):
         """
         Return the time labels of the different time slices as a list
-        """
-
-        if (self._timeInMin(endTime) - self._timeInMin(startTime)) % self._timeInMin(timeStep) != 0:
+        """        
+        if ((endTime - startTime) % timeStep) != 0:
             raise DtaError("Demand interval is not divisible by the demand time step") 
                            
         result = []
-        time = copy.deepcopy(startTime)
+        #TODO: this is interesting. The following line fails
+        #time = copy.deepcopy(startTime)
+        time = Time(startTime.hour, startTime.minute)
         while time != endTime:
             time += timeStep
             result.append(time)
@@ -198,8 +196,7 @@ class Demand(object):
         """
         Return a datetime object that corresponds to the input military time. For example, if the input 
         military time is 1700 the following datetime object will be returned datetime(17, 0, 0)
-        """
-        
+        """        
         strTime = str(militaryTime)
         assert 3 <= len(strTime) <= 4
         minutes = int(strTime[-2:])
@@ -235,7 +232,7 @@ class Demand(object):
         outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
                                          self.endTime.strftime("%H:%M")))
 
-        timeStepInMin = self._timeInMin(self.timeStep)
+        timeStepInMin = self.timeStep.getMinutes()
 
         _npyArray = self._demandTable.getNumpyArray()
         
@@ -243,10 +240,10 @@ class Demand(object):
             outputStream.write("SLICE\n%s\n" % timePeriod.strftime("%H:%M"))
             outputStream.write("\t%s\n" % '\t'.join(map(str, self._centroidIds)))
 
-            timeLabel = self._datetimeToMilitaryTime(timePeriod)             
-
             for j, cent in enumerate(self._centroidIds):
-                outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % (elem / (60.0 / timeStepInMin)) for elem in _npyArray[i, j, :])))
+                #outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % (elem / (60.0 / timeStepInMin)) for elem in _npyArray[i, j, :])))
+                outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % elem for elem in _npyArray[i, j, :])))                
+                
 
         outputStream.close()
 
@@ -255,26 +252,7 @@ class Demand(object):
         Implementation of the == operator. The comparisson of the 
         two demand objects is made using both the data and the labels 
         of the underlying multidimensional arrays. 
-        """
-        
-        def areEqual(array1, array2):
-            
-            for elem1, elem2 in izip(array1, array2):
-                if elem1 != elem2:
-                    return False
-            return True
-        
-        d1 = self._la.copyx().flat
-        d2 = other._la.copyx().flat 
-
-        l1 = self._la.copylabel()
-        l2 = other._la.copylabel()
-
-        if not areEqual(d1,d2):
-            return False
-        if not areEqual(l1, l2):
-            return False
-
+        """        
         if self.startTime != other.startTime or self.endTime != other.endTime or \
                 self.timeStep != other.timeStep:
             return False 
@@ -286,6 +264,9 @@ class Demand(object):
         if self.vehClassName != other.vehClassName:
             return False
 
+        if not self._demandTable == other._demandTable:
+            return False 
+
         return True
 
     def applyTimeOfDayFactors(self, factorsInAList):
@@ -296,23 +277,24 @@ class Demand(object):
         the result of the original table multiplied by a factor 
         in the list. 
         """
+        "TODO: fix the implementation of this method" 
+        raise Exception("This is not the correct implementation. Change it") 
         if self.getNumSlices() != 1:
             raise DtaError("Time of day factors can be applied only to a demand that has only"
                            " one time slice") 
             
         if sum(factorsInAList) != 1:
             raise DtaError("The input time of day factors should sum up to 1.0") 
-
         
-        newTimeStep = self.timeStep / len(factorsInAList) 
-
+        newTimeStepInMin = self.timeStep.getMinutes() / len(factorsInAList)
+        newTimeStep = Time.fromMinutes(newTimeStepInMin)
+        
         newDemand = Demand(self._net, self.vehClassName, self.startTime, self.endTime, newTimeStep)
-
+        pdb.set_trace() 
         _npyArrayOld = self._demandTable.getNumpyArray() 
         _npyArrayNew = newDemand._demandTable.getNumpyArray()
 
-        for i in range(len(factorsInAList)):
-            
+        for i in range(len(factorsInAList)):            
             _npyArrayNew[i, :, :] = _npyArrayOld[i, :, :] * factorsInAList[i] 
 
         return newDemand                            
@@ -336,5 +318,5 @@ class Demand(object):
         """
         Return the total number of trips
         """
-        return self._la.sum() 
+        return self._demandTable.getSum()
 
