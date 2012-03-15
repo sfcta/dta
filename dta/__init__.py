@@ -43,7 +43,7 @@ from .RoadNode import RoadNode
 from .Path import Path
 from .Scenario import Scenario
 from .TimePlan import PlanCollectionInfo, TimePlan
-from .Utils import crossProduct, direction, lineSegmentsCross, onSegment
+from .Utils import crossProduct, direction, lineSegmentsCross, onSegment, Time
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
 from .VirtualLink import VirtualLink
@@ -57,5 +57,5 @@ __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
            'Link', 'RoadLink', 'Connector', 'VirtualLink', 'Demand',
            'PlanCollectionInfo', 'TimePlan', 'Route', 'Phase', 'MultiArray',
-           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment'
+           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time'
 ]

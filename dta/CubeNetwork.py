@@ -61,15 +61,8 @@ ENDRUN
         """ 
         Network.__init__(self, scenario)
         
-        #: node variable names; must include "N", "X" and "Y"
-        self._nodeVariableNames = []
-        #: id to variable list
-        self._nodeVariables     = {}
-        
-        #: link variable names; must include "A" and "B"
-        self._linkVariableNames = []
-        #: id to variable list
-        self._linkVariables     = {}
+        #: "old" node number to node number, see discussion of *nodeOldNodeStr* in readCSVs()
+        self._oldNodeNumToNodeNum = None
 
     def readNetfile(self, netFile, 
                     nodeVariableNames,
@@ -125,6 +118,7 @@ ENDRUN
                  nodePriorityEvalStr,
                  nodeLabelEvalStr,
                  nodeLevelEvalStr,
+                 nodeOldNodeStr,
                  linkReverseAttachedIdEvalStr,
                  linkFacilityTypeEvalStr,
                  linkLengthEvalStr,
@@ -161,6 +155,11 @@ ENDRUN
         * *nodePriorityEvalStr* indicates how to set the *priority* for each :py:class:`RoadNode`
         * *nodeLabelEvalStr* indicates how to set the *label* for each :py:class:`Node`
         * *nodeLevelEvalStr* indicates how to set the *level* for each :py:class:`Node`
+        * *nodeOldNodeStr* indicates how to correspond Node numbers to original Node numbers.  This is
+          relevant if the cube network is the result of a Subarea Extraction, in which case node renumbering
+          may have occurred but the old node numbers are still useful.  If passed, a node number to old node number
+          correspondence will be retained.  Pass None if this feature won't be used; a typical use would be
+          to pass ``"int(OLD_NODE)"``.
 
         Similarly, the following strings are used to indicate how the **links** should be interpreted.
         
@@ -186,6 +185,8 @@ ENDRUN
           and :py:class:`Connector` instances
         
         """
+        if nodeOldNodeStr: self._oldNodeNumToNodeNum = {}
+        
         nIndex = nodeVariableNames.index("N")
         xIndex = nodeVariableNames.index("X")
         yIndex = nodeVariableNames.index("Y")
@@ -202,7 +203,7 @@ ENDRUN
             n = int(fields[nIndex])
             x = float(fields[xIndex])
             y = float(fields[yIndex])
-
+            
             localsdict = {}
             for i,nodeVarName in enumerate(nodeVariableNames):
                 localsdict[nodeVarName] = fields[i].strip("' ") # Cube csv strings are in single quotes
@@ -223,6 +224,9 @@ ENDRUN
                                    level=eval(nodeLevelEvalStr, globals(), localsdict))
                 countRoadNodes += 1
             self.addNode(newNode)
+            
+            if nodeOldNodeStr: self._oldNodeNumToNodeNum[eval(nodeOldNodeStr, globals(), localsdict)] = n
+
         DtaLogger.info("Read  %8d %-16s from %s" % (countCentroids, "centroids", nodesCsvFilename))
         DtaLogger.info("Read  %8d %-16s from %s" % (countRoadNodes, "roadnodes", nodesCsvFilename))
         nodesFile.close()
@@ -430,7 +434,7 @@ ENDRUN
         
         DtaLogger.info("Removed %d movements out of %d found in %s" % (movements_removed, lines_read, fileName))
         
-    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField):
+    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, useOldNodeNum=False, skipField=None, skipValueList=None):
         """
         Uses the given *linkShapefile* to add shape points to the network, in order to more accurately
         represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
@@ -438,6 +442,20 @@ ENDRUN
         
         *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
         of the start node and end node IDs within the *linkShapefile*.
+        
+        If *useOldNodeNum* is passed, the shapefile will be assumed to be referring to the old node numbers rather
+        than the current node numbers; see :py:meth:`CubeNetwork.readCSVs` discussion of the arg *nodeOldNodeStr* for
+        more information on the old node numbers.
+        
+        If *skipField* is passed, then the field given by this name will be checked against the list of values given
+        by *skipValueList*.  This is useful for when there are some bad elements in your shapefile that you want to skip.
+        
+        If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
+        will be used.
+        
+        Does this in two passes; in the first pass, the (a,b) from the shapefile is looked up in the network, and used
+        to add shape points.  In the second pass, the (b,a) from the shapefile is looked up in the network, and used
+        to add shape points **if that link has not already been updated from the first pass**.
         
         .. todo:: Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
                   node should be included too.  However, if we include either the first or the last shape point below,
@@ -457,28 +475,56 @@ ENDRUN
         if fields[0] == 'DeletionFlag':
             fields.pop(0)
             
-        for shape, recordValues in izip(shapes, records):
-
-            assert(len(fields)==len(recordValues))
+        # If a link with the same (node1,node2) pair is specified more than 
+        # once in the shapefile, only the first one will be used.
+        links_done = {}
+        
+        # two passes - regular and reverse
+        for direction in ["regular","reverse"]:
             
-            localsdict  = dict(zip(fields, recordValues))
-            startNodeId = int(localsdict[startNodeIdField])
-            endNodeId   = int(localsdict[endNodeIdField])
+            for shape, recordValues in izip(shapes, records):
 
-            # DtaLogger.debug("shape %d %d" % (startNodeId, endNodeId))
-
-            if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
-                link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
-                links_found += 1
+                assert(len(fields)==len(recordValues))
                 
-                # just a straight line - no shape points necessary
-                if len(shape.points) == 2: continue
+                localsdict  = dict(zip(fields, recordValues))
                 
-                # Dynameq throws away a single, see todo above
-                if len(shape.points) == 3: continue
+                # check if we're instructed to skip this one
+                if skipField and (skipField in fields) and (localsdict[skipField] in skipValueList): continue
                 
-                # don't include the first and last, they're already there
-                link._shapePoints = shape.points[1:-1]
-                shapepoints_added += len(shape.points)-2
+                if direction == "regular":
+                    startNodeId = int(localsdict[startNodeIdField])
+                    endNodeId   = int(localsdict[endNodeIdField])
+                else:
+                    startNodeId = int(localsdict[endNodeIdField])
+                    endNodeId   = int(localsdict[startNodeIdField])
+                        
+                # DtaLogger.debug("shape %d %d" % (startNodeId, endNodeId))
+    
+                if useOldNodeNum:
+                    try:
+                        startNodeId = self._oldNodeNumToNodeNum[startNodeId]
+                        endNodeId   = self._oldNodeNumToNodeNum[endNodeId]
+                    except:
+                        # couldn't find relevant nodes
+                        continue
+                
+                if (startNodeId, endNodeId) in links_done: continue 
+                    
+                if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
+                    link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
+                    links_found += 1
+                    
+                    # just a straight line - no shape points necessary
+                    if len(shape.points) == 2: continue
+                    
+                    # Dynameq throws away a single, see todo above
+                    if len(shape.points) == 3: continue
+                    
+                    # don't include the first and last, they're already there
+                    link._shapePoints = shape.points[1:-1]
+                    if direction == "reverse": link._shapePoints.reverse()
+                    shapepoints_added += len(shape.points)-2
+                    
+                    links_done[(startNodeId, endNodeId)] = True
 
         DtaLogger.info("Read %d shape points for %d links from %s" % (shapepoints_added, links_found, linkShapefile))

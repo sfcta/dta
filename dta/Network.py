@@ -213,7 +213,7 @@ class Network(object):
     def addAllMovements(self, vehicleClassGroup, includeUTurns=False):
         """
         For each :py:class:`RoadNode` and each :py:class:`VirtualNode`, 
-        makes a movement for the given *vehicleClassGroup* (a :py:class:'VehicleClassGroup' instance) 
+        makes a movement for the given *vehicleClassGroup* (a :py:class:`VehicleClassGroup` instance)
         from each incoming link to each outgoing link 
         (not including :py:class:`VirtualLink` instances).
         
@@ -342,10 +342,6 @@ class Network(object):
         virtual links from *startVirtualLinkId*.  The new virtual node will be placed along the connector
         link a distance away from the centroid specified by *distanceFromCentroid* (in :py:attr:`Node.COORDINATE_UNITS`),
         so it will be in the same location if that argument is specified as zero.
-        
-        .. todo:: the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
-                  "ERROR - the following virtual nodes have multiple entrance/exit connector"
-           
         """
         
         allLinkNodeIDPairs = self._linksByNodeIdPair.keys()
@@ -981,54 +977,20 @@ class Network(object):
                 numMoves += 1
 
             DtaLogger.info("Moved virtual node %8d associated with connector %8d to avoid overlapping links" % (virtualNode.getId(), link.getId()))
-                                                
-    def moveVirtualNodesToAvoidOverlappingLinks(self, maxDistToMove):
-        """
-        .. todo:: What overlapping links are a problem?  Why?  More explanation please.
-        
-        The :py:class:`VirtualNode` will be moved randomly within the bounding box defined by its
-        current location +/- *maxDistToMove*, where *maxDistToMove* is in the units given by 
-        :py:attr:`Node.COORDINATE_UNITS`.
-        
-        This will be repeated until the links do not overlap (up to 8 times).
-        """
-        
-        MAX_NUM_MOVES = 8
-        
-        for node in self.iterNodes():
-            if not node.isRoadNode():
-                continue
-            numMoves = 0
-            for con in node.iterAdjacentLinks():
-                if not con.isConnector():
-                    continue
-                
-                virtualNode = con.getOtherEnd(node)
-                vNodeNeedsToMove = True 
-                while vNodeNeedsToMove:
-                    
-                    for link in node.iterAdjacentLinks():
-                        if link == con:
-                            continue
 
-                        if con.isOverlapping(link):
-                            vNodeNeedsToMove = True
-                            break 
-                    else:
-                        vNodeNeedsToMove = False
-                    
-                    if vNodeNeedsToMove:
-                        virtualNode._x += random.uniform(0, maxDistToMove)
-                        virtualNode._y += random.uniform(0, maxDistToMove)
-                        numMoves += 1
-                        if numMoves > MAX_NUM_MOVES:
-                            vNodeNeedsToMove = False
-
-    def handleOverlappingLinks(self, warn):
+    def handleOverlappingLinks(self, warn, moveVirtualNodeDist=None):
         """
-        For each node, checks if any incoming links overlap, and if any outoing links overlap.
+        For each node, checks if any incoming links overlap, and if any outgoing links overlap.
         
-        In the future, it might address this but for now, warn.
+        If *moveVirtualNodeDist* is passed, if the overlapping links includes a c:py:class:`Connector`,
+        the :py:class:`VirtualNode` instance will be moved +- *moveVirtualNodeDist* in each direction
+        to see if that resolves the overlap.  If not, the node retains its original location.
+        
+        *moveVirtualNodeDist* is in :py:attr:`Node.COORDINATE_UNITS`
+        
+        (order attempted: (0,+dist), (+dist,0), (0,-dist), (-dist,0), 
+                          (+dist,-dist), (+dist,+dist), (-dist,+dist), (-dist,-dist))
+        
         """
         
         # going through the nodes in sequential order
@@ -1041,42 +1003,86 @@ class Network(object):
                 if link1.isVirtualLink(): continue
                 
                 for link2 in node.iterIncomingLinks():
-                    if link2.isVirtualLink(): continue
                     
-                    # they're the same
-                    if link1 == link2: continue
-                    
-                    # not overlapping
-                    try:
-                        if not link1.isOverlapping(link2, usingShapepoints=True): continue
-                    except DtaError, e:
-                        # DtaLogger.warn("Couldn't determine link overlap: "+str(e))
-                        continue
-
-                    if warn:
-                        DtaLogger.warn("node %d: incoming links %d and %d are overlapping (angle=%.3f)" %
-                                       (node.getId(), link1.getId(), link2.getId(), link1.getAngle(link2, True)))
+                    self._handleOverlappingLinkPair(node, link1, link2, warn, moveVirtualNodeDist, incoming=True)
 
             # check outgoing links
             for link1 in node.iterOutgoingLinks():
                 if link1.isVirtualLink(): continue
                 
                 for link2 in node.iterOutgoingLinks():
-                    if link2.isVirtualLink(): continue
                     
-                    # they're the same
-                    if link1 == link2: continue
+                    self._handleOverlappingLinkPair(node, link1, link2, warn, moveVirtualNodeDist, incoming=False)                
                     
-                    # not overlapping
-                    try:
-                        if not link1.isOverlapping(link2, usingShapepoints=True): continue
-                    except DtaError, e:
-                        # DtaLogger.warn("Couldn't determine link overlap: "+str(e))
-                        continue
+    def _handleOverlappingLinkPair(self, node, link1, link2, warn, moveVirtualNodeDist, incoming=True):
+        """
+        Helper method to avoid repeating code; handles a single pair of overlapping links
+        """
+        # virtual links are not a concern
+        if link2.isVirtualLink(): return
+                    
+        # they're the same
+        if link1 == link2: return
 
-                    if warn:
-                        DtaLogger.warn("node %d: outgoing links %d and %d are overlapping (angle=%.3f)" %
-                                       (node.getId(), link1.getId(), link2.getId(), link1.getAngle(link2, True)))
+        if node.getId() == 9004052:
+            DtaLogger.debug("node %d link1 %d and link2 %d have angle %.3f" % \
+                            (node.getId(), link1.getId(), link2.getId(),
+                             link1.getAngle(link2, True)))
+                    
+        # not overlapping
+        try:
+            if not link1.isOverlapping(link2, usingShapepoints=True): return
+        except DtaError, e:
+            # DtaLogger.warn("Couldn't determine link overlap: "+str(e))
+            return
+
+        warn_str = None
+        if warn:
+            warn_str = "node %d: %s links %d and %d are overlapping (angle=%.3f)" % \
+                        (node.getId(), "incoming" if incoming else "outgoing", \
+                         link1.getId(), link2.getId(), link1.getAngle(link2, True))
+
+        if moveVirtualNodeDist:
+            toMove = None
+            if link1.getStartNode().isVirtualNode():
+                toMove = link1.getStartNode()
+            elif link1.getEndNode().isVirtualNode():
+                toMove = link1.getEndNode()
+            elif link2.getStartNode().isVirtualNode():
+                toMove = link2.getStartNode()
+            elif link2.getEndNode().isVirtualNode():
+                toMove = link2.getEndNode()
+            
+            if toMove:
+                original_loc = (toMove.getX(), toMove.getY())
+                
+                try_locs = [(original_loc[0], original_loc[1]+moveVirtualNodeDist),
+                            (original_loc[0]+moveVirtualNodeDist, original_loc[1]),
+                            (original_loc[0], original_loc[1]-moveVirtualNodeDist),
+                            (original_loc[0]-moveVirtualNodeDist, original_loc[1]),
+                            (original_loc[0]+moveVirtualNodeDist, original_loc[1]-moveVirtualNodeDist),
+                            (original_loc[0]+moveVirtualNodeDist, original_loc[1]+moveVirtualNodeDist),
+                            (original_loc[0]-moveVirtualNodeDist, original_loc[1]+moveVirtualNodeDist),
+                            (original_loc[0]-moveVirtualNodeDist, original_loc[1]-moveVirtualNodeDist)]
+                
+                fixed = False
+                for try_loc in try_locs:
+                    toMove._x = try_loc[0]
+                    toMove._y = try_loc[1]
+                    
+                    if not link1.isOverlapping(link2, usingShapepoints=True):
+                        # fixed! stop here
+                        if warn_str: warn_str += "; fixed by adjusting virtual node to %.2f, %.2f" % (try_loc[0],try_loc[1])
+                        fixed = True
+                        break
+                    
+                # failed to fix
+                if not fixed:
+                    toMove._x = original_loc[0]
+                    toMove._y = original_loc[1]
+                    if warn_str: warn_str += "; failed to fix"
+        
+        if warn_str: DtaLogger.warn(warn_str)
 
         
     def handleShortLinks(self, minLength, warn, setLength):
@@ -1096,12 +1102,17 @@ class Network(object):
             # that are too short
             if link.getLength() >= minLength: continue
             
+            warn_str = None
             if warn:
-                DtaLogger.warn("Short link warning: %d (%d,%d) has length %.4f < %.4f" % 
-                               (link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),
-                                link.getLength(), minLength))
+                warn_str = "Short link warning: %d (%d,%d) has length %.4f < %.4f" % \
+                            (link.getId(), link.getStartNode().getId(), link.getEndNode().getId(), \
+                             link.getLength(), minLength)
+            
             if setLength:
                 link.setLength(minLength)
+                if warn_str: warn_str += "; Setting length to min"
+
+            if warn_str: DtaLogger.warn(warn_str)
                 
             
     def writeNodesToShp(self, name):

@@ -417,6 +417,10 @@ class NetworkMapping(object):
 
 
 class Time(datetime.time):
+    """
+    Class that represents a time (without a specific date).
+    Adds a few simple methods to the standard python datetime.time class.
+    """
 
     @classmethod
     def readFromString(cls, timeAsString):
@@ -438,7 +442,7 @@ class Time(datetime.time):
     
     def __init__(self, hours, minutes):
 
-        super(Time, self).__init__(hours, minutes)
+        datetime.time.__init__(hours, minutes)
 
     def __lt__(self, other):
         """

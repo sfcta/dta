@@ -307,9 +307,19 @@ class RoadLink(Link):
            the center line of the roadway that the first segment is shifted.
          * *endShift*: End-shift: the shift value of the last segment of the link, that is, the number of 
            lanes from the center line of the roadway that the last segment is shifted.
+           
+        Dynameq software requires the link to have at least 2 shape points in order to use these shifts.
+        Thus, this method will also add the required shape points, if they're lacking (just a linear interpolation
+        1/3 and 2/3 along the line via :py:meth:`RoadLink.coordinatesAlongLink`
         """
         self._startShift    = startShift
         self._endShift      = endShift
+        
+        # Dynameq requires the RoadLink to have at least 2 shapepoints in order to use the shifts
+        # Add them, if necessary
+        if len(self._shapePoints) < 2:
+            self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.33))
+            self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.66))
 
     def getNumOutgoingMovements(self):
         """
