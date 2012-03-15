@@ -49,7 +49,7 @@ dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
 dta.RoadLink.LENGTH_UNITS   = "miles"
 
-mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+mainFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata')
 
 def getGearyNet():
 
@@ -69,7 +69,7 @@ def getTestScenario():
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+    scenario = DynameqScenario(dta.Time(0,0), dta.Time(4,0))
     scenario.read(projectFolder, prefix) 
 
     return scenario 
@@ -79,7 +79,7 @@ def getTestNet():
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+    scenario = DynameqScenario(dta.Time(0,0), dta.Time(4,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
@@ -90,7 +90,7 @@ def getDowntownSF():
     projectFolder = os.path.join(mainFolder, 'cubeSubarea_downtownSF/dynameqNetwork')
     prefix = 'sf' 
 
-    scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+    scenario = DynameqScenario(dta.Time(0,0), dta.Time(4,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 

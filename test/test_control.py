@@ -29,16 +29,14 @@ from dta.DynameqNetwork import DynameqNetwork
 from dta.TimePlan import TimePlan
 from dta.Utils import Time
 
-mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
+projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
 
 dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
 dta.RoadLink.LENGTH_UNITS   = "miles"
 
-
 def getTestScenario(): 
 
-    projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
     scenario = DynameqScenario(Time(0,0), Time(4,0))
@@ -48,6 +46,7 @@ def getTestScenario():
 
 def getGearyNet():
 
+    # TODO: checkin this test network (or add to existing test networks?) and remove this absolute path stuff
     gearynetDta = DynameqNetwork(scenario=getTestScenario())
     gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
     
@@ -61,6 +60,7 @@ class TestControl:
 
         #pdb.set_trace() 
 
+        # TODO: write the test output file to a tempfile.mkdtemp()
         fileName = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/Base_ctrl.dqt"               
         projectFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test"
         net.write(dir=projectFolder, file_prefix="Test")

@@ -31,6 +31,9 @@ from dta.Utils import *
 from dta.Algorithms import dfs, hasPath, getConvexHull, \
     getConvexHull2, getTightHull, getConvexHull3, pairwise, isPointInPolygon
 
+dta.VehicleType.LENGTH_UNITS= "feet"
+dta.Node.COORDINATE_UNITS   = "feet"
+dta.RoadLink.LENGTH_UNITS   = "miles"
 
 def getTestNet():
 
