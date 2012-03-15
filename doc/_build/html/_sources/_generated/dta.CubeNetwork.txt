@@ -41,6 +41,7 @@ dta.CubeNetwork
       ~CubeNetwork.getNumVirtualNodes
       ~CubeNetwork.getPlanCollectionInfo
       ~CubeNetwork.getScenario
+      ~CubeNetwork.handleOverlappingLinks
       ~CubeNetwork.handleShortLinks
       ~CubeNetwork.hasLinkForId
       ~CubeNetwork.hasLinkForNodeIdPair
@@ -57,7 +58,6 @@ dta.CubeNetwork
       ~CubeNetwork.mergeSecondaryNetwork
       ~CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds
       ~CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2
-      ~CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks
       ~CubeNetwork.moveVirtualNodesToAvoidShortConnectors
       ~CubeNetwork.readCSVs
       ~CubeNetwork.readFromShapefiles

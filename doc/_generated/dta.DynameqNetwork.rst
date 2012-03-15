@@ -40,6 +40,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.getNumVirtualNodes
       ~DynameqNetwork.getPlanCollectionInfo
       ~DynameqNetwork.getScenario
+      ~DynameqNetwork.handleOverlappingLinks
       ~DynameqNetwork.handleShortLinks
       ~DynameqNetwork.hasLinkForId
       ~DynameqNetwork.hasLinkForNodeIdPair
@@ -59,7 +60,6 @@ dta.DynameqNetwork
       ~DynameqNetwork.mergeSecondaryNetwork
       ~DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds
       ~DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds2
-      ~DynameqNetwork.moveVirtualNodesToAvoidOverlappingLinks
       ~DynameqNetwork.moveVirtualNodesToAvoidShortConnectors
       ~DynameqNetwork.read
       ~DynameqNetwork.readSimResults

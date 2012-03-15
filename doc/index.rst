@@ -98,15 +98,16 @@ Misc
 .. autosummary::
    :nosignatures:
    :toctree: _generated
-   
+
+   dta.Algorithms
+   dta.Demand   
    dta.DtaError
    dta.DtaLogger
    dta.Movement
    dta.MultiArray
    dta.Network
-   dta.Route
-   dta.Algorithms
-   dta.Demand
+   dta.Path
+   dta.Time
    dta.Utils
    
    

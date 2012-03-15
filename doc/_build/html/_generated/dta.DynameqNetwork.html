@@ -154,6 +154,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.getScenario" title="dta.DynameqNetwork.getScenario"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.getScenario</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.handleOverlappingLinks" title="dta.DynameqNetwork.handleOverlappingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.handleOverlappingLinks</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.handleShortLinks" title="dta.DynameqNetwork.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.handleShortLinks</span></tt></a></td>
 <td></td>
 </tr>
@@ -209,9 +212,6 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds2" title="dta.DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds2"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds2</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.DynameqNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="dta.DynameqNetwork.moveVirtualNodesToAvoidOverlappingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.moveVirtualNodesToAvoidOverlappingLinks</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.moveVirtualNodesToAvoidShortConnectors" title="dta.DynameqNetwork.moveVirtualNodesToAvoidShortConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.moveVirtualNodesToAvoidShortConnectors</span></tt></a></td>
@@ -277,7 +277,7 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <dt id="dta.DynameqNetwork.addAllMovements">
 <tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addAllMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
-makes a movement for the given <em>vehicleClassGroup</em> (a :py:class:&#8217;VehicleClassGroup&#8217; instance) 
+makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance) 
 from each incoming link to each outgoing link 
 (not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
 <p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
@@ -459,9 +459,16 @@ another connector</p>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.handleOverlappingLinks">
-<tt class="descname">handleOverlappingLinks</tt><big>(</big><em>warn</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.handleOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>For each node, checks if any incoming links overlap, and if any outoing links overlap.</p>
-<p>In the future, it might address this but for now, warn.</p>
+<tt class="descname">handleOverlappingLinks</tt><big>(</big><em>warn</em>, <em>moveVirtualNodeDist=None</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.handleOverlappingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each node, checks if any incoming links overlap, and if any outgoing links overlap.</p>
+<p>If <em>moveVirtualNodeDist</em> is passed, if the overlapping links includes a c:py:class:<cite>Connector</cite>,
+the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instance will be moved +- <em>moveVirtualNodeDist</em> in each direction
+to see if that resolves the overlap.  If not, the node retains its original location.</p>
+<p><em>moveVirtualNodeDist</em> is in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
+<dl class="docutils">
+<dt>(order attempted: (0,+dist), (+dist,0), (0,-dist), (-dist,0), </dt>
+<dd>(+dist,-dist), (+dist,+dist), (-dist,+dist), (-dist,-dist))</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -638,19 +645,6 @@ coppied.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.DynameqNetwork.moveVirtualNodesToAvoidOverlappingLinks">
-<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition-todo admonition " id="index-10">
-<p class="first admonition-title">Todo</p>
-<p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
-</div>
-<p>The <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> will be moved randomly within the bounding box defined by its
-current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in the units given by 
-<a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
-<p>This will be repeated until the links do not overlap (up to 8 times).</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="dta.DynameqNetwork.moveVirtualNodesToAvoidShortConnectors">
 <tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><em>connectorMinLength</em>, <em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connectors are sometimes too short. This method tries to move 
@@ -682,11 +676,11 @@ current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in 
 location. If a midblock location does does not exist a RoadLink close
 to the connector is split in half and the connector is attached to the new 
 midblock location</p>
-<div class="admonition-todo admonition " id="index-11">
+<div class="admonition-todo admonition " id="index-10">
 <p class="first admonition-title">Todo</p>
 <p class="last">why is this in <a class="reference internal" href="#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a> rather than <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>?</p>
 </div>
-<div class="admonition-todo admonition " id="index-12">
+<div class="admonition-todo admonition " id="index-11">
 <p class="first admonition-title">Todo</p>
 <p class="last">I would like more detail about this.  How are movements handled for VehicleClassGroups?
 Also, rename to &#8220;moveConnectorsFromIntersectionsToMidblocks&#8221;; this sounds like a delete operation.</p>
@@ -704,7 +698,7 @@ created node.</p>
 <img alt="../_images/removeCentroidConnectors1.png" src="../_images/removeCentroidConnectors1.png" style="height: 300px;" />
 <p>After:</p>
 <img alt="../_images/removeCentroidConnectors2.png" src="../_images/removeCentroidConnectors2.png" style="height: 300px;" />
-<div class="admonition-todo admonition " id="index-13">
+<div class="admonition-todo admonition " id="index-12">
 <p class="first admonition-title">Todo</p>
 <p class="last">why is this in <a class="reference internal" href="#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a> rather than <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>?</p>
 </div>
@@ -733,7 +727,7 @@ same centroid to the same road node</p>
 <dt id="dta.DynameqNetwork.removeShapePoints">
 <tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeShapePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove shape points from the network</p>
-<div class="admonition-todo admonition " id="index-14">
+<div class="admonition-todo admonition " id="index-13">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
@@ -776,7 +770,7 @@ tolerance = tolerance for matching nodes in two databases in feet (5 ft is appro
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
-<div class="admonition-todo admonition " id="index-15">
+<div class="admonition-todo admonition " id="index-14">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>

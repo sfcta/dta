@@ -91,6 +91,9 @@ a Centroid or a VirtualNode.</p>
 <tr><td><a class="reference internal" href="#dta.Connector.addShifts" title="dta.Connector.addShifts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.addShifts</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Connector.coordinatesAlongLink" title="dta.Connector.coordinatesAlongLink"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.coordinatesAlongLink</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Connector.endIsRoadNode" title="dta.Connector.endIsRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.endIsRoadNode</span></tt></a></td>
 <td></td>
 </tr>
@@ -116,6 +119,9 @@ a Centroid or a VirtualNode.</p>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getFacilityType" title="dta.Connector.getFacilityType"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getFacilityType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.getFreeFlowSpeedInMPH" title="dta.Connector.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getFreeFlowSpeedInMPH</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getId" title="dta.Connector.getId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getId</span></tt></a></td>
@@ -196,6 +202,9 @@ a Centroid or a VirtualNode.</p>
 <tr><td><a class="reference internal" href="#dta.Connector.getStartNodeId" title="dta.Connector.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getStartNodeId</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Connector.getThruTurn" title="dta.Connector.getThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getThruTurn</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getVirtualNode" title="dta.Connector.getVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getVirtualNode</span></tt></a></td>
 <td></td>
 </tr>
@@ -203,6 +212,9 @@ a Centroid or a VirtualNode.</p>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.hasSameAttributes" title="dta.Connector.hasSameAttributes"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasSameAttributes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.hasThruTurn" title="dta.Connector.hasThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasThruTurn</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.isConnector" title="dta.Connector.isConnector"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.isConnector</span></tt></a></td>
@@ -287,12 +299,17 @@ such as showing curvature.</p>
 <dl class="method">
 <dt id="dta.Connector.addShifts">
 <tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em><big>)</big><a class="headerlink" href="#dta.Connector.addShifts" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
+<dd><blockquote>
+<div><ul class="simple">
 <li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from
 the center line of the roadway that the first segment is shifted.</li>
 <li><em>endShift</em>: End-shift: the shift value of the last segment of the link, that is, the number of 
 lanes from the center line of the roadway that the last segment is shifted.</li>
 </ul>
+</div></blockquote>
+<p>Dynameq software requires the link to have at least 2 shape points in order to use these shifts.
+Thus, this method will also add the required shape points, if they&#8217;re lacking (just a linear interpolation
+1/3 and 2/3 along the line via <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAlongLink()</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -395,7 +412,7 @@ EB, NB, WB, EB</p>
 <dt id="dta.Connector.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the length of the link in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</p>
-<p>Uses the asserted length, if there is one; otherwise calculates the euclidean length.</p>
+<p>Uses the user input length, if there is one; otherwise calculates the euclidean length.</p>
 </dd></dl>
 
 <dl class="method">

@@ -18,6 +18,7 @@ dta.Connector
       ~Connector.addOutgoingMovement
       ~Connector.addShapePoint
       ~Connector.addShifts
+      ~Connector.coordinatesAlongLink
       ~Connector.endIsRoadNode
       ~Connector.euclideanLength
       ~Connector.getAngle
@@ -27,6 +28,7 @@ dta.Connector
       ~Connector.getEndNode
       ~Connector.getEndNodeId
       ~Connector.getFacilityType
+      ~Connector.getFreeFlowSpeedInMPH
       ~Connector.getId
       ~Connector.getIid
       ~Connector.getLabel
@@ -53,9 +55,11 @@ dta.Connector
       ~Connector.getSimVolume
       ~Connector.getStartNode
       ~Connector.getStartNodeId
+      ~Connector.getThruTurn
       ~Connector.getVirtualNode
       ~Connector.hasOutgoingMovement
       ~Connector.hasSameAttributes
+      ~Connector.hasThruTurn
       ~Connector.isConnector
       ~Connector.isOverlapping
       ~Connector.isRoadLink

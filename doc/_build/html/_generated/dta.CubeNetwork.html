@@ -157,6 +157,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.getScenario" title="dta.CubeNetwork.getScenario"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getScenario</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.handleOverlappingLinks" title="dta.CubeNetwork.handleOverlappingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.handleOverlappingLinks</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.handleShortLinks" title="dta.CubeNetwork.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.handleShortLinks</span></tt></a></td>
 <td></td>
 </tr>
@@ -203,9 +206,6 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2" title="dta.CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors" title="dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.moveVirtualNodesToAvoidShortConnectors</span></tt></a></td>
@@ -259,7 +259,7 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <dt id="dta.CubeNetwork.addAllMovements">
 <tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addAllMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
-makes a movement for the given <em>vehicleClassGroup</em> (a :py:class:&#8217;VehicleClassGroup&#8217; instance) 
+makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance) 
 from each incoming link to each outgoing link 
 (not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
 <p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
@@ -447,9 +447,16 @@ another connector</p>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.handleOverlappingLinks">
-<tt class="descname">handleOverlappingLinks</tt><big>(</big><em>warn</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.handleOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>For each node, checks if any incoming links overlap, and if any outoing links overlap.</p>
-<p>In the future, it might address this but for now, warn.</p>
+<tt class="descname">handleOverlappingLinks</tt><big>(</big><em>warn</em>, <em>moveVirtualNodeDist=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.handleOverlappingLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each node, checks if any incoming links overlap, and if any outgoing links overlap.</p>
+<p>If <em>moveVirtualNodeDist</em> is passed, if the overlapping links includes a c:py:class:<cite>Connector</cite>,
+the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instance will be moved +- <em>moveVirtualNodeDist</em> in each direction
+to see if that resolves the overlap.  If not, the node retains its original location.</p>
+<p><em>moveVirtualNodeDist</em> is in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
+<dl class="docutils">
+<dt>(order attempted: (0,+dist), (+dist,0), (0,-dist), (-dist,0), </dt>
+<dd>(+dist,-dist), (+dist,+dist), (-dist,+dist), (-dist,-dist))</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -499,11 +506,6 @@ start and end times</p>
 virtual links from <em>startVirtualLinkId</em>.  The new virtual node will be placed along the connector
 link a distance away from the centroid specified by <em>distanceFromCentroid</em> (in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>),
 so it will be in the same location if that argument is specified as zero.</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
-&#8220;ERROR - the following virtual nodes have multiple entrance/exit connector&#8221;</p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -556,7 +558,7 @@ error</p>
 <dd><p>This method will create a polygon around the current 
 (primary network). Every node or link of the secondary network 
 that is not in the polygon will be copied.</p>
-<div class="admonition-todo admonition " id="index-3">
+<div class="admonition-todo admonition " id="index-2">
 <p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
@@ -583,19 +585,6 @@ coppied.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks">
-<tt class="descname">moveVirtualNodesToAvoidOverlappingLinks</tt><big>(</big><em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidOverlappingLinks" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">What overlapping links are a problem?  Why?  More explanation please.</p>
-</div>
-<p>The <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> will be moved randomly within the bounding box defined by its
-current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in the units given by 
-<a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
-<p>This will be repeated until the links do not overlap (up to 8 times).</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors">
 <tt class="descname">moveVirtualNodesToAvoidShortConnectors</tt><big>(</big><em>connectorMinLength</em>, <em>maxDistToMove</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connectors are sometimes too short. This method tries to move 
@@ -610,7 +599,7 @@ current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in 
 
 <dl class="method">
 <dt id="dta.CubeNetwork.readCSVs">
-<tt class="descname">readCSVs</tt><big>(</big><em>nodesCsvFilename</em>, <em>nodeVariableNames</em>, <em>linksCsvFilename</em>, <em>linkVariableNames</em>, <em>centroidIds</em>, <em>nodeGeometryTypeEvalStr</em>, <em>nodeControlEvalStr</em>, <em>nodePriorityEvalStr</em>, <em>nodeLabelEvalStr</em>, <em>nodeLevelEvalStr</em>, <em>linkReverseAttachedIdEvalStr</em>, <em>linkFacilityTypeEvalStr</em>, <em>linkLengthEvalStr</em>, <em>linkFreeflowSpeedEvalStr</em>, <em>linkEffectiveLengthFactorEvalStr</em>, <em>linkResponseTimeFactorEvalStr</em>, <em>linkNumLanesEvalStr</em>, <em>linkRoundAboutEvalStr</em>, <em>linkLevelEvalStr</em>, <em>linkLabelEvalStr</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readCSVs" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readCSVs</tt><big>(</big><em>nodesCsvFilename</em>, <em>nodeVariableNames</em>, <em>linksCsvFilename</em>, <em>linkVariableNames</em>, <em>centroidIds</em>, <em>nodeGeometryTypeEvalStr</em>, <em>nodeControlEvalStr</em>, <em>nodePriorityEvalStr</em>, <em>nodeLabelEvalStr</em>, <em>nodeLevelEvalStr</em>, <em>nodeOldNodeStr</em>, <em>linkReverseAttachedIdEvalStr</em>, <em>linkFacilityTypeEvalStr</em>, <em>linkLengthEvalStr</em>, <em>linkFreeflowSpeedEvalStr</em>, <em>linkEffectiveLengthFactorEvalStr</em>, <em>linkResponseTimeFactorEvalStr</em>, <em>linkNumLanesEvalStr</em>, <em>linkRoundAboutEvalStr</em>, <em>linkLevelEvalStr</em>, <em>linkLabelEvalStr</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readCSVs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the network from the given csv files.
 * <em>nodesCsvFilename</em> is the csv with the node data; <em>nodeVariableNames</em> are the column names.
 * <em>linksCsvFilename</em> is the csv with the link data; <em>linkVariableNames</em> are the column names.
@@ -632,6 +621,11 @@ intersections and 0 otherwise, the <em>nodeControlEvalStr</em> could be
 <li><em>nodePriorityEvalStr</em> indicates how to set the <em>priority</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
 <li><em>nodeLabelEvalStr</em> indicates how to set the <em>label</em> for each <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></li>
 <li><em>nodeLevelEvalStr</em> indicates how to set the <em>level</em> for each <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></li>
+<li><em>nodeOldNodeStr</em> indicates how to correspond Node numbers to original Node numbers.  This is
+relevant if the cube network is the result of a Subarea Extraction, in which case node renumbering
+may have occurred but the old node numbers are still useful.  If passed, a node number to old node number
+correspondence will be retained.  Pass None if this feature won&#8217;t be used; a typical use would be
+to pass <tt class="docutils literal"><span class="pre">&quot;int(OLD_NODE)&quot;</span></tt>.</li>
 </ul>
 <p>Similarly, the following strings are used to indicate how the <strong>links</strong> should be interpreted.</p>
 <ul class="simple">
@@ -665,13 +659,23 @@ and <a class="reference internal" href="dta.Connector.html#dta.Connector" title=
 
 <dl class="method">
 <dt id="dta.CubeNetwork.readLinkShape">
-<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em>, <em>startNodeIdField</em>, <em>endNodeIdField</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em>, <em>startNodeIdField</em>, <em>endNodeIdField</em>, <em>useOldNodeNum=False</em>, <em>skipField=None</em>, <em>skipValueList=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses the given <em>linkShapefile</em> to add shape points to the network, in order to more accurately
 represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
 intersections because of the angles involved.</p>
 <p><em>startNodeIdField</em> and <em>endNodeIdField</em> are the column headers (so they&#8217;re strings)
 of the start node and end node IDs within the <em>linkShapefile</em>.</p>
-<div class="admonition-todo admonition " id="index-5">
+<p>If <em>useOldNodeNum</em> is passed, the shapefile will be assumed to be referring to the old node numbers rather
+than the current node numbers; see <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.CubeNetwork.readCSVs"><tt class="xref py py-meth docutils literal"><span class="pre">CubeNetwork.readCSVs()</span></tt></a> discussion of the arg <em>nodeOldNodeStr</em> for
+more information on the old node numbers.</p>
+<p>If <em>skipField</em> is passed, then the field given by this name will be checked against the list of values given
+by <em>skipValueList</em>.  This is useful for when there are some bad elements in your shapefile that you want to skip.</p>
+<p>If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
+will be used.</p>
+<p>Does this in two passes; in the first pass, the (a,b) from the shapefile is looked up in the network, and used
+to add shape points.  In the second pass, the (b,a) from the shapefile is looked up in the network, and used
+to add shape points <strong>if that link has not already been updated from the first pass</strong>.</p>
+<div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
 <p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
 node should be included too.  However, if we include either the first or the last shape point below,
@@ -704,7 +708,7 @@ See <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.Cu
 <dt id="dta.CubeNetwork.removeShapePoints">
 <tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CubeNetwork.removeShapePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove shape points from the network</p>
-<div class="admonition-todo admonition " id="index-6">
+<div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
@@ -737,7 +741,7 @@ the other kind?</p>
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
-<div class="admonition-todo admonition " id="index-7">
+<div class="admonition-todo admonition " id="index-5">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>

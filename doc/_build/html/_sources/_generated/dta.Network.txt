@@ -40,6 +40,7 @@ dta.Network
       ~Network.getNumVirtualNodes
       ~Network.getPlanCollectionInfo
       ~Network.getScenario
+      ~Network.handleOverlappingLinks
       ~Network.handleShortLinks
       ~Network.hasLinkForId
       ~Network.hasLinkForNodeIdPair
@@ -56,7 +57,6 @@ dta.Network
       ~Network.mergeSecondaryNetwork
       ~Network.mergeSecondaryNetworkBasedOnLinkIds
       ~Network.mergeSecondaryNetworkBasedOnLinkIds2
-      ~Network.moveVirtualNodesToAvoidOverlappingLinks
       ~Network.moveVirtualNodesToAvoidShortConnectors
       ~Network.removeLink
       ~Network.removeNode

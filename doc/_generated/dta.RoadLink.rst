@@ -18,6 +18,7 @@ dta.RoadLink
       ~RoadLink.addOutgoingMovement
       ~RoadLink.addShapePoint
       ~RoadLink.addShifts
+      ~RoadLink.coordinatesAlongLink
       ~RoadLink.euclideanLength
       ~RoadLink.getAngle
       ~RoadLink.getCenterLine
@@ -25,6 +26,7 @@ dta.RoadLink
       ~RoadLink.getEndNode
       ~RoadLink.getEndNodeId
       ~RoadLink.getFacilityType
+      ~RoadLink.getFreeFlowSpeedInMPH
       ~RoadLink.getId
       ~RoadLink.getIid
       ~RoadLink.getLabel
@@ -50,8 +52,10 @@ dta.RoadLink
       ~RoadLink.getSimVolume
       ~RoadLink.getStartNode
       ~RoadLink.getStartNodeId
+      ~RoadLink.getThruTurn
       ~RoadLink.hasOutgoingMovement
       ~RoadLink.hasSameAttributes
+      ~RoadLink.hasThruTurn
       ~RoadLink.isConnector
       ~RoadLink.isOverlapping
       ~RoadLink.isRoadLink

@@ -55,14 +55,16 @@
 <h1>dta.PlanCollectionInfo<a class="headerlink" href="#dta-plancollectioninfo" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.PlanCollectionInfo">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">PlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">PlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Contains user information for a collection of signals belonging to the
 same time period</p>
 <dl class="method">
 <dt id="dta.PlanCollectionInfo.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>militaryStartTime,militaryEndtime should be integers such as 700, 1500</p>
+<tt class="descname">__init__</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A PlanCollectionInfo object represents the timeplans for a particular time period
+The inputs to the constructor are the start and end times as datetime.time objects
+and the name and description of the timeplans</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -72,8 +74,8 @@ same time period</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.PlanCollectionInfo.__init__" title="dta.PlanCollectionInfo.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(militaryStartTime,&nbsp;militaryEndTime,&nbsp;...)</td>
-<td>militaryStartTime,militaryEndtime should be integers such as 700, 1500</td>
+<tr><td><a class="reference internal" href="#dta.PlanCollectionInfo.__init__" title="dta.PlanCollectionInfo.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(startTime,&nbsp;endTime,&nbsp;name,&nbsp;description)</td>
+<td>A PlanCollectionInfo object represents the timeplans for a particular time period</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.PlanCollectionInfo.getTimePeriod" title="dta.PlanCollectionInfo.getTimePeriod"><tt class="xref py py-obj docutils literal"><span class="pre">getTimePeriod</span></tt></a>()</td>
 <td>Return a tuple representing the time period</td>

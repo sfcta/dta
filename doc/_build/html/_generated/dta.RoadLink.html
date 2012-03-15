@@ -107,6 +107,9 @@ on the link.  May vary over time with LinkEvents</li>
 <tr><td><a class="reference internal" href="#dta.RoadLink.addShifts" title="dta.RoadLink.addShifts"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.addShifts</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.coordinatesAlongLink</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.euclideanLength" title="dta.RoadLink.euclideanLength"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.euclideanLength</span></tt></a></td>
 <td></td>
 </tr>
@@ -126,6 +129,9 @@ on the link.  May vary over time with LinkEvents</li>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getFacilityType" title="dta.RoadLink.getFacilityType"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getFacilityType</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.getFreeFlowSpeedInMPH" title="dta.RoadLink.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getFreeFlowSpeedInMPH</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getId" title="dta.RoadLink.getId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getId</span></tt></a></td>
@@ -203,10 +209,16 @@ on the link.  May vary over time with LinkEvents</li>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getStartNodeId" title="dta.RoadLink.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getStartNodeId</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.getThruTurn" title="dta.RoadLink.getThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getThruTurn</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.hasOutgoingMovement" title="dta.RoadLink.hasOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.hasOutgoingMovement</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.hasSameAttributes" title="dta.RoadLink.hasSameAttributes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.hasSameAttributes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.hasThruTurn" title="dta.RoadLink.hasThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.hasThruTurn</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.isConnector" title="dta.RoadLink.isConnector"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.isConnector</span></tt></a></td>
@@ -289,12 +301,17 @@ such as showing curvature.</p>
 <dl class="method">
 <dt id="dta.RoadLink.addShifts">
 <tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShifts" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
+<dd><blockquote>
+<div><ul class="simple">
 <li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from
 the center line of the roadway that the first segment is shifted.</li>
 <li><em>endShift</em>: End-shift: the shift value of the last segment of the link, that is, the number of 
 lanes from the center line of the roadway that the last segment is shifted.</li>
 </ul>
+</div></blockquote>
+<p>Dynameq software requires the link to have at least 2 shape points in order to use these shifts.
+Thus, this method will also add the required shape points, if they&#8217;re lacking (just a linear interpolation
+1/3 and 2/3 along the line via <a class="reference internal" href="#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAlongLink()</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -385,7 +402,7 @@ EB, NB, WB, EB</p>
 <dt id="dta.RoadLink.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the length of the link in <a class="reference internal" href="#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</p>
-<p>Uses the asserted length, if there is one; otherwise calculates the euclidean length.</p>
+<p>Uses the user input length, if there is one; otherwise calculates the euclidean length.</p>
 </dd></dl>
 
 <dl class="method">
