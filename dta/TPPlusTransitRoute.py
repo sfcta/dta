@@ -18,12 +18,48 @@ __license__     = """
 
 import re
 from itertools import izip
+
 import nose.tools
 from pyparsing import *
-from pbCore.utils.odict import OrderedDict
-from pbCore.utils.paragraph import iterRecords
 
-from pbCore.tpplus.errors import TPPlusError
+from dta.DtaError import DtaError
+
+import re
+
+def iterRecords(iterable, is_separator=re.compile(r"^a"), 
+                is_comment = re.compile(r"^#"), 
+                joiner=lambda tokens: " ".join(tokens)): 
+
+
+    """Read a text file record by record where a record is defined
+    in multiple sequential lines and return a string concatenating 
+    all the lines of a record into one line.The provided function 
+    is_separator identifies the lines which separate records. The 
+    provided is_comment function identies comment lines that ought to 
+    be bypased. The provided joiner function is used to combine
+    all the lines of a record into one string"""
+
+    record = []
+    for line in iterable:
+        line = line.strip()
+        if is_comment.match(line):
+            continue
+        if is_separator.match(line):
+            if record:
+                if isinstance(joiner(record), str):
+                    if is_separator.match(joiner(record)):
+                        yield joiner(record)
+                    record = []
+                else:
+                    yield record
+                    record = [] # remove if record headers do
+                            # not serve as record separators
+            record.append(line)
+        else:
+            record.append(line)
+    if record:
+        yield joiner(record)
+
 
 
 def createTPPlusTransitRouteParser():
@@ -116,7 +152,7 @@ class TPPlusTransitRoute(object):
     intAttributes = ['runtime', 'oneway', 'mode', 'owner', 'xySpeed', 'timefac', 'freq1',
                      'freq2', 'freq3', 'freq4', 'freq5']
 
-    attrs = OrderedDict(izip(extAttributes, intAttributes))
+    attrs = dict(izip(extAttributes, intAttributes))
 
     @classmethod
     def read(cls, net, fileName, includeOnlyNetNodes=False):
@@ -234,4 +270,15 @@ class TPPlusTransitRoute(object):
     def getNumStops(self):
         """Return the number of stops the route makes"""
         return sum([tr.isStop for tr in self.iterTransitNodes()])
+
+
+if __name__ == "__main__":
+
+
+
+    for transitRoute in TPPlusTransitRoute.read(None, r"..\testdata\transit\muniSample.lin"):
+        print transitRoute
+
+    
+
         
