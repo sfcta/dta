@@ -27,6 +27,8 @@ import pickle
 import re
 import xlrd
 from itertools import izip, chain
+import sys 
+
 import logging
 import datetime
 
@@ -78,8 +80,7 @@ USAGE = r"""
  
  e.g.
  
- python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\ExcelSignals 1530 1830
- 
+ python importExcelSignals.py . "sf" r"X:\mx\dta\dev\testdata\cubeSubarea_sfCounty\excelSignalCards2" 15:30 18:30
  This script reads all the excel signal cards in the excel_signal_cards dir and converts them to the dynameq network specified with the first two arguments. Only signals that are active in the given time period are converted. The script writes a new dynameq network that includes the signals to output_dynameq_dir using the prefix output_dynameq_net_prefix
  """
 
@@ -452,7 +453,7 @@ def findSignalIntervals(sheet, topLeftCell):
     """
     Find the cell that contains the Cycle and Offset infrmation
     """
-    Find the cell that 
+
     CELLS_TO_SEARCH = 80
     for row in range(CELLS_TO_SEARCH):
         cell = (topLeftCell[0] + row, topLeftCell[1])
@@ -1486,22 +1487,35 @@ def verifySingleSignal(net, fileName):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 8:
-        print USAGE
-        sys.exit(2)
+    #if len(sys.argv) != 8:
+    #    print USAGE
+    #    sys.exit(2)
 
     INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
     INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
     EXCEL_DIR                     = sys.argv[3]
     START_TIME                    = sys.argv[4]
     END_TIME                      = sys.argv[5]
-    OUTPUT_DYNAMEQ_NET_DIR        = sys.argv[6]
-    OUTPUT_DYNAMEQ_NET_PREFIX     = sys.argv[7]
+    #OUTPUT_DYNAMEQ_NET_DIR        = sys.argv[6]
+    #OUTPUT_DYNAMEQ_NET_PREFIX     = sys.argv[7]
 
-    net = dta.DynameqNetwork.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
-    cards = getMappedCards(EXCEL_DIR) 
-    cardsWithMovements = mapMovements(net, cards)
+    # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
+    dta.VehicleType.LENGTH_UNITS= "feet"
+    dta.Node.COORDINATE_UNITS   = "feet"
+    dta.RoadLink.LENGTH_UNITS   = "miles"
+
+
+    dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
+    
+    scenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
+    scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
+    net = dta.DynameqNetwork(scenario)
+    net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
+    
+    cards = getMappedCards(net, EXCEL_DIR) 
+    
+    cardsWithMovements = mapMovements(cards, net)
     allPlans = createDynameqSignals(net, cardsWithMovements, START_TIME, END_TIME)     
-    net.write(OUTPUT_DYNAMEQ_NET_DIR, OUTPUT_DYNAMEQ_NET_PREFIX)
+    net.write(".", "sf_signals")
 
     #dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes_pm")
