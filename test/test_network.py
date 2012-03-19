@@ -20,11 +20,12 @@ import pdb
 import nose.tools
 import math
 import difflib 
-
 import os
-import datetime
+import shutil
+
 from itertools import izip 
 
+import dta
 from dta.Scenario import Scenario
 from dta.DynameqScenario import DynameqScenario 
 from dta.Network import Network
@@ -33,64 +34,49 @@ from dta.RoadNode import RoadNode
 from dta.RoadLink import RoadLink
 from dta.Centroid import Centroid
 from dta.Link import Link
+from dta.VirtualLink import VirtualLink
 from dta.Movement import Movement 
 from dta.VirtualNode import VirtualNode
 from dta.Connector import Connector
-
 from dta.VehicleClassGroup import VehicleClassGroup
 from dta.DtaError import DtaError 
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.Utils import lineSegmentsCross
-from dta.Utils import militaryTimeToDateTime
 from dta.Utils import Time
-import dta
 
 dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
 dta.RoadLink.LENGTH_UNITS   = "miles"
 
-mainFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata')
-
-def getGearyNet():
-
-    gearynetDta = DynameqNetwork(scenario=getTestScenario())
-    gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
-    
-    return gearynetDta
-
-def getTestNet2():
-    
-    net = DynameqNetwork(scenario=getTestScenario())
-    net.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/sf9", file_prefix="sf9")
-    return net
+mainFolder = os.path.join(os.path.dirname(__file__), "..", "testdata") 
 
 def getTestScenario(): 
 
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(dta.Time(0,0), dta.Time(4,0))
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
     scenario.read(projectFolder, prefix) 
 
     return scenario 
 
-def getTestNet():
+def getGearySubNet():
 
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(dta.Time(0,0), dta.Time(4,0))
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
     return net 
 
-def getDowntownSF():
+def getCubeSubarea():
 
     projectFolder = os.path.join(mainFolder, 'cubeSubarea_downtownSF/dynameqNetwork')
     prefix = 'sf' 
 
-    scenario = DynameqScenario(dta.Time(0,0), dta.Time(4,0))
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
@@ -126,6 +112,9 @@ def simpleConnectorFactory(id_, startNode, endNode):
                     None, length, 30, 1.0, 1.0, 3,
                     0, 0, "")
 
+def simpleVirtualLinkFactory(id_, startNode, endNode):
+
+    return VirtualLink(id_, startNode, endNode, "")
 
 def simpleMovementFactory(incomingLink, outgoingLink):
 
@@ -420,10 +409,6 @@ class TestNetwork(object):
         assert link2.hasOutgoingMovement(2) 
         assert link2.hasOutgoingMovement(4)
         assert link2.hasOutgoingMovement(3)
-
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
-
     
     def test_10link_getCenterline(self):
 
@@ -439,9 +424,7 @@ class TestNetwork(object):
         
         assert link.getCenterLine() == ((118.0, 0.0), (118.0, 100.0))
 
-
     def test_11link_lineSegmentsIntersect(self):
-
 
         net = getSimpleNet() 
 
@@ -487,9 +470,6 @@ class TestNetwork(object):
         assert n1.getNumAdjacentLinks() == 2
         assert n1.getNumAdjacentNodes() == 1
 
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
-
     def test_13IsShapePoint(self):
 
         net = getSimpleNet() 
@@ -505,7 +485,7 @@ class TestNetwork(object):
 
         assert midNode.isShapePoint()
 
-        net = getTestNet() 
+        net = getGearySubNet() 
 
     def test_hasConnector(self):
 
@@ -559,7 +539,7 @@ class TestNetwork(object):
         assert 2 in [link.getId() for link in clinks]
         assert 8 in [link.getId() for link in clinks]
 
-    def test_removeConnectorFromIntersection(self):
+    def NOtest_removeConnectorFromIntersection(self):
         
         net = getSimpleNet()
         n5 = net.getNodeForId(5) 
@@ -567,13 +547,26 @@ class TestNetwork(object):
         assert not n5.hasConnector()
         
         vn = VirtualNode(9, 0, 200) 
-
-        net.addNode(vn) 
+        cen = Centroid(10, 0, 200)
+        
+        net.addNode(vn)
+        net.addNode(cen)
+        
         con = simpleConnectorFactory(15, vn, n5)
         con2 = simpleConnectorFactory(16, n5, vn) 
 
+        vl1 = simpleVirtualLinkFactory(17, cen, vn)
+        vl2 = simpleVirtualLinkFactory(18, vn, cen) 
+        net.addLink(vl1)
+        net.addLink(vl2)
+
+        pdb.set_trace()
+        
         net.addLink(con)
         net.addLink(con2)
+        assert net.getNumLinks() == 16
+        
+        
         assert net.getNumLinks() == 16
         assert n5.hasConnector()
         #this is the connector to be removed 
@@ -614,14 +607,22 @@ class TestNetwork(object):
         assert not n5.hasConnector()
         
         vn = VirtualNode(9, 0, 200) 
-
-        net.addNode(vn) 
+        cen = Centroid(10, 0, 200)
+        
+        net.addNode(vn)
+        net.addNode(cen)
+        
         con = simpleConnectorFactory(15, vn, n5)
         con2 = simpleConnectorFactory(16, n5, vn) 
 
         net.addLink(con)
         net.addLink(con2)
-        assert net.getNumLinks() == 16
+
+        vl1 = simpleVirtualLinkFactory(17, cen, vn)
+        vl2 = simpleVirtualLinkFactory(18, vn, cen) 
+        net.addLink(vl1)
+        net.addLink(vl2)
+        
         assert n5.hasConnector()
         #this is the connector to be removed 
         assert net.hasLinkForNodeIdPair(9, 5) 
@@ -631,13 +632,14 @@ class TestNetwork(object):
 
         assert net.getNumConnectors() == 2 
 
-        assert net.getNumNodes() == 9
-        assert net.getNumLinks() == 16
-
-        net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-
         assert net.getNumNodes() == 10
         assert net.getNumLinks() == 18
+
+        net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
+        #net.removeCentroidConnectorFromIntersection(n5, con, splitReverseLink=True)
+
+        assert net.getNumNodes() == 11
+        assert net.getNumLinks() == 20
 
         #the connectors have been removed from the intersection 
         assert not net.hasLinkForNodeIdPair(9, 5) 
@@ -646,17 +648,11 @@ class TestNetwork(object):
 
         assert net.hasLinkForId(15) 
         assert net.hasLinkForId(16)
-
-
+        
         assert not n5.hasConnector()         #there is no connector at intersection 5
 
-
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
-
     def test_insertVirtualNodes(self):
-
-        
+ 
         net = getSimpleNet()
         n5 = net.getNodeForId(5) 
 
@@ -665,9 +661,6 @@ class TestNetwork(object):
         centroid = Centroid(9, 0, 200) 
         net.addNode(centroid) 
         
-
-
-        #net.addNode(vn) 
         con = simpleConnectorFactory(15, centroid, n5)
         con2 = simpleConnectorFactory(16, n5, centroid) 
 
@@ -686,47 +679,37 @@ class TestNetwork(object):
         net = DynameqNetwork(scenario) 
         net.read("test", "test") 
 
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
 
     def test_readScenario(self):
 
-        net = getTestNet()
+        net = getGearySubNet()
         projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
 
         prefix = 'smallTestNet' 
-        sc = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+        sc = DynameqScenario(Time(0,0), Time(12,0))
         sc.read(projectFolder, prefix) 
-
         
         assert 'All' in sc.vehicleClassGroups.keys() 
         assert 'Transit' in sc.vehicleClassGroups.keys() 
         assert 'Prohibited' in sc.vehicleClassGroups.keys() 
 
-    def test_writeScenario(self):
-
-        net = getTestNet() 
-        sc = net.getScenario() 
-
-        sc.write(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
-
     def test_readDynameqNetwork(self):
 
-        net = getTestNet()
+        net = getGearySubNet()
 
         assert net.getNumNodes() == 299 
         assert  net.getNumLinks() == 560
 
     def test_writeDynameqNetwork(self): 
 
-        mainFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata"
-        projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
-        
-        net = getTestNet()
+        projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')        
+        net = getGearySubNet()
 
         before = (net.getNumNodes(), net.getNumRoadNodes(), net.getNumCentroids(), net.getNumVirtualNodes(),
                   net.getNumLinks(), net.getNumRoadLinks(), net.getNumConnectors(), net.getNumVirtualLinks())
-        
+
+        os.mkdir(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'))
+
         net.write(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'), 'smallTestNet')
 
         net2 = DynameqNetwork(net.getScenario()) 
@@ -734,7 +717,8 @@ class TestNetwork(object):
 
         after = (net2.getNumNodes(), net2.getNumRoadNodes(), net2.getNumCentroids(), net2.getNumVirtualNodes(),
                   net2.getNumLinks(), net2.getNumRoadLinks(), net2.getNumConnectors(), net2.getNumVirtualLinks())
-        
+
+        shutil.rmtree(os.path.join(mainFolder, 'dynameqNetwork_gearySubset_copy'))
         assert before == after 
         return
     
@@ -812,7 +796,7 @@ class TestNetwork(object):
         projectFolder = os.path.join(os.path.dirname(__file__), '..', "test")
         prefix = 'test' 
 
-        scenario = DynameqScenario(datetime.datetime(2010,1,1,0,0,0), datetime.datetime(2010,1,1,4,0,0))
+        scenario = DynameqScenario(Time(0,0), Time(12,0))
         scenario.read(projectFolder, prefix)
 
         net = DynameqNetwork(scenario) 
@@ -826,7 +810,7 @@ class TestNetwork(object):
         
     def test_isJunction(self):
         
-        net = getTestNet() 
+        net = getGearySubNet() 
         assert net.getNodeForId(24473).isJunction() 
         assert net.getNodeForId(26514).isIntersection()
         assert net.getNodeForId(24472).isIntersection() 
@@ -837,9 +821,8 @@ class TestNetwork(object):
         sc = getTestScenario() 
         assert "All" in list(sc.name for sc in sc.iterVehicleClassGroups())
         assert "Prohibited" in list(sc.name for sc in sc.iterVehicleClassGroups())
- 
         
-    def test_10getAcuteAngle(self):
+    def NOtest_10getAcuteAngle(self):
 
         net = getSimpleNet()
 
@@ -858,52 +841,10 @@ class TestNetwork(object):
         assert link1.getAngle(link4) == 90
         assert link3.getAngle(link3) == 0
         assert link4.getAngle(link3) == 90
-
-    def test_moveVirtualNodesToAvoidOverlappingLinks(self):
-
-        net = getDowntownSF()
-
-        link1 = net.getLinkForId(904)
-        link2 = net.getLinkForId(905)
-
-        assert link1.getAngle(link2) < 0.0001
-
-
-        assert net.getNumOverlappingConnectors() > 0 
-
-        net.moveVirtualNodesToAvoidOverlappingLinks()
-        assert net.getNumOverlappingConnectors()  == 0
-
-        outputFolder = os.path.join(mainFolder, 'cubeSubarea_downtownSF/dynameqNetwork')
-        prefix = 'sf5' 
-        net.write(dir=outputFolder, file_prefix=prefix)
-
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
-
-    def test_isConnectedToRoadNode(self):
-
-        net = getDowntownSF()
-
-        c = net.getNodeForId(958)
-        n = net.getNodeForId(2085)
-        n2 = net.getNodeForId(2426)
-
-        assert c.isConnectedToRoadNode(n)
-        assert not c.isConnectedToRoadNode(n2)
-
-    def test_hasOutgoingLink(self):
-        
-        net = getDowntownSF() 
-        c = net.getNodeForId(958)        
-        c.hasOutgoingLinkForNodeId(900110)
-
-        v = net.getNodeForId(900110)
-        v.hasOutgoingLinkForNodeId(958)
         
     def test_shpwrite(self):
 
-        net = getDowntownSF()
+        net = getGearySubNet()
 
         net.writeNodesToShp("test/tmp_nodes")
         net.writeLinksToShp("test/tmp_links")
@@ -915,9 +856,9 @@ class TestNetwork(object):
         os.remove("test/tmp_links.shx")
         os.remove("test/tmp_links.dbf")
         
-    def test_mergeLink(self):
+    def NOtest_mergeLink(self):
         
-        net = getDowntownSF()  
+        net = getCubeSubarea()  
         assert net.hasNodeForId(3674)
 
         answer = (net.getNumNodes() - 1, net.getNumLinks() - 1) 
@@ -948,9 +889,6 @@ class TestNetwork(object):
         numShapePoints = sum([1 for node in net.iterNodes() if node.isShapePoint() and node.isRoadNode()])        
         assert numShapePoints == 40
 
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
-
     def test_1renameLink(self):
 
         net = getSimpleNet()
@@ -973,9 +911,6 @@ class TestNetwork(object):
         assert link_15.hasOutgoingMovement(2)
         assert link_15.hasOutgoingMovement(4)
         assert link_15.hasOutgoingMovement(3)
-
-        #net.checkAdjacentNodesExist()
-        #net.checkAdjacentLinksExist() 
 
     def test_1renameNode(self):
 
@@ -1009,7 +944,7 @@ class TestNetwork(object):
 
     def test_renameNodesAndLinks(self):
 
-        net = getTestNet() 
+        net = getGearySubNet() 
         
         projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
         prefix = 'smallTestNet2' 
@@ -1033,7 +968,7 @@ class TestNetwork(object):
         
     def test_deleteCentroid(self):
 
-        net = getTestNet()
+        net = getGearySubNet()
         
         net.writeNodesToShp("/Users/michalis/Dropbox/tmp/testNodes")
         net.writeLinksToShp("/Users/michalis/Dropbox/tmp/testLinks")
@@ -1073,7 +1008,7 @@ class TestNetwork(object):
         mov154 = link15.getOutgoingMovement(4)
         mov153 = link15.getOutgoingMovement(3)
 
-        print mov152.getDirection()
+        assert mov152.getDirection() == "EBLT"
 
     def test_movementGetCenterLine(self):
 
@@ -1087,9 +1022,9 @@ class TestNetwork(object):
         mov351 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(1)
         mov352 = net.getLinkForNodeIdPair(3, 5).getOutgoingMovement(2)
 
-        print l35.getCenterLine()
-        print l54.getCenterLine()
-        print mov354.getCenterLine()
+        assert l35.getCenterLine() == ((118.0, 0.0), (118.0, 100.0))
+        assert l54.getCenterLine() == ((100.0, 82.0), (200.0, 82.0))
+        assert mov354.getCenterLine() == [(118.0, 0.0), (118.0, 50.0), (150.0, 82.0), (200.0, 82.0)]
         
     def test_conflictingMovements(self):
 
@@ -1129,16 +1064,12 @@ class TestNetwork(object):
         #left turn with right from same link 
         assert not mov351.isInConflict(mov354)
 
-    def test_movementCapacity(self):
+    def NOtest_movementCapacity(self):
 
-        net = getGearyNet()
+        net = getGearySubNet()
 
         pi = net._planInfo.values()[0]
         
-        sTime = militaryTimeToDateTime(1530)
-        eTime = militaryTimeToDateTime(1830)
-            
-
         node = net.getNodeForId(24467)
 
         for mov in node.iterMovements():
@@ -1146,10 +1077,4 @@ class TestNetwork(object):
         
         print "num time plans", net.getNumTimePlans()
 
-    def test_1readSimResults(self):
-
-        net = getTestNet2()
-        print net.getNumNodes()
-        print net.getNumLinks()
-        net.readSimResults(0, 6*60, 5)
         
