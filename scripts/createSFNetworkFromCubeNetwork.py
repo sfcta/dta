@@ -181,6 +181,7 @@ if __name__ == '__main__':
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
+       #linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "")'
        )
     
     # create the movements for the network for all vehicles
