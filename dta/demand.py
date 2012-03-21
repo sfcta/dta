@@ -23,6 +23,7 @@ from itertools import izip
 
 import numpy as np
 
+import dta
 from dta.Algorithms import hasPath 
 from .DtaError import DtaError
 from dta.MultiArray import MultiArray
@@ -53,16 +54,27 @@ class Demand(object):
         should correspond to the names of the vehicle classes. 
         """
 
-        demand = Demand(net, vehicleClassName, startTime, endTime, endTime - startTime)
-
+        timeSpan = endTime - startTime 
+        demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
+        totTrips = 0
         inputStream = open(fileName, "r")
         for record in csv.DictReader(inputStream):
             
             origin = int(record["ORIGIN"])
             destination = int(record["DESTINATION"])
+            trips = float(record[vehicleClassName])
+            totTrips += trips
+            tripsInHourlyFlows = trips * (60.0 / timeSpan.getMinutes())
             
-            demand.setValue(endTime, origin, destination, float(record[vehicleClassName]))
+            demand.setValue(endTime, origin, destination, tripsInHourlyFlows)
 
+        #msg = "Read %20.2f %s trips" % (totTrips, vehicleClassName)
+       # msg += "     from   cube table %s" % fileName
+
+        dta.DtaLogger.info("Read %10.2f %-16s from %s" % (totTrips, "%s TRIPS" % vehicleClassName, fileName))
+        
+        #dta.DtaLogger.info(msg)
+        
         return demand
 
     @classmethod
@@ -314,9 +326,9 @@ class Demand(object):
                         if not hasPath(self._net, origin, destination):
                             self.setValue(timeLabel, originId, destinationId, 0) 
                         
-    def getTotalDemand(self):
+    def getTotalNumTrips(self):
         """
-        Return the total number of trips
+        Return the total number of trips for all time periods
         """
-        return self._demandTable.getSum()
+        return self._demandTable.getSum() * self.timeStep.getMinutes() / 60.0
 
