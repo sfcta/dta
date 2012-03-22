@@ -216,10 +216,15 @@ class DynameqScenario(Scenario):
         vehicleTypeName     = fields[1]
         length              = float(fields[2])
         responseTime        = float(fields[3])
+        maxSpeed            = float(fields[4])
+        speedRatio          = float(fields[5])
+        
         return VehicleType(vehicleTypeName,
                            vehicleClassName,
                            length,
-                           responseTime)
+                           responseTime,
+                           maxSpeed,
+                           speedRatio)
 
     
     def _writeVehicleTypesToScenarioFile(self, scenariofile_object):

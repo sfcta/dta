@@ -15,7 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-import datetime
+
 import dta
 import os
 import sys
@@ -181,6 +181,7 @@ if __name__ == '__main__':
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
+       #linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "")'
        )
     
     # create the movements for the network for all vehicles
@@ -243,5 +244,5 @@ if __name__ == '__main__':
     sanfranciscoNet.merge(sanfranciscoCubeNet)
     
     # Write the result.  sanfrancisco_dta is a DynameqNetwork
-    sanfranciscoNet.write(dir = ".", file_prefix="SanFrancisco_")
+    sanfranciscoNet.write(dir = ".", file_prefix="sf")
     
