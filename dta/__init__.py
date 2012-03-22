@@ -43,6 +43,7 @@ from .RoadNode import RoadNode
 from .Path import Path
 from .Scenario import Scenario
 from .TimePlan import PlanCollectionInfo, TimePlan
+from .TPPlusTransitRoute import TPPlusTransitRoute
 from .Utils import crossProduct, direction, lineSegmentsCross, onSegment, Time
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
@@ -56,6 +57,6 @@ __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
            'Link', 'RoadLink', 'Connector', 'VirtualLink', 'Demand',
-           'PlanCollectionInfo', 'TimePlan', 'Route', 'Phase', 'MultiArray',
+           'PlanCollectionInfo', 'TimePlan', 'TPPlusTransitRoute', 'Route', 'Phase', 'MultiArray',
            'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time'
 ]

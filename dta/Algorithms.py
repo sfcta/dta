@@ -438,30 +438,31 @@ class ShortestPaths(object):
         
         """
 
-        for vertex in graph.iterVertices():
+        for vertex in graph.iterNodes():
             vertex.label = sys.maxint
             vertex.alreadyVisited = False 
             vertex.predVertex = None
 
         sourceVertex.label = 0
-        edgesToExamine = deque()
-        edgesToExamine.appendleft(sourceVertex)
+        verticesToExamine = deque()
+        verticesToExamine.appendleft(sourceVertex)
         
-        while edgesToExamine:
-            pivotVertex = edgesToExamine.popleft()
+        while verticesToExamine:
+            pivotVertex = verticesToExamine.popleft()
             pivotVertex.alreadyVisited = True
-            for edge in pivotVertex.iterEmanatingEdges():
+            for edge in pivotVertex.iterOutgoingLinks():
                 #if edge.isConnector():
                 #    continue
-                newLabel = pivotVertex.label + edge.cost
-                downstreamVertex = edge.vertexB
+                
+                newLabel = pivotVertex.label + edge.euclideanLength()
+                downstreamVertex = edge.getEndNode()
                 if newLabel < downstreamVertex.label:
                     downstreamVertex.label = newLabel
                     downstreamVertex.predVertex = pivotVertex
                     if downstreamVertex.alreadyVisited:
-                        edgesToExamine.appendleft(downstreamVertex)
+                        verticesToExamine.appendleft(downstreamVertex)
                     else:
-                        edgesToExamine.append(downstreamVertex)
+                        verticesToExamine.append(downstreamVertex)
 
     @classmethod
     def getShortestPathBetweenLinks(cls, sourceLink, destinationLink):

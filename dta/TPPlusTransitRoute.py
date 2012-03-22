@@ -122,7 +122,7 @@ def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
                 if not net.hasNode(nodeId):
                     continue
 
-            route.addTransitNode(nodeId, isStop, access)
+            route.addTransitNode(int(nodeId), isStop, access)
 
     return route
         
