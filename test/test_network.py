@@ -101,7 +101,7 @@ def simpleRoadLinkFactory(id_, startNode, endNode):
 
     return RoadLink(id_, startNode, endNode,
                     None, 0, length, 30, 1.0, 1.0, 3,
-                    0, 0, "")
+                    0, 0, "", id_)
 
 def simpleConnectorFactory(id_, startNode, endNode):
 
@@ -110,7 +110,7 @@ def simpleConnectorFactory(id_, startNode, endNode):
     length = length / 5280.0    
     return Connector(id_, startNode, endNode,
                     None, length, 30, 1.0, 1.0, 3,
-                    0, 0, "")
+                    0, 0, "", id_)
 
 def simpleVirtualLinkFactory(id_, startNode, endNode):
 
@@ -972,15 +972,19 @@ class TestNetwork(object):
         
         net.writeNodesToShp("/Users/michalis/Dropbox/tmp/testNodes")
         net.writeLinksToShp("/Users/michalis/Dropbox/tmp/testLinks")
-         
-        cent = net.getNodeForId(9)
-        net.removeNode(cent) 
 
+        cent = net.getNodeForId(9)
+        net.removeNode(cent)
+        
+        assert not net.hasLinkForId(104874)
+        assert not net.hasLinkForId(104875)
         #the following two are the connectors
-        #assert net.hasLinkForId(16432)
-        #assert net.hasLinkForId(16425)
-        assert not net.hasLinkForId(104867)
-        assert not net.hasLinkForId(104940)
+        #assert not net.hasLinkForId(16432)
+        #assert not net.hasLinkForId(16425)
+        #and this is the virtual node
+        #assert not net.hasNodeForId(26626)
+        
+
 
     def test_linkOrientation(self):
 

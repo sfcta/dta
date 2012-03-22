@@ -376,12 +376,13 @@ class DynameqNetwork(Network):
         rabout  = int(fields[10])
         level   = int(fields[11])
         tmplabel= fields[12:len(fields) - 1]
-        group = fields[len(fields) - 1]
+        group = int(fields[len(fields) - 1])
 
         if tmplabel == '""':
             label = ""
         else:
             label = " ".join(tmplabel)[1:-1]
+
             
         startNode = self.getNodeForId(startid)
         endNode = self.getNodeForId(endid)
@@ -395,14 +396,14 @@ class DynameqNetwork(Network):
                                 length=(None if length==-1 else length),
                                 freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                                 responseTimeFactor=resfac, numLanes=lanes,
-                                roundAbout=rabout, level=level, label=label)
+                                roundAbout=rabout, level=level, label=label, group=group)
         
         # are these all RoadLinks?  What about VirtualLinks?
         return RoadLink(id, startNode, endNode, reverseAttachedLinkId=rev, 
                            facilityType=faci, length=(None if length==-1 else length),
                            freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                            responseTimeFactor=resfac, numLanes=lanes,
-                           roundAbout=rabout, level=level, label=label)                    
+                           roundAbout=rabout, level=level, label=label, group=group)
 
     def _writeLinksToBasefile(self, basefile_object):
         """
@@ -419,7 +420,7 @@ class DynameqNetwork(Network):
 
         for link in chain(roadLinks, connectors):
 
-            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %13s\n" % 
+            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %50s %d\n" % 
                                   (link.getId(),
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
@@ -432,7 +433,7 @@ class DynameqNetwork(Network):
                                    link._numLanes,
                                    link._roundAbout,
                                    link._level,
-                                   '"' + (link._label if link._label else "") + '"'))
+                                   '"' + (link._label if link._label else "") + '"', link._group))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", basefile_object.name))
@@ -929,7 +930,7 @@ class DynameqNetwork(Network):
                                      connector._numLanes,
                                      connector._roundAbout,
                                      connector._level, 
-                                     connector._label)
+                                     connector._label, connector.getId())
 
             self.removeLink(connector)
             self.addLink(newConnector)
@@ -949,7 +950,7 @@ class DynameqNetwork(Network):
                                      connector._numLanes,
                                      connector._roundAbout,
                                      connector._level, 
-                                     connector._label)
+                                     connector._label, connector.getId())
 
             self.removeLink(connector)
             self.addLink(newConnector)

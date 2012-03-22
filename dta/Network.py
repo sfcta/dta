@@ -591,8 +591,8 @@ class Network(object):
                                 linkToSplit._numLanes,
                                 linkToSplit._roundAbout,
                                 linkToSplit._level, 
-                                linkToSplit.getLabel() 
-                                )
+                                linkToSplit.getLabel(),
+                                self._maxLinkId + 1)
 
             self.addLink(newLink1)
 
@@ -608,8 +608,8 @@ class Network(object):
                                 linkToSplit._numLanes,
                                 linkToSplit._roundAbout,
                                 linkToSplit._level,
-                                linkToSplit.getLabel()
-                                )
+                                linkToSplit.getLabel(),
+                                self._maxLinkId + 1)
 
             self.addLink(newLink2) 
 
@@ -1254,8 +1254,8 @@ class Network(object):
                             link1._numLanes,
                             link1._roundAbout,
                             link1._level, 
-                            label
-                            )
+                            label,
+                            self._maxLinkId + 1)
         
         self.addLink(newLink)
 

@@ -48,7 +48,7 @@ class RoadLink(Link):
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
-                 roundAbout, level, label):
+                 roundAbout, level, label, group):
         """
         Constructor.
         
@@ -69,6 +69,7 @@ class RoadLink(Link):
          * *roundAbout* is true/false or 1/0
          * *level* is an indicator to attribute vertical alignment/elevation. If None passed, will use default.
          * *label* is a link label. If None passed, will use default. 
+         * *group* is an integer that identifies one or more links.
          
         """
         Link.__init__(self, id, startNode, endNode, label)
@@ -77,6 +78,7 @@ class RoadLink(Link):
         self._freeflowSpeed             = freeflowSpeed
         self._effectiveLengthFactor     = effectiveLengthFactor
         self._responseTimeFactor        = responseTimeFactor
+        self._group                     = group
 
         if numLanes <= 0: 
             raise DtaError("RoadLink %d cannot have number of lanes = %d" % (self.getId(), numLanes))
@@ -788,5 +790,15 @@ class RoadLink(Link):
         """
         return self._freeflowSpeed
             
-        
+    def getGroup(self):
+        """
+        Return the group number fo the link
+        """
+        return self._group
+    
+    def setGroup(self, group):
+        """
+        Set the group number fo the link
+        """
+        self._group = group
         
