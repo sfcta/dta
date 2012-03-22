@@ -19,10 +19,10 @@ __license__     = """
 import logging
 import sys
 
-from pbCore.utils.itertools2 import pairwise
-from pbCore.dynameq.transitLine import TransitLine
-from pbModels.algorithms.shortestPaths import ShortestPaths
-from pbCore.dynameq.error import TPPlus2DynameqError
+#from pbCore.utils.itertools2 import pairwise
+#from pbCore.dynameq.transitLine import TransitLine
+#from pbModels.algorithms.shortestPaths import ShortestPaths
+#from pbCore.dynameq.error import TPPlus2DynameqError
 
 def convertHeadway2HHMM(headwayInMin):
 
@@ -60,36 +60,6 @@ def convertStartTime2HHMMSS(startTimeInMin):
 
 class TPPlus2Dynameq(object):
     """Converts TPPlus Network elemements to the equivalent Dynameq ones"""
-
-    @classmethod
-    def convertRoute2(cls, dynameqNet, tpplusRoute):
-
-        DWELL_TIME = 30
-
-        tRoute = tpplusRoute
-
-        dRoute = TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
-
-        dNodeSequence = []
-        for tNode in tRoute.iterTransitNodes():
-            if not dynameqNet.hasNode(tNode.nodeId):
-                continue
-            dNode = dynameqNet.getNode(tNode.nodeId)
-            dNodeSequence.append(dNode)
-
-        if len(dNodeSequence) == 0:
-            errorMessage = ('Tpplus route %s cannot be converted to Dynameq because '
-                            'none of its nodes is in the Dynameq network' % tRoute.name)
-            logging.error(errorMessage)
-            raise TPPlus2DynameqError(errorMessage)
-                                              
-        if len(dNodeSequence) == 1:
-            errorMessage = ('Tpplus route %s cannot be converted to Dyanmeq because only '
-                                      'one of its nodes is in the Dynameq network' % tRoute.name)
-            logging.error(errorMessage)            
-            raise TPPlus2DynameqError(errorMessage)
-        
-
     
     @classmethod
     def convertRoute(cls, dynameqNet, tpplusRoute, doShortestPath=True):

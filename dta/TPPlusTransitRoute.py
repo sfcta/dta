@@ -272,12 +272,6 @@ class TPPlusTransitRoute(object):
         return sum([tr.isStop for tr in self.iterTransitNodes()])
 
 
-if __name__ == "__main__":
-
-
-
-    for transitRoute in TPPlusTransitRoute.read(None, r"..\testdata\transit\muniSample.lin"):
-        print transitRoute
 
     
 
