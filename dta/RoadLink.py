@@ -71,7 +71,8 @@ class RoadLink(Link):
          * *label* is a link label. If None passed, will use default. 
          * *group* is an integer that identifies one or more links; groups are used for calculation of approach
            delay to an intersection.  So all vehicles approaching on the links in one group experience the
-           same approach delay.  (todo: example of how this should be used?)
+           same approach delay.  (todo: example of how this should be used?)  If -1 is passed, no group will be
+           used.
          
         """
         Link.__init__(self, id, startNode, endNode, label)

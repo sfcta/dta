@@ -181,7 +181,7 @@ if __name__ == '__main__':
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")',
-       linkGroupEvalStr                 = "-1", # is this appropriate?  I haven't tested
+       linkGroupEvalStr                 = "-1",
        )
     
     # create the movements for the network for all vehicles

@@ -52,7 +52,7 @@ class DynameqNetwork(Network):
     PRIORITIES_FILE = '%s_prio.dqt'
     
     BASE_HEADER          = """<DYNAMEQ>
-<VERSION_1.5>
+<VERSION_1.8>
 <BASE_NETWORK_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/
 """
@@ -411,7 +411,7 @@ class DynameqNetwork(Network):
         ready for writing.
         """
         basefile_object.write("LINKS\n")
-        basefile_object.write("*      id    start      end      rev faci          len       fspeed   lenfac   resfac lanes rabout  level         label        group\n")
+        basefile_object.write("*        id     start       end       rev faci         len      fspeed  lenfac  resfac lanes rabout level                          label                                  group       \n")
 
         count = 0
 
@@ -420,14 +420,13 @@ class DynameqNetwork(Network):
 
         for link in chain(roadLinks, connectors):
 
-            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %-13s %5d\n" % 
-
+            basefile_object.write(" %10d %9d %9d %9d %4d %11s %11.3f %7.3f %7.3f %5d %6d %5d %30s %38d       \n" % 
                                   (link.getId(),
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
                                    link._reverseAttachedLinkId if link._reverseAttachedLinkId else -1,
                                    link._facilityType,
-                                   ("%12.3f" % link._length),
+                                   ("%11.3f" % link._length),
                                    link._freeflowSpeed,
                                    link._effectiveLengthFactor,
                                    link._responseTimeFactor,
@@ -435,7 +434,8 @@ class DynameqNetwork(Network):
                                    link._roundAbout,
                                    link._level,
                                    '"' + (link._label if link._label else "") + '"',
-                                   link._group))
+                                   link.getId() if link._group == -1 else link._group)) # -1 means no group so use link ID
+
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", basefile_object.name))
