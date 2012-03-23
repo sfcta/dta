@@ -1511,9 +1511,7 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
-
-
-    
+ 
     cards = getMappedCards(net, EXCEL_DIR) 
     
     cardsWithMovements = mapMovements(cards, net)
