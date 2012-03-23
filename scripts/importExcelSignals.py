@@ -29,7 +29,6 @@ import xlrd
 from itertools import izip, chain
 import sys 
 
-import logging
 import datetime
 
 from dta.MultiArray import MultiArray
@@ -41,11 +40,6 @@ from dta.Algorithms import pairwise, any2, all2
 from dta.TimePlan import TimePlan, PlanCollectionInfo
 from dta.Phase import Phase
 from dta.PhaseMovement import PhaseMovement
-
-logging.basicConfig(filename = "logParse.txt",\
-                        level = logging.DEBUG, \
-                        filemode= "w", \
-                        format = " %(levelname)-10s %(asctime)s %(message)s")
 
 class ExcelCardError(Exception):
     pass
@@ -111,7 +105,7 @@ class SignalData(object):
 
         self.mappedStreet = {}
         self.mappedMovements = defaultdict(list)  #indexed by the keys of the mappedStreet 
-        self.signalTiming = {} # singal timing objects indexed by cso
+        self.signalTiming = {} # signal timing objects indexed by cso
         
         self.error = None
 
@@ -297,7 +291,7 @@ class SignalData(object):
                 return cso
 
         for cso, signalTiming in self.signalTiming.iteritems(): 
-            if signalTiming.startTime == 0 and signalTiming.endTime == 2400:
+            if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(23,59):
                 return cso
         return None
 
@@ -332,8 +326,8 @@ class ExcelSignalTiming(object):
 
         self.isActuated = False
 
-        self.startTime = 0
-        self.endTime = 2400
+        self.startTime = dta.Time(0,0)
+        self.endTime = dta.Time(23,59)
 
         self.times = ()
         
@@ -523,10 +517,10 @@ def getOperationTimes(sheet, signalData):
                                        time = xlrd.xldate_as_tuple(cellValue, 0)
                                    #print "\t", time
                                    if gotStartTime == False:
-                                       signalData.signalTiming[strCso].startTime = time[3] * 100 + time[4] 
+                                       signalData.signalTiming[strCso].startTime = dta.Time(time[3], time[4]) 
                                        gotStartTime = True
                                    else:
-                                       signalData.signalTiming[strCso].endTime = time[3] * 100 + time[4]
+                                       signalData.signalTiming[strCso].endTime = dta.Time(time[3], time[4])
                         #print signalData.signalTiming[strCso]
     if found == False:
         raise ParsingCardError("I cannot find start and end times") 
@@ -868,11 +862,13 @@ def parseExcelCardFile(directory, fileName):
 
 
 def parseExcelCardsToSignalObjects(directory):
-    """Reads the raw excel cards, extracts all the relevant infomation, instantiates 
+    """
+    Reads the raw excel cards, extracts all the relevant information, instantiates 
     for each excel file an object called SignalData and stores the information
     and then pickles all the signal data objects into a file named: 
 
-    excelCards.pkl"""
+    excelCards.pkl
+    """
 
     excelCards = []
     problemCards = [] 
@@ -893,21 +889,18 @@ def parseExcelCardsToSignalObjects(directory):
 
             #print sd
         except ParsingCardError, e:
-            #logging.error(str(e))
-
-            
-            print "%40s\t%s" % (fileName, str(e))
+            dta.DtaLogger.error("Error parsing %-40s: %s" % (fileName, str(e)))
             problemCards.append(sd)
             sd.error = e
             continue
         #except Exception, e:
-        #   logging.error("UnCaught exception. Card %s. %s" % (fileName, e))
+        #   dta.DtaLogger.error("UnCaught exception. Card %s. %s" % (fileName, e))
         else:
             excelCards.append(sd)
 
 #        if numFiles == 10:
 #            break
-    logging.info("Number of excel cards succesfully parsed = %d" % len(excelCards))
+    dta.DtaLogger.info("Number of excel cards successfully parsed = %d" % len(excelCards))
     return excelCards
 
 def mapStreetNamesForManuallyMappedNodes(network, cards):
@@ -936,7 +929,18 @@ def mapStreetNamesForManuallyMappedNodes(network, cards):
     return result
 
 def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
-
+    """
+    Given a :py:class:`dta.DynameqNetwork` instance, *network*, and 
+    an instance of ?, *excelCard*,
+    looks for the :py:class:`dta.RoadNode` instance in the *network* with matching
+    streetnames to the excelCard.streetNames
+    
+    Returns True if a match is found, and sets:
+      * excelCard.mappedStreet
+      * excelCard.mappedNodeName
+      * excelCard.mappedNodeId
+      
+    """
     streetNames = excelCard.streetNames
     for node in network.iterRoadNodes():
 
@@ -947,7 +951,9 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
             continue
 
         baseStreetNames = node.getStreetNames()
-        for bName, mName in izip(baseStreetNames, streetNames):
+        baseStreetNames_cleaned = [cleanStreetName(bs) for bs in baseStreetNames]
+        
+        for bName, mName in izip(baseStreetNames_cleaned, streetNames):
             if not difflib.get_close_matches(bName, [mName], 1, CUTOFF):
                 break
             excelCard.mappedStreet[mName] = bName            
@@ -962,7 +968,7 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
     
 def mapMovements(excelCards, baseNetwork):
     
-    logging.info("Number of excel cards read %d" % len(excelCards))
+    dta.DtaLogger.info("Number of excel cards read %d" % len(excelCards))
     
     def getStreetName(gMovName, streetNames):
         """Finds to which street the movement applies to and returns the 
@@ -1125,23 +1131,19 @@ def mapMovements(excelCards, baseNetwork):
             try:
                 mapGroupMovements(mec, groupMovementNames, bNode)
             except MovementMappingError, e:
-                print e
-                #logging.error(str(e))
+                dta.DtaLogger.error("MovementMappingError:   %s" % str(e))
                 continue
-#                print e
             except StreetNameMappingError, e:
-                print e
-                #logging.error(str(e))
+                dta.DtaLogger.error("StreetNameMappingError: %s" % str(e))
                 continue
-#                print e
 
         if len(mec.mappedMovements) == 0:
-            logging.error("Signal %s. No mapped movements" % mec.fileName)
+            dta.DtaLogger.error("Signal %s. No mapped movements" % mec.fileName)
             continue
             #raise MovementMappingError("Signal %s. No mapped movements" % mec.fileName)
 
         if len(mec.mappedMovements) == 1:
-            logging.error("Signal %s. Only one of the group movements has been mapped" %
+            dta.DtaLogger.error("Signal %s. Only one of the group movements has been mapped" %
                           mec.fileName)
             continue
 #            raise MovementMappingError("Signal %s. Cannot generate a signal with "
@@ -1149,14 +1151,14 @@ def mapMovements(excelCards, baseNetwork):
 
         groupMovements = mec.phasingData.getElementsOfDimention(0)
         if len(mec.mappedMovements) != len(groupMovements):
-            logging.error("Signal %s. Not all movements have been mapped" % mec.fileName)
+            dta.DtaLogger.error("Signal %s. Not all movements have been mapped" % mec.fileName)
             continue
 
 #            raise MovementMappingError("Signal %s. Not all movements have been mapped" %
 #                                    mec.fileName)
         for gMov in groupMovements:
             if len(mec.mappedMovements[gMov]) == 0:
-                logging.error("Signal %s. The group movement %s is not mapped to "
+                dta.DtaLogger.error("Signal %s. The group movement %s is not mapped to "
                               "any link movements" % (mec.fileName, gmov))
                 continue
 #                raise MovementMappingError("Signal %s. The group movmement %s is not mapped"
@@ -1176,7 +1178,7 @@ def selectCSO(excelCard, startTime, endTime):
             return signalTiming
 
     for signalTiming in excelCard.iterSignalTiming():
-        if signalTiming.startTime == 0 and signalTiming.endTime == 2400:
+        if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(23,59):
             return signalTiming
 
     return None
@@ -1288,11 +1290,11 @@ def mapIntersectionsByName(network, excelCards):
 
         if findNodeWithSameStreetNames(network, sd, 0.9, mappedNodes):
             mappedExcelCards.append(sd)
-            print "Mapped ", sd.fileName, "to", sd.mappedNodeId
+            dta.DtaLogger.info("Mapped %s to %d (%s)" % (sd.fileName, sd.mappedNodeId, str(network.getNodeForId(sd.mappedNodeId).getStreetNames())))
         else:
-            print "Failed to map,", sd.fileName
+            dta.DtaLogger.error("Failed to map %s" % sd.fileName)
 
-    print "Number of cards are", len(excelCards), " Number of mapped nodes are ", len(mappedNodes)
+    dta.DtaLogger.info("Number of cards are %d; Number of mapped nodes are %d" % (len(excelCards), len(mappedNodes)))
 
 def getPossibleLinkDirections(link):
     """Return a two element tuple containing the possible directions of the link.
@@ -1438,7 +1440,7 @@ def exportToJSON(cards, outFileName):
 def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
     """
     Create a dynameq signal for each excel card object for
-    the specified input preriod
+    the specified input period
     """    
     planInfo = net.addPlanCollectionInfo(startTime, endTime, "excelSignalsToDynameq", "excel_signal_cards_imported_automatically")
     allPlans = []
@@ -1487,9 +1489,9 @@ def verifySingleSignal(net, fileName):
 
 if __name__ == "__main__":
 
-    #if len(sys.argv) != 8:
-    #    print USAGE
-    #    sys.exit(2)
+    if len(sys.argv) != 6:
+        print USAGE
+        sys.exit(2)
 
     INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
     INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
@@ -1505,7 +1507,7 @@ if __name__ == "__main__":
     dta.RoadLink.LENGTH_UNITS   = "miles"
 
 
-    dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
+    dta.setupLogging("importExcelSignals.INFO.log", "importExcelSignals.DEBUG.log", logToConsole=True)
     
     scenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
@@ -1515,7 +1517,7 @@ if __name__ == "__main__":
     cards = getMappedCards(net, EXCEL_DIR) 
     
     cardsWithMovements = mapMovements(cards, net)
-    allPlans = createDynameqSignals(net, cardsWithMovements, START_TIME, END_TIME)     
+    allPlans = createDynameqSignals(net, cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))     
     net.write(".", "sf_signals")
 
     #dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes_pm")

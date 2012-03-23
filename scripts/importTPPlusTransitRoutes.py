@@ -144,7 +144,7 @@ if __name__ == "__main__":
     dta.Node.COORDINATE_UNITS   = "feet"
     dta.RoadLink.LENGTH_UNITS   = "miles"
 
-    dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
+    dta.setupLogging("importTPPlusTransitRoutes.INFO.log", "importTPPlusTransitRoutes.DEBUG.log", logToConsole=True)
     
     scenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 

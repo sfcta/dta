@@ -410,7 +410,7 @@ class DynameqNetwork(Network):
         ready for writing.
         """
         basefile_object.write("LINKS\n")
-        basefile_object.write("*      id    start      end      rev faci          len       fspeed   lenfac   resfac lanes rabout  level         label\n")
+        basefile_object.write("*      id    start      end      rev faci          len       fspeed   lenfac   resfac lanes rabout  level         label        group\n")
 
         count = 0
 
@@ -419,7 +419,7 @@ class DynameqNetwork(Network):
 
         for link in chain(roadLinks, connectors):
 
-            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %13s\n" % 
+            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %-13s %5d\n" % 
                                   (link.getId(),
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
@@ -432,7 +432,8 @@ class DynameqNetwork(Network):
                                    link._numLanes,
                                    link._roundAbout,
                                    link._level,
-                                   '"' + (link._label if link._label else "") + '"'))
+                                   '"' + (link._label if link._label else "") + '"',
+                                   0)) # group: default to 0 for now
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", basefile_object.name))
