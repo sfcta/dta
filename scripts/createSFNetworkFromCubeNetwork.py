@@ -101,7 +101,7 @@ if __name__ == '__main__':
     dta.Node.COORDINATE_UNITS   = "feet"
     dta.RoadLink.LENGTH_UNITS   = "miles"
 
-    dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
+    dta.setupLogging("createSFNetworkFromCubeNetwork.INFO.log", "createSFNetworkFromCubeNetwork.DEBUG.log", logToConsole=True)
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.

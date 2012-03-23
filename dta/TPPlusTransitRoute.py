@@ -122,7 +122,7 @@ def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
                 if not net.hasNode(nodeId):
                     continue
 
-            route.addTransitNode(nodeId, isStop, access)
+            route.addTransitNode(int(nodeId), isStop, access)
 
     return route
         
@@ -272,12 +272,6 @@ class TPPlusTransitRoute(object):
         return sum([tr.isStop for tr in self.iterTransitNodes()])
 
 
-if __name__ == "__main__":
-
-
-
-    for transitRoute in TPPlusTransitRoute.read(None, r"..\testdata\transit\muniSample.lin"):
-        print transitRoute
 
     
 
