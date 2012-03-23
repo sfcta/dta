@@ -180,8 +180,8 @@ if __name__ == '__main__':
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
-       linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
-       #linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "")'
+       linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")',
+       linkGroupEvalStr                 = "-1", # is this appropriate?  I haven't tested
        )
     
     # create the movements for the network for all vehicles

@@ -434,7 +434,8 @@ class DynameqNetwork(Network):
                                    link._numLanes,
                                    link._roundAbout,
                                    link._level,
-                                   '"' + (link._label if link._label else "") + '"', link._group))
+                                   '"' + (link._label if link._label else "") + '"',
+                                   link._group))
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", basefile_object.name))

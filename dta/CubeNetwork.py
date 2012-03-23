@@ -128,7 +128,8 @@ ENDRUN
                  linkNumLanesEvalStr,
                  linkRoundAboutEvalStr,
                  linkLevelEvalStr,
-                 linkLabelEvalStr):
+                 linkLabelEvalStr,
+                 linkGroupEvalStr):
         """
         Reads the network from the given csv files.
         * *nodesCsvFilename* is the csv with the node data; *nodeVariableNames* are the column names.
@@ -183,6 +184,8 @@ ENDRUN
           and :py:class:`Connector` instances
         * *linkLabelEvalStr* indicates how to set the *label* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
+        * *linkGroupEvalStr* indicates how to set the *group* for :py:class:`RoadLink`
+          and :py:class:`Connector` instances.
         
         """
         if nodeOldNodeStr: self._oldNodeNumToNodeNum = {}
@@ -264,7 +267,8 @@ ENDRUN
                         numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
                         roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
                         level                   = eval(linkLevelEvalStr, globals(), localsdict),
-                        label                   = eval(linkLabelEvalStr, globals(), localsdict))
+                        label                   = eval(linkLabelEvalStr, globals(), localsdict),
+                        group                   = eval(linkGroupEvalStr, globals(), localsdict))
                     countConnectors += 1
                 except DtaError, e:
                     DtaLogger.error("Error adding Connector from %d to %d - skipping: %s" %
@@ -286,7 +290,8 @@ ENDRUN
                         numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
                         roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
                         level                   = eval(linkLevelEvalStr, globals(), localsdict),
-                        label                   = eval(linkLabelEvalStr, globals(), localsdict))
+                        label                   = eval(linkLabelEvalStr, globals(), localsdict),
+                        group                   = eval(linkGroupEvalStr, globals(), localsdict))
                     countRoadLinks += 1
                 except DtaError, e:
                     DtaLogger.error("Error adding RoadLink from %d to %d - skipping: %s" %
