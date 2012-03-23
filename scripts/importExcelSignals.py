@@ -953,10 +953,11 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
         baseStreetNames = node.getStreetNames()
         baseStreetNames_cleaned = [cleanStreetName(bs) for bs in baseStreetNames]
         
-        for bName, mName in izip(baseStreetNames_cleaned, streetNames):
-            if not difflib.get_close_matches(bName, [mName], 1, CUTOFF):
-                break
-            excelCard.mappedStreet[mName] = bName            
+        for idx in range(len(baseStreetNames_cleaned)):
+            
+            if not difflib.get_close_matches(baseStreetNames_cleaned[idx], [streetNames[idx]], 1, CUTOFF): break
+            excelCard.mappedStreet[streetNames[idx]] = baseStreetNames[idx]            
+        
         else:
 
             mappedNodes[excelCard.iiName] = node.getId()
@@ -1008,7 +1009,8 @@ def mapMovements(excelCards, baseNetwork):
         return result
 
     def getTurnType(gMovName):
-        """Searches the movment name for a known set of turn type indicators such as
+        """
+        Searches the movement name for a known set of turn type indicators such as
         LT and returns the turn type as a string which is one of the following:
         TURN_LEFT, TURN_THRU
 
