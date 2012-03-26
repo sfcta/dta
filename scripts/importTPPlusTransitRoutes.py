@@ -17,12 +17,14 @@ __license__     = """
 """
 
 import logging
+import os
 import sys
+from itertools import izip
 
 import dta
 from dta.TPPlusTransitRoute import TPPlusTransitRoute
 from dta.DynameqTransitLine import TransitLine
-from dta.Algorithms import pairwise, ShortestPaths
+from dta.Algorithms import ShortestPaths
 #from dta.Network import Network
 
 #from pbCore.utils.itertools2 import pairwise
@@ -100,31 +102,33 @@ class TPPlus2Dynameq(object):
             raise TPPlus2DynameqError(errorMessage)
 
         dRoute = dta.DynameqTransitLine.TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
-        for dNodeA, dNodeB in dta.Algorithms.pairwise(dNodeSequence):
+        for dNodeA, dNodeB in izip(dNodeSequence, dNodeSequence[1:]):
             
             if dynameqNet.hasLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId()):
                 dLink = dynameqNet.getLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId())
                 dSegment = dRoute.addSegment(dLink, 0)
                 #print 'added link', dLink.iid
 
-                tNodeB = tRoute.getTransitNode(dLink.nodeBid)
+                tNodeB = tRoute.getTransitNode(dNodeB.getId())
                 if tNodeB.isStop:
                     dSegment.dwell = DWELL_TIME
                 
             else:
                 if doShortestPath:
                     print 'I am running the SP. Root node', dNodeA.getId()
+                    #ShortestPaths.labelSettingWithLabelsOnNodes(dynameqNet, dNodeA, dNodeB)
                     ShortestPaths.labelCorrectingWithLabelsOnNodes(dynameqNet, dNodeA)
                     if dNodeB.label == sys.maxint:
                         continue
 
-                    pathNodes = ShortestPaths.getShortestPath(dNodeA, dNodeB)
+                    pathNodes = ShortestPaths.getShortestPathBetweenNodes(dNodeA, dNodeB)
 
-                    for pathNodeA, pathNodeB in pairwise(pathNodes):
-                        dLink = dynameqNet.getLink(pathNodeA.id, pathNodeB.id)
+                    for pathNodeA, pathNodeB in izip(pathNodes, pathNodes[1:]):
+                        dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                         dSegment = dRoute.addSegment(dLink, 0)
+                        print 'Segment added = ', pathNodeA.getId(), pathNodeB.getId()
 
-                    tNodeB = tRoute.getTransitNode(dLink.nodeBid)
+                    tNodeB = tRoute.getTransitNode(pathNodeB.getId())
                     if tNodeB.isStop:
                         dSegment.dwell = DWELL_TIME
                 else:
@@ -150,6 +154,9 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+    #projectFolder2 = "C:/SFCTA/dta/testdata/ReneeTransitTest/"
+    #net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
+    #net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
     for tpplusRoute in dta.TPPlusTransitRoute.read(net, TRANSIT_LINES):
 

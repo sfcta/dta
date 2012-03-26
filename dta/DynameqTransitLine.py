@@ -18,6 +18,8 @@ __license__     = """
 
 import re
 import dta
+from itertools import izip
+from dta.Algorithms import pairwise
 
 class TransitSegment(object):        
     
@@ -184,19 +186,16 @@ class TransitLine(object):
 
     def validatePath(self):
         
-        isValid = True
-        for upSegment, downSegment in pairwise(self.iterSegments()):
+        allSegments=list(self.iterSegments())
+        for upSegment, downSegment in izip(allSegments,allSegments[1:]):
             upLink = upSegment.link
             downLink = downSegment.link
-            if not upLink.hasEmanatingMovement(downLink.nodeBid):
+           
+            if not upLink.hasOutgoingMovement(downLink.getEndNodeId()):
                 errorMessage = "Route %20s cannot excecute movement from link %15s to link %15s " % \
-                    (self.label, str(upLink.iid), str(downLink.iid))
+                (self.label, str(upLink.getIid()), str(downLink.getIid()))
 
-                logging.error(errorMessage)
-                isValid = False 
-
-        if not isValid:
-            raise dta.DtaError(errorMessage)
+                dta.DtaLogger.error(errorMessage)
 
 def correctTransitLineUsingSP(net, transitLine):
     

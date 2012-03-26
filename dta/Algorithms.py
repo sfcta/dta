@@ -38,13 +38,18 @@ def all2(seq, pred=None):
     return True
 
 def any2(seq, pred=None):
-    "Returns True if pred(x) is true for at least one element in the iterable"
+    """
+    Returns True if pred(x) is true for at least one element in the iterable
+    """
     for elem in ifilter(pred, seq):
         return True
     return False
 
 def pairwise(iterable):
-    
+    """
+    This function will return len(iterable) pairs from the input iterable
+    example [1, 2, 3] will produce (1, 2), (2, 3), (3, 1)
+    """
     a, b = tee(iterable)
     b = cycle(b) 
     b.next()
@@ -450,19 +455,74 @@ class ShortestPaths(object):
         while verticesToExamine:
             pivotVertex = verticesToExamine.popleft()
             pivotVertex.alreadyVisited = True
+            if pivotVertex.isVirtualNode():
+                print 'Virtual Node Included = ', pivotVertex.getId()
             for edge in pivotVertex.iterOutgoingLinks():
-                #if edge.isConnector():
-                #    continue
+                if not edge.isVirtualLink():
+                    newLabel = pivotVertex.label + edge.getLength()
+                    downstreamVertex = edge.getEndNode()
+                    if not downstreamVertex.isVirtualNode():
+                        if newLabel < downstreamVertex.label:
+                            downstreamVertex.label = newLabel
+                            downstreamVertex.predVertex = pivotVertex
+                            if downstreamVertex.alreadyVisited:
+                                verticesToExamine.appendleft(downstreamVertex)
+                            else:
+                                verticesToExamine.append(downstreamVertex)
+
+
+    @classmethod
+    def labelSettingWithLabelsOnNodes(cls, graph, sourceVertex, endVertex):
+        """Implementation of Pape's shortest path
+        using a deque. Vertices are inserted to the 
+        left of the deque if they have been already 
+        visited. Otherwise they are inserted to the
+        right of the deque
+
+        To work edges should have a cost attribute
+        
+        """
+
+        for vertex in graph.iterNodes():
+            vertex.label = sys.maxint
+            vertex.alreadySet = False
+            vertex.predVertex = None
+            mincostVertex = sourceVertex
+
+        sourceVertex.label = 0
+        verticesToExamine = deque()
+        verticesSet=deque()
+        verticesSet.appendleft(sourceVertex)
+        pivotVertex = sourceVertex
                 
-                newLabel = pivotVertex.label + edge.euclideanLength()
-                downstreamVertex = edge.getEndNode()
-                if newLabel < downstreamVertex.label:
-                    downstreamVertex.label = newLabel
-                    downstreamVertex.predVertex = pivotVertex
-                    if downstreamVertex.alreadyVisited:
-                        verticesToExamine.appendleft(downstreamVertex)
-                    else:
-                        verticesToExamine.append(downstreamVertex)
+        while pivotVertex != endVertex :
+            mincost = 0
+            pivotVertex = verticesSet.popleft()
+            pivotVertex.alreadySet = True
+            #if pivotVertex.isVirtualNode:
+                #print 'Virtual Node Included = ', pivotVertex.getId()
+            for edge in pivotVertex.iterOutgoingLinks():
+                if not edge.isVirtualLink():                 
+                    newLabel = pivotVertex.label + edge.getLength()
+                    downstreamVertex = edge.getEndNode()
+                    if not downstreamVertex.isVirtualNode():
+                        if newLabel < downstreamVertex.label:
+                            downstreamVertex.label = newLabel
+                            downstreamVertex.predVertex = pivotVertex
+                            if not downstreamVertex.alreadySet:
+                                verticesToExamine.appendleft(downstreamVertex)
+            for updateVertex in verticesToExamine:
+                if mincost==0:
+                    mincost = updateVertex.label
+                    mincostVertex = updateVertex
+                else:
+                    if updateVertex.label<mincost:
+                        mincost = updateVertex.label
+                        mincostVertex = updateVertex
+            verticesToExamine.remove(mincostVertex)
+            verticesSet.appendleft(mincostVertex)
+                
+
 
     @classmethod
     def getShortestPathBetweenLinks(cls, sourceLink, destinationLink):
@@ -481,5 +541,21 @@ class ShortestPaths(object):
         path.insert(0, edge)
         return path
 
+    @classmethod
+    def getShortestPathBetweenNodes(cls, sourceNode, destinationNode):
+        """
+        Return the path from the sourceNode to the 
+        destinationNode as a list of nodes. The return list always contains the 
+        destination and the source node
+        """
+        if sourceNode==destinationNode:
+            return []
+        vertex = destinationNode
+        path = []
+        while vertex != sourceNode:
+            path.insert(0, vertex)
+            vertex = vertex.predVertex
+        path.insert(0, vertex)
+        return path
 
      
