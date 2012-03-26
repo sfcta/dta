@@ -29,7 +29,6 @@ from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import getMidPoint, lineSegmentsCross, polylinesCross
 from .Algorithms import pairwise
-import parameters
 
 class Movement(object):
     """

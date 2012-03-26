@@ -25,7 +25,6 @@ from .Logger import DtaLogger
 from .Scenario import Scenario
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
-import parameters
 
 class DynameqScenario(Scenario):
     """
