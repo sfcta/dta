@@ -439,18 +439,18 @@ class RoadLink(Link):
         """
         Prohibit the input movement
         """
-        if not isinstance(movementToRemove, Movement):
+        if not isinstance(movementToProhibit, Movement):
             raise DtaError("RoadLink %s deleteOutgoingMovement() "
-                           "called with invalid movement %s" % str(movementToRemove))
+                           "called with invalid movement %s" % str(movementToProhibit))
         
-        if movementToRemove.getIncomingLink() != self:
-            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
+        if movementToProhibit.getIncomingLink() != self:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToProhibit))
 
-        if not movementToRemove in self._outgoingMovements:
+        if not movementToProhibit in self._outgoingMovements:
             raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
-                           "inexisting movement" % str(movementToRemove))
+                           "inexisting movement" % str(movementToProhibit))
 
-        movementToRemove.setProhibited()        
+        movementToProhibit.prohibitAllVehicleClassGroups()        
         
     def _removeOutgoingMovement(self, movementToRemove):
         """

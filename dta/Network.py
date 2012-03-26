@@ -240,7 +240,7 @@ class Network(object):
                 
                     # if it's a U-Turn and we don't want it, set the movement to prohibited
                     if mov.isUTurn() and not includeUTurns:
-                        mov.setProhibited()
+                        mov.prohibitAllVehicleClassGroups()
                 
                     incomingLink.addOutgoingMovement(mov)
                     movements_added += 1

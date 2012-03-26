@@ -131,9 +131,11 @@ if __name__ == '__main__':
     # Generic is an implicit type
 
     # VehicleClassGroups
-    allVCG =                                  dta.VehicleClassGroup(dta.VehicleClassGroup.ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe") 
+    allVCG = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
+        dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
+        "#bebebe")
     sanfranciscoScenario.addVehicleClassGroup(allVCG)
-    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.TRANSIT,    dta.VehicleClassGroup.TRANSIT,                      "#55ff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
     

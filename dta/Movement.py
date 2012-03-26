@@ -542,5 +542,5 @@ class Movement(object):
         """
         Set the movement to prohibited to all vehicles
         """
-        self._permission = Vehicle.getProhibited()
+        self._permission = VehicleClassGroup.getProhibited()
 

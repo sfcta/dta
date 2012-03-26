@@ -74,10 +74,10 @@ class Demand(object):
                 numIntrazonalTrips += trips
                 continue
             if not net.hasCentroidForId(origin):
-                #dta.DtaLogger.error("Origin zone %d does not exist" % origin)
+                dta.DtaLogger.error("Origin zone %d does not exist" % origin)
                 continue 
             if not net.hasCentroidForId(destination):
-                #dta.DtaLogger.error("Destination zone %s does not exist" % destination)
+                dta.DtaLogger.error("Destination zone %s does not exist" % destination)
                 continue
             demand.setValue(endTime, origin, destination, tripsInHourlyFlows)
 

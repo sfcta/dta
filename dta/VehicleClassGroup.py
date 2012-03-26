@@ -21,7 +21,8 @@ class VehicleClassGroup:
     Represents a group (or a set) of VehicleClasses, which are the classNames in :py:class:`VehicleType`.
     """
     CLASSDEFINITION_PROHIBITED = "Prohibited"
-    CLASSDEFINITION_ALL = "All"
+    CLASSDEFINITION_ALL        = "All"
+    TRANSIT                    = "Transit" 
 
     @classmethod
     def getProhibited(cls):
