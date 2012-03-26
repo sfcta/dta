@@ -284,9 +284,9 @@ class TestNetwork(object):
 
         assert link_52.getNumIncomingMovements() == 1
 
-        nose.tools.assert_raises(DtaError, link_51.removeOutgoingMovement, mov)
+        nose.tools.assert_raises(DtaError, link_51._removeOutgoingMovement, mov)
         
-        link_15.removeOutgoingMovement(mov)
+        link_15._removeOutgoingMovement(mov)
         assert link_15.getNumOutgoingMovements() == 0
         assert link_52.getNumIncomingMovements() == 0
 
@@ -1081,4 +1081,20 @@ class TestNetwork(object):
         
         print "num time plans", net.getNumTimePlans()
 
-        
+    def NOtest_movementVehClassGrous(self):
+
+        net = getGearySubNet()
+
+        node = net.getNodeForId(24467)
+
+        i = 0
+        for mov in node.iterMovements():
+            mov.allowVehicleClassGroup("All")
+            if i % 2 == 0:
+                mov.prohibitVehicleClassGroup("Transit")                
+
+            else:
+                mov.allowVehicleClassGroup("Truck")                
+
+        mov.isVehicleClassGroupProhibited("Transit")
+        mov.prohibitAllVehicleClassGroups() 

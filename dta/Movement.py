@@ -16,7 +16,8 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import pdb 
+import pdb
+import copy
 import math
 from itertools import izip
 from collections import defaultdict
@@ -27,7 +28,8 @@ from .Node import Node
 from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import getMidPoint, lineSegmentsCross, polylinesCross
-from .Algorithms import pairwise 
+from .Algorithms import pairwise
+import parameters
 
 class Movement(object):
     """
@@ -41,6 +43,9 @@ class Movement(object):
     DIR_LT      = 'LT'
     DIR_TH      = 'TH'
     PROTECTED_CAPACITY_PER_HOUR_PER_LANE = 1900
+
+    PERMITTED_ALL = "all"
+    PROHIBITED_ALL = "prohibited"
     
     @classmethod
     def simpleMovementFactory(cls, incomingLink, outgoingLink, vehicleClassGroup):
@@ -520,8 +525,23 @@ class Movement(object):
         """
         Return the vehicle class group
         """
-        return self._permission 
+        return self._permission
 
+    def setVehicleClassGroup(self, vehicleClassGroup):
+        """
+        Set the vehicle class group for this movement
+        """
+        self._permission = vehicleClassGroup
 
+    def isProhibitedToAllVehicleClassGroups(self):
+        """
+        Return True if the movement is prohibited for all vehicles
+        """
+        return self._permission.allowsNone()
 
-    
+    def prohibitAllVehicleClassGroups(self):
+        """
+        Set the movement to prohibited to all vehicles
+        """
+        self._permission = Vehicle.getProhibited()
+

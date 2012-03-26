@@ -390,13 +390,20 @@ class RoadLink(Link):
         raise DtaError("coordinatesAlongLink: distance %.2f too long for link %d (%d-%d) with total distance %.2f" % 
                        (distance, self._id, self._startNode.getId(), self._endNode.getId(), total_distance))
 
-    def hasOutgoingMovement(self, nodeId):
+    def hasOutgoingMovement(self, nodeId, vehicleClassGroup=None):
         """
-        Return True if the link has an outgoing movement towards nodeId
+        Return True if the link has an outgoing movement towards nodeId.
+        Please note that the movement may be prohibited.
         """
-        for mov in self.iterOutgoingMovements():
-            if mov.getDestinationNode().getId() == nodeId:
-                return True
+        if not vehicleClassGroup: 
+            for mov in self.iterOutgoingMovements():
+                if mov.getDestinationNode().getId() == nodeId:
+                    return True
+        else:
+            for mov in self.iterOutgoingMovements():
+                if mov.getDestinationNode().getId() == nodeId and \
+                   mov.getVehicleClassGroup() == vehicleClassGroup:
+                    return True            
         return False
     
     def addOutgoingMovement(self, movement):
@@ -413,11 +420,6 @@ class RoadLink(Link):
             raise DtaError("RoadLink %s addOutgoingMovement() called to add already "
                            "existing movement" % str(movement))
 
-        #if not movement.getVehicleClassGroup().allowsAll():
-        #    raise DtaError("RoadLink %s addOutgoingMovement() called to add movement "
-        #                   "with lane permissions %s" % (str(movement),
-        #                                                 str(movement.getVehicleClassGroup())))
-                    
         self._outgoingMovements.append(movement)
         movement.getOutgoingLink()._incomingMovements.append(movement)
     
@@ -432,8 +434,25 @@ class RoadLink(Link):
         Returns the number of incoming movements
         """
         return len(self._incomingMovements)
+    
+    def prohibitOutgoingMovement(self, movementToProhibit):
+        """
+        Prohibit the input movement
+        """
+        if not isinstance(movementToRemove, Movement):
+            raise DtaError("RoadLink %s deleteOutgoingMovement() "
+                           "called with invalid movement %s" % str(movementToRemove))
+        
+        if movementToRemove.getIncomingLink() != self:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
 
-    def removeOutgoingMovement(self, movementToRemove):
+        if not movementToRemove in self._outgoingMovements:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
+                           "inexisting movement" % str(movementToRemove))
+
+        movementToRemove.setProhibited()        
+        
+    def _removeOutgoingMovement(self, movementToRemove):
         """
         Delete the input movement
         """
@@ -448,6 +467,7 @@ class RoadLink(Link):
             raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
                            "inexisting movement" % str(movementToRemove))
 
+        #movementToRemove.setProhibited()
         self._outgoingMovements.remove(movementToRemove)
         movementToRemove.getOutgoingLink()._incomingMovements.remove(movementToRemove)
 

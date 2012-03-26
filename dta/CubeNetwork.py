@@ -434,7 +434,8 @@ ENDRUN
                 continue
             
             # DtaLogger.info("Removing movement %d-%d-%d found in turn prohibition file" % (startNodeId, nodeId, endNodeId))
-            link.removeOutgoingMovement(mov)
+            mov.prohibitAllVehicleClassGroups()
+            #link.removeOutgoingMovement(mov)
             movements_removed += 1
         
         DtaLogger.info("Removed %d movements out of %d found in %s" % (movements_removed, lines_read, fileName))

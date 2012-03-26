@@ -238,8 +238,9 @@ class Network(object):
                 
                     mov = Movement.simpleMovementFactory(incomingLink, outgoingLink, vehicleClassGroup)
                 
-                    # if it's a U-Turn and we don't want it, move on
-                    if mov.isUTurn() and not includeUTurns: continue
+                    # if it's a U-Turn and we don't want it, set the movement to prohibited
+                    if mov.isUTurn() and not includeUTurns:
+                        mov.setProhibited()
                 
                     incomingLink.addOutgoingMovement(mov)
                     movements_added += 1
@@ -522,10 +523,10 @@ class Network(object):
             inMovsToRemove = [mov for mov in linkToRemove.iterIncomingMovements()]
 
             for mov in outMovsToRemove:
-                linkToRemove.removeOutgoingMovement(mov)
+                linkToRemove._removeOutgoingMovement(mov)
 
             for mov in inMovsToRemove:
-                mov.getIncomingLink().removeOutgoingMovement(mov)
+                mov.getIncomingLink()._removeOutgoingMovement(mov)
 
         linkToRemove.getStartNode()._removeOutgoingLink(linkToRemove)
         linkToRemove.getEndNode()._removeIncomingLink(linkToRemove)
@@ -646,7 +647,7 @@ class Network(object):
                                    newLink1,
                                    newLink2,                               
                                    newLink1._freeflowSpeed,
-                                   self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL), 
+                                   self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL), 
                                    newLink1._numLanes,
                                    0,
                                    newLink1._numLanes,
@@ -666,14 +667,14 @@ class Network(object):
                                                  midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
                 prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
-                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
                 link1.addOutgoingMovement(prohibitedMovement)
 
                 link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
                                                  midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getEndNode().getId())
                 prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
-                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
 
                 link1.addOutgoingMovement(prohibitedMovement)
 

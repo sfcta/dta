@@ -1286,7 +1286,6 @@ def mapIntersectionsByName(network, excelCards):
 
     mappedExcelCards = []
 
-    numMappedNodesV1 = 0
     mappedNodes = {}
     for sd in excelCards:
 
@@ -1460,8 +1459,14 @@ def createDynameqSignals(net, cardsWithMovements, startTime, endTime):
         except dta.DtaError, e:
             print str(e)
             continue
-        node.addTimePlan(dPlan) 
+        try:
+            node.addTimePlan(dPlan)
+        except dta.DtaError, e:
+            print str(e)
+            continue
+        
         allPlans.append(dPlan)
+        
     return allPlans
 
 def verifySingleSignal(net, fileName):
@@ -1515,11 +1520,32 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
- 
+
+    pdb.set_trace()
+    for node in net.iterRoadNodes():
+        node._control = 0
+    
+    excelCards = parseExcelCardsToSignalObjects(EXCEL_DIR)
+    assignCardNames(excelCards)
+
+    in2 = open("test.pkl", "rb")
+    data2 = pickle.load(in2)
+    in2.close()    
+
+    for i in range(len(excelCards)):
+        excelCards[i].mappedStreet = data2[i][0]
+        excelCards[i].mappedNodeName = data2[i][1]
+        excelCards[i].mappedNodeId = data2[i][2]
+
+    cards = excelCards 
     cards = getMappedCards(net, EXCEL_DIR) 
     
     cardsWithMovements = mapMovements(cards, net)
-    allPlans = createDynameqSignals(net, cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))     
+    allPlans = createDynameqSignals(net, cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
+
+    pdb.set_trace()
+    print "Num of time plans", len(allPlans)
+    
     net.write(".", "sf_signals")
 
     #dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes_pm")

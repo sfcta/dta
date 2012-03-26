@@ -316,8 +316,7 @@ class DynameqNetwork(Network):
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadNodes(), "ROAD NODES", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumCentroids(), "CENTROIDS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumVirtualNodes(), "VIRTUAL NODES", basefile_object.name))
-        
-        
+                
     def _parseCentroidFromFields(self, fields):
         """
         Interprets fields into a Centroid
@@ -857,16 +856,17 @@ class DynameqNetwork(Network):
                     if ilink.isConnector() and olink.isConnector():
                         if ilink.hasOutgoingMovement(olink.getEndNodeId()):
                             mov = ilink.getOutgoingMovement(olink.getEndNodeId())
-                            ilink.removeOutgoingMovement(mov)
+                            ilink.prohibitOutgoingMovement(mov)
+                            #ilink.removeOutgoingMovement(mov)
                         else:
                             prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
-                                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
                             ilink.addOutgoingMovement(prohibitedMovement) 
                     else:
                         if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
                             
                             allowedMovement = Movement.simpleMovementFactory(ilink, olink,
-                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL))
+                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
                             ilink.addOutgoingMovement(allowedMovement)
                     
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):

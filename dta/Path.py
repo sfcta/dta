@@ -54,7 +54,11 @@ class Path(object):
             if not linkUpstream.hasOutgoingMovement(linkDownstream.getEndNodeId()):
                 raise DtaError("Link %d does not have an outgoing movement towards "
                                "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
-
+            mov = linkUpStream.getOutgoingMovement(linkDownstream.getEndNodeId())
+            if mov.isProhibitedToAllVehicleClassGroups():
+                raise DtaError("Link %d does not allow an outgoing movement towards "
+                               "node %d to any vehicle class" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
+                
         if len(self._links) == 0:
             raise DtaError('A path cannot istantiated without any links')
         self._lengthInMiles = sum([link.getLengthInMiles() for link  in self.iterLinks()])

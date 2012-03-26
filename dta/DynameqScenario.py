@@ -25,6 +25,7 @@ from .Logger import DtaLogger
 from .Scenario import Scenario
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
+import parameters
 
 class DynameqScenario(Scenario):
     """
@@ -102,6 +103,8 @@ class DynameqScenario(Scenario):
             self._readGeneralizedCostFromFields(fields)
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "GENERALIZED_COSTS", scenariofile))
+
+        parameters.vehicleClassGroups = self.vehicleClassGroups
 
     def write(self, dir, file_prefix):
         scenariofile = os.path.join(dir, DynameqScenario.SCENARIO_FILE % file_prefix)

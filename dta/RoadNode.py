@@ -263,6 +263,7 @@ class RoadNode(Node):
         """
         Add the given *timePlan*, an instance of :py:class:`TimePlan`, to the current collection.
         """
+        timePlan.validate()
         self._timePlans[timePlan.getPlanInfo()] = timePlan
         self._control = RoadNode.CONTROL_TYPE_SIGNALIZED
         
