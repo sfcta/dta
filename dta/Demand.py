@@ -57,21 +57,39 @@ class Demand(object):
         timeSpan = endTime - startTime 
         demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
         totTrips = 0
+        numIntrazonalTrips = 0
         inputStream = open(fileName, "r")
         for record in csv.DictReader(inputStream):
             
-            origin = int(record["ORIGIN"])
-            destination = int(record["DESTINATION"])
+            #pdb.set_trace()
+            origin = int(record["O"])
+            destination = int(record["D"])
             trips = float(record[vehicleClassName])
             totTrips += trips
             tripsInHourlyFlows = trips * (60.0 / timeSpan.getMinutes())
             
+            if tripsInHourlyFlows == 0:
+                continue
+            if origin == destination:
+                numIntrazonalTrips += trips
+                continue
+            if not net.hasCentroidForId(origin):
+                #dta.DtaLogger.error("Origin zone %d does not exist" % origin)
+                continue 
+            if not net.hasCentroidForId(destination):
+                #dta.DtaLogger.error("Destination zone %s does not exist" % destination)
+                continue
             demand.setValue(endTime, origin, destination, tripsInHourlyFlows)
 
         #msg = "Read %20.2f %s trips" % (totTrips, vehicleClassName)
        # msg += "     from   cube table %s" % fileName
-
+          
         dta.DtaLogger.info("Read %10.2f %-16s from %s" % (totTrips, "%s TRIPS" % vehicleClassName, fileName))
+        if numIntrazonalTrips > 0:
+            dta.DtaLogger.error("Disregarded intrazonal Trips %f" % numIntrazonalTrips)
+        if totTrips != demand.getTotalNumTrips():
+            dta.DtaLogger.error("The total number of trips in the Cube table transfered to Dynameq are not the same. "
+            ". The Dynameq network may not include all the centroids in the cube network")
         
         #dta.DtaLogger.info(msg)
         
