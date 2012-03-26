@@ -45,14 +45,14 @@ def addShifts(sanfranciscoCubeNet):
     e.g. some local lanes need to be shifted to be outside the through lanes.
     """
     # geary local
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26595,26591).addShifts(3,3)  # Steiner to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26591,26588).addShifts(3,3)  # Fillmore to Webster
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3)  # Steiner to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3)  # Fillmore to Webster
     
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26588,26591).addShifts(3,3)  # Webster to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26591,26597).addShifts(3,3)  # Fillmore to Avery
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26597,26595).addShifts(3,3)  # Avery to Steiner
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3)  # Webster to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3)  # Fillmore to Avery
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3)  # Avery to Steiner
     # HWY 101 N On-Ramp at Marin / Bayshore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(33752,33084).addShifts(1,0)
+    sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0)
     
 def removeHOVStubs(sanfranciscoDynameqNet):
     """
@@ -148,6 +148,10 @@ if __name__ == '__main__':
     
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
+    centroidIds         = range(1,981)  # internal to SF
+    centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
+                        7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
+                        8339,8832])     # externals
     sanfranciscoCubeNet.readNetfile \
       (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
        nodeVariableNames=["N","X","Y","OLD_NODE"],
@@ -164,13 +168,13 @@ if __name__ == '__main__':
                           "VALUETOLL_FLAG","PASSTHRU",
                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
                           ],
-       centroidIds                      = range(1,999),
+       centroidIds                      = centroidIds,
+       useOldNodeForId                  = True,
        nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
        nodeLabelEvalStr                 = "None",
        nodeLevelEvalStr                 = "None",
-       nodeOldNodeStr                   = "int(OLD_NODE)",
        linkReverseAttachedIdEvalStr     = "None", #TODO: fix?
        linkFacilityTypeEvalStr          = "int(FT)",
        linkLengthEvalStr                = "float(DISTANCE)",
@@ -191,7 +195,7 @@ if __name__ == '__main__':
     sanfranciscoCubeNet.applyTurnProhibitions(os.path.join(SF_CUBE_NET_DIR, "turnspm.pen"))
     
     # Read the shape points so curvy streets look curvy
-    sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B", useOldNodeNum=True,
+    sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
                                       skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
                                                                            2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
                                                                            ])
