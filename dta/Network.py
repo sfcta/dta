@@ -491,7 +491,19 @@ class Network(object):
             return True
         except DtaError:
             return False
-
+            
+    def hasCentroidForId(self, nodeId):
+        """
+        Return True if there is a centroid with the given id
+        """
+        try:
+            node = self.getNodeForId(nodeId)
+            if node.isCentroid():
+                return True
+            return False
+        except DtaError:
+            return False
+    
     def hasLinkForId(self, linkId):
         """
         Return True if a link with the given id exists
