@@ -142,8 +142,6 @@ class DynameqNetwork(Network):
         count = 0                        
         for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
             mov = self._parseMovementFromFields(fields)
-            if mov._permission.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
-                continue                               
             self.addMovement(self._parseMovementFromFields(fields))
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))
@@ -868,6 +866,8 @@ class DynameqNetwork(Network):
                             allowedMovement = Movement.simpleMovementFactory(ilink, olink,
                                self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
                             ilink.addOutgoingMovement(allowedMovement)
+                            
+        self._removeDuplicateConnectors()
                     
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
         """
@@ -1107,7 +1107,7 @@ class DynameqNetwork(Network):
         inputStream1.close()
         inputStream2.close()
 
-    def removeDuplicateConnectors(self):
+    def _removeDuplicateConnectors(self):
         """
         Remove duplicate connectors that connect from the
         same centroid to the same road node

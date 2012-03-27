@@ -19,6 +19,7 @@ __license__     = """
 import dta
 import os
 import sys
+import pdb
 
 USAGE = r"""
 
@@ -219,9 +220,6 @@ if __name__ == '__main__':
     # Move the centroid connectors from intersection nodes to midblock locations
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
     sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-
-    # TODO: why is this necessary?  Where these duplicate connectors came from?
-    # sanfranciscoDynameqNet.removeDuplicateConnectors()
     
     # TODO: I think this isn't necessary; but discuss if the soln below is ok
     # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),

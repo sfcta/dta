@@ -275,7 +275,8 @@ class TimePlan(object):
                 if mov.isRightTurn():
                     phaseMovements.add(mov.getId())
 
-        nodeMovements = set([mov.getId() for mov in self._node.iterMovements()])
+        nodeMovements = set([mov.getId() for mov in self._node.iterMovements() 
+                            if not mov.isProhibitedToAllVehicleClassGroups()])
         if phaseMovements != nodeMovements:
             nodeMovsNotInPhaseMovs = nodeMovements.difference(phaseMovements)
             phaseMovsNotInNodeMovs = phaseMovements.difference(nodeMovements)
