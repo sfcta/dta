@@ -150,7 +150,7 @@ if __name__ == '__main__':
     
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
-    centroidIds         = range(1,981)  # internal to SF
+    centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
     centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
                         7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
                         8339,8832])     # externals
