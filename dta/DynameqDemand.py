@@ -29,7 +29,7 @@ from .DtaError import DtaError
 from dta.MultiArray import MultiArray
 from dta.Utils import Time
 
-class Demand(object):
+class DynameqDemand(object):
     """
     Class that represents the demand matrix for a :py:class:`Network`
     """
@@ -55,7 +55,7 @@ class Demand(object):
         """
 
         timeSpan = endTime - startTime 
-        demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
+        demand = DynameqDemand(net, vehicleClassName, startTime, endTime, timeSpan)
         totTrips = 0
         numIntrazonalTrips = 0
         inputStream = open(fileName, "r")
@@ -105,8 +105,8 @@ class Demand(object):
         input.next() # <MATRIX_FILE> 
         input.next() # * comment 
         line = input.next().strip() 
-        if line != Demand.FORMAT_FULL:
-            raise DtaError("I cannot read a demand format other than %s" % Demand.FORMAT_FULL)
+        if line != DynameqDemand.FORMAT_FULL:
+            raise DtaError("I cannot read a demand format other than %s" % DynameqDemand.FORMAT_FULL)
         input.next() # VEH_CLASS 
         line = input.next().strip() 
 
@@ -130,7 +130,7 @@ class Demand(object):
         if timeStep.getMinutes() == 0:
             raise DtaError("The time step defined by the first slice cannot be zero") 
         
-        demand = Demand(net, vehClassName, startTime, endTime, timeStep)
+        demand = DynameqDemand(net, vehClassName, startTime, endTime, timeStep)
         _npyArray = demand._demandTable.getNumpyArray()
 
         timeStepInMin = timeStep.getMinutes()
@@ -214,24 +214,7 @@ class Demand(object):
         if isinstance(time, datetime.datetime):
             return time.hour * 60 + time.minute 
         elif isinstance(time, datetime.timedelta):
-            return time.seconds / 60 
-
-    def _datetimeToMilitaryTime(self, time):
-        """
-        Return an integer that repreents the time of the day e.g. entering 5:00 PM will return 1700
-        """
-        return time.hour * 100 + time.minute
-        
-    def _militaryTimeToDayTime(self, militaryTime):
-        """
-        Return a datetime object that corresponds to the input military time. For example, if the input 
-        military time is 1700 the following datetime object will be returned datetime(17, 0, 0)
-        """        
-        strTime = str(militaryTime)
-        assert 3 <= len(strTime) <= 4
-        minutes = int(strTime[-2:])
-        hours = int(strTime[:-2])
-        return datetime.datetime(Demand.YEAR, Demand.MONTH, Demand.DAY, hours, minutes)         
+            return time.seconds / 60     
                                                
     def setValue(self, timeLabel, origin, destination, value):
         """
@@ -255,10 +238,10 @@ class Demand(object):
         outputStream.write('%s %s %s\n' % ("Created by python DTA by SFCTA", 
                                            datetime.datetime.now().strftime("%x"), 
                                            datetime.datetime.now().strftime("%X")))
-        outputStream.write('%s\n' % Demand.FORMAT_FULL)
-        outputStream.write('%s\n' % Demand.VEHCLASS_SECTION)
+        outputStream.write('%s\n' % DynameqDemand.FORMAT_FULL)
+        outputStream.write('%s\n' % DynameqDemand.VEHCLASS_SECTION)
         outputStream.write('%s\n' % self.vehClassName)
-        outputStream.write('%s\n' % Demand.DATA_SECTION)
+        outputStream.write('%s\n' % DynameqDemand.DATA_SECTION)
         outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
                                          self.endTime.strftime("%H:%M")))
 

@@ -1373,6 +1373,8 @@ def convertSignalToDynameq(node, card, planInfo):
             for dMovStr in dMovsAsStr:
                 n1, n2, n3 = map(int, dMovStr.split())
                 dMov = node.getMovement(n1, n3)
+                if dMov.isProhibitedToAllVehicleClassGroups():
+                    continue
                 phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
                 if not dPhase.hasMovement(phaseMovement.getStartNodeId(),
                                           phaseMovement.getEndNodeId()):                    

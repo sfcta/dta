@@ -142,8 +142,6 @@ class DynameqNetwork(Network):
         count = 0                        
         for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
             mov = self._parseMovementFromFields(fields)
-            if mov._permission.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
-                continue                               
             self.addMovement(self._parseMovementFromFields(fields))
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))

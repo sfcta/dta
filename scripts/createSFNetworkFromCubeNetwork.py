@@ -152,6 +152,7 @@ if __name__ == '__main__':
     centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
                         7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
                         8339,8832])     # externals
+    #TODO: hard coding below
     sanfranciscoCubeNet.readNetfile \
       (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
        nodeVariableNames=["N","X","Y","OLD_NODE"],
