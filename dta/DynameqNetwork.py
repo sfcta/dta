@@ -866,6 +866,8 @@ class DynameqNetwork(Network):
                             allowedMovement = Movement.simpleMovementFactory(ilink, olink,
                                self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
                             ilink.addOutgoingMovement(allowedMovement)
+                            
+        self._removeDuplicateConnectors()
                     
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
         """
@@ -1105,7 +1107,7 @@ class DynameqNetwork(Network):
         inputStream1.close()
         inputStream2.close()
 
-    def removeDuplicateConnectors(self):
+    def _removeDuplicateConnectors(self):
         """
         Remove duplicate connectors that connect from the
         same centroid to the same road node

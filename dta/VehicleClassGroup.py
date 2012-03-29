@@ -22,7 +22,6 @@ class VehicleClassGroup:
     """
     CLASSDEFINITION_PROHIBITED = "Prohibited"
     CLASSDEFINITION_ALL        = "All"
-
     TRANSIT                    = "Transit"           
 
     @classmethod

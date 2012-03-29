@@ -19,6 +19,7 @@ __license__     = """
 import dta
 import os
 import sys
+import pdb
 
 USAGE = r"""
 
@@ -131,9 +132,11 @@ if __name__ == '__main__':
     # Generic is an implicit type
 
     # VehicleClassGroups
-    allVCG =                                  dta.VehicleClassGroup(dta.VehicleClassGroup.ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe") 
+    allVCG = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
+        dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
+        "#bebebe")
     sanfranciscoScenario.addVehicleClassGroup(allVCG)
-    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.TRANSIT,    dta.VehicleClassGroup.TRANSIT,                      "#55ff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
     
@@ -148,7 +151,7 @@ if __name__ == '__main__':
     
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
-    centroidIds         = range(1,981)  # internal to SF
+    centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
     centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
                         7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
                         8339,8832])     # externals
@@ -218,9 +221,6 @@ if __name__ == '__main__':
     # Move the centroid connectors from intersection nodes to midblock locations
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
     sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-
-    # TODO: why is this necessary?  Where these duplicate connectors came from?
-    # sanfranciscoDynameqNet.removeDuplicateConnectors()
     
     # TODO: I think this isn't necessary; but discuss if the soln below is ok
     # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),

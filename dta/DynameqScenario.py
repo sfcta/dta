@@ -103,7 +103,6 @@ class DynameqScenario(Scenario):
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "GENERALIZED_COSTS", scenariofile))
 
-        parameters.vehicleClassGroups = self.vehicleClassGroups
 
     def write(self, dir, file_prefix):
         scenariofile = os.path.join(dir, DynameqScenario.SCENARIO_FILE % file_prefix)

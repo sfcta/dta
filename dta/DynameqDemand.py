@@ -59,9 +59,9 @@ class DynameqDemand(object):
         totTrips = 0
         numIntrazonalTrips = 0
         inputStream = open(fileName, "r")
+    
         for record in csv.DictReader(inputStream):
             
-            #pdb.set_trace()
             origin = int(record["O"])
             destination = int(record["D"])
             trips = float(record[vehicleClassName])
@@ -74,22 +74,21 @@ class DynameqDemand(object):
                 numIntrazonalTrips += trips
                 continue
             if not net.hasCentroidForId(origin):
-                #dta.DtaLogger.error("Origin zone %d does not exist" % origin)
+                dta.DtaLogger.error("Origin zone %d does not exist" % origin)
                 continue 
             if not net.hasCentroidForId(destination):
-                #dta.DtaLogger.error("Destination zone %s does not exist" % destination)
+                dta.DtaLogger.error("Destination zone %s does not exist" % destination)
                 continue
             demand.setValue(endTime, origin, destination, tripsInHourlyFlows)
 
-        #msg = "Read %20.2f %s trips" % (totTrips, vehicleClassName)
-       # msg += "     from   cube table %s" % fileName
+        dta.DtaLogger.info("The cube table has the following fields: %s" % ",".join(record.keys()))
           
         dta.DtaLogger.info("Read %10.2f %-16s from %s" % (totTrips, "%s TRIPS" % vehicleClassName, fileName))
         if numIntrazonalTrips > 0:
             dta.DtaLogger.error("Disregarded intrazonal Trips %f" % numIntrazonalTrips)
-        if totTrips != demand.getTotalNumTrips():
-            dta.DtaLogger.error("The total number of trips in the Cube table transfered to Dynameq are not the same. "
-            ". The Dynameq network may not include all the centroids in the cube network")
+        if totTrips - demand.getTotalNumTrips() - numIntrazonalTrips > 1:
+            dta.DtaLogger.error("The total number of trips in the Cube table transfered to Dynameq is not the same.")
+            
         
         #dta.DtaLogger.info(msg)
         
