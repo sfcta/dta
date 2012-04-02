@@ -40,6 +40,7 @@ from dta.Algorithms import pairwise, any2, all2
 from dta.TimePlan import TimePlan, PlanCollectionInfo
 from dta.Phase import Phase
 from dta.PhaseMovement import PhaseMovement
+from dta.Utils import Time
 
 class ExcelCardError(Exception):
     pass
@@ -480,48 +481,61 @@ def getFirstColumnOfPhasingData(sheet, signalData):
                            "STREET keyword")
 
 def getOperationTimes(sheet, signalData):
-    
+
+
+    dta.DtaLogger.info("I am parsing the operating times for signal %s" % signalData.fileName)
+                       
     i = signalData.topLeftCell[0] + 12
     j = signalData.colPhaseData
 
+    def setTimes(row):
+
+        gotStartTime = False
+        for curColumn in range(signalData.topLeftCell[1], signalData.colPhaseData):
+           cellValue = sheet.cell_value(row, curColumn) 
+           if str(cellValue).strip():
+               if isinstance(cellValue, float):
+                   if cellValue == 1.0:
+                       time = (0, 0, 0, 0, 0, 0)
+                   else:
+                       time = xlrd.xldate_as_tuple(cellValue, 0)
+
+                   if gotStartTime == False:
+                       signalData.signalTiming[strCso].startTime = dta.Time(time[3], time[4]) 
+                       gotStartTime = True
+                   else:
+                       signalData.signalTiming[strCso].endTime = dta.Time(time[3], time[4])
+
+        dta.DtaLogger.info("Operating times are from %s to %s" % (signalData.signalTiming[strCso].startTime, signalData.signalTiming[strCso].endTime))
+        
     found = False
-    for x in range(i-5, i + 7):
-#        myValues = [sheet.cell_value(x, y) for y in range(j, j + 13)]
-#        print "\t", myValues
+    for x in range(i-5, i + 7):        
         for y in range(j, j + 13):
-            #print x, y, str(sheet.cell_value(x, y)).strip().upper()
-            if str(sheet.cell_value(x, y)).strip().upper() == "CYCLE":
+            keyword = str(sheet.cell_value(x, y)).strip().upper()
+            if keyword == "CYCLE":  #find the row with the CYCLE keyword
                 found = True
-                for k in range(x + 1, x + 6):
+                for k in range(x + 1, x + 6): #search six cells down 
                     cso = []
-                    for l in range(y, y + 6):
+                    for l in range(y, y + 6): # search six cells to the right 
                         cellValue = sheet.cell_value(k, l)
+                        if str(cellValue).strip() == "":
+                            continue
                         if cellValue:
                             if isinstance(cellValue, float):
                                 cellValue = str(int(cellValue))
                             elif isinstance(cellValue, int):
                                 cellValue = str(cellValue)
                             cso.append(cellValue)
+
                     strCso = "".join(cso)
-                    if strCso.strip() and strCso in signalData.signalTiming:
-                        #print "CSO is", strCso
-                        gotStartTime = False
-                        for m in range(signalData.topLeftCell[1], signalData.colPhaseData):
-                           cellValue = sheet.cell_value(k, m) 
-                           if str(cellValue).strip():
-                               #print cellValue 
-                               if isinstance(cellValue, float):
-                                   if cellValue == 1.0:
-                                       time = (0, 0, 0, 0, 0, 0)
-                                   else:
-                                       time = xlrd.xldate_as_tuple(cellValue, 0)
-                                   #print "\t", time
-                                   if gotStartTime == False:
-                                       signalData.signalTiming[strCso].startTime = dta.Time(time[3], time[4]) 
-                                       gotStartTime = True
-                                   else:
-                                       signalData.signalTiming[strCso].endTime = dta.Time(time[3], time[4])
-                        #print signalData.signalTiming[strCso]
+                    if not strCso:
+                        continue
+                    dta.DtaLogger.info("I found CSO: %s" % strCso)                    
+                    if not strCso in signalData.signalTiming:
+                        dta.DtaLogger.error("ERROR CSO %s does not exist in the timing section. Please manually correct the signal" % strCso)
+                        continue
+                    setTimes(k)  #set the start and end times
+                    
     if found == False:
         raise ParsingCardError("I cannot find start and end times") 
 
@@ -1351,6 +1365,7 @@ def convertSignalToDynameq(node, card, planInfo):
     startTime, endTime = planInfo.getTimePeriod()
     cso = card.selectCSO(startTime, endTime)
     if not cso:
+        dta.dtaLogger.error("Unable to find CSO") 
         raise dta.DtaError("Unable to find CSO")
     
     offset = card.signalTiming[cso].offset
@@ -1515,15 +1530,13 @@ if __name__ == "__main__":
     dta.Node.COORDINATE_UNITS   = "feet"
     dta.RoadLink.LENGTH_UNITS   = "miles"
 
-
     dta.setupLogging("importExcelSignals.INFO.log", "importExcelSignals.DEBUG.log", logToConsole=True)
-    
+
     scenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
 
-    pdb.set_trace()
     for node in net.iterRoadNodes():
         node._control = 0
     
@@ -1545,9 +1558,7 @@ if __name__ == "__main__":
     cardsWithMovements = mapMovements(cards, net)
     allPlans = createDynameqSignals(net, cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
 
-    pdb.set_trace()
-    print "Num of time plans", len(allPlans)
-    
+    print "Num of time plans", len(allPlans)    
     net.write(".", "sf_signals")
 
     #dta.Utils.plotSignalAttributes(net, 1530, 1830, "signalAttributes_pm")

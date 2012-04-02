@@ -187,6 +187,30 @@ class Path(object):
         for link in self.iterLinks():
             yield link.getStartNode()
         yield link.getEndNode()
+
+    def getCrossStreetName(self, node):
+        """
+        Return the cross street name for the node
+        that belongs to the path
+        """
+        if node == self.getLastNode():
+            l = self.getLastLink()
+            n = node
+        else:
+            for n, l in izip(self.iterNodes(), self.iterLinks()):            
+                if n == node:
+                    break
+            else:
+                raise DtaError("Node %d does not belong to the path" % node.getId())
+
+        for iLink in n.iterIncomingLinks():
+            if iLink.getStreetName() != l.getStreetName():
+                return iLink.getStreetName()
+        else:
+            return "" 
+            
+            
+      
     
 
 

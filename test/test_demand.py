@@ -25,7 +25,7 @@ import nose.tools
 import numpy as np
 
 import dta
-from dta.Demand import Demand
+from dta.DynameqDemand import DynameqDemand
 from dta.Utils import Time
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.DynameqScenario import DynameqScenario 
@@ -63,7 +63,7 @@ class TestDemand:
         startTime = Time(8, 30)
         endTime = Time(9, 30)
         timeStep = Time(0, 15)
-        demand = Demand(net, Demand.DEFAULT_VEHCLASS, startTime, endTime, timeStep)
+        demand = DynameqDemand(net, DynameqDemand.DEFAULT_VEHCLASS, startTime, endTime, timeStep)
 
         print [tp for tp in demand.iterTimePeriods()]
         
@@ -76,7 +76,7 @@ class TestDemand:
 
         net = getTestNet() 
 
-        demand = Demand.read(net, fileName)
+        demand = DynameqDemand.read(net, fileName)
         assert demand.getNumSlices() == 4
 
         assert demand.getValue(Time(0, 15), 56, 8) == 4000
@@ -119,13 +119,13 @@ class TestDemand:
                                 'dynameqNetwork_gearySubset', 'gearysubnet_matx.dqt')
 
         net = getTestNet() 
-        demand = Demand.read(net, fileName)
+        demand = DynameqDemand.read(net, fileName)
 
         # TODO: this requires subdir test to exist.  Write this to tempfile.mkdtemp()
         outFileName = "test/testDemand.dqt" 
 
         demand.write(outFileName)
-        demand2 = Demand.read(net, outFileName)
+        demand2 = DynameqDemand.read(net, outFileName)
         assert demand == demand2
         os.remove("test/testDemand.dqt")
 
@@ -136,7 +136,7 @@ class TestDemand:
         
         net = getTestNet()
 
-        demand = Demand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
+        demand = DynameqDemand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
                                      
         assert demand.getValue(Time(8, 0), 2, 6) == 1000
         assert demand.getValue(Time(8, 0), 6, 2) == 4000
@@ -147,15 +147,10 @@ class TestDemand:
                                 'dynameqNetwork_gearySubset', 'cubeTestDemand.txt')
         
         net = getTestNet()
-        demand = Demand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
+        demand = DynameqDemand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
                                      
         d2 = demand.applyTimeOfDayFactors([0.5, 0.5])
 
         assert d2.getValue(730, 2, 6) == 500
         assert d2.getValue(800, 2, 6) == 500
 
-# Create the demand matrix 
-# remove all the very short links. This is the only way to move forward.
-# you may need to write the algoritm that finds invalid demand pairs 
-# make a run. Maybe you should make a simple run first 
-# you will need to apply the algorithm that takes care of the overlapping links 
