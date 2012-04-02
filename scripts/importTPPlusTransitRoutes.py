@@ -85,6 +85,8 @@ class TPPlus2Dynameq(object):
         dNodeSequence = []
         for tNode in tRoute.iterTransitNodes():
             if not dynameqNet.hasNodeForId(tNode.nodeId):
+                errorMessage = ('Node id %d does not exist in the Dynameq network' % tNode.nodeId)
+                print 'Node ',tNode.nodeId,' does not exist.'
                 continue
             dNode = dynameqNet.getNodeForId(tNode.nodeId)
             dNodeSequence.append(dNode)
@@ -103,7 +105,7 @@ class TPPlus2Dynameq(object):
 
         dRoute = dta.DynameqTransitLine.TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
         for dNodeA, dNodeB in izip(dNodeSequence, dNodeSequence[1:]):
-            
+               
             if dynameqNet.hasLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId()):
                 dLink = dynameqNet.getLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId())
                 dSegment = dRoute.addSegment(dLink, 0)
@@ -122,11 +124,16 @@ class TPPlus2Dynameq(object):
                         continue
 
                     pathNodes = ShortestPaths.getShortestPathBetweenNodes(dNodeA, dNodeB)
-
+                    numnewlinks = 0
                     for pathNodeA, pathNodeB in izip(pathNodes, pathNodes[1:]):
+                        numnewlinks+=1
                         dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                         dSegment = dRoute.addSegment(dLink, 0)
-                        print 'Segment added = ', pathNodeA.getId(), pathNodeB.getId()
+                        if dNodeA.getId()==52458:
+                            print 'New Link Added = ',dLink.getId()
+
+                    #if numnewlinks>2:
+                     #   print 'Number of new links added = ',numnewlinks
 
                     tNodeB = tRoute.getTransitNode(pathNodeB.getId())
                     if tNodeB.isStop:
@@ -154,9 +161,9 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
-    #projectFolder2 = "C:/SFCTA/dta/testdata/ReneeTransitTest/"
-    #net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
-    #net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
+    projectFolder2 = "C:/SFCTA/dta/testdata/ReneeTransitTest/"
+    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
+    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
     for tpplusRoute in dta.TPPlusTransitRoute.read(net, TRANSIT_LINES):
 
