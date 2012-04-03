@@ -25,11 +25,11 @@ import numpy as np
 
 import dta
 from dta.Algorithms import hasPath 
-from .DtaError import DtaError
+from dta.DtaError import DtaError
 from dta.MultiArray import MultiArray
 from dta.Utils import Time
 
-class DynameqDemand(object):
+class Demand(object):
     """
     Class that represents the demand matrix for a :py:class:`Network`
     """
@@ -55,7 +55,7 @@ class DynameqDemand(object):
         """
 
         timeSpan = endTime - startTime 
-        demand = DynameqDemand(net, vehicleClassName, startTime, endTime, timeSpan)
+        demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
         totTrips = 0
         numIntrazonalTrips = 0
         inputStream = open(fileName, "r")
@@ -88,15 +88,15 @@ class DynameqDemand(object):
             dta.DtaLogger.error("Disregarded intrazonal Trips %f" % numIntrazonalTrips)
         if totTrips - demand.getTotalNumTrips() - numIntrazonalTrips > 1:
             dta.DtaLogger.error("The total number of trips in the Cube table transfered to Dynameq is not the same.")
-            
-        
-        #dta.DtaLogger.info(msg)
-        
+                    
         return demand
 
     @classmethod
-    def read(cls, net, fileName):
-
+    def readDynameqTable(cls, net, fileName):
+        """
+        Read the dynameq demand stored in the fileName that pertains to the 
+        dynameq network a :py:class:`DynameqNetwork`instance
+        """
         input = open(fileName, "rb")
         
         input.next() # <DYNAMEQ>
@@ -104,8 +104,8 @@ class DynameqDemand(object):
         input.next() # <MATRIX_FILE> 
         input.next() # * comment 
         line = input.next().strip() 
-        if line != DynameqDemand.FORMAT_FULL:
-            raise DtaError("I cannot read a demand format other than %s" % DynameqDemand.FORMAT_FULL)
+        if line != Demand.FORMAT_FULL:
+            raise DtaError("I cannot read a demand format other than %s" % Demand.FORMAT_FULL)
         input.next() # VEH_CLASS 
         line = input.next().strip() 
 
@@ -129,7 +129,7 @@ class DynameqDemand(object):
         if timeStep.getMinutes() == 0:
             raise DtaError("The time step defined by the first slice cannot be zero") 
         
-        demand = DynameqDemand(net, vehClassName, startTime, endTime, timeStep)
+        demand = Demand(net, vehClassName, startTime, endTime, timeStep)
         _npyArray = demand._demandTable.getNumpyArray()
 
         timeStepInMin = timeStep.getMinutes()
@@ -148,7 +148,14 @@ class DynameqDemand(object):
         return demand
 
     def __init__(self, net, vehClassName, startTime, endTime, timeStep):
-
+        """
+        Constructor that initializes an empty Demand table that has three dimensions:
+        time, origin taz, destination taz. 
+        
+        *net* is a dta.Network instance
+        *vehClassName* is a string 
+        *startTime*, *endTime* and *timeStep* are dta.Utils.Time instancess 
+        """
         self._net = net 
 
         if startTime >= endTime:
@@ -227,7 +234,7 @@ class DynameqDemand(object):
         """
         return self._demandTable[timeLabel, origin, destination]
 
-    def write(self, fileName):
+    def writeDynameqTable(self, fileName):
         """
         Write the demand in the dynameq format
         """
@@ -237,10 +244,10 @@ class DynameqDemand(object):
         outputStream.write('%s %s %s\n' % ("Created by python DTA by SFCTA", 
                                            datetime.datetime.now().strftime("%x"), 
                                            datetime.datetime.now().strftime("%X")))
-        outputStream.write('%s\n' % DynameqDemand.FORMAT_FULL)
-        outputStream.write('%s\n' % DynameqDemand.VEHCLASS_SECTION)
+        outputStream.write('%s\n' % Demand.FORMAT_FULL)
+        outputStream.write('%s\n' % Demand.VEHCLASS_SECTION)
         outputStream.write('%s\n' % self.vehClassName)
-        outputStream.write('%s\n' % DynameqDemand.DATA_SECTION)
+        outputStream.write('%s\n' % Demand.DATA_SECTION)
         outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
                                          self.endTime.strftime("%H:%M")))
 

@@ -35,39 +35,34 @@ dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
 dta.RoadLink.LENGTH_UNITS   = "miles"
 
+
+mainFolder = os.path.join(os.path.dirname(__file__), "..", "testdata") 
+
 def getTestScenario(): 
 
+    projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
-    scenario = DynameqScenario(Time(0,0), Time(4,0))
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
     scenario.read(projectFolder, prefix) 
 
     return scenario 
-
-def getGearyNet():
-
-    # TODO: checkin this test network (or add to existing test networks?) and remove this absolute path stuff
-    gearynetDta = DynameqNetwork(scenario=getTestScenario())
-    gearynetDta.read(dir="/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary", file_prefix="Base")
-    
-    return gearynetDta
 
 class TestControl:
 
     def test_one(self):
 
-        net = getGearyNet()
+        net = getTestScenario()
 
         #pdb.set_trace() 
 
         # TODO: write the test output file to a tempfile.mkdtemp()
-        fileName = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/Base_ctrl.dqt"               
-        projectFolder = "/Users/michalis/Documents/workspace/dta/dev/testdata/dynameqNetwork_geary/test"
-        net.write(dir=projectFolder, file_prefix="Test")
+
+        net.write(dir=".", file_prefix="Test")
 
         #The following code finds the differences between the two control files the original and
         #the one created by the code 
-        
+        fileName = os.path.join(os.path.dirname(__file__), "..", "testdata", 'dynameqNetwork_gearySubset', "smallTestNet_ctrl.dqt") 
         originalFile = os.path.join(fileName)
         copyFile = os.path.join(projectFolder, "Test_ctrl.dqt")
         original = open(fileName, "r").readlines()

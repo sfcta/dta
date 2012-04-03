@@ -32,7 +32,7 @@ class Scenario(object):
         """
         Constructor.
         
-        *startTime* and *endTime* are datetime.datetime instances.
+        *startTime* and *endTime* are dta.Utils.Time instances.
         """
         self.startTime = startTime
         self.endTime   = endTime

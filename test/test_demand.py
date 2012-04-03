@@ -20,12 +20,11 @@ import dta
 import os
 import pdb
 
-import la
 import nose.tools 
 import numpy as np
 
 import dta
-from dta.DynameqDemand import DynameqDemand
+from dta.Demand import Demand
 from dta.Utils import Time
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.DynameqScenario import DynameqScenario 
@@ -63,7 +62,7 @@ class TestDemand:
         startTime = Time(8, 30)
         endTime = Time(9, 30)
         timeStep = Time(0, 15)
-        demand = DynameqDemand(net, DynameqDemand.DEFAULT_VEHCLASS, startTime, endTime, timeStep)
+        demand = Demand(net, Demand.DEFAULT_VEHCLASS, startTime, endTime, timeStep)
 
         print [tp for tp in demand.iterTimePeriods()]
         
@@ -76,7 +75,7 @@ class TestDemand:
 
         net = getTestNet() 
 
-        demand = DynameqDemand.read(net, fileName)
+        demand = Demand.readDynameqTable(net, fileName)
         assert demand.getNumSlices() == 4
 
         assert demand.getValue(Time(0, 15), 56, 8) == 4000
@@ -89,28 +88,6 @@ class TestDemand:
         assert not demand.getValue(Time(0, 15), 56, 8) == 4000
         assert demand.getValue(Time(0, 15), 56, 8) == 4001
 
-    def test_larry(self):
-        
-        x = np.array([[[1,2], [3,4]],[[1,2], [3,4]]])
-        label = [['a', 'b'], ['c', 'd'], ['e', 'f']]
-        m = la.larry(x, label, dtype=float)
-
-        assert m.lix[['a'], ['d'], ['e']] == 3.0
-
-        y = np.array([[[1,2], [3,4]],[[1,2], [3,4]]])
-        label2 = [['a', 'b'], ['c', 'd'], ['e', 'f']]
-        m2 = la.larry(y, label2, dtype=float)
-
-        #nose.tools.set_trace()
-
-        m1 = m.copyx()
-        m2 = m2.copyx() 
-
-        result = m1 == m2
-    
-        for elem in result.flat:
-            assert elem 
-
     def test_write(self):
         """
         """
@@ -119,13 +96,13 @@ class TestDemand:
                                 'dynameqNetwork_gearySubset', 'gearysubnet_matx.dqt')
 
         net = getTestNet() 
-        demand = DynameqDemand.read(net, fileName)
+        demand = Demand.readDynameqTable(net, fileName)
 
         # TODO: this requires subdir test to exist.  Write this to tempfile.mkdtemp()
         outFileName = "test/testDemand.dqt" 
 
-        demand.write(outFileName)
-        demand2 = DynameqDemand.read(net, outFileName)
+        demand.writeDynameqTable(outFileName)
+        demand2 = Demand.readDynameqTable(net, outFileName)
         assert demand == demand2
         os.remove("test/testDemand.dqt")
 
@@ -136,7 +113,7 @@ class TestDemand:
         
         net = getTestNet()
 
-        demand = DynameqDemand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
+        demand = Demand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
                                      
         assert demand.getValue(Time(8, 0), 2, 6) == 1000
         assert demand.getValue(Time(8, 0), 6, 2) == 4000
@@ -147,7 +124,7 @@ class TestDemand:
                                 'dynameqNetwork_gearySubset', 'cubeTestDemand.txt')
         
         net = getTestNet()
-        demand = DynameqDemand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
+        demand = Demand.readCubeODTable(fileName, net, "AUTO", Time(7,0), Time(8, 0))
                                      
         d2 = demand.applyTimeOfDayFactors([0.5, 0.5])
 
