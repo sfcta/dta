@@ -969,9 +969,7 @@ class TestNetwork(object):
     def test_deleteCentroid(self):
 
         net = getGearySubNet()
-        
-        net.writeNodesToShp("/Users/michalis/Dropbox/tmp/testNodes")
-        net.writeLinksToShp("/Users/michalis/Dropbox/tmp/testLinks")
+    
 
         cent = net.getNodeForId(9)
         net.removeNode(cent)

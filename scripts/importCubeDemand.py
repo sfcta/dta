@@ -66,9 +66,9 @@ if __name__ == "__main__":
     endTime   = dta.Utils.Time.readFromString(END_TIME)
     timeStep  = dta.Utils.Time.readFromString(TIME_STEP)
 
-    demand = dta.DynameqDemand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, startTime, endTime)
+    demand = dta.Demand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, startTime, endTime)
 
-    demand.write(OUTPUT_DYNAMEQ_TABLE)
+    demand.writeDynameqTable(OUTPUT_DYNAMEQ_TABLE)
 
 
     dta.DtaLogger.info("Wrote%10.2f %-16s   to %s" % (demand.getTotalNumTrips(),
