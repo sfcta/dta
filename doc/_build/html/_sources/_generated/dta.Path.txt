@@ -14,6 +14,7 @@ dta.Path
    .. autosummary::
    
       ~Path.__init__
+      ~Path.getCrossStreetName
       ~Path.getFirstLink
       ~Path.getFirstNode
       ~Path.getLastLink

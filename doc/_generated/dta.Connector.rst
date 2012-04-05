@@ -29,6 +29,7 @@ dta.Connector
       ~Connector.getEndNodeId
       ~Connector.getFacilityType
       ~Connector.getFreeFlowSpeedInMPH
+      ~Connector.getGroup
       ~Connector.getId
       ~Connector.getIid
       ~Connector.getLabel
@@ -66,8 +67,9 @@ dta.Connector
       ~Connector.isVirtualLink
       ~Connector.iterIncomingMovements
       ~Connector.iterOutgoingMovements
-      ~Connector.removeOutgoingMovement
+      ~Connector.prohibitOutgoingMovement
       ~Connector.setEndNode
+      ~Connector.setGroup
       ~Connector.setLabel
       ~Connector.setLength
       ~Connector.setNumLanes

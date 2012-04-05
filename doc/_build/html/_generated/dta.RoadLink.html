@@ -55,12 +55,12 @@
 <h1>dta.RoadLink<a class="headerlink" href="#dta-roadlink" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.RoadLink">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.RoadLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.RoadLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
 <p>A RoadLink in a network.  Both nodes must be RoadNodes.</p>
 <dl class="method">
 <dt id="dta.RoadLink.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.RoadLink.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.RoadLink.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <blockquote>
 <div><ul class="simple">
@@ -81,6 +81,10 @@ on the link.  May vary over time with LinkEvents</li>
 <li><em>roundAbout</em> is true/false or 1/0</li>
 <li><em>level</em> is an indicator to attribute vertical alignment/elevation. If None passed, will use default.</li>
 <li><em>label</em> is a link label. If None passed, will use default.</li>
+<li><em>group</em> is an integer that identifies one or more links; groups are used for calculation of approach
+delay to an intersection.  So all vehicles approaching on the links in one group experience the
+same approach delay.  (todo: example of how this should be used?)  If -1 is passed, no group will be
+used.</li>
 </ul>
 </div></blockquote>
 </dd></dl>
@@ -132,6 +136,9 @@ on the link.  May vary over time with LinkEvents</li>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getFreeFlowSpeedInMPH" title="dta.RoadLink.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getFreeFlowSpeedInMPH</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.getGroup" title="dta.RoadLink.getGroup"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getGroup</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getId" title="dta.RoadLink.getId"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getId</span></tt></a></td>
@@ -239,7 +246,10 @@ on the link.  May vary over time with LinkEvents</li>
 <tr><td><a class="reference internal" href="#dta.RoadLink.iterOutgoingMovements" title="dta.RoadLink.iterOutgoingMovements"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.iterOutgoingMovements</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.RoadLink.removeOutgoingMovement" title="dta.RoadLink.removeOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.removeOutgoingMovement</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.RoadLink.prohibitOutgoingMovement" title="dta.RoadLink.prohibitOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.prohibitOutgoingMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.setGroup" title="dta.RoadLink.setGroup"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.setGroup</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.setLabel" title="dta.RoadLink.setLabel"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.setLabel</span></tt></a></td>
@@ -272,9 +282,33 @@ on the link.  May vary over time with LinkEvents</li>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="dta.RoadLink.DIR_EB">
+<tt class="descname">DIR_EB</tt><a class="headerlink" href="#dta.RoadLink.DIR_EB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eastbound return value for <a class="reference internal" href="#dta.RoadLink.getDirection" title="dta.RoadLink.getDirection"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getDirection()</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadLink.DIR_NB">
+<tt class="descname">DIR_NB</tt><a class="headerlink" href="#dta.RoadLink.DIR_NB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Northbound return value for <a class="reference internal" href="#dta.RoadLink.getDirection" title="dta.RoadLink.getDirection"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getDirection()</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadLink.DIR_SB">
+<tt class="descname">DIR_SB</tt><a class="headerlink" href="#dta.RoadLink.DIR_SB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Southbound return value for <a class="reference internal" href="#dta.RoadLink.getDirection" title="dta.RoadLink.getDirection"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getDirection()</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.RoadLink.DIR_WB">
+<tt class="descname">DIR_WB</tt><a class="headerlink" href="#dta.RoadLink.DIR_WB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Westbound return value for <a class="reference internal" href="#dta.RoadLink.getDirection" title="dta.RoadLink.getDirection"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getDirection()</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dta.RoadLink.LENGTH_UNITS">
 <tt class="descname">LENGTH_UNITS</tt><a class="headerlink" href="#dta.RoadLink.LENGTH_UNITS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Static variable representing the nits of the length variable
+<dd><p>Static variable representing the units of the length variable
 Should be <tt class="docutils literal"><span class="pre">kilometers</span></tt> or <tt class="docutils literal"><span class="pre">miles</span></tt></p>
 </dd></dl>
 
@@ -352,8 +386,8 @@ return a tuple of two points (each one being a tuple of two floats) representing
 <dl class="method">
 <dt id="dta.RoadLink.getDirection">
 <tt class="descname">getDirection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getDirection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the direction of the link as one of 
-EB, NB, WB, EB</p>
+<dd><p>Returns the direction of the link as one of <a class="reference internal" href="#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>,  <a class="reference internal" href="#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -378,6 +412,12 @@ EB, NB, WB, EB</p>
 <dt id="dta.RoadLink.getFreeFlowSpeedInMPH">
 <tt class="descname">getFreeFlowSpeedInMPH</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getFreeFlowSpeedInMPH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the free flow speed in MPH</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.getGroup">
+<tt class="descname">getGroup</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the group number fo the link</p>
 </dd></dl>
 
 <dl class="method">
@@ -548,8 +588,9 @@ See addShifts() for details.</p>
 
 <dl class="method">
 <dt id="dta.RoadLink.hasOutgoingMovement">
-<tt class="descname">hasOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadLink.hasOutgoingMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the link has an outgoing movement towards nodeId</p>
+<tt class="descname">hasOutgoingMovement</tt><big>(</big><em>nodeId</em>, <em>vehicleClassGroup=None</em><big>)</big><a class="headerlink" href="#dta.RoadLink.hasOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the link has an outgoing movement towards nodeId.
+Please note that the movement may be prohibited.</p>
 </dd></dl>
 
 <dl class="method">
@@ -602,9 +643,15 @@ See <a class="reference internal" href="#dta.RoadLink.getAngle" title="dta.RoadL
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.RoadLink.removeOutgoingMovement">
-<tt class="descname">removeOutgoingMovement</tt><big>(</big><em>movementToRemove</em><big>)</big><a class="headerlink" href="#dta.RoadLink.removeOutgoingMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete the input movement</p>
+<dt id="dta.RoadLink.prohibitOutgoingMovement">
+<tt class="descname">prohibitOutgoingMovement</tt><big>(</big><em>movementToProhibit</em><big>)</big><a class="headerlink" href="#dta.RoadLink.prohibitOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prohibit the input movement</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.setGroup">
+<tt class="descname">setGroup</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#dta.RoadLink.setGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the group number fo the link</p>
 </dd></dl>
 
 <dl class="method">

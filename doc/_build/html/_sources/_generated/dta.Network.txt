@@ -21,6 +21,7 @@ dta.Network
       ~Network.addPlanCollectionInfo
       ~Network.areIDsUnique
       ~Network.deepcopy
+      ~Network.findMovementForRoadLabels
       ~Network.getLinkForId
       ~Network.getLinkForNodeIdPair
       ~Network.getLinkType
@@ -42,6 +43,7 @@ dta.Network
       ~Network.getScenario
       ~Network.handleOverlappingLinks
       ~Network.handleShortLinks
+      ~Network.hasCentroidForId
       ~Network.hasLinkForId
       ~Network.hasLinkForNodeIdPair
       ~Network.hasNodeForId

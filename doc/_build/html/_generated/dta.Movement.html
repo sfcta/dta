@@ -99,9 +99,6 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.getCenterLine" title="dta.Movement.getCenterLine"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getCenterLine</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getCountList" title="dta.Movement.getCountList"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getCountList</span></tt></a></td>
-<td></td>
-</tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getDestinationNode" title="dta.Movement.getDestinationNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getDestinationNode</span></tt></a></td>
 <td></td>
 </tr>
@@ -174,6 +171,9 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.isLeftTurn" title="dta.Movement.isLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isLeftTurn</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Movement.isProhibitedToAllVehicleClassGroups" title="dta.Movement.isProhibitedToAllVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isProhibitedToAllVehicleClassGroups</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Movement.isRightTurn" title="dta.Movement.isRightTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isRightTurn</span></tt></a></td>
 <td></td>
 </tr>
@@ -183,7 +183,7 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.isUTurn" title="dta.Movement.isUTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isUTurn</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setCountsFromCountDracula" title="dta.Movement.setCountsFromCountDracula"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setCountsFromCountDracula</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Movement.prohibitAllVehicleClassGroups" title="dta.Movement.prohibitAllVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.prohibitAllVehicleClassGroups</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.setPenaltyInMin" title="dta.Movement.setPenaltyInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setPenaltyInMin</span></tt></a></td>
@@ -196,6 +196,9 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.setTimeVaryingCosts" title="dta.Movement.setTimeVaryingCosts"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setTimeVaryingCosts</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setVehicleClassGroup" title="dta.Movement.setVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setVehicleClassGroup</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.simpleMovementFactory" title="dta.Movement.simpleMovementFactory"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.simpleMovementFactory</span></tt></a></td>
@@ -213,12 +216,6 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <dt id="dta.Movement.getCenterLine">
 <tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getCenterLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of points represeting the movement</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.Movement.getCountList">
-<tt class="descname">getCountList</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getCountList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns countslist saved for the movement</p>
 </dd></dl>
 
 <dl class="method">
@@ -372,6 +369,12 @@ UTURN, RT, RT2, LT2, LT, TH</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Movement.isProhibitedToAllVehicleClassGroups">
+<tt class="descname">isProhibitedToAllVehicleClassGroups</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.isProhibitedToAllVehicleClassGroups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the movement is prohibited for all vehicles</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Movement.isRightTurn">
 <tt class="descname">isRightTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.isRightTurn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the movement is a right turn</p>
@@ -390,9 +393,9 @@ UTURN, RT, RT2, LT2, LT, TH</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Movement.setCountsFromCountDracula">
-<tt class="descname">setCountsFromCountDracula</tt><big>(</big><em>countsListFromCountDracula</em><big>)</big><a class="headerlink" href="#dta.Movement.setCountsFromCountDracula" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts the countlist</p>
+<dt id="dta.Movement.prohibitAllVehicleClassGroups">
+<tt class="descname">prohibitAllVehicleClassGroups</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.prohibitAllVehicleClassGroups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the movement to prohibited to all vehicles</p>
 </dd></dl>
 
 <dl class="method">
@@ -420,6 +423,12 @@ input time period</p>
 <dd><p>Inputs:timeVaryingCosts is an array containing the cost 
 of the edge in each time period. timeStep is the interval 
 length in minutes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.setVehicleClassGroup">
+<tt class="descname">setVehicleClassGroup</tt><big>(</big><em>vehicleClassGroup</em><big>)</big><a class="headerlink" href="#dta.Movement.setVehicleClassGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the vehicle class group for this movement</p>
 </dd></dl>
 
 <dl class="classmethod">

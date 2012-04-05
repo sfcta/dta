@@ -100,6 +100,9 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <tr><td><a class="reference internal" href="#dta.Network.deepcopy" title="dta.Network.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">Network.deepcopy</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Network.findMovementForRoadLabels" title="dta.Network.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">Network.findMovementForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Network.getLinkForId" title="dta.Network.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.getLinkForId</span></tt></a></td>
 <td></td>
 </tr>
@@ -161,6 +164,9 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Network.handleShortLinks" title="dta.Network.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Network.handleShortLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Network.hasCentroidForId" title="dta.Network.hasCentroidForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.hasCentroidForId</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Network.hasLinkForId" title="dta.Network.hasLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">Network.hasLinkForId</span></tt></a></td>
@@ -247,7 +253,7 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <dt id="dta.Network.addAllMovements">
 <tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.Network.addAllMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
-makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance) 
+makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance)
 from each incoming link to each outgoing link 
 (not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
 <p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
@@ -299,6 +305,22 @@ and that the id is not already used; stores it.</p>
 constituent elements into self (Nodes and Links and Movements, 
 not the scenario). If the originNetwork contains an element 
 with an already existing id this method will throw an exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.findMovementForRoadLabels">
+<tt class="descname">findMovementForRoadLabels</tt><big>(</big><em>incoming_street_label</em>, <em>incoming_direction</em>, <em>outgoing_street_label</em>, <em>outgoing_direction</em>, <em>intersection_street_label=None</em>, <em>roadnode_id=None</em><big>)</big><a class="headerlink" href="#dta.Network.findMovementForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to find the movement from the given <em>incoming_street_label</em> and <em>incoming_direction</em>
+to the given <em>outgoing_street_label</em> and <em>outgoing_direction</em>.  If this is a through movement or a U-Turn
+(e.g. <em>incoming_street_label</em> == <em>outgoing_street_label</em>), then <em>intersection_street_label</em> is also required
+to identify the intersection.</p>
+<p><em>incoming_street_label</em> and <em>outgoing_street_label</em> are checked against <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels
+and should be upper-case.</p>
+<p><em>incoming_direction</em> and <em>outgoing_direction</em> are one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.</p>
+<p>Pass optional <em>roadnode_id</em> to speed things up but if the movement is not found for that <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>,
+this method will fall back and try to find the movement based on the labels.</p>
+<p>Raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> on failure, returns a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instance on success.</p>
 </dd></dl>
 
 <dl class="method">
@@ -451,6 +473,12 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 <li>if <em>setLength</em> then adjust the length attribute to the minimum</li>
 </ul>
 <p>Note that <em>minLength</em> and <em>setLength</em> are both in the units specified by <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.hasCentroidForId">
+<tt class="descname">hasCentroidForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Network.hasCentroidForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a centroid with the given id</p>
 </dd></dl>
 
 <dl class="method">

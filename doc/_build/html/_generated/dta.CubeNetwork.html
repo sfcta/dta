@@ -100,6 +100,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.deepcopy" title="dta.CubeNetwork.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.deepcopy</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.findMovementForRoadLabels" title="dta.CubeNetwork.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.findMovementForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.getLinkForId" title="dta.CubeNetwork.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.getLinkForId</span></tt></a></td>
 <td></td>
 </tr>
@@ -161,6 +164,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.handleShortLinks" title="dta.CubeNetwork.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.handleShortLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.hasCentroidForId" title="dta.CubeNetwork.hasCentroidForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.hasCentroidForId</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.hasLinkForId" title="dta.CubeNetwork.hasLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.hasLinkForId</span></tt></a></td>
@@ -259,7 +265,7 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <dt id="dta.CubeNetwork.addAllMovements">
 <tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addAllMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
-makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance) 
+makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance)
 from each incoming link to each outgoing link 
 (not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
 <p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
@@ -317,6 +323,21 @@ and that the id is not already used; stores it.</p>
 constituent elements into self (Nodes and Links and Movements, 
 not the scenario). If the originNetwork contains an element 
 with an already existing id this method will throw an exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CubeNetwork.findMovementForRoadLabels">
+<tt class="descname">findMovementForRoadLabels</tt><big>(</big><em>incoming_street_label</em>, <em>incoming_direction</em>, <em>outgoing_street_label</em>, <em>outgoing_direction</em>, <em>intersection_street_label=None</em>, <em>roadnode_id=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.findMovementForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to find the movement from the given <em>incoming_street_label</em> and <em>incoming_direction</em>
+to the given <em>outgoing_street_label</em> and <em>outgoing_direction</em>.  If this is a through movement or a U-Turn
+(e.g. <em>incoming_street_label</em> == <em>outgoing_street_label</em>), then <em>intersection_street_label</em> is also required
+to identify the intersection.</p>
+<p><em>incoming_street_label</em> and <em>outgoing_street_label</em> are checked against <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels
+and should be upper-case.</p>
+<p><em>incoming_direction</em> and <em>outgoing_direction</em> are one of <tt class="docutils literal"><span class="pre">EB</span></tt>, <tt class="docutils literal"><span class="pre">NB</span></tt>, <tt class="docutils literal"><span class="pre">SB</span></tt> and <tt class="docutils literal"><span class="pre">WB</span></tt>.</p>
+<p>Pass optional <em>roadnode_id</em> to speed things up but if the movement is not found for that <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>,
+this method will fall back and try to find the movement based on the labels.</p>
+<p>Raises an exception on failure.</p>
 </dd></dl>
 
 <dl class="method">
@@ -472,6 +493,12 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.CubeNetwork.hasCentroidForId">
+<tt class="descname">hasCentroidForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasCentroidForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a centroid with the given id</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.CubeNetwork.hasLinkForId">
 <tt class="descname">hasLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasLinkForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if a link with the given id exists</p>
@@ -599,7 +626,7 @@ current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in 
 
 <dl class="method">
 <dt id="dta.CubeNetwork.readCSVs">
-<tt class="descname">readCSVs</tt><big>(</big><em>nodesCsvFilename</em>, <em>nodeVariableNames</em>, <em>linksCsvFilename</em>, <em>linkVariableNames</em>, <em>centroidIds</em>, <em>nodeGeometryTypeEvalStr</em>, <em>nodeControlEvalStr</em>, <em>nodePriorityEvalStr</em>, <em>nodeLabelEvalStr</em>, <em>nodeLevelEvalStr</em>, <em>nodeOldNodeStr</em>, <em>linkReverseAttachedIdEvalStr</em>, <em>linkFacilityTypeEvalStr</em>, <em>linkLengthEvalStr</em>, <em>linkFreeflowSpeedEvalStr</em>, <em>linkEffectiveLengthFactorEvalStr</em>, <em>linkResponseTimeFactorEvalStr</em>, <em>linkNumLanesEvalStr</em>, <em>linkRoundAboutEvalStr</em>, <em>linkLevelEvalStr</em>, <em>linkLabelEvalStr</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readCSVs" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readCSVs</tt><big>(</big><em>nodesCsvFilename</em>, <em>nodeVariableNames</em>, <em>linksCsvFilename</em>, <em>linkVariableNames</em>, <em>centroidIds</em>, <em>useOldNodeForId</em>, <em>nodeGeometryTypeEvalStr</em>, <em>nodeControlEvalStr</em>, <em>nodePriorityEvalStr</em>, <em>nodeLabelEvalStr</em>, <em>nodeLevelEvalStr</em>, <em>linkReverseAttachedIdEvalStr</em>, <em>linkFacilityTypeEvalStr</em>, <em>linkLengthEvalStr</em>, <em>linkFreeflowSpeedEvalStr</em>, <em>linkEffectiveLengthFactorEvalStr</em>, <em>linkResponseTimeFactorEvalStr</em>, <em>linkNumLanesEvalStr</em>, <em>linkRoundAboutEvalStr</em>, <em>linkLevelEvalStr</em>, <em>linkLabelEvalStr</em>, <em>linkGroupEvalStr</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readCSVs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the network from the given csv files.
 * <em>nodesCsvFilename</em> is the csv with the node data; <em>nodeVariableNames</em> are the column names.
 * <em>linksCsvFilename</em> is the csv with the link data; <em>linkVariableNames</em> are the column names.
@@ -616,16 +643,12 @@ intersections and 0 otherwise, the <em>nodeControlEvalStr</em> could be
 <tt class="docutils literal"><span class="pre">&quot;RoadNode.CONTROL_TYPE_SIGNALIZED</span> <span class="pre">if</span> <span class="pre">int(SIGNAL)==1</span> <span class="pre">else</span> <span class="pre">RoadNode.CONTROL_TYPE_UNSIGNALIZED&quot;</span></tt>.</p>
 <p>Note that the CSV fields are all strings, which is why SIGNAL is cast to an int here.</p>
 <ul class="simple">
+<li><em>useOldNodeForId</em> indicates that the <tt class="docutils literal"><span class="pre">OLD_NODE</span></tt> variable is to be used for the ID (rather than <tt class="docutils literal"><span class="pre">N</span></tt>).</li>
 <li><em>nodeGeometryTypeEvalStr</em> indicates how to set the <em>geometryType</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
 <li><em>nodeControlEvalStr</em> indicates how to set the <em>control</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
 <li><em>nodePriorityEvalStr</em> indicates how to set the <em>priority</em> for each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a></li>
 <li><em>nodeLabelEvalStr</em> indicates how to set the <em>label</em> for each <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></li>
 <li><em>nodeLevelEvalStr</em> indicates how to set the <em>level</em> for each <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></li>
-<li><em>nodeOldNodeStr</em> indicates how to correspond Node numbers to original Node numbers.  This is
-relevant if the cube network is the result of a Subarea Extraction, in which case node renumbering
-may have occurred but the old node numbers are still useful.  If passed, a node number to old node number
-correspondence will be retained.  Pass None if this feature won&#8217;t be used; a typical use would be
-to pass <tt class="docutils literal"><span class="pre">&quot;int(OLD_NODE)&quot;</span></tt>.</li>
 </ul>
 <p>Similarly, the following strings are used to indicate how the <strong>links</strong> should be interpreted.</p>
 <ul class="simple">
@@ -649,6 +672,8 @@ and <a class="reference internal" href="dta.Connector.html#dta.Connector" title=
 and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
 <li><em>linkLabelEvalStr</em> indicates how to set the <em>label</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
 and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances</li>
+<li><em>linkGroupEvalStr</em> indicates how to set the <em>group</em> for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>
+and <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances.</li>
 </ul>
 </dd></dl>
 
@@ -659,15 +684,12 @@ and <a class="reference internal" href="dta.Connector.html#dta.Connector" title=
 
 <dl class="method">
 <dt id="dta.CubeNetwork.readLinkShape">
-<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em>, <em>startNodeIdField</em>, <em>endNodeIdField</em>, <em>useOldNodeNum=False</em>, <em>skipField=None</em>, <em>skipValueList=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em>, <em>startNodeIdField</em>, <em>endNodeIdField</em>, <em>skipField=None</em>, <em>skipValueList=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses the given <em>linkShapefile</em> to add shape points to the network, in order to more accurately
 represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
 intersections because of the angles involved.</p>
 <p><em>startNodeIdField</em> and <em>endNodeIdField</em> are the column headers (so they&#8217;re strings)
 of the start node and end node IDs within the <em>linkShapefile</em>.</p>
-<p>If <em>useOldNodeNum</em> is passed, the shapefile will be assumed to be referring to the old node numbers rather
-than the current node numbers; see <a class="reference internal" href="#dta.CubeNetwork.readCSVs" title="dta.CubeNetwork.readCSVs"><tt class="xref py py-meth docutils literal"><span class="pre">CubeNetwork.readCSVs()</span></tt></a> discussion of the arg <em>nodeOldNodeStr</em> for
-more information on the old node numbers.</p>
 <p>If <em>skipField</em> is passed, then the field given by this name will be checked against the list of values given
 by <em>skipValueList</em>.  This is useful for when there are some bad elements in your shapefile that you want to skip.</p>
 <p>If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one

@@ -27,6 +27,7 @@ dta.RoadLink
       ~RoadLink.getEndNodeId
       ~RoadLink.getFacilityType
       ~RoadLink.getFreeFlowSpeedInMPH
+      ~RoadLink.getGroup
       ~RoadLink.getId
       ~RoadLink.getIid
       ~RoadLink.getLabel
@@ -62,7 +63,8 @@ dta.RoadLink
       ~RoadLink.isVirtualLink
       ~RoadLink.iterIncomingMovements
       ~RoadLink.iterOutgoingMovements
-      ~RoadLink.removeOutgoingMovement
+      ~RoadLink.prohibitOutgoingMovement
+      ~RoadLink.setGroup
       ~RoadLink.setLabel
       ~RoadLink.setLength
       ~RoadLink.setNumLanes
