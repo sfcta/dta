@@ -783,17 +783,54 @@ def extractStreetNames(intersection):
 
 def cleanStreetName(streetName):
 
-    corrections = {"TWELFTH":"12TH", "ELEVENTH":"11TH", "TENTH":"10TH", "NINTH":"9TH", "EIGHTH":"8TH", \
-                            "SEVENTH":"7TH", "SIXTH":"6TH", "FIFTH":"5TH", "FOURTH":"4TH", "THIRD":"3RD", "SECOND":"2ND", \
-                        "FIRST":"1ST", "O'FARRELL":"O FARRELL", "3RDREET":"3RD", "EMBARCADERO/KING":"THE EMBARCADERO", \
-                   "VAN NESSNUE":"VAN NESS", "3RD #3":"3RD", "BAYSHORE #3":"BAYSHORE", \
-                   "09TH":"9TH", "08TH":"8TH", "07TH":"7TH", "06TH":"6TH", "05TH":"5TH", "04TH":"4TH", "03RD":"3RD", "02ND":"2ND", \
-                       "01ST":"1ST"}
+    corrections = {"TWELFTH":"12TH", 
+                   "ELEVENTH":"11TH",
+                   "TENTH":"10TH",
+                   "NINTH":"9TH",
+                   "EIGHTH":"8TH",
+                   "SEVENTH":"7TH",
+                   "SIXTH":"6TH",
+                   "FIFTH":"5TH",
+                   "FOURTH":"4TH",
+                   "THIRD":"3RD",
+                   "SECOND":"2ND",
+                   "FIRST":"1ST",
+                   "O'FARRELL":"O FARRELL",
+                   "3RDREET":"3RD",
+                   "EMBARCADERO/KING":"THE EMBARCADERO",
+                   "VAN NESSNUE":"VAN NESS",
+                   "3RD #3":"3RD",
+                   "BAYSHORE #3":"BAYSHORE",
+                   "09TH":"9TH",
+                   "08TH":"8TH",
+                   "07TH":"7TH",
+                   "06TH":"6TH",
+                   "05TH":"5TH",
+                   "04TH":"4TH",
+                   "03RD":"3RD",
+                   "02ND":"2ND",
+                   "01ST":"1ST"}
 
 
-    itemsToRemove = [" STREETS", " STREET", " STS.", " STS", " ST.", " ST", " ROAD", " RD.", " RD", \
-                         " AVENUE", " AVE.", " AVE", " BLVD.", " BLVD", " BOULEVARD", "MASTER:", " DRIVE", \
-                         " DR.", " WAY"]
+    itemsToRemove = [" STREETS",
+                     " STREET",
+                     " STS.",
+                     " STS",
+                     " ST.",
+                     " ST",
+                     " ROAD",
+                     " RD.",
+                     " RD",
+                     " AVENUE",
+                     " AVE.",
+                     " AVE",
+                     " BLVD.",
+                     " BLVD",
+                     " BOULEVARD",
+                     "MASTER:",
+                     " DRIVE",
+                     " DR.",
+                     " WAY"]
 
     newStreetName = streetName.strip()
     for wrongName, rightName in corrections.items():
