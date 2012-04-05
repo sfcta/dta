@@ -611,75 +611,7 @@ class DynameqNetwork(Network):
                 count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))                                           
         
-    def retrieveCountListFromCountDracula(self, countDraculaReader, starttime, period, number, tolerance):
-        """
-        Writes counts to movements from CountDracula
-        starttime = startitme for counts
-        period = interval for each count
-        number = total counts = (endtime-starttime)/period
-        tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)        
-        """
-        #Can have additional arguments for aggregating counts, days and other args
-        
-        Movement.countNumber = number
-        Movement.countPeriod = period
-        Movement.countStartTime = starttime
-        
-        movementcounter = 0
-        
-        dtaNodes2countDraculaNodes_dict = {}  #Dictionary by dta node id: Key = dta_node_id, value = CD_node_id
-        #counter = 0
-
-        for dtanodeid in self._nodes:
-            dtanode = self._nodes[dtanodeid]
-            dta_node_x = dtanode.getX()
-            dta_node_y = dtanode.getY()
-            cd_node = countDraculaReader.mapNodeId(dta_node_x, dta_node_y, tolerance)
-            
-            #------ASSUMING there is a single match !!!!------ 
-            if not cd_node == -1 :
-                dtaNodes2countDraculaNodes_dict[dtanode.getId()] = cd_node
-            
-                #counter = counter+1
-        
-        print str(len(dtaNodes2countDraculaNodes_dict))+" nodes matched from "+str(len(self._nodes))+" nodes"
-        
-        for id in self._linksById:
-            link = self._linksById[id]
-            if not isinstance(link, VirtualLink):
-        
-        #TODO - Attach link counts
-        #====================================================================
-        # 
-        # Here we can insert count attachment to links. For this we would need:
-        # 1)counts[] instance variable for class link (or roadlink or connector)
-        # 2)create getMainlineCountFromCountDracula method for countdracula.ReadFromCD class
-        #   
-        #====================================================================
-                
- 
-                
-                for movement in link.iterOutgoingMovements():
-                    movementcounter += 1
-                    #print movementcounter
-                    #if movementcounter == 9000:
-                    #    return
                     
-                    if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict: #check if node is in CD
-                        atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()] #returns the nodes CD id
-                        if movement.getOriginNode().getId() in dtaNodes2countDraculaNodes_dict:
-                            fromNode = dtaNodes2countDraculaNodes_dict[movement.getOriginNode().getId()]
-                            if movement.getDestinationNode().getId() in dtaNodes2countDraculaNodes_dict:
-                                toNode = dtaNodes2countDraculaNodes_dict[movement.getDestinationNode().getId()]
-                    
-                                fromangle = movement.getIncomingLink().getReferenceAngle()
-                                toangle = movement.getOutgoingLink().getReferenceAngle()
-                                
-                                countsList = countDraculaReader.getTurningCounts(atNode, fromNode, toNode, fromangle, toangle, starttime, period, number)
-                                if not countsList == []: 
-                                    #print "***************************************"
-                                    movement.setCountsFromCountDracula(countsList)
-                            
     def writeCountListToFile(self, dir, starttime, period, number):
         """
         Writes counts to movements from CountDracula

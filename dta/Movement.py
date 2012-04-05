@@ -105,7 +105,6 @@ class Movement(object):
         self._outgoingLane  = outgoingLane
         self._followupTime  = followupTime
         
-        self._countsList = []        
         self._centerline = self.getCenterLine()
         
         self._simVolume = defaultdict(int)      # indexed by timeperiod
@@ -148,18 +147,6 @@ class Movement(object):
         """
         return self._outgoingLink.getEndNode()
     
-    def getCountList(self):
-        """
-        Returns countslist saved for the movement
-        """
-        return self._countsList
-    
-    def setCountsFromCountDracula(self, countsListFromCountDracula):
-        """
-        Inserts the countlist
-        """
-        self._countsList = countsListFromCountDracula
-        
     def getStartNode(self):
         """
         Returns the start node of incomingLink, a :py:class:`Link` instance

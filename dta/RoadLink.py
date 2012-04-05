@@ -32,7 +32,7 @@ class RoadLink(Link):
     A RoadLink in a network.  Both nodes must be RoadNodes.
     
     """
-    #: Static variable representing the nits of the length variable
+    #: Static variable representing the units of the length variable
     #: Should be ``kilometers`` or ``miles``
     LENGTH_UNITS = None
     
@@ -41,9 +41,13 @@ class RoadLink(Link):
     #: default lane width in :py:attr:`Node.COORDINATE_UNITS`
     DEFAULT_LANE_WIDTH = 12
 
+    #: Eastbound return value for :py:meth:`RoadLink.getDirection`
     DIR_EB = "EB"
+    #: Westbound return value for :py:meth:`RoadLink.getDirection`
     DIR_WB = "WB"
+    #: Northbound return value for :py:meth:`RoadLink.getDirection`    
     DIR_NB = "NB"
+    #: Southbound return value for :py:meth:`RoadLink.getDirection`
     DIR_SB = "SB"
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
@@ -457,15 +461,15 @@ class RoadLink(Link):
         Delete the input movement
         """
         if not isinstance(movementToRemove, Movement):
-            raise DtaError("RoadLink %s deleteOutgoingMovement() "
+            raise DtaError("RoadLink %s _removeOutgoingMovement() "
                            "called with invalid movement %s" % str(movementToRemove))
         
         if movementToRemove.getIncomingLink() != self:
-            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
+            raise DtaError("RoadLink %s _removeOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
 
         if not movementToRemove in self._outgoingMovements:
-            raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
-                           "inexisting movement" % str(movementToRemove))
+            raise DtaError("RoadLink %s _removeOutgoingMovement() called to delete "
+                           "invalid movement" % str(movementToRemove))
 
         #movementToRemove.setProhibited()
         self._outgoingMovements.remove(movementToRemove)
@@ -776,8 +780,10 @@ class RoadLink(Link):
         return orientation * 180 / math.pi
         
     def getDirection(self):
-        """Return the direction of the link as one of 
-        EB, NB, WB, EB"""
+        """
+        Returns the direction of the link as one of :py:attr:`RoadLink.DIR_EB`,  :py:attr:`RoadLink.DIR_NB`,
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`
+        """
 
         orientation = self.getOrientation()
         if 315 <= orientation or orientation < 45:

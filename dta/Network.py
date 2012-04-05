@@ -524,7 +524,207 @@ class Network(object):
             return True
         except DtaError:
             return False
+    
+    def findLinksForRoadLabels(self, on_street_label, on_direction,
+                                       from_street_label, to_street_label,
+                                       remove_label_spaces=False):
+        """
+        Attempts to find the link(s) with the given *on_street_label* and *on_direction*
+        from the street matching *from_street_label* to the street matching *to_street_label*.
+        
+        *on_street_label*, *from_street_label* and *to_street_label* are checked against 
+        :py:class:`RoadLink` labels and should be upper-case.  If *remove_label_spaces* is True, then
+        the labels will have their spaces stripped before comparison.
+        
+        *on_direction* is one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_NB`,
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`.
+        
+        Raises a :py:class:`DtaError` on failure, returns a list of :py:class:`RoadLink` instances on success.
+        """
+        # first find candidates for the two intersections in question
+        roadnode_from = []
+        roadnode_to   = []
+            
+        for roadnode_candidate in self.iterRoadNodes():
+            # check the streets match
+            streetnames = roadnode_candidate.getStreetNames()
+            if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
+            
+            if on_street_label in streetnames and from_street_label in streetnames:
+                roadnode_from.append(roadnode_candidate)
+            
+            if on_street_label in streetnames and to_street_label in streetnames:
+                roadnode_to.append(roadnode_candidate)
 
+
+        # Did we fail to find an intersection?
+        if len(roadnode_from)==0:
+            raise DtaError("findLinksForRoadLabels: Couldn't find intersection1 with %s and %s in the Network" % 
+                           (on_street_label, from_street_label))
+        
+        if len(roadnode_to)==0:
+            raise DtaError("findLinksForRoadLabels: Couldn't find intersection2 with %s and %s in the Network" % 
+                           (on_street_label, to_street_label))
+        
+        # DtaLogger.debug("from: %s  to: %s" % (str(roadnode_from), str(roadnode_to)))
+        
+        debug_str = ""
+        
+        # try each candidate from node
+        for start_node in roadnode_from:
+            
+            # Walk from the from node
+            curnode = start_node
+            return_links = []
+            
+            while True:
+                
+                # look for the next link
+                outgoing_link = None
+                for olink in curnode.iterOutgoingLinks():                
+                    olabel = olink.getLabel().upper()
+                    if remove_label_spaces: olabel = olabel.replace(" ","")            
+                    
+                    # DtaLogger.debug("olink %s %s" % (olabel, olink.getDirection() if olink.isRoadLink else "nonroad"))
+                    
+                    # for now, require all links have the given direction
+                    if olink.isRoadLink() and olabel==on_street_label and olink.getDirection()==on_direction:
+                        outgoing_link = olink
+                        break
+                    
+                # nothing found - we got stuck
+                if not outgoing_link:
+                    debug_str += "findLinksForRoadLabels: Couldn't find links from %s to %s on %s %s\n" % \
+                                 (from_street_label, to_street_label, on_street_label, on_direction)
+                    break
+                    
+                # found it; -- make sure it's not already in our list (cycle!)
+                if outgoing_link in return_links:
+                    debug_str += "findLinksForRoadLabels: Found cycle when finding links from %s to %s on %s %s\n" % \
+                                 (from_street_label, to_street_label, on_street_label, on_direction)
+                    break
+    
+                # add to our list
+                return_links.append(outgoing_link)
+                
+                # we're finished if we got to the end
+                if outgoing_link.getEndNode() in roadnode_to:
+                    return return_links
+                
+                # continue on
+                curnode = outgoing_link.getEndNode()
+            
+            # ok if we've gotten here, then we reached a break and we were unsuccessful
+            # so we'll continue with the next road_node_from
+            # DtaLogger.debug("Failure")
+            
+        # if we've gotten here then all attempts have failed
+        raise DtaError(debug_str)
+                
+    def findMovementForRoadLabels(self, incoming_street_label, incoming_direction, 
+                                            outgoing_street_label, outgoing_direction,
+                                            intersection_street_label=None,
+                                            roadnode_id=None,
+                                            remove_label_spaces=False):
+        """
+        Attempts to find the movement from the given *incoming_street_label* and *incoming_direction*
+        to the given *outgoing_street_label* and *outgoing_direction*.  If this is a through movement or a U-Turn
+        (e.g. *incoming_street_label* == *outgoing_street_label*), then *intersection_street_label* is also required
+        to identify the intersection.
+        
+        *incoming_street_label*, *outgoing_street_label* and *intersection_street_label* are checked against 
+        :py:class:`RoadLink` labels and should be upper-case.  If *remove_label_spaces* is True, then
+        the labels will have their spaces stripped before comparison.
+        
+        *incoming_direction* and *outgoing_direction* are one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_NB`,
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`.
+        
+        
+        Pass optional *roadnode_id* to speed things up but if the movement is not found for that :py:class:`RoadNode`,
+        this method will fall back and try to find the movement based on the labels.
+        
+        Raises a :py:class:`DtaError` on failure, returns a :py:class:`Movement` instance on success.
+        """
+        
+        if (incoming_street_label==outgoing_street_label) and (intersection_street_label==None):
+            raise DtaError("findMovementForRoadLabels: intersection_street_label is required when "
+                           "incoming_street_label==outgoing_street_label (%s)" % incoming_street_label)
+            
+        roadnode = None
+        
+        # see if the the given id will do it
+        if roadnode_id:
+            
+            if roadnode_id in self._nodes:
+                roadnode = self.getNodeForId(roadnode_id)
+            
+            if not isinstance(roadnode, RoadNode):
+                roadnode = None
+                DtaLogger.debug("findMovementForRoadLabels: given RoadNode id %d isn't a valid road node" % roadnode_id)
+            else:
+                # check the streets match
+                streetnames = roadnode.getStreetNames()
+                if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
+                
+                if incoming_street_label not in streetnames:
+                    roadnode = None
+                    DtaLogger.debug("findMovementForRoadLabels: given RoadNode %d doesn't have incoming street %s (streets are %s)" %
+                                    (roadnode_id, incoming_street_label, str(streetnames)))
+                if outgoing_street_label not in streetnames:
+                    roadnode = None
+                    DtaLogger.debug("findMovementForRoadLabels: given RoadNode %d doesn't have outgoing street %s (streets are %s)" %
+                                    (roadnode_id, outgoing_street_label, str(streetnames)))
+                    
+        # Still haven't found the right roadnode; look for it
+        if roadnode==None:
+            
+            for roadnode_candidate in self.iterRoadNodes():
+                # check the streets match
+                streetnames = roadnode_candidate.getStreetNames()
+                if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
+                
+                if incoming_street_label in streetnames and outgoing_street_label in streetnames:
+                    roadnode = roadnode_candidate
+                    break
+            
+        # Still haven't found it - give up
+        if roadnode==None:
+            raise DtaError("findMovementForRoadLabels: Couldn't find intersection with %s and %s in the Network" % 
+                           (incoming_street_label, outgoing_street_label))
+        
+        #DtaLogger.debug("Found intersection with %s and %s in the network: %d %s" % 
+        #                (incoming_street_label, outgoing_street_label, roadnode.getId(), str(roadnode.getStreetNames())))
+        
+        # Found the intersection; now find the exact incoming link
+        incoming_link = None
+        for ilink in roadnode.iterIncomingLinks():
+            #if ilink.isRoadLink() and ilink.getLabel().upper()==incoming_street_label:
+            #    DtaLogger.debug("ilink: %s %s" % (ilink.getLabel().upper(), ilink.getDirection()))
+            ilabel = ilink.getLabel().upper()
+            if remove_label_spaces: ilabel = ilabel.replace(" ","")
+
+            if ilink.isRoadLink() and ilabel==incoming_street_label and ilink.getDirection()==incoming_direction:
+                incoming_link = ilink
+                break
+        if not incoming_link:
+            raise DtaError("findMovementForRoadLabels: Couldn't find incoming link %s with dir %s at intersection %d %s" %
+                           (incoming_street_label, incoming_direction, roadnode.getId(), str(roadnode.getStreetNames())))
+
+        # Found the intersection; now find the exact outgoing link      
+        outgoing_link = None
+        for olink in roadnode.iterOutgoingLinks():
+            olabel = olink.getLabel().upper()
+            if remove_label_spaces: olabel = olabel.replace(" ","")            
+            
+            if olink.isRoadLink() and olabel==outgoing_street_label and olink.getDirection()==outgoing_direction:
+                outgoing_link = olink
+                break
+        if not outgoing_link:
+            raise DtaError("findMovementForRoadLabels: Couldn't find outgoing link %s with dir %s at intersection %d %s" %
+                           (outgoing_street_label, outgoing_direction, roadnode.getId(), str(roadnode.getStreetNames())))
+
+        return incoming_link.getOutgoingMovement(outgoing_link.getEndNode().getId())
+                                                                   
     def removeLink(self, linkToRemove):
         """
         Remove the input link from the network
