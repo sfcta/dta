@@ -27,11 +27,13 @@ from .DtaError import DtaError
 from .Link import Link
 from .RoadLink import RoadLink
 from .Logger import DtaLogger
+from .Node import Node
 from .RoadNode import RoadNode
 from .TimePlan import PlanCollectionInfo
 from .Scenario import Scenario
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
+from .VehicleType import VehicleType
 from .VehicleClassGroup import VehicleClassGroup
 from .Movement import Movement
 from .Algorithms import * 
@@ -52,6 +54,8 @@ class Network(object):
         Constructor.  Initializes to an empty network, stores reference to given
         scenario (a :py:class:`Scenario` instance).
         """
+        if (not VehicleType.LENGTH_UNITS) or (not Node.COORDINATE_UNITS) or not (RoadLink.LENGTH_UNITS):
+            raise DtaError("Network __init__ failed; Please set VehicleType.LENGTH_UNITS, Node.COORDINATE_UNITS and RoadLink.LENGTH_UNITS.")
         
         #: node id -> node; these can be instances of :py:class:`RoadNode` :py:class:`VirtualNode` or
         #: :py:class:`Centroid`
