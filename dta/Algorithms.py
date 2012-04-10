@@ -465,7 +465,7 @@ class ShortestPaths(object):
                         verticesToExamine.append(downstreamVertex)
 
     @classmethod
-    def getShortestPathBetweenLinks(cls, sourceLink, destinationLink):
+    def getShortestPathBetweenLinks(cls, graph, sourceLink, destinationLink, runSP=False):
         """
         Return the path from the sourceLink to the 
         destinationLink as a list of edges. The return list always contains the 
@@ -473,6 +473,10 @@ class ShortestPaths(object):
         """
         if sourceLink==destinationLink:
             return []
+        
+        if runSP:
+            ShortestPaths.labelCorrectingWithLabelsOnLinks(graph, sourceLink)
+        
         edge = destinationLink
         path = []
         while edge != sourceLink:

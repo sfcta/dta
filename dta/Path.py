@@ -204,8 +204,8 @@ class Path(object):
                 raise DtaError("Node %d does not belong to the path" % node.getId())
 
         for iLink in n.iterIncomingLinks():
-            if iLink.getStreetName() != l.getStreetName():
-                return iLink.getStreetName()
+            if iLink.getLabel() != l.getLabel():
+                return iLink.getLabel()
         else:
             return "" 
             
