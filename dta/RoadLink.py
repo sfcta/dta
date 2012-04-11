@@ -752,14 +752,23 @@ class RoadLink(Link):
         
         return False
 
-    def getOrientation(self):
+    def getOrientation(self, atEnd=True):
         """
         Returns the angle of the link in degrees from the North
         measured clockwise. The link shape is taken into account.
+        If there are shape points, and *atEnd* is True, then the orientation
+        is evaluated at the end point of the link, otherwise it's evaluated at
+        the start of the link.
         """
         if self._shapePoints:
-            x1, y1 = self._shapePoints[-2]
-            x2, y2 = self._shapePoints[-1]
+            if atEnd:
+                # skip point -1 because of the centerline issue that makes the first point jump out from the centerline                                
+                x1, y1 = self._shapePoints[-2]
+                x2, y2 = self.getEndNode().getX(), self.getEndNode().getY()
+            else:
+                x1, y1 = self.getStartNode().getX(), self.getStartNode().getY()
+                # skip point 0 because of the centerline issue that makes the first point jump out from the centerline                
+                x2, y2 = self._shapePoints[1]  
         else:
             x1 = self.getStartNode().getX()
             y1 = self.getStartNode().getY()
@@ -779,13 +788,14 @@ class RoadLink(Link):
 
         return orientation * 180 / math.pi
         
-    def getDirection(self):
+    def getDirection(self, atEnd=True):
         """
         Returns the direction of the link as one of :py:attr:`RoadLink.DIR_EB`,  :py:attr:`RoadLink.DIR_NB`,
-        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`.  Uses :py:meth:`getOrientation` so the
+        shape points are used with the *atEnd* argument.
         """
 
-        orientation = self.getOrientation()
+        orientation = self.getOrientation(atEnd)
         if 315 <= orientation or orientation < 45:
             return RoadLink.DIR_NB
         elif 45 <= orientation < 135:

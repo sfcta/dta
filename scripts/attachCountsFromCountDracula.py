@@ -158,6 +158,7 @@ if __name__ == '__main__':
     
     SF_DYNAMEQ_NET_DIR          = sys.argv[1] 
     SF_DYNAMEQ_NET_PREFIX       = sys.argv[2]
+    SF_SHAPEFILE                = r"Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp"
                 
     dta.setupLogging("attachCountsFromCountDracula.INFO.log", "attachCountsFromCountDracula.DEBUG.log", logToConsole=True)
     
@@ -165,13 +166,18 @@ if __name__ == '__main__':
     dta.Node.COORDINATE_UNITS   = "feet"
     dta.RoadLink.LENGTH_UNITS   = "miles"
         
-
     # Read the SF scenario and DTA network
     sanfranciscoScenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
     sanfranciscoScenario.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
     
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfranciscoDynameqNet.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
+    sanfranciscoDynameqNet.readLinkShape(SF_SHAPEFILE, "A", "B",
+                                         skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
+                                                                              2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
+                                                                              ])
+
+    
     
     # Instantiate the count dracula reader and do the exports
     # Time slices here are based on what we have available (according to CountDracula's querySanFranciscoCounts.py)
