@@ -419,14 +419,19 @@ class Node(object):
         """
         return " AND ".join(self.getStreetNames())
 
-    def getStreetNames(self):
+    def getStreetNames(self, incoming=True, outgoing=False):
         """
-        Return the street names (labels) of the incoming links as a sorted upper-case list.
+        Return the street names (labels) of the relevant links as a sorted upper-case list.
         """
         names = set()
-        for ilink in self.iterIncomingLinks():
-            if ilink.getLabel():
-                names.add(ilink.getLabel().upper())
+        if incoming:
+            for ilink in self.iterIncomingLinks():
+                if ilink.getLabel(): names.add(ilink.getLabel().upper())
+                
+        if outgoing:
+            for olink in self.iterOutgoingLinks():
+                if olink.getLabel(): names.add(olink.getLabel().upper())
+                    
         return sorted(names)
 
     def iterMovements(self):

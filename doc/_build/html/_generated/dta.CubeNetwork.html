@@ -326,18 +326,35 @@ with an already existing id this method will throw an exception.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.CubeNetwork.findLinksForRoadLabels">
+<tt class="descname">findLinksForRoadLabels</tt><big>(</big><em>on_street_label</em>, <em>on_direction</em>, <em>from_street_label</em>, <em>to_street_label</em>, <em>remove_label_spaces=False</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.findLinksForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to find the link(s) with the given <em>on_street_label</em> and <em>on_direction</em>
+from the street matching <em>from_street_label</em> to the street matching <em>to_street_label</em>.</p>
+<p><em>on_street_label</em>, <em>from_street_label</em> and <em>to_street_label</em> are checked against 
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels and should be upper-case.  If <em>remove_label_spaces</em> is True, then
+the labels will have their spaces stripped before comparison.</p>
+<p><em>on_direction</em> is one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.</p>
+<p>Raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> on failure, returns a list of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances on success.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.CubeNetwork.findMovementForRoadLabels">
-<tt class="descname">findMovementForRoadLabels</tt><big>(</big><em>incoming_street_label</em>, <em>incoming_direction</em>, <em>outgoing_street_label</em>, <em>outgoing_direction</em>, <em>intersection_street_label=None</em>, <em>roadnode_id=None</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.findMovementForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">findMovementForRoadLabels</tt><big>(</big><em>incoming_street_label</em>, <em>incoming_direction</em>, <em>outgoing_street_label</em>, <em>outgoing_direction</em>, <em>intersection_street_label=None</em>, <em>roadnode_id=None</em>, <em>remove_label_spaces=False</em>, <em>use_dir_for_movement=True</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.findMovementForRoadLabels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempts to find the movement from the given <em>incoming_street_label</em> and <em>incoming_direction</em>
 to the given <em>outgoing_street_label</em> and <em>outgoing_direction</em>.  If this is a through movement or a U-Turn
 (e.g. <em>incoming_street_label</em> == <em>outgoing_street_label</em>), then <em>intersection_street_label</em> is also required
 to identify the intersection.</p>
-<p><em>incoming_street_label</em> and <em>outgoing_street_label</em> are checked against <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels
-and should be upper-case.</p>
-<p><em>incoming_direction</em> and <em>outgoing_direction</em> are one of <tt class="docutils literal"><span class="pre">EB</span></tt>, <tt class="docutils literal"><span class="pre">NB</span></tt>, <tt class="docutils literal"><span class="pre">SB</span></tt> and <tt class="docutils literal"><span class="pre">WB</span></tt>.</p>
+<p><em>incoming_street_label</em>, <em>outgoing_street_label</em> and <em>intersection_street_label</em> are checked against 
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels and should be upper-case.  If <em>remove_label_spaces</em> is True, then
+the labels will have their spaces stripped before comparison.</p>
+<p><em>incoming_direction</em> and <em>outgoing_direction</em> are one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.</p>
 <p>Pass optional <em>roadnode_id</em> to speed things up but if the movement is not found for that <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>,
 this method will fall back and try to find the movement based on the labels.</p>
-<p>Raises an exception on failure.</p>
+<p>Pass <em>use_dir_for_movement</em> as True if the <em>incoming_street_label</em> and <em>outgoing_street_label</em> are useful
+for identifying the intersection but not necessary for the movement (e.g. only the direction needs to match)</p>
+<p>Raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> on failure, returns a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instance on success.</p>
 </dd></dl>
 
 <dl class="method">

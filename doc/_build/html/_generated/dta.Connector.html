@@ -367,9 +367,10 @@ return a tuple of two points (each one being a tuple of two floats) representing
 
 <dl class="method">
 <dt id="dta.Connector.getDirection">
-<tt class="descname">getDirection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getDirection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the direction of the link as one of 
-EB, NB, WB, EB</p>
+<tt class="descname">getDirection</tt><big>(</big><em>atEnd=True</em><big>)</big><a class="headerlink" href="#dta.Connector.getDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the direction of the link as one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>,  <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.  Uses <a class="reference internal" href="#dta.Connector.getOrientation" title="dta.Connector.getOrientation"><tt class="xref py py-meth docutils literal"><span class="pre">getOrientation()</span></tt></a> so the
+shape points are used with the <em>atEnd</em> argument.</p>
 </dd></dl>
 
 <dl class="method">
@@ -479,9 +480,12 @@ EB, NB, WB, EB</p>
 
 <dl class="method">
 <dt id="dta.Connector.getOrientation">
-<tt class="descname">getOrientation</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getOrientation" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getOrientation</tt><big>(</big><em>atEnd=True</em><big>)</big><a class="headerlink" href="#dta.Connector.getOrientation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the angle of the link in degrees from the North
-measured clockwise. The link shape is taken into account.</p>
+measured clockwise. The link shape is taken into account.
+If there are shape points, and <em>atEnd</em> is True, then the orientation
+is evaluated at the end point of the link, otherwise it&#8217;s evaluated at
+the start of the link.</p>
 </dd></dl>
 
 <dl class="method">
