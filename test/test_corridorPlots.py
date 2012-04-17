@@ -88,16 +88,35 @@ class TestCorridorPlots:
 
         #pdb.set_trace()
 
-        net.writeLinksToShp("gearySubnet")
+        net.writeLinksToShp("gearySubnet_links")
+        net.writeNodesToShp("gearySubnet_nodes")
+        
         link1 = net.getLinkForId(14834)
         link2 = net.getLinkForId(14539)
         
         pathLinks = dta.Algorithms.ShortestPaths.getShortestPathBetweenLinks(net, link1, link2, runSP=True)
-        dta.Path.Path
-        print [link.getId() for link in path]
+
+        path = dta.Path(net, "test", pathLinks)
+        print [link.getId() for link in pathLinks]
         volumesVsCounts = dta.CorridorPlots.CountsVsVolumes(net, path, False)
         #VC = VolumesVsCounts(net, path, False)
 
+        names = volumesVsCounts.getIntersectionNames()
+        locations = volumesVsCounts.getIntersectionLocations()
+        volumes = volumesVsCounts.getVolumesAlongCorridor(0, 60)
+
+        volumes2 = volumesVsCounts.getMovementVolumesCrossingCorridor(0, 60)
+
+        print volumes2
+        
+        print "names=", volumesVsCounts.getIntersectionNames()
+        print "locations=", volumesVsCounts.getIntersectionLocations()
+
+        print "volumes=", volumesVsCounts.getVolumesAlongCorridor(0, 60)
+        volumesVsCounts.writeVolumesVsCounts(0, 60, 'test')
+
+        
+        
         
 
         

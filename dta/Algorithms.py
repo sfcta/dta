@@ -368,7 +368,7 @@ class ShortestPaths(object):
                 movement.cost = edge.getFreeFlowTTInMin()
 
     @staticmethod
-    def initializeMovementCostsWithLengthInFeet(network):
+    def initializeMovementCostsWithLength(network):
         for edge in network.iterLinks():
             if edge.isVirtualLink():
                 continue
@@ -376,7 +376,7 @@ class ShortestPaths(object):
                 movement.cost = edge.getLength()
 
     @staticmethod
-    def initializeEdgeCostsWithFFTT(network):
+    def initiaxblizeEdgeCostsWithFFTT(network):
         """Initialize all the edge costs with the edge free flow travel times in minutes"""
         for edge in network.iterLinks():
             if edge.isLink():
@@ -385,10 +385,12 @@ class ShortestPaths(object):
                 edge.cost = sys.maxint 
             
     @staticmethod
-    def initializeEdgeCostsWithEdgeLength(network):
+    def initializeEdgeCostsWithLength(network):
         """Initalize all the edge costs with the edge lengths in feet"""
         for edge in network.iterLinks():
-            edge.cost = edge.getLengthInFeet()
+            if edge.isVirtualLink():
+                continue
+            edge.cost = edge.getLength()
 
     @classmethod
     def labelCorrectingWithLabelsOnLinks(cls, graph, sourceLink):

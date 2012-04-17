@@ -129,7 +129,7 @@ class DynameqNetwork(Network):
         count = 0
         for fields in self._readSectionFromFile(basefile, "LANE_EVENTS", "VIRTUAL_LINKS"):
             #TODO: do LANE_EVENTS have to correspond to scenario events?
-            raise DtaError("LANE_EVENTS not implemented yet")
+            #raise DtaError("LANE_EVENTS not implemented yet")
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "LANE_EVENTS", basefile))
             
@@ -149,7 +149,7 @@ class DynameqNetwork(Network):
         count = 0
         for fields in self._readSectionFromFile(basefile, "MOVEMENT_EVENTS", "ENDOFFILE"):
             #TODO: MOVEMENT_EVENTS
-            raise DtaError("MOVEMENT_EVENTS not implemented yet")            
+            #raise DtaError("MOVEMENT_EVENTS not implemented yet")            
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENT_EVENTS", basefile))
         
@@ -174,6 +174,7 @@ class DynameqNetwork(Network):
         #The structure of the code is different than the previous read ones
         #Reason 1: The control file does not contain a signal for each line
         #Reason 2: If multiple time periods exist one more nesting level is added 
+
         if os.path.exists(controlFile):
             for tp in TimePlan.read(self, controlFile):
                 tp.getNode().addTimePlan(tp)
@@ -978,6 +979,7 @@ class DynameqNetwork(Network):
             inputStream1.next()
             inputStream2.next()
 
+
         for flowLine, timeLine in izip(inputStream1, inputStream2):
             
             flowFields = flowLine.strip().split()
@@ -1008,6 +1010,11 @@ class DynameqNetwork(Network):
             timePeriodStart = self._simStartTimeInMin
                     
             for simFlow, simTT in izip(simFlows, simTTs):
+
+
+                #TODO:Dynameq occasionaly reports negative times.
+                if simTT < 0:
+                    continue
 
                 if simFlow == 0 and simTT > 0:
                     raise DtaError('Movement %s has zero flow in the '
@@ -1080,10 +1087,3 @@ class DynameqNetwork(Network):
                 mov.simEndTimeInMin = simEndTimeInMin
 
         self._readMovementOutFlowsAndTTs()
-
-
-        
-        
-        
-
-                    

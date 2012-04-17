@@ -473,8 +473,8 @@ class Movement(object):
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
         if averageTTInMin < 0:
-            raise DtaError("The travel time on movement cannot be negative" %
-                                   self.iid)
+            raise DtaError("The travel time on movement %s cannot be negative" %
+                                   str(self.getId()))
         if averageTTInMin == 0:
             if self.getSimFlow(startTimeInMin, endTimeInMin) > 0:
                 raise DtaError("The travel time on movement %s with flow %d from %d to %d "

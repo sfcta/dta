@@ -24,7 +24,6 @@ class Path(object):
     A path in the network represented by a sequence of links
     that are connected to each other
     """
-
     @classmethod
     def writePathsToShp(cls, paths, outFileName):
         """
@@ -54,14 +53,14 @@ class Path(object):
             if not linkUpstream.hasOutgoingMovement(linkDownstream.getEndNodeId()):
                 raise DtaError("Link %d does not have an outgoing movement towards "
                                "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
-            mov = linkUpStream.getOutgoingMovement(linkDownstream.getEndNodeId())
+            mov = linkUpstream.getOutgoingMovement(linkDownstream.getEndNodeId())
             if mov.isProhibitedToAllVehicleClassGroups():
                 raise DtaError("Link %d does not allow an outgoing movement towards "
                                "node %d to any vehicle class" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
                 
         if len(self._links) == 0:
             raise DtaError('A path cannot istantiated without any links')
-        self._lengthInMiles = sum([link.getLengthInMiles() for link  in self.iterLinks()])
+        self._lengthInMiles = sum([link.getLength() for link  in self.iterLinks()])
         self._obsTTInMin = {}
 
     def getLengthInMiles(self):
@@ -146,13 +145,13 @@ class Path(object):
         """
         Get the first node in the path
         """
-        return self._links[0].nodeA
+        return self._links[0].getStartNode()
 
     def getLastNode(self):
         """
         Return the last node in the path
         """
-        return self._links[-1].nodeB
+        return self._links[-1].getEndNode()
 
     def getFirstLink(self):
         """

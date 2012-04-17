@@ -75,7 +75,7 @@ class DynameqScenario(Scenario):
         
         count = 0
         for fields in self._readSectionFromFile(scenariofile, "EVENTS",       "VEH_CLASSES"):
-            self._addEventFromFields(fields)
+            #self._addEventFromFields(fields)
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "EVENTS", scenariofile))
                 

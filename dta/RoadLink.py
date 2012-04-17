@@ -433,6 +433,15 @@ class RoadLink(Link):
         """
         return iter(self._outgoingMovements)
 
+    def iterIncidentMovements(self):
+        """
+        Return an iterator to all the incident movemements
+        of this link
+        """
+        for mov in self.getStartNode().iterMovements():
+            if mov.getOutgoingLink() == self:
+                yield mov
+            
     def getNumIncomingMovements(self):
         """
         Returns the number of incoming movements
@@ -795,7 +804,43 @@ class RoadLink(Link):
         else:
             return RoadLink.DIR_WB
 
+    def hasRightTurn(self):
+        """
+        Return True if the link has a through turn
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isRightTurn():
+                return True
+        return False
+
+    def getRightTurn(self):
+        """
+        Return the thru movement of the link or raise an error if it does not exist
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isThruTurn():
+                return mov
+        raise DtaError("Link %d does not have a thru movement" % self.getId())
+
     def hasThruTurn(self):
+        """
+        Return True if the link has a through turn
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isThruTurn():
+                return True
+        return False
+
+    def getThruTurn(self):
+        """
+        Return the thru movement of the link or raise an error if it does not exist
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isLeftTurn():
+                return mov
+        raise DtaError("Link %d does not have a thru movement" % self.getId())
+
+    def hasLeftTurn(self):
         """
         Return True if the link has a through turn
         """
@@ -804,7 +849,7 @@ class RoadLink(Link):
                 return True
         return False
 
-    def getThruTurn(self):
+    def getLeftTurn(self):
         """
         Return the thru movement of the link or raise an error if it does not exist
         """
