@@ -40,8 +40,8 @@ class CountsVsVolumes(object):
         """
         Return a list of intersection names and intersection locations
         """
-        intLocationsAlongRoute = []
-        intNamesAlongRoute = [] 
+        intLocationsAlongRoute = [0,]
+        intNamesAlongRoute = [self._path.getCrossStreetName(self._path.getFirstNode()),] 
         length = 0
         for node, link in izip(self._path.iterNodes(), self._path.iterLinks()):        
             length += (link.getLength() * 5280)
@@ -71,30 +71,33 @@ class CountsVsVolumes(object):
         """Generator method that returns the edge, leftTurn and right turn
         volumes for all the links on the route
         """
-        linkVolumes = []
+        linkOutVolumes = []
+        linkInVolumes = []
         leftTurnVolumes = []
         rightTurnVolumes = []
          
         for edge in self._path.iterLinks():
-            edgeVolume = edge.getSimVolume(startTimeInMin, endTimeInMin)
+            edgeVolume = edge.getSimOutVolume(startTimeInMin, endTimeInMin)
+            edgeInVolume = edge.getSimInVolume(startTimeInMin, endTimeInMin)
             leftTurnVolume = 0
             rightTurnVolume = 0
             if edge.hasLeftTurn():
                 leftTurn = edge.getLeftTurn()
-                leftTurnVolume = leftTurn.getSimVolume(startTimeInMin, endTimeInMin)
+                leftTurnVolume = leftTurn.getSimOutVolume(startTimeInMin, endTimeInMin)
             else:
                 leftTurn = 0
             if edge.hasRightTurn():
                 rightTurn = edge.getRightTurn()
-                rightTurnVolume = rightTurn.getSimVolume(startTimeInMin, endTimeInMin)
+                rightTurnVolume = rightTurn.getSimOutVolume(startTimeInMin, endTimeInMin)
             else:
                 rightTurn = 0
 
-            linkVolumes.append(edgeVolume)
+            linkOutVolumes.append(edgeVolume)
+            linkInVolumes.append(edgeInVolume)
             leftTurnVolumes.append(leftTurnVolume)
             rightTurnVolumes.append(rightTurnVolume)
 
-        return linkVolumes, leftTurnVolumes, rightTurnVolumes
+        return linkOutVolumes, linkInVolumes, leftTurnVolumes, rightTurnVolumes
 
     def getCountsAlongCorridor(self, startTimeInMin, endTimeInMin):
         """Generator method that returns the edge, left turn and right turn
@@ -130,7 +133,7 @@ class CountsVsVolumes(object):
             leftTurnVolume = None
             rightTurnVolume = None
             for incidentMovement in edge.iterIncidentMovements():                
-                movementVolume = incidentMovement.getSimVolume(startTimeInMin, endTimeInMin)
+                movementVolume = incidentMovement.getSimOutVolume(startTimeInMin, endTimeInMin)
                 if incidentMovement.isLeftTurn():
                     leftTurnVolume = movementVolume
                 elif incidentMovement.isRightTurn():
@@ -223,43 +226,54 @@ class CountsVsVolumes(object):
         plt.cla()
         figure = plt.figure(1)
         figure.set_size_inches((25, 16))
+        BAR_WIDTH = 50         
 
         ###################################
         ax = plt.subplot(313)
         names = self.getIntersectionNames()
         locations = np.array(self.getIntersectionLocations())
-        linkVolumes, ltVolumes, rtVolumes = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
-        #crossLtVolumes, crossRtVolumes = self.getMovementVolumesCrossingCorridor(0, 60) 
+        linkOutVolumes, linkInVolumes, ltVolumes, rtVolumes = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
 
-        ax.set_ylabel('Vehicles Per Hour')
+        #throuCapacities = [link.getCapacity(startTimeInMin, endTimeInMin) for link in self._path.iterLinks()]
+
+        assert len(linkOutVolumes) == len(linkInVolumes) == len(ltVolumes) == len(rtVolumes) == len(locations) - 1
         
-        ax.plot(locations, linkVolumes, c='b')
+        #crossLtVolumes, crossRtVolumes = self.getMovementVolumesCrossingCorridor(0, 60) 
+        ax.set_ylabel('Vehicles Per Hour')
+
+        valuesToPlot = []
+        newLocations = []
+        for i in range(len(linkOutVolumes)):
+            newLocations.append(locations[i] + BAR_WIDTH)
+            newLocations.append(locations[i + 1] - BAR_WIDTH)
+            valuesToPlot.append(linkInVolumes[i])
+            valuesToPlot.append(linkOutVolumes[i])
+            
+        ax.plot(newLocations, valuesToPlot, c='b')
         ax.set_xticks(locations)
         ax.set_xticklabels(names, rotation=90)
         ax.grid(True)
         
         #############################
-        BAR_WIDTH = 50 
+
         ax = plt.subplot(312)
 
-        ax.bar(locations - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes Off")
-        ax.bar(locations, rtVolumes, BAR_WIDTH, color='y', label="RT Volumes Off") 
+        ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes Off")
+        ax.bar(locations[1:], rtVolumes, BAR_WIDTH, color='y', label="RT Volumes Off") 
         ax.set_xticks(locations)
         ax.set_xticklabels(["" for i in range(len(locations))])
 
         ax.legend(loc=2)
         ax.set_ylabel('Vehicles Per Hour')        
-        plt.savefig("testRoutePlot")
 
         #############################
 
         BAR_WIDTH = 50 
         ax = plt.subplot(311)
 
-        ltVolumes, rtVolumes = self.getMovementVolumesCrossingCorridor(startTimeInMin, endTimeInMin)
-        
-        ax.bar(locations - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes On")
-        ax.bar(locations, rtVolumes, BAR_WIDTH, color='y', label="RT Volumes On") 
+        ltVolumes, rtVolumes = self.getMovementVolumesCrossingCorridor(startTimeInMin, endTimeInMin)       
+        ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes On")
+        ax.bar(locations[1:], rtVolumes, BAR_WIDTH, color='y', label="RT Volumes On") 
         ax.set_xticks(locations)
         ax.set_xticklabels(["" for i in range(len(locations))])
 

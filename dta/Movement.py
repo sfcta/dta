@@ -107,7 +107,8 @@ class Movement(object):
         
         self._centerline = self.getCenterLine()
         
-        self._simVolume = defaultdict(int)      # indexed by timeperiod
+        self._simOutVolume = defaultdict(int)      # indexed by timeperiod
+        self._simInVolume = defaultdict(int)      # indexed by timeperiod
         self._simMeanTT = defaultdict(float)    # indexed by timeperiod
         self._penalty   = 0
         self._timeVaryingCosts = []
@@ -319,17 +320,21 @@ class Movement(object):
     def getProtectedCapacity(self, planInfo=None):
         """
         Return the capacity of the movement in vehicles per hour
-        """        
+        """
+        
         if self._node.hasTimePlan(planInfo=planInfo):
             tp = self._node.getTimePlan(planInfo=planInfo)
             greenTime = 0
             for phase in tp.iterPhases():
                 if phase.hasMovement(self.getStartNodeId(), self.getEndNodeId()):
-                    greenTime += phase.getGreen()
-
-            return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
-        else:
-            return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+                    mov = phase.getMovement(self.getStartNodeId(), self.getEndNodeId())
+                    if mov.isProtected:
+                        greenTime += phase.getGreen()
+            if greenTime > 0:                
+                return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+        raise DtaError("The movement %s does does not operate under a protected phase"
+                       % self.getId())
+         #return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
                 
     def _checkInputTimeStep(self, startTimeInMin, endTimeInMin):
         """The input time step should always be equal to the sim time step"""
@@ -363,8 +368,10 @@ class Movement(object):
             raise DtaError('Time period from %d to %d is out of '
                                    'simulation time' % (startTimeInMin, endTimeInMin))
         
-    def getSimVolume(self, startTimeInMin, endTimeInMin):
-        """Return the flow from the start to end"""
+    def getSimOutVolume(self, startTimeInMin, endTimeInMin):
+        """
+        Return the outgoing flow from the start to end
+        """
 
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
@@ -372,14 +379,34 @@ class Movement(object):
         result = 0
         for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
                                              self.simTimeStepInMin)):
-            result += self._simVolume[stTime, enTime]
-
+            result += self._simOutVolume[stTime, enTime]
         return result
 
-    def getSimFlow(self, startTimeInMin, endTimeInMin):
+    def getSimOutFlow(self, startTimeInMin, endTimeInMin):
+        """
+        Get the outgoing flow for the specified time period 
+        in vph
+        """
+        volume = self.getSimOutVolume(startTimeInMin, endTimeInMin)
+        return  60.0 / (endTimeInMin - startTimeInMin) * volume
+
+    def getSimInVolume(self, startTimeInMin, endTimeInMin):
+        """
+        Return the incoming flow from the start to end
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        result = 0
+        for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
+                                             self.simTimeStepInMin)):
+            result += self._simInVolume[stTime, enTime]
+        return result
+
+    def getSimInFlow(self, startTimeInMin, endTimeInMin):
         """Get the simulated flow for the specified time period 
         in vph"""
-        volume = self.getSimVolume(startTimeInMin, endTimeInMin)
+        volume = self.getSimInVolume(startTimeInMin, endTimeInMin)
         return  60.0 / (endTimeInMin - startTimeInMin) * volume
 
     def getSimTTInMin(self, startTimeInMin, endTimeInMin):
@@ -396,7 +423,7 @@ class Movement(object):
         if (startTimeInMin, endTimeInMin) in self._simMeanTT:
             return self._simMeanTT[startTimeInMin, endTimeInMin]
 
-        for (stTime, enTime), flow in self._simVolume.iteritems():
+        for (stTime, enTime), flow in self._simOutVolume.iteritems():
             if stTime >= startTimeInMin and enTime <= endTimeInMin:
                 binTT = self._simMeanTT[(stTime, enTime)]
 
@@ -455,14 +482,23 @@ class Movement(object):
         """
         return self._timeStep
     
-    def setSimVolume(self, startTimeInMin, endTimeInMin, flow):
+    def setSimOutVolume(self, startTimeInMin, endTimeInMin, flow):
         """
-        Specify the simulated flow (vehicles per HOUR) for the supplied time period
+        Specify the simulated outgoing flow (vehicles per HOUR) for the supplied time period
         """
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
-        self._simVolume[startTimeInMin, endTimeInMin] = flow
+        self._simOutVolume[startTimeInMin, endTimeInMin] = flow
+
+    def setSimInVolume(self, startTimeInMin, endTimeInMin, flow):
+        """
+        Specify the simulated incoming flow (vehicles per HOUR) for the supplied time period
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkInputTimeStep(startTimeInMin, endTimeInMin)
+
+        self._simInVolume[startTimeInMin, endTimeInMin] = flow
 
     def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
         """
@@ -484,7 +520,7 @@ class Movement(object):
             else:
                 return
 
-        if self.getSimFlow(startTimeInMin, endTimeInMin) == 0:
+        if self.getSimOutFlow(startTimeInMin, endTimeInMin) == 0:
             raise DtaError('Cannot set the travel time on a movement with zero flow')
 
         self._simMeanTT[startTimeInMin, endTimeInMin] = averageTTInMin

@@ -112,7 +112,7 @@ class RoadLink(Link):
         self._shapePoints               = []  #: sequenceNum -> (x,y)
         self._centerline                = self.getCenterLine()
 
-        self._simVolume = defaultdict(int)
+        self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
 
     def _validateInputTimes(self, startTimeInMin, endTimeInMin):
@@ -152,25 +152,50 @@ class RoadLink(Link):
                 return True
         return False
 
-    def getSimFlow(self, startTimeInMin, endTimeInMin):
+    def getSimOutFlow(self, startTimeInMin, endTimeInMin):
         """Get the simulated flow in vph"""
         volume = self.getSimVolume(startTimeInMin, endTimeInMin)        
         return int(float(volume) / (endTimeInMin - startTimeInMin) * 60)
 
-    def getSimVolume(self, startTimeInMin, endTimeInMin):
+    def getSimOutVolume(self, startTimeInMin, endTimeInMin):
         """Return the volume on the link from startTimeInMin to endTimeInMin"""
 
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
 
         if self.getNumOutgoingMovements() > 0:
-            return sum([mov.getSimVolume(startTimeInMin, endTimeInMin) 
+            return sum([mov.getSimOutVolume(startTimeInMin, endTimeInMin) 
                         for mov in self.iterOutgoingMovements()])
         else:
             result = 0
             for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
                                                  self.simTimeStepInMin)):
-                result += self._simVolume[stTime, enTime]
+                result += self._simOutVolume[stTime, enTime]
+            return result
+
+    def getSimInFlow(self, startTimeInMin, endTimeInMin):
+        """
+        Get the simulated incoming flow in vph
+        """
+        volume = self.getSimInVolume(startTimeInMin, endTimeInMin)        
+        return int(float(volume) / (endTimeInMin - startTimeInMin) * 60)
+
+    def getSimInVolume(self, startTimeInMin, endTimeInMin):
+        """
+        Return the incoming volume on the link from startTimeInMin to endTimeInMin
+        """
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        if self.getNumOutgoingMovements() > 0:
+            return sum([mov.getSimInVolume(startTimeInMin, endTimeInMin) 
+                        for mov in self.iterOutgoingMovements()])
+        else:
+            result = 0
+            for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
+                                                 self.simTimeStepInMin)):
+                result += self._simInVolume[stTime, enTime]
             return result
 
     def getSimTTInMin(self, startTimeInMin, endTimeInMin):
@@ -186,14 +211,14 @@ class RoadLink(Link):
         if totalFlow == 0:
             return self.getFreeFlowTTInMin()
 
-        if not self._simMeanTT and not self._simVolume:
+        if not self._simMeanTT and not self._simOutVolume:
             totalTime = sum([ mov.getSimTTInMin(start, end) * mov.getSimVolume(start, end)
                           for mov in self.iterOutgoingMovements()])
             return totalTime / float(totalFlow)
-        elif self._simMeanTT and self._simVolume:
+        elif self._simMeanTT and self._simOutVolume:
             totalTime = 0
             totalFlow = 0
-            for (stTime, enTime), flow in self._simVolume.iteritems():
+            for (stTime, enTime), flow in self._simOutVolume.iteritems():
                 if stTime >= startTimeInMin and enTime <= endTimeInMin:
 
                     binTT = self._simMeanTT[(stTime, enTime)]
@@ -239,7 +264,7 @@ class RoadLink(Link):
         raise Exception("Not implemented yet")
         return self._obsSpeed[startTimeInMin, endTimeInMin]
     
-    def setSimVolume(self, startTimeInMin, endTimeInMin, volume):
+    def setSimOutVolume(self, startTimeInMin, endTimeInMin, volume):
         """
         Set the simulated volume on the edge provided that the edge 
         does not have any emanating movements
@@ -261,7 +286,7 @@ class RoadLink(Link):
             for emanatingMovement in self.iterOutgoingMovements():
                 emanatingMovement.setSimVolume(startTimeInMin, endTimeInMin, volume)
         else:
-            self._simVolume[startTimeInMin, endTimeInMin] = volume
+            self._simOutVolume[startTimeInMin, endTimeInMin] = volume
         
     def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
         """
@@ -885,4 +910,5 @@ class RoadLink(Link):
         Set the group number fo the link
         """
         self._group = group
+        
         

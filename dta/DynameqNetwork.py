@@ -68,6 +68,7 @@ class DynameqNetwork(Network):
 """
 
     MOVEMENT_FLOW_OUT = 'movement_aflowo.dqt'
+    MOVEMENT_FLOW_IN = 'movement_aflowi.dqt'
     MOVEMENT_TIME_OUT = 'movement_atime.dqt'
     MOVEMENT_SPEED_OUT = "movement_aspeed.dqt"
     LINK_FLOW_OUT = 'link_aflowo.dqt'
@@ -175,9 +176,9 @@ class DynameqNetwork(Network):
         #Reason 1: The control file does not contain a signal for each line
         #Reason 2: If multiple time periods exist one more nesting level is added 
 
-        if os.path.exists(controlFile):
-            for tp in TimePlan.read(self, controlFile):
-                tp.getNode().addTimePlan(tp)
+        #if os.path.exists(controlFile):
+        #    for tp in TimePlan.read(self, controlFile):
+        #        tp.getNode().addTimePlan(tp)
                         
         #TODO: what about the custom priorities file?  I don't see that in pbtools               
         ## TODO - what about the public transit file?
@@ -972,18 +973,23 @@ class DynameqNetwork(Network):
         movementTimeFileName = os.path.join(self._dir,
                                             DynameqNetwork.MOVEMENT_TIME_OUT)
 
+        movementFlowInFileName = os.path.join(self._dir,
+                                            DynameqNetwork.MOVEMENT_FLOW_IN)
+
+
         inputStream1 = open(movementFlowFileName, 'r')
         inputStream2 = open(movementTimeFileName, 'r')
+        inputStream3 = open(movementFlowInFileName, 'r')        
 
         for i in range(9):
             inputStream1.next()
             inputStream2.next()
 
-
-        for flowLine, timeLine in izip(inputStream1, inputStream2):
+        for flowLine, timeLine, flowInLine in izip(inputStream1, inputStream2, inputStream3):
             
             flowFields = flowLine.strip().split()
             timeFields = timeLine.strip().split()
+            flowInFields = flowLine.strip().split()            
 
             nodeBid, nodeAid, nodeCid = map(int, flowFields[:3])
 
@@ -1007,10 +1013,11 @@ class DynameqNetwork(Network):
 
             simFlows = imap(int, flowFields[3:])
             simTTs = imap(float, timeFields[3:])
+            simInFlows = imap(int, flowInFields[3:])
+            
             timePeriodStart = self._simStartTimeInMin
                     
-            for simFlow, simTT in izip(simFlows, simTTs):
-
+            for simFlow, simTT, simInFlow in izip(simFlows, simTTs, simInFlows):
 
                 #TODO:Dynameq occasionaly reports negative times.
                 if simTT < 0:
@@ -1033,11 +1040,14 @@ class DynameqNetwork(Network):
                     if timePeriodStart >= self._simEndTimeInMin:
                         break
                 else:
-                    movement.setSimVolume(timePeriodStart, timePeriodStart + 
+                    movement.setSimOutVolume(timePeriodStart, timePeriodStart + 
                                         self._simTimeStepInMin, simFlow / (60 / self._simTimeStepInMin))
+                    movement.setSimInVolume(timePeriodStart, timePeriodStart + 
+                                        self._simTimeStepInMin, simInFlow / (60 / self._simTimeStepInMin))
 
                     movement.setSimTTInMin(timePeriodStart, timePeriodStart + 
                                           self._simTimeStepInMin, simTT / 60.0)
+
                                       
                     timePeriodStart += self._simTimeStepInMin
                     if timePeriodStart >= self._simEndTimeInMin:
