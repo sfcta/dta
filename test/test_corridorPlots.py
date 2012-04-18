@@ -59,12 +59,17 @@ def getGearySubNet():
     for link in net.iterLinks():
         if link.isVirtualLink():
             continue
+        if link.isConnector():
+            continue
         link._label  = str(link.getId())
         for mov in link.iterOutgoingMovements():
             for start, end in izip(range(0, 60, 15), range(15, 61, 15)):
                 mov.setSimOutVolume(start, end, random.randint(500, 1000))
                 mov.setSimInVolume(start, end, random.randint(500, 1000))
                 mov.cost = link.euclideanLength()
+                randInt = random.randint(2,4) 
+                tt = mov.getFreeFlowTTInMin() * float(randInt)
+                mov.setSimTTInMin(start, end, tt)
     
     return net 
 

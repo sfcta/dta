@@ -207,12 +207,12 @@ class RoadLink(Link):
         start = startTimeInMin
         end = endTimeInMin
 
-        totalFlow = self.getSimVolume(start, end)
+        totalFlow = self.getSimOutVolume(startTimeInMin, endTimeInMin)
         if totalFlow == 0:
             return self.getFreeFlowTTInMin()
 
         if not self._simMeanTT and not self._simOutVolume:
-            totalTime = sum([ mov.getSimTTInMin(start, end) * mov.getSimVolume(start, end)
+            totalTime = sum([ mov.getSimTTInMin(start, end) * mov.getSimOutVolume(start, end)
                           for mov in self.iterOutgoingMovements()])
             return totalTime / float(totalFlow)
         elif self._simMeanTT and self._simOutVolume:
@@ -251,7 +251,7 @@ class RoadLink(Link):
         #TODO if the coordinate system is not in feet 
         # you are going to have a problem
         tt = self.getSimTTInMin(startTimeInMin, endTimeInMin)
-        speedInMPH = self.getLengthInMiles() / (tt / 60.)
+        speedInMPH = self.getLength() / (tt / 60.)
         return speedInMPH
 
     def getObsMeanTT(self, startTimeInMin, endTimeInMin):
@@ -898,6 +898,12 @@ class RoadLink(Link):
         Return the free flow speed in MPH
         """
         return self._freeflowSpeed
+
+    def getFreeFlowTTInMin(self):
+        """
+        Return the free flow travel time in minutes
+        """
+        return (self.getLength() / self._freeflowSpeed) * 60.0
             
     def getGroup(self):
         """

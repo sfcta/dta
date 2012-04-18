@@ -226,10 +226,16 @@ class CountsVsVolumes(object):
         plt.cla()
         figure = plt.figure(1)
         figure.set_size_inches((25, 16))
-        BAR_WIDTH = 50         
+        BAR_WIDTH = 25        
 
         ###################################
         ax = plt.subplot(313)
+        speedAxis = ax.twinx()
+
+        #par2.spines["right"].set_position(("axes", 1.2))
+        #par2.spines["right"].set_visible(True)
+
+
         names = self.getIntersectionNames()
         locations = np.array(self.getIntersectionLocations())
         linkOutVolumes, linkInVolumes, ltVolumes, rtVolumes = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
@@ -241,6 +247,9 @@ class CountsVsVolumes(object):
         #crossLtVolumes, crossRtVolumes = self.getMovementVolumesCrossingCorridor(0, 60) 
         ax.set_ylabel('Vehicles Per Hour')
 
+        speedsAlongCorridor = [link.getSimSpeedInMPH(startTimeInMin, endTimeInMin) for link in self._path.iterLinks()]
+        speedValuesToPlot = []
+        
         valuesToPlot = []
         newLocations = []
         for i in range(len(linkOutVolumes)):
@@ -248,11 +257,17 @@ class CountsVsVolumes(object):
             newLocations.append(locations[i + 1] - BAR_WIDTH)
             valuesToPlot.append(linkInVolumes[i])
             valuesToPlot.append(linkOutVolumes[i])
+            speedValuesToPlot.append(speedsAlongCorridor[i])
+            speedValuesToPlot.append(speedsAlongCorridor[i])            
             
         ax.plot(newLocations, valuesToPlot, c='b')
         ax.set_xticks(locations)
         ax.set_xticklabels(names, rotation=90)
         ax.grid(True)
+
+        p2, = speedAxis.plot(newLocations, speedValuesToPlot, "r-", label="Link Speeds")
+        speedAxis.set_ylim(0, int(max(speedsAlongCorridor) + 1))
+
         
         #############################
 
@@ -268,7 +283,6 @@ class CountsVsVolumes(object):
 
         #############################
 
-        BAR_WIDTH = 50 
         ax = plt.subplot(311)
 
         ltVolumes, rtVolumes = self.getMovementVolumesCrossingCorridor(startTimeInMin, endTimeInMin)       

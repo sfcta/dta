@@ -435,13 +435,13 @@ class Movement(object):
                 else:
                     raise DtaError("Movement %s has flow:%f and TT:%f "
                                            "for time period from %d to %d"  % 
-                                           (self.iid, flow, binTT, 
+                                           (self.getId(), flow, binTT, 
                                             startTimeInMin, endTimeInMin))
 
         if totalFlow > 0:
             return totalTime / float(totalFlow) + self._penalty
         else:
-            return (self._incomingLink.getLengthInMiles() / 
+            return (self._incomingLink.getLength() / 
                 float(self._incomingLink.getFreeFlowSpeedInMPH()) * 60 + self._penalty)
 
     def getSimSpeedInMPH(self, startTimeInMin, endTimeInMin):
@@ -466,7 +466,7 @@ class Movement(object):
         """
         Return the free flow travel time in minutes
         """
-        return self.incomingLink.getFreeFlowTTInMin()
+        return self._incomingLink.getFreeFlowTTInMin()
 
     def getTimeVaryingCostAt(self, timeInMin):
         """
@@ -512,10 +512,10 @@ class Movement(object):
             raise DtaError("The travel time on movement %s cannot be negative" %
                                    str(self.getId()))
         if averageTTInMin == 0:
-            if self.getSimFlow(startTimeInMin, endTimeInMin) > 0:
+            if self.getSimOutFlow(startTimeInMin, endTimeInMin) > 0:
                 raise DtaError("The travel time on movement %s with flow %d from %d to %d "
                                        "cannot be 0" % (self.iid, 
-                                                        self.getSimFlow(startTimeInMin, endTimeInMin),
+                                                        self.getSimOutFlow(startTimeInMin, endTimeInMin),
                                                         startTimeInMin, endTimeInMin))
             else:
                 return
