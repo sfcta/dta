@@ -20,6 +20,7 @@ import logging
 import os
 import sys
 from itertools import izip
+import pdb
 
 import dta
 from dta.TPPlusTransitRoute import TPPlusTransitRoute
@@ -80,7 +81,6 @@ class TPPlus2Dynameq(object):
             edge.cost = edge.euclideanLength()
             if edge.isConnector():
                 edge.cost = sys.maxint
-
         
         dNodeSequence = []
         for tNode in tRoute.iterTransitNodes():
@@ -95,13 +95,16 @@ class TPPlus2Dynameq(object):
             errorMessage = ('Tpplus route %s cannot be converted to Dynameq because '
                             'none of its nodes is in the Dynameq network' % tRoute.name)
             logging.error(errorMessage)
-            raise TPPlus2DynameqError(errorMessage)
+
+            dta.DtaLogger.error(errorMessage)
+            #raise TPPlusError(errorMessage)
                                               
         if len(dNodeSequence) == 1:
             errorMessage = ('Tpplus route %s cannot be converted to Dyanmeq because only '
                                       'one of its nodes is in the Dynameq network' % tRoute.name)
             logging.error(errorMessage)            
-            raise TPPlus2DynameqError(errorMessage)
+            dta.DtaLogger.error(errorMessage)
+            #raise TPPlusError(errorMessage)
 
         dRoute = dta.DynameqTransitLine.TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
         for dNodeA, dNodeB in izip(dNodeSequence, dNodeSequence[1:]):
@@ -113,8 +116,8 @@ class TPPlus2Dynameq(object):
 
                 tNodeB = tRoute.getTransitNode(dNodeB.getId())
                 if tNodeB.isStop:
-                    dSegment.dwell = DWELL_TIME
-                
+                    dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
+                    #print 'Delay = ',dSegment.dwell
             else:
                 if doShortestPath:
                     print 'I am running the SP. Root node', dNodeA.getId()
@@ -129,15 +132,15 @@ class TPPlus2Dynameq(object):
                         numnewlinks+=1
                         dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                         dSegment = dRoute.addSegment(dLink, 0)
-                        if dNodeA.getId()==52458:
-                            print 'New Link Added = ',dLink.getId()
+                        #if numnewlinks>2:
+                         #   print 'New Link Added = ',dLink.getId()
 
-                    #if numnewlinks>2:
-                     #   print 'Number of new links added = ',numnewlinks
+                    if numnewlinks>2:
+                        print 'Number of new links added = ',numnewlinks
 
-                    tNodeB = tRoute.getTransitNode(pathNodeB.getId())
+                    tNodeB = tRoute.getTransitNode(dNodeB.getId())
                     if tNodeB.isStop:
-                        dSegment.dwell = DWELL_TIME
+                        dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
                 else:
                     pass
                         
@@ -166,9 +169,8 @@ if __name__ == "__main__":
     net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
     for tpplusRoute in dta.TPPlusTransitRoute.read(net, TRANSIT_LINES):
-
+       
         dynameqRoute = TPPlus2Dynameq.convertRoute(net, tpplusRoute)
-
         
 
     

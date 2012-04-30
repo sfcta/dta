@@ -18,6 +18,8 @@ __license__     = """
 
 import re
 from itertools import izip
+import pdb
+from collections import defaultdict
 
 import nose.tools
 from pyparsing import *
@@ -75,12 +77,24 @@ def createTPPlusTransitRouteParser():
 
     nodeId = Word(nums + '-') + ZeroOrMore(Literal(',').suppress())
     access = Optional('ACCESS=' + Word(nums) + ZeroOrMore(Literal(',').suppress()))
-    segment = Group('N=' + OneOrMore(nodeId) + access)
+    delay = Optional('DELAY=' + Word(nums+'.'+nums) + ZeroOrMore(Literal(',').suppress()))
+    segment = Group('N=' + OneOrMore(nodeId) + access + delay)
     body = OneOrMore(segment)
-
     route = header + body
 
     return header.parseString, body.parseString
+
+def getDictOfParsedElements(parsedSegment):
+
+    result = defaultdict(list)
+    keyword = ""
+    for i in parsedSegment:
+        if i in ["N=", "ACCESS=", "DELAY="]:
+            keyword = i
+        else:
+            result[keyword].append(i)
+                
+    return result
 
 def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
 
@@ -104,16 +118,36 @@ def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
     for extAttrName, intAttrName in TPPlusTransitRoute.attrs.iteritems():
         if extAttrName in headerFields:
             setattr(route, intAttrName, headerFields[headerFields.index(extAttrName) + 1])
+
+    
         
     for segment in bodyFields:
+        
         access = TransitNode.ACCESS_BOTH
-        if segment[-2] == 'ACCESS=':
-            access == segment[-1]
-            nodeIds = segment[1:-2]
+        delay = TransitNode.DELAY_VAL
+
+        parsedSegment = getDictOfParsedElements(segment)
+
+        nodeIds = parsedSegment["N="]
+        if "ACCESS=" in parsedSegment:
+            accessLast = float(parsedSegment["ACCESS="][0])
         else:
-            nodeIds = segment[1:]
+            accessLast = access
+        if "DELAY=" in parsedSegment:
+            delayLast = float(parsedSegment["DELAY="][0])
+        else:
+            delayLast = delay 
+        
+        #if segment[-2] == 'ACCESS=':
+        #    access == segment[-1]
+        #    nodeIds = segment[1:-2]
+        #elif segment[-2] == 'DELAY=':
+        #    delay == segment[-1]
+        #    nodeIds = segment[1:-3]
+        #else:
+        #    nodeIds = segment[1:]
             
-        for nodeId in nodeIds:
+        for i, nodeId in enumerate(nodeIds):
             isStop = True
             if nodeId.startswith('-'):
                 isStop = False
@@ -121,8 +155,13 @@ def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
             if includeOnlyNetNodes:
                 if not net.hasNode(nodeId):
                     continue
-
-            route.addTransitNode(int(nodeId), isStop, access)
+                
+            if i == len(nodeIds) - 1:
+                route.addTransitNode(int(nodeId), isStop, accessLast, delayLast)
+            else:
+                route.addTransitNode(int(nodeId), isStop, access, delay)
+            
+            #print 'nodeId = ',nodeId
 
     return route
         
@@ -131,19 +170,22 @@ class TransitNode(object):
     ACCESS_BOARD = '1'
     ACCESS_ALIGHT = '2'
     ACCESS_BOTH = '0'
+    DELAY_VAL = '0.0'
 
-    def __init__(self, nodeId, isStop, access):
+    def __init__(self, nodeId, isStop, access, delay):
         
-        self.node = None
+        #self.node = None # transitNode
         self.nodeId = nodeId
         self.isStop = isStop
-        self.access = access 
+        self.access = access
+        self.delay = delay
 
     def __repr__(self):
+        
         if self.isStop:
-            return "%s, ACCESS=%s" % (self.nodeId, self.access)
+            return "%s, ACCESS=%f.2, DELAY=%f.2, \n" % (self.nodeId, self.access, self.delay)
         else:
-            return "-%s, ACCESS=%s" % (self.nodeId, self.access)
+            return "-%s, ACCESS=%f.2, DELAY=%f.2, \n" % (self.nodeId, self.access, self.delay)
 
 class TPPlusTransitRoute(object):
 
@@ -209,17 +251,17 @@ class TPPlusTransitRoute(object):
         body = ', N='
         for transitNode in self.iterTransitNodes():
             if transitNode.isStop:
-                body += '%s, ' % transitNode.nodeId
+                body += '%s, ACCESS=%f.2, DELAY=%f.2, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
             else:
-                body += '-%s, ' % transitNode.nodeId
+                body += '-%s, ACCESS=%f.2, DELAY=%f.2, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
 
         return header + body[:-2] + '\n'
         
-    def addTransitNode(self, nodeId, isStop, access):
+    def addTransitNode(self, nodeId, isStop, access, delay):
         """
         Add a node with the given input id to the transit route
         """        
-        transitNode = TransitNode(nodeId, isStop, access)
+        transitNode = TransitNode(nodeId, isStop, access, delay)
         self._transitNodes.append(transitNode)
 
     def getTransitNode(self, nodeId):
@@ -228,6 +270,12 @@ class TPPlusTransitRoute(object):
             if transitNode.nodeId == nodeId:
                 return transitNode
         raise TPPlusError("Node %s is not in the route %s" % (nodeId, self.name))
+
+    def getTransitDelay(self, nodeId):
+        """Return the transit node with the given id"""
+        for transitNode in self.iterTransitNodes():
+            if transitNode.nodeId == nodeId :
+                return transitNode.delay
 
     def hasTransitNode(self, nodeId):
         """Return True if the route has a node with the given id otherwise false"""
