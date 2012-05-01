@@ -33,28 +33,24 @@ class PlanCollectionInfo(object):
     
     def __init__(self, startTime, endTime, name, description):
         """
-        A PlanCollectionInfo object represents the timeplans for a particular time period
-        The inputs to the constructor are the start and end times as datetime.time objects
-        and the name and description of the timeplans
+        A PlanCollectionInfo object has some general info for all the time plans that are
+        active between startTime and endTime. The inputs to the constructor are:
+        
+        startTime: a :py:class:`Utils.Time' object representing the start time of the time plan collection
+        endTime: a :py:class:`Utils.Time' object representing the end time of the time plan collection
+        name: a python string containing the name of the plan collection
+        description: a python string containing the description of the plan collection 
         """
-        assert isinstance(startTime, Time)
-        assert isinstance(endTime, Time)
         self._startTime = startTime
         self._endTime = endTime
         self._name = name
         self._description = description
 
-    def __str__(self):
+    def getDynameqStr(self):
         """
-        Return the string representing the plan collection
-        """            
-        return self.__repr__()
-
-    def __repr__(self):
-        """
-        Return the string representing the plan collection
-        """
-        #<DYNAMEQ>\n<VERSION_1.5>\n<CONTROL_PLANS_FILE>\n* %s\n
+        Return a Dynameq parsable string containing information about the time plan such as
+        the start time, the end time, its name, and description
+        """ 
         return ("PLAN_INFO\n%s %s\n%s\n%s" %  
                 (self._startTime.strftime("%H:%M"), 
                  self._endTime.strftime("%H:%M"),
@@ -62,31 +58,29 @@ class PlanCollectionInfo(object):
                     
     def getTimePeriod(self):
         """
-        Return a tuple representing the time period
-        of the plan collection
+        Return a tuple of two :py:class:`Utils.Time'objects corresponding to the
+        start and end time of the plan collection
         """
         return self._startTime, self._endTime
 
 class TimePlan(object):
     """
-    Represents a Dynameq timeplan
+    Represents gereric signal timeplan
     
-    .. todo:: Dynameq, eh?  What about just DTA?  And the Dynameq subclass?  And a holistic description
-              of what a "time plan" is, anyhow?  (No it's not obvious.)
-
     """
 
-    CONTROL_TYPE_CONSTANT = 0
-    CONTROL_TYPE_PRETIMED = 1
+    DYNAMEQ_CONTROL_TYPE_CONSTANT = 0
+    DYNAMEQ_CONTROL_TYPE_PRETIMED = 1
     
     TURN_ON_RED_YES = 1
     TURN_ON_RED_NO = 0
 
     @classmethod
-    def read(cls, net, fileName):
+    def readDynameqPlans(cls, net, fileName):
         """
-        This method reads the time plans contained in the fileName
-        file and adds them to the Dynameq Network object
+        This method reads the Dynameq time plans contained in the input
+        ascii filename and adds them to the provided dynameq network object.
+        #TODO: add version number
         """
 
         try:
@@ -136,8 +130,10 @@ class TimePlan(object):
                  syncPhase=1, turnOnRed=TURN_ON_RED_YES):
         """
         Constructor.
+        :py:class:`RoadNode': the node the signal applies
+        offset: a positive integer representing the offset of the 
+        :py:class:`PlanCollectionInfo': containing information about the start and end times of the time plan  
         
-        .. todo:: Documentation?
         """
         self._node = node
         self._planCollectionInfo = planCollectionInfo
@@ -148,7 +144,7 @@ class TimePlan(object):
 
         self._phases = []
 
-    def __repr__(self):
+    def getDynameqStr(self):
         """
         Return a Dynameq parsable string that represents the time plan
         """
@@ -156,12 +152,6 @@ class TimePlan(object):
         planInfo = "PLAN\n%d %d %d %d\n" % (self._type, self._offset, self._syncPhase, self._turnOnRed)
         phases = "\n".join([repr(phase) for phase in self.iterPhases()])
         return "%s%s%s\n" % (nodeInfo, planInfo, phases)
-
-    def __str__(self):
-        """
-        Return a Dynameq parsable string that represents the time plan
-        """        
-        return self.__repr__()
 
     def addPhase(self, phase):
         """
@@ -206,13 +196,13 @@ class TimePlan(object):
 
     def getNode(self):
         """
-        Return the node the timeplan applies
+        Return the node instance the timeplan applies
         """
         return self._node
 
     def getPhase(self, phaseNum):
         """
-        Return the phase with the given index
+        Return the phase instance with the given index
         """
         if phaseNum <= 0 or phaseNum > self.getNumPhases():
             return DtaError("Timeplan for node %s does not have a phase "
@@ -231,9 +221,9 @@ class TimePlan(object):
         """
         return self._planCollectionInfo
 
-    def setSyncPhase(self, syncPhase):
+    def setSyncPhase(self, phaseId):
         """
-        Set the syncing phase to the input value
+        Set the phase with input id the as the sync phase.  
         """
         if syncPhase <= 0:
             raise DtaError("Node %s. The sync phase %d cannot be less than 1 or greater than "
@@ -272,11 +262,12 @@ class TimePlan(object):
         #if right turns on red add the right turns 
         if self._turnOnRed == TimePlan.TURN_ON_RED_YES:
             for mov in self._node.iterMovements():
-                if mov.isRightTurn():
+                if mov.isRightTurn() and not mov.isProhibitedToAllVehicleClassGroups():
                     phaseMovements.add(mov.getId())
 
         nodeMovements = set([mov.getId() for mov in self._node.iterMovements() 
                             if not mov.isProhibitedToAllVehicleClassGroups()])
+        
         if phaseMovements != nodeMovements:
             nodeMovsNotInPhaseMovs = nodeMovements.difference(phaseMovements)
             phaseMovsNotInNodeMovs = phaseMovements.difference(nodeMovements)
@@ -298,17 +289,15 @@ class TimePlan(object):
                        if mov1.isRightTurn() or mov2.isRightTurn():
                            continue
                        raise DtaError("Movements %s, %s and %s, %s are in coflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))  
-                                       
-
-        #does it make sense to check there is no case where you have 3 simulataneous conflicting movements
-        #permitted or protected? Probably
-                               
+                                                                      
     def setPermittedMovements(self):
         """
-        Goes over the movements of the phase. If two protected movements
-        conflict with each other it sets the one with the fewer number of
-        lanes as a permitted one unless if both movements are
-        through movmeents. In this case it raises an error. 
+        Examines all the movements in the timeplan pairwise and if two movements
+        conflict with each other it sets the lower priority movement as
+        permitted. For examle, if a protected left turn conflicts with a
+        protected through movement it sets the left turn as permitted.
+        If two through movements conflict with each other and are both
+        protected an error is being raised.
         """
         for phase in self.iterPhases():
             for mov1 in phase.iterMovements():
