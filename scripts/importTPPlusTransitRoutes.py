@@ -15,7 +15,7 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import csv
 import logging
 import os
 import sys
@@ -26,6 +26,7 @@ import dta
 from dta.TPPlusTransitRoute import TPPlusTransitRoute
 from dta.DynameqTransitLine import TransitLine
 from dta.Algorithms import ShortestPaths
+from dta.CubeNetwork import CubeNetwork
 #from dta.Network import Network
 
 #from pbCore.utils.itertools2 import pairwise
@@ -97,14 +98,12 @@ class TPPlus2Dynameq(object):
             logging.error(errorMessage)
 
             dta.DtaLogger.error(errorMessage)
-            #raise TPPlusError(errorMessage)
                                               
         if len(dNodeSequence) == 1:
             errorMessage = ('Tpplus route %s cannot be converted to Dyanmeq because only '
                                       'one of its nodes is in the Dynameq network' % tRoute.name)
             logging.error(errorMessage)            
             dta.DtaLogger.error(errorMessage)
-            #raise TPPlusError(errorMessage)
 
         dRoute = dta.DynameqTransitLine.TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
         for dNodeA, dNodeB in izip(dNodeSequence, dNodeSequence[1:]):
@@ -132,11 +131,11 @@ class TPPlus2Dynameq(object):
                         numnewlinks+=1
                         dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                         dSegment = dRoute.addSegment(dLink, 0)
-                        #if numnewlinks>2:
-                         #   print 'New Link Added = ',dLink.getId()
+                        #if dNodeB.getId()==24666 and dNodeA.getId()==24564:
+                        #    print 'New Link Added = ',dLink.getId()
 
                     if numnewlinks>2:
-                        print 'Number of new links added = ',numnewlinks
+                        print 'NodeStart = ',dNodeA.getId(),', NodeEnd =',dNodeB.getId(),', Number of new links added = ',numnewlinks
 
                     tNodeB = tRoute.getTransitNode(dNodeB.getId())
                     if tNodeB.isStop:
@@ -153,6 +152,7 @@ if __name__ == "__main__":
     INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
     INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
     TRANSIT_LINES                 = sys.argv[3]
+    #SF_CUBE_NET_FIL               = sys.argv[4]
 
     dta.VehicleType.LENGTH_UNITS= "feet"
     dta.Node.COORDINATE_UNITS   = "feet"
@@ -164,12 +164,14 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
-    projectFolder2 = "C:/SFCTA/dta/testdata/ReneeTransitTest/"
-    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
-    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
+
+    #projectFolder2 = "C:/SFCTA/dta/testdata/ReneeTransitTest/"
+    #net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
+    #net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
+    
     for tpplusRoute in dta.TPPlusTransitRoute.read(net, TRANSIT_LINES):
-       
+
         dynameqRoute = TPPlus2Dynameq.convertRoute(net, tpplusRoute)
         
 
