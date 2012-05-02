@@ -21,6 +21,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.addPlanCollectionInfo
       ~DynameqNetwork.areIDsUnique
       ~DynameqNetwork.deepcopy
+      ~DynameqNetwork.findMovementForRoadLabels
       ~DynameqNetwork.getLinkForId
       ~DynameqNetwork.getLinkForNodeIdPair
       ~DynameqNetwork.getLinkType
@@ -42,6 +43,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.getScenario
       ~DynameqNetwork.handleOverlappingLinks
       ~DynameqNetwork.handleShortLinks
+      ~DynameqNetwork.hasCentroidForId
       ~DynameqNetwork.hasLinkForId
       ~DynameqNetwork.hasLinkForNodeIdPair
       ~DynameqNetwork.hasNodeForId
@@ -65,14 +67,12 @@ dta.DynameqNetwork
       ~DynameqNetwork.readSimResults
       ~DynameqNetwork.removeCentroidConnectorFromIntersection
       ~DynameqNetwork.removeCentroidConnectorsFromIntersections
-      ~DynameqNetwork.removeDuplicateConnectors
       ~DynameqNetwork.removeLink
       ~DynameqNetwork.removeNode
       ~DynameqNetwork.removeShapePoints
       ~DynameqNetwork.removeUnconnectedNodes
       ~DynameqNetwork.renameLink
       ~DynameqNetwork.renameNode
-      ~DynameqNetwork.retrieveCountListFromCountDracula
       ~DynameqNetwork.splitLink
       ~DynameqNetwork.write
       ~DynameqNetwork.writeCountListToFile

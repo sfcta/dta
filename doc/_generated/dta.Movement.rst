@@ -16,7 +16,6 @@ dta.Movement
       ~Movement.__init__
       ~Movement.getAtNode
       ~Movement.getCenterLine
-      ~Movement.getCountList
       ~Movement.getDestinationNode
       ~Movement.getDirection
       ~Movement.getEndNode
@@ -41,14 +40,16 @@ dta.Movement
       ~Movement.getVehicleClassGroup
       ~Movement.isInConflict
       ~Movement.isLeftTurn
+      ~Movement.isProhibitedToAllVehicleClassGroups
       ~Movement.isRightTurn
       ~Movement.isThruTurn
       ~Movement.isUTurn
-      ~Movement.setCountsFromCountDracula
+      ~Movement.prohibitAllVehicleClassGroups
       ~Movement.setPenaltyInMin
       ~Movement.setSimTTInMin
       ~Movement.setSimVolume
       ~Movement.setTimeVaryingCosts
+      ~Movement.setVehicleClassGroup
       ~Movement.simpleMovementFactory
    
    

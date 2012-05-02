@@ -60,9 +60,6 @@ ENDRUN
         for :py:class:`VehicleClassGroup` lookups        
         """ 
         Network.__init__(self, scenario)
-        
-        #: "old" node number to node number, see discussion of *nodeOldNodeStr* in readCSVs()
-        self._oldNodeNumToNodeNum = None
 
     def readNetfile(self, netFile, 
                     nodeVariableNames,
@@ -113,12 +110,12 @@ ENDRUN
                  nodesCsvFilename, nodeVariableNames,
                  linksCsvFilename, linkVariableNames,
                  centroidIds,
+                 useOldNodeForId,
                  nodeGeometryTypeEvalStr,
                  nodeControlEvalStr,
                  nodePriorityEvalStr,
                  nodeLabelEvalStr,
                  nodeLevelEvalStr,
-                 nodeOldNodeStr,
                  linkReverseAttachedIdEvalStr,
                  linkFacilityTypeEvalStr,
                  linkLengthEvalStr,
@@ -128,7 +125,8 @@ ENDRUN
                  linkNumLanesEvalStr,
                  linkRoundAboutEvalStr,
                  linkLevelEvalStr,
-                 linkLabelEvalStr):
+                 linkLabelEvalStr,
+                 linkGroupEvalStr):
         """
         Reads the network from the given csv files.
         * *nodesCsvFilename* is the csv with the node data; *nodeVariableNames* are the column names.
@@ -150,16 +148,12 @@ ENDRUN
         
         Note that the CSV fields are all strings, which is why SIGNAL is cast to an int here.
         
+        * *useOldNodeForId* indicates that the ``OLD_NODE`` variable is to be used for the ID (rather than ``N``).
         * *nodeGeometryTypeEvalStr* indicates how to set the *geometryType* for each :py:class:`RoadNode`
         * *nodeControlEvalStr* indicates how to set the *control* for each :py:class:`RoadNode`
         * *nodePriorityEvalStr* indicates how to set the *priority* for each :py:class:`RoadNode`
         * *nodeLabelEvalStr* indicates how to set the *label* for each :py:class:`Node`
         * *nodeLevelEvalStr* indicates how to set the *level* for each :py:class:`Node`
-        * *nodeOldNodeStr* indicates how to correspond Node numbers to original Node numbers.  This is
-          relevant if the cube network is the result of a Subarea Extraction, in which case node renumbering
-          may have occurred but the old node numbers are still useful.  If passed, a node number to old node number
-          correspondence will be retained.  Pass None if this feature won't be used; a typical use would be
-          to pass ``"int(OLD_NODE)"``.
 
         Similarly, the following strings are used to indicate how the **links** should be interpreted.
         
@@ -183,10 +177,14 @@ ENDRUN
           and :py:class:`Connector` instances
         * *linkLabelEvalStr* indicates how to set the *label* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
+        * *linkGroupEvalStr* indicates how to set the *group* for :py:class:`RoadLink`
+          and :py:class:`Connector` instances.
         
         """
-        if nodeOldNodeStr: self._oldNodeNumToNodeNum = {}
-        
+        # need to keep this for reading links
+        N_to_OldNode = {}
+            
+        idIndex = nodeVariableNames.index("OLD_NODE" if useOldNodeForId else "N")
         nIndex = nodeVariableNames.index("N")
         xIndex = nodeVariableNames.index("X")
         yIndex = nodeVariableNames.index("Y")
@@ -200,23 +198,24 @@ ENDRUN
         for line in nodesFile:
             fields = line.strip().split(",")
             
-            n = int(fields[nIndex])
-            x = float(fields[xIndex])
-            y = float(fields[yIndex])
+            id = int(fields[idIndex])
+            n  = int(fields[nIndex])
+            x  = float(fields[xIndex])
+            y  = float(fields[yIndex])
             
             localsdict = {}
             for i,nodeVarName in enumerate(nodeVariableNames):
                 localsdict[nodeVarName] = fields[i].strip("' ") # Cube csv strings are in single quotes
             
             newNode = None
-            if n in centroidIds:
-                newNode = Centroid(id=n,x=x,y=y,
+            if id in centroidIds:
+                newNode = Centroid(id=id,x=x,y=y,
                                    label=eval(nodeLabelEvalStr, globals(), localsdict),
                                    level=eval(nodeLevelEvalStr, globals(), localsdict))
                 countCentroids += 1
             else:
                 #TODO: allow user to set the defaults
-                newNode = RoadNode(id=n,x=x,y=y,
+                newNode = RoadNode(id=id,x=x,y=y,
                                    geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
                                    control=eval(nodeControlEvalStr, globals(), localsdict),
                                    priority=eval(nodePriorityEvalStr, globals(), localsdict),
@@ -225,7 +224,7 @@ ENDRUN
                 countRoadNodes += 1
             self.addNode(newNode)
             
-            if nodeOldNodeStr: self._oldNodeNumToNodeNum[eval(nodeOldNodeStr, globals(), localsdict)] = n
+            if useOldNodeForId: N_to_OldNode[n] = id
 
         DtaLogger.info("Read  %8d %-16s from %s" % (countCentroids, "centroids", nodesCsvFilename))
         DtaLogger.info("Read  %8d %-16s from %s" % (countRoadNodes, "roadnodes", nodesCsvFilename))
@@ -240,6 +239,10 @@ ENDRUN
             a = int(fields[aIndex])
             b = int(fields[bIndex])
             
+            if useOldNodeForId:
+                a = N_to_OldNode[a]
+                b = N_to_OldNode[b]
+                
             nodeA = self.getNodeForId(a)
             nodeB = self.getNodeForId(b)
             
@@ -264,7 +267,8 @@ ENDRUN
                         numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
                         roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
                         level                   = eval(linkLevelEvalStr, globals(), localsdict),
-                        label                   = eval(linkLabelEvalStr, globals(), localsdict))
+                        label                   = eval(linkLabelEvalStr, globals(), localsdict),
+                        group                   = eval(linkGroupEvalStr, globals(), localsdict))
                     countConnectors += 1
                 except DtaError, e:
                     DtaLogger.error("Error adding Connector from %d to %d - skipping: %s" %
@@ -286,7 +290,8 @@ ENDRUN
                         numLanes                = eval(linkNumLanesEvalStr, globals(), localsdict),
                         roundAbout              = eval(linkRoundAboutEvalStr, globals(), localsdict),
                         level                   = eval(linkLevelEvalStr, globals(), localsdict),
-                        label                   = eval(linkLabelEvalStr, globals(), localsdict))
+                        label                   = eval(linkLabelEvalStr, globals(), localsdict),
+                        group                   = eval(linkGroupEvalStr, globals(), localsdict))
                     countRoadLinks += 1
                 except DtaError, e:
                     DtaLogger.error("Error adding RoadLink from %d to %d - skipping: %s" %
@@ -429,102 +434,9 @@ ENDRUN
                 continue
             
             # DtaLogger.info("Removing movement %d-%d-%d found in turn prohibition file" % (startNodeId, nodeId, endNodeId))
-            link.removeOutgoingMovement(mov)
+            mov.prohibitAllVehicleClassGroups()
+            #link.removeOutgoingMovement(mov)
             movements_removed += 1
         
         DtaLogger.info("Removed %d movements out of %d found in %s" % (movements_removed, lines_read, fileName))
         
-    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, useOldNodeNum=False, skipField=None, skipValueList=None):
-        """
-        Uses the given *linkShapefile* to add shape points to the network, in order to more accurately
-        represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
-        intersections because of the angles involved.
-        
-        *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
-        of the start node and end node IDs within the *linkShapefile*.
-        
-        If *useOldNodeNum* is passed, the shapefile will be assumed to be referring to the old node numbers rather
-        than the current node numbers; see :py:meth:`CubeNetwork.readCSVs` discussion of the arg *nodeOldNodeStr* for
-        more information on the old node numbers.
-        
-        If *skipField* is passed, then the field given by this name will be checked against the list of values given
-        by *skipValueList*.  This is useful for when there are some bad elements in your shapefile that you want to skip.
-        
-        If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
-        will be used.
-        
-        Does this in two passes; in the first pass, the (a,b) from the shapefile is looked up in the network, and used
-        to add shape points.  In the second pass, the (b,a) from the shapefile is looked up in the network, and used
-        to add shape points **if that link has not already been updated from the first pass**.
-        
-        .. todo:: Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
-                  node should be included too.  However, if we include either the first or the last shape point below,
-                  everything goes crazy.  I'm not sure why?
-        """ 
-
-        sf      = shapefile.Reader(linkShapefile)
-        shapes  = sf.shapes()
-        records = sf.records()
-        
-        links_found         = 0
-        shapepoints_added   = 0
-
-        fields = [field[0] for field in sf.fields]
-        
-        # if the first field is the 'DeletionFlag' -- remove
-        if fields[0] == 'DeletionFlag':
-            fields.pop(0)
-            
-        # If a link with the same (node1,node2) pair is specified more than 
-        # once in the shapefile, only the first one will be used.
-        links_done = {}
-        
-        # two passes - regular and reverse
-        for direction in ["regular","reverse"]:
-            
-            for shape, recordValues in izip(shapes, records):
-
-                assert(len(fields)==len(recordValues))
-                
-                localsdict  = dict(zip(fields, recordValues))
-                
-                # check if we're instructed to skip this one
-                if skipField and (skipField in fields) and (localsdict[skipField] in skipValueList): continue
-                
-                if direction == "regular":
-                    startNodeId = int(localsdict[startNodeIdField])
-                    endNodeId   = int(localsdict[endNodeIdField])
-                else:
-                    startNodeId = int(localsdict[endNodeIdField])
-                    endNodeId   = int(localsdict[startNodeIdField])
-                        
-                # DtaLogger.debug("shape %d %d" % (startNodeId, endNodeId))
-    
-                if useOldNodeNum:
-                    try:
-                        startNodeId = self._oldNodeNumToNodeNum[startNodeId]
-                        endNodeId   = self._oldNodeNumToNodeNum[endNodeId]
-                    except:
-                        # couldn't find relevant nodes
-                        continue
-                
-                if (startNodeId, endNodeId) in links_done: continue 
-                    
-                if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
-                    link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
-                    links_found += 1
-                    
-                    # just a straight line - no shape points necessary
-                    if len(shape.points) == 2: continue
-                    
-                    # Dynameq throws away a single, see todo above
-                    if len(shape.points) == 3: continue
-                    
-                    # don't include the first and last, they're already there
-                    link._shapePoints = shape.points[1:-1]
-                    if direction == "reverse": link._shapePoints.reverse()
-                    shapepoints_added += len(shape.points)-2
-                    
-                    links_done[(startNodeId, endNodeId)] = True
-
-        DtaLogger.info("Read %d shape points for %d links from %s" % (shapepoints_added, links_found, linkShapefile))

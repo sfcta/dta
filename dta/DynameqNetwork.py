@@ -52,7 +52,7 @@ class DynameqNetwork(Network):
     PRIORITIES_FILE = '%s_prio.dqt'
     
     BASE_HEADER          = """<DYNAMEQ>
-<VERSION_1.5>
+<VERSION_1.8>
 <BASE_NETWORK_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/
 """
@@ -68,6 +68,7 @@ class DynameqNetwork(Network):
 """
 
     MOVEMENT_FLOW_OUT = 'movement_aflowo.dqt'
+    MOVEMENT_FLOW_IN = 'movement_aflowi.dqt'
     MOVEMENT_TIME_OUT = 'movement_atime.dqt'
     MOVEMENT_SPEED_OUT = "movement_aspeed.dqt"
     LINK_FLOW_OUT = 'link_aflowo.dqt'
@@ -129,7 +130,7 @@ class DynameqNetwork(Network):
         count = 0
         for fields in self._readSectionFromFile(basefile, "LANE_EVENTS", "VIRTUAL_LINKS"):
             #TODO: do LANE_EVENTS have to correspond to scenario events?
-            raise DtaError("LANE_EVENTS not implemented yet")
+            #raise DtaError("LANE_EVENTS not implemented yet")
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "LANE_EVENTS", basefile))
             
@@ -142,8 +143,6 @@ class DynameqNetwork(Network):
         count = 0                        
         for fields in self._readSectionFromFile(basefile, "MOVEMENTS", "MOVEMENT_EVENTS"):
             mov = self._parseMovementFromFields(fields)
-            if mov._permission.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_PROHIBITED:
-                continue                               
             self.addMovement(self._parseMovementFromFields(fields))
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENTS", basefile))
@@ -151,7 +150,7 @@ class DynameqNetwork(Network):
         count = 0
         for fields in self._readSectionFromFile(basefile, "MOVEMENT_EVENTS", "ENDOFFILE"):
             #TODO: MOVEMENT_EVENTS
-            raise DtaError("MOVEMENT_EVENTS not implemented yet")            
+            #raise DtaError("MOVEMENT_EVENTS not implemented yet")            
             count += 1
         DtaLogger.info("Read  %8d %-16s from %s" % (count, "MOVEMENT_EVENTS", basefile))
         
@@ -176,9 +175,10 @@ class DynameqNetwork(Network):
         #The structure of the code is different than the previous read ones
         #Reason 1: The control file does not contain a signal for each line
         #Reason 2: If multiple time periods exist one more nesting level is added 
-        if os.path.exists(controlFile):
-            for tp in TimePlan.read(self, controlFile):
-                tp.getNode().addTimePlan(tp)
+
+        #if os.path.exists(controlFile):
+        #    for tp in TimePlan.read(self, controlFile):
+        #        tp.getNode().addTimePlan(tp)
                         
         #TODO: what about the custom priorities file?  I don't see that in pbtools               
         ## TODO - what about the public transit file?
@@ -316,8 +316,7 @@ class DynameqNetwork(Network):
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadNodes(), "ROAD NODES", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumCentroids(), "CENTROIDS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumVirtualNodes(), "VIRTUAL NODES", basefile_object.name))
-        
-        
+                
     def _parseCentroidFromFields(self, fields):
         """
         Interprets fields into a Centroid
@@ -376,12 +375,13 @@ class DynameqNetwork(Network):
         rabout  = int(fields[10])
         level   = int(fields[11])
         tmplabel= fields[12:len(fields) - 1]
-        group = fields[len(fields) - 1]
+        group = int(fields[len(fields) - 1])
 
         if tmplabel == '""':
             label = ""
         else:
             label = " ".join(tmplabel)[1:-1]
+
             
         startNode = self.getNodeForId(startid)
         endNode = self.getNodeForId(endid)
@@ -395,14 +395,14 @@ class DynameqNetwork(Network):
                                 length=(None if length==-1 else length),
                                 freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                                 responseTimeFactor=resfac, numLanes=lanes,
-                                roundAbout=rabout, level=level, label=label)
+                                roundAbout=rabout, level=level, label=label, group=group)
         
         # are these all RoadLinks?  What about VirtualLinks?
         return RoadLink(id, startNode, endNode, reverseAttachedLinkId=rev, 
                            facilityType=faci, length=(None if length==-1 else length),
                            freeflowSpeed=fspeed, effectiveLengthFactor=lenfac, 
                            responseTimeFactor=resfac, numLanes=lanes,
-                           roundAbout=rabout, level=level, label=label)                    
+                           roundAbout=rabout, level=level, label=label, group=group)
 
     def _writeLinksToBasefile(self, basefile_object):
         """
@@ -410,7 +410,7 @@ class DynameqNetwork(Network):
         ready for writing.
         """
         basefile_object.write("LINKS\n")
-        basefile_object.write("*      id    start      end      rev faci          len       fspeed   lenfac   resfac lanes rabout  level         label\n")
+        basefile_object.write("*        id     start       end       rev faci         len      fspeed  lenfac  resfac lanes rabout level                          label                                  group       \n")
 
         count = 0
 
@@ -419,20 +419,22 @@ class DynameqNetwork(Network):
 
         for link in chain(roadLinks, connectors):
 
-            basefile_object.write("%9d %8d %8d %7d %4d %12s %12.1f %8.2f %8.2f %5d %5d %6d %13s\n" % 
+            basefile_object.write(" %10d %9d %9d %9d %4d %11s %11.3f %7.3f %7.3f %5d %6d %5d %30s %38d       \n" % 
                                   (link.getId(),
                                    link.getStartNode().getId(),
                                    link.getEndNode().getId(),
                                    link._reverseAttachedLinkId if link._reverseAttachedLinkId else -1,
                                    link._facilityType,
-                                   ("%12.3f" % link._length),
+                                   ("%11.3f" % link._length),
                                    link._freeflowSpeed,
                                    link._effectiveLengthFactor,
                                    link._responseTimeFactor,
                                    link._numLanes,
                                    link._roundAbout,
                                    link._level,
-                                   '"' + (link._label if link._label else "") + '"'))
+                                   '"' + (link._label if link._label else "") + '"',
+                                   link.getId() if link._group == -1 else link._group)) # -1 means no group so use link ID
+
             count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", basefile_object.name))
         DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", basefile_object.name))
@@ -611,75 +613,7 @@ class DynameqNetwork(Network):
                 count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))                                           
         
-    def retrieveCountListFromCountDracula(self, countDraculaReader, starttime, period, number, tolerance):
-        """
-        Writes counts to movements from CountDracula
-        starttime = startitme for counts
-        period = interval for each count
-        number = total counts = (endtime-starttime)/period
-        tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)        
-        """
-        #Can have additional arguments for aggregating counts, days and other args
-        
-        Movement.countNumber = number
-        Movement.countPeriod = period
-        Movement.countStartTime = starttime
-        
-        movementcounter = 0
-        
-        dtaNodes2countDraculaNodes_dict = {}  #Dictionary by dta node id: Key = dta_node_id, value = CD_node_id
-        #counter = 0
-
-        for dtanodeid in self._nodes:
-            dtanode = self._nodes[dtanodeid]
-            dta_node_x = dtanode.getX()
-            dta_node_y = dtanode.getY()
-            cd_node = countDraculaReader.mapNodeId(dta_node_x, dta_node_y, tolerance)
-            
-            #------ASSUMING there is a single match !!!!------ 
-            if not cd_node == -1 :
-                dtaNodes2countDraculaNodes_dict[dtanode.getId()] = cd_node
-            
-                #counter = counter+1
-        
-        print str(len(dtaNodes2countDraculaNodes_dict))+" nodes matched from "+str(len(self._nodes))+" nodes"
-        
-        for id in self._linksById:
-            link = self._linksById[id]
-            if not isinstance(link, VirtualLink):
-        
-        #TODO - Attach link counts
-        #====================================================================
-        # 
-        # Here we can insert count attachment to links. For this we would need:
-        # 1)counts[] instance variable for class link (or roadlink or connector)
-        # 2)create getMainlineCountFromCountDracula method for countdracula.ReadFromCD class
-        #   
-        #====================================================================
-                
- 
-                
-                for movement in link.iterOutgoingMovements():
-                    movementcounter += 1
-                    #print movementcounter
-                    #if movementcounter == 9000:
-                    #    return
                     
-                    if movement.getAtNode().getId() in dtaNodes2countDraculaNodes_dict: #check if node is in CD
-                        atNode = dtaNodes2countDraculaNodes_dict[movement.getAtNode().getId()] #returns the nodes CD id
-                        if movement.getOriginNode().getId() in dtaNodes2countDraculaNodes_dict:
-                            fromNode = dtaNodes2countDraculaNodes_dict[movement.getOriginNode().getId()]
-                            if movement.getDestinationNode().getId() in dtaNodes2countDraculaNodes_dict:
-                                toNode = dtaNodes2countDraculaNodes_dict[movement.getDestinationNode().getId()]
-                    
-                                fromangle = movement.getIncomingLink().getReferenceAngle()
-                                toangle = movement.getOutgoingLink().getReferenceAngle()
-                                
-                                countsList = countDraculaReader.getTurningCounts(atNode, fromNode, toNode, fromangle, toangle, starttime, period, number)
-                                if not countsList == []: 
-                                    #print "***************************************"
-                                    movement.setCountsFromCountDracula(countsList)
-                            
     def writeCountListToFile(self, dir, starttime, period, number):
         """
         Writes counts to movements from CountDracula
@@ -854,17 +788,20 @@ class DynameqNetwork(Network):
                     if ilink.isConnector() and olink.isConnector():
                         if ilink.hasOutgoingMovement(olink.getEndNodeId()):
                             mov = ilink.getOutgoingMovement(olink.getEndNodeId())
-                            ilink.removeOutgoingMovement(mov)
+                            ilink.prohibitOutgoingMovement(mov)
+                            #ilink.removeOutgoingMovement(mov)
                         else:
                             prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
-                                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
                             ilink.addOutgoingMovement(prohibitedMovement) 
                     else:
                         if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
                             
                             allowedMovement = Movement.simpleMovementFactory(ilink, olink,
-                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL))
+                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
                             ilink.addOutgoingMovement(allowedMovement)
+                            
+        self._removeDuplicateConnectors()
                     
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
         """
@@ -929,7 +866,7 @@ class DynameqNetwork(Network):
                                      connector._numLanes,
                                      connector._roundAbout,
                                      connector._level, 
-                                     connector._label)
+                                     connector._label, connector.getId())
 
             self.removeLink(connector)
             self.addLink(newConnector)
@@ -949,7 +886,7 @@ class DynameqNetwork(Network):
                                      connector._numLanes,
                                      connector._roundAbout,
                                      connector._level, 
-                                     connector._label)
+                                     connector._label, connector.getId())
 
             self.removeLink(connector)
             self.addLink(newConnector)
@@ -1036,17 +973,23 @@ class DynameqNetwork(Network):
         movementTimeFileName = os.path.join(self._dir,
                                             DynameqNetwork.MOVEMENT_TIME_OUT)
 
+        movementFlowInFileName = os.path.join(self._dir,
+                                            DynameqNetwork.MOVEMENT_FLOW_IN)
+
+
         inputStream1 = open(movementFlowFileName, 'r')
         inputStream2 = open(movementTimeFileName, 'r')
+        inputStream3 = open(movementFlowInFileName, 'r')        
 
         for i in range(9):
             inputStream1.next()
             inputStream2.next()
 
-        for flowLine, timeLine in izip(inputStream1, inputStream2):
+        for flowLine, timeLine, flowInLine in izip(inputStream1, inputStream2, inputStream3):
             
             flowFields = flowLine.strip().split()
             timeFields = timeLine.strip().split()
+            flowInFields = flowLine.strip().split()            
 
             nodeBid, nodeAid, nodeCid = map(int, flowFields[:3])
 
@@ -1070,9 +1013,15 @@ class DynameqNetwork(Network):
 
             simFlows = imap(int, flowFields[3:])
             simTTs = imap(float, timeFields[3:])
+            simInFlows = imap(int, flowInFields[3:])
+            
             timePeriodStart = self._simStartTimeInMin
                     
-            for simFlow, simTT in izip(simFlows, simTTs):
+            for simFlow, simTT, simInFlow in izip(simFlows, simTTs, simInFlows):
+
+                #TODO:Dynameq occasionaly reports negative times.
+                if simTT < 0:
+                    continue
 
                 if simFlow == 0 and simTT > 0:
                     raise DtaError('Movement %s has zero flow in the '
@@ -1091,11 +1040,14 @@ class DynameqNetwork(Network):
                     if timePeriodStart >= self._simEndTimeInMin:
                         break
                 else:
-                    movement.setSimVolume(timePeriodStart, timePeriodStart + 
+                    movement.setSimOutVolume(timePeriodStart, timePeriodStart + 
                                         self._simTimeStepInMin, simFlow / (60 / self._simTimeStepInMin))
+                    movement.setSimInVolume(timePeriodStart, timePeriodStart + 
+                                        self._simTimeStepInMin, simInFlow / (60 / self._simTimeStepInMin))
 
                     movement.setSimTTInMin(timePeriodStart, timePeriodStart + 
                                           self._simTimeStepInMin, simTT / 60.0)
+
                                       
                     timePeriodStart += self._simTimeStepInMin
                     if timePeriodStart >= self._simEndTimeInMin:
@@ -1104,7 +1056,7 @@ class DynameqNetwork(Network):
         inputStream1.close()
         inputStream2.close()
 
-    def removeDuplicateConnectors(self):
+    def _removeDuplicateConnectors(self):
         """
         Remove duplicate connectors that connect from the
         same centroid to the same road node
@@ -1145,10 +1097,3 @@ class DynameqNetwork(Network):
                 mov.simEndTimeInMin = simEndTimeInMin
 
         self._readMovementOutFlowsAndTTs()
-
-
-        
-        
-        
-
-                    

@@ -21,18 +21,21 @@ from .DtaError import DtaError
 
 class Phase(object):
     """
-    Represents a dynameq phase.
-    
-    .. todo:: Dynameq?  There should be a Dynameq subclass.
+    Represents a generic phase class that can contain one or more 
+    :py:class:`PhaseMovement' objects. 
     """
     
     TYPE_CUSTOM = 1
     TYPE_STANDARD = 0
 
     @classmethod
-    def read(self, net, timeplan, lineIter):
-        """read a phase string from the line iterator and return a Phase instance"""
-
+    def readFromDynameqString(self, net, timeplan, lineIter):
+        """Parses the dynameq phase string defined in multiple lines of text and returns a
+        Dynameq phase object. 
+        lineIter is an iterator over the lines of a text file containing the Dynameq phase info. 
+        net is an instance of :py:class:`DynameqNetwork'
+        timePlan is an instance of :py:class:`TimePlan'
+        """         
         endOfFile = True
         try:
             currentLine = lineIter.next().strip() 
@@ -73,8 +76,13 @@ class Phase(object):
                 yield phase
             raise StopIteration
 
-    def __init__(self, timePlan, green, yellow, red, phaseType):
-        
+    def __init__(self, timePlan, green, yellow, red, phaseType=TYPE_STANDARD):
+        """
+        Constructor. 
+        :py:class:`TimePlan' is the timeplan instance the phase
+        green, red, and yellow is the green, yellow, and red times respectively
+
+        """
         self._timePlan = timePlan
         self._node = timePlan.getNode()
         self._green = green
@@ -114,10 +122,13 @@ class Phase(object):
         return self.__str__()
 
     def addMovement(self, movement):
-        
+        """
+        Add the input movement to the phase. If the movement
+        allready exists and exception will be thrown
+        """
         if not self.getTimePlan().getNode().hasMovement(movement.getStartNode().getId(),
                                           movement.getEndNode().getId()):
-            raise DtaError("Movement %s is not does not belong to node node %d" % (movement.getId(),
+            raise DtaError("Movement %s is not does not belong to node %d" % (movement.getId(),
                                                                                    movement.getAtNode().getId()))
         if self.hasMovement(movement.getStartNodeId(), 
                             movement.getEndNodeId()):
@@ -125,20 +136,6 @@ class Phase(object):
         
         self._movements.append(movement)
     
-    def deleteMovement(self, ):
-        """Add the movement with the provided iid to the list of movements 
-        served by the phase"""
-
-        if not self.hasMovement(movementIid):
-            raise DtaError("Movement to be deleted %s does not belog to the "
-                             "phase" % str(movementIid))
-
-        if self.getNumMovements() == 1:
-            raise DtaError('I cannot delete a phase with only one movement. '
-                             'Please delete the phase')
-        movement = self.getMovement(movementIid)
-        self._movements.pop(self._movements.index(movement))
-
     def getTimePlan(self):
         """
         Return the timeplan associated with this phase
@@ -199,7 +196,9 @@ class Phase(object):
             return False 
         
     def iterMovements(self):
-        """Return an iterator the the phase movements"""
+        """
+        Return an iterator the the phase movements
+        """
         return iter(self._movements)
 
     def getGreen(self):

@@ -16,14 +16,14 @@ dta.Demand
       ~Demand.__init__
       ~Demand.applyTimeOfDayFactors
       ~Demand.getNumSlices
-      ~Demand.getTotalDemand
+      ~Demand.getTotalNumTrips
       ~Demand.getValue
       ~Demand.iterTimePeriods
-      ~Demand.read
       ~Demand.readCubeODTable
+      ~Demand.readDynameqTable
       ~Demand.removeInvalidODPairs
       ~Demand.setValue
-      ~Demand.write
+      ~Demand.writeDynameqTable
    
    
 

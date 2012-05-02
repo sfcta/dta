@@ -101,7 +101,7 @@ def simpleRoadLinkFactory(id_, startNode, endNode):
 
     return RoadLink(id_, startNode, endNode,
                     None, 0, length, 30, 1.0, 1.0, 3,
-                    0, 0, "")
+                    0, 0, "", id_)
 
 def simpleConnectorFactory(id_, startNode, endNode):
 
@@ -110,7 +110,7 @@ def simpleConnectorFactory(id_, startNode, endNode):
     length = length / 5280.0    
     return Connector(id_, startNode, endNode,
                     None, length, 30, 1.0, 1.0, 3,
-                    0, 0, "")
+                    0, 0, "", id_)
 
 def simpleVirtualLinkFactory(id_, startNode, endNode):
 
@@ -284,9 +284,9 @@ class TestNetwork(object):
 
         assert link_52.getNumIncomingMovements() == 1
 
-        nose.tools.assert_raises(DtaError, link_51.removeOutgoingMovement, mov)
+        nose.tools.assert_raises(DtaError, link_51._removeOutgoingMovement, mov)
         
-        link_15.removeOutgoingMovement(mov)
+        link_15._removeOutgoingMovement(mov)
         assert link_15.getNumOutgoingMovements() == 0
         assert link_52.getNumIncomingMovements() == 0
 
@@ -969,18 +969,20 @@ class TestNetwork(object):
     def test_deleteCentroid(self):
 
         net = getGearySubNet()
-        
-        net.writeNodesToShp("/Users/michalis/Dropbox/tmp/testNodes")
-        net.writeLinksToShp("/Users/michalis/Dropbox/tmp/testLinks")
-         
-        cent = net.getNodeForId(9)
-        net.removeNode(cent) 
+    
 
+        cent = net.getNodeForId(9)
+        net.removeNode(cent)
+        
+        assert not net.hasLinkForId(104874)
+        assert not net.hasLinkForId(104875)
         #the following two are the connectors
-        #assert net.hasLinkForId(16432)
-        #assert net.hasLinkForId(16425)
-        assert not net.hasLinkForId(104867)
-        assert not net.hasLinkForId(104940)
+        #assert not net.hasLinkForId(16432)
+        #assert not net.hasLinkForId(16425)
+        #and this is the virtual node
+        #assert not net.hasNodeForId(26626)
+        
+
 
     def test_linkOrientation(self):
 
@@ -1077,4 +1079,20 @@ class TestNetwork(object):
         
         print "num time plans", net.getNumTimePlans()
 
-        
+    def NOtest_movementVehClassGrous(self):
+
+        net = getGearySubNet()
+
+        node = net.getNodeForId(24467)
+
+        i = 0
+        for mov in node.iterMovements():
+            mov.allowVehicleClassGroup("All")
+            if i % 2 == 0:
+                mov.prohibitVehicleClassGroup("Transit")                
+
+            else:
+                mov.allowVehicleClassGroup("Truck")                
+
+        mov.isVehicleClassGroupProhibited("Transit")
+        mov.prohibitAllVehicleClassGroups() 

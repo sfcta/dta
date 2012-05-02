@@ -32,7 +32,7 @@ class RoadLink(Link):
     A RoadLink in a network.  Both nodes must be RoadNodes.
     
     """
-    #: Static variable representing the nits of the length variable
+    #: Static variable representing the units of the length variable
     #: Should be ``kilometers`` or ``miles``
     LENGTH_UNITS = None
     
@@ -41,14 +41,18 @@ class RoadLink(Link):
     #: default lane width in :py:attr:`Node.COORDINATE_UNITS`
     DEFAULT_LANE_WIDTH = 12
 
+    #: Eastbound return value for :py:meth:`RoadLink.getDirection`
     DIR_EB = "EB"
+    #: Westbound return value for :py:meth:`RoadLink.getDirection`
     DIR_WB = "WB"
+    #: Northbound return value for :py:meth:`RoadLink.getDirection`    
     DIR_NB = "NB"
+    #: Southbound return value for :py:meth:`RoadLink.getDirection`
     DIR_SB = "SB"
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
-                 roundAbout, level, label):
+                 roundAbout, level, label, group):
         """
         Constructor.
         
@@ -69,6 +73,10 @@ class RoadLink(Link):
          * *roundAbout* is true/false or 1/0
          * *level* is an indicator to attribute vertical alignment/elevation. If None passed, will use default.
          * *label* is a link label. If None passed, will use default. 
+         * *group* is an integer that identifies one or more links; groups are used for calculation of approach
+           delay to an intersection.  So all vehicles approaching on the links in one group experience the
+           same approach delay.  (todo: example of how this should be used?)  If -1 is passed, no group will be
+           used.
          
         """
         Link.__init__(self, id, startNode, endNode, label)
@@ -77,6 +85,7 @@ class RoadLink(Link):
         self._freeflowSpeed             = freeflowSpeed
         self._effectiveLengthFactor     = effectiveLengthFactor
         self._responseTimeFactor        = responseTimeFactor
+        self._group                     = group
 
         if numLanes <= 0: 
             raise DtaError("RoadLink %d cannot have number of lanes = %d" % (self.getId(), numLanes))
@@ -103,7 +112,7 @@ class RoadLink(Link):
         self._shapePoints               = []  #: sequenceNum -> (x,y)
         self._centerline                = self.getCenterLine()
 
-        self._simVolume = defaultdict(int)
+        self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
 
     def _validateInputTimes(self, startTimeInMin, endTimeInMin):
@@ -143,25 +152,50 @@ class RoadLink(Link):
                 return True
         return False
 
-    def getSimFlow(self, startTimeInMin, endTimeInMin):
+    def getSimOutFlow(self, startTimeInMin, endTimeInMin):
         """Get the simulated flow in vph"""
         volume = self.getSimVolume(startTimeInMin, endTimeInMin)        
         return int(float(volume) / (endTimeInMin - startTimeInMin) * 60)
 
-    def getSimVolume(self, startTimeInMin, endTimeInMin):
+    def getSimOutVolume(self, startTimeInMin, endTimeInMin):
         """Return the volume on the link from startTimeInMin to endTimeInMin"""
 
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
 
         if self.getNumOutgoingMovements() > 0:
-            return sum([mov.getSimVolume(startTimeInMin, endTimeInMin) 
+            return sum([mov.getSimOutVolume(startTimeInMin, endTimeInMin) 
                         for mov in self.iterOutgoingMovements()])
         else:
             result = 0
             for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
                                                  self.simTimeStepInMin)):
-                result += self._simVolume[stTime, enTime]
+                result += self._simOutVolume[stTime, enTime]
+            return result
+
+    def getSimInFlow(self, startTimeInMin, endTimeInMin):
+        """
+        Get the simulated incoming flow in vph
+        """
+        volume = self.getSimInVolume(startTimeInMin, endTimeInMin)        
+        return int(float(volume) / (endTimeInMin - startTimeInMin) * 60)
+
+    def getSimInVolume(self, startTimeInMin, endTimeInMin):
+        """
+        Return the incoming volume on the link from startTimeInMin to endTimeInMin
+        """
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        if self.getNumOutgoingMovements() > 0:
+            return sum([mov.getSimInVolume(startTimeInMin, endTimeInMin) 
+                        for mov in self.iterOutgoingMovements()])
+        else:
+            result = 0
+            for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
+                                                 self.simTimeStepInMin)):
+                result += self._simInVolume[stTime, enTime]
             return result
 
     def getSimTTInMin(self, startTimeInMin, endTimeInMin):
@@ -173,18 +207,18 @@ class RoadLink(Link):
         start = startTimeInMin
         end = endTimeInMin
 
-        totalFlow = self.getSimVolume(start, end)
+        totalFlow = self.getSimOutVolume(startTimeInMin, endTimeInMin)
         if totalFlow == 0:
             return self.getFreeFlowTTInMin()
 
-        if not self._simMeanTT and not self._simVolume:
-            totalTime = sum([ mov.getSimTTInMin(start, end) * mov.getSimVolume(start, end)
+        if not self._simMeanTT and not self._simOutVolume:
+            totalTime = sum([ mov.getSimTTInMin(start, end) * mov.getSimOutVolume(start, end)
                           for mov in self.iterOutgoingMovements()])
             return totalTime / float(totalFlow)
-        elif self._simMeanTT and self._simVolume:
+        elif self._simMeanTT and self._simOutVolume:
             totalTime = 0
             totalFlow = 0
-            for (stTime, enTime), flow in self._simVolume.iteritems():
+            for (stTime, enTime), flow in self._simOutVolume.iteritems():
                 if stTime >= startTimeInMin and enTime <= endTimeInMin:
 
                     binTT = self._simMeanTT[(stTime, enTime)]
@@ -217,7 +251,7 @@ class RoadLink(Link):
         #TODO if the coordinate system is not in feet 
         # you are going to have a problem
         tt = self.getSimTTInMin(startTimeInMin, endTimeInMin)
-        speedInMPH = self.getLengthInMiles() / (tt / 60.)
+        speedInMPH = self.getLength() / (tt / 60.)
         return speedInMPH
 
     def getObsMeanTT(self, startTimeInMin, endTimeInMin):
@@ -230,7 +264,7 @@ class RoadLink(Link):
         raise Exception("Not implemented yet")
         return self._obsSpeed[startTimeInMin, endTimeInMin]
     
-    def setSimVolume(self, startTimeInMin, endTimeInMin, volume):
+    def setSimOutVolume(self, startTimeInMin, endTimeInMin, volume):
         """
         Set the simulated volume on the edge provided that the edge 
         does not have any emanating movements
@@ -252,7 +286,7 @@ class RoadLink(Link):
             for emanatingMovement in self.iterOutgoingMovements():
                 emanatingMovement.setSimVolume(startTimeInMin, endTimeInMin, volume)
         else:
-            self._simVolume[startTimeInMin, endTimeInMin] = volume
+            self._simOutVolume[startTimeInMin, endTimeInMin] = volume
         
     def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
         """
@@ -385,13 +419,20 @@ class RoadLink(Link):
         raise DtaError("coordinatesAlongLink: distance %.2f too long for link %d (%d-%d) with total distance %.2f" % 
                        (distance, self._id, self._startNode.getId(), self._endNode.getId(), total_distance))
 
-    def hasOutgoingMovement(self, nodeId):
+    def hasOutgoingMovement(self, nodeId, vehicleClassGroup=None):
         """
-        Return True if the link has an outgoing movement towards nodeId
+        Return True if the link has an outgoing movement towards nodeId.
+        Please note that the movement may be prohibited.
         """
-        for mov in self.iterOutgoingMovements():
-            if mov.getDestinationNode().getId() == nodeId:
-                return True
+        if not vehicleClassGroup: 
+            for mov in self.iterOutgoingMovements():
+                if mov.getDestinationNode().getId() == nodeId:
+                    return True
+        else:
+            for mov in self.iterOutgoingMovements():
+                if mov.getDestinationNode().getId() == nodeId and \
+                   mov.getVehicleClassGroup() == vehicleClassGroup:
+                    return True            
         return False
     
     def addOutgoingMovement(self, movement):
@@ -408,11 +449,6 @@ class RoadLink(Link):
             raise DtaError("RoadLink %s addOutgoingMovement() called to add already "
                            "existing movement" % str(movement))
 
-        #if not movement.getVehicleClassGroup().allowsAll():
-        #    raise DtaError("RoadLink %s addOutgoingMovement() called to add movement "
-        #                   "with lane permissions %s" % (str(movement),
-        #                                                 str(movement.getVehicleClassGroup())))
-                    
         self._outgoingMovements.append(movement)
         movement.getOutgoingLink()._incomingMovements.append(movement)
     
@@ -422,27 +458,54 @@ class RoadLink(Link):
         """
         return iter(self._outgoingMovements)
 
+    def iterIncidentMovements(self):
+        """
+        Return an iterator to all the incident movemements
+        of this link
+        """
+        for mov in self.getStartNode().iterMovements():
+            if mov.getOutgoingLink() == self:
+                yield mov
+            
     def getNumIncomingMovements(self):
         """
         Returns the number of incoming movements
         """
         return len(self._incomingMovements)
+    
+    def prohibitOutgoingMovement(self, movementToProhibit):
+        """
+        Prohibit the input movement
+        """
+        if not isinstance(movementToProhibit, Movement):
+            raise DtaError("RoadLink %s deleteOutgoingMovement() "
+                           "called with invalid movement %s" % str(movementToProhibit))
+        
+        if movementToProhibit.getIncomingLink() != self:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToProhibit))
 
-    def removeOutgoingMovement(self, movementToRemove):
+        if not movementToProhibit in self._outgoingMovements:
+            raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
+                           "inexisting movement" % str(movementToProhibit))
+
+        movementToProhibit.prohibitAllVehicleClassGroups()        
+        
+    def _removeOutgoingMovement(self, movementToRemove):
         """
         Delete the input movement
         """
         if not isinstance(movementToRemove, Movement):
-            raise DtaError("RoadLink %s deleteOutgoingMovement() "
+            raise DtaError("RoadLink %s _removeOutgoingMovement() "
                            "called with invalid movement %s" % str(movementToRemove))
         
         if movementToRemove.getIncomingLink() != self:
-            raise DtaError("RoadLink %s deleteOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
+            raise DtaError("RoadLink %s _removeOutgoingMovement() called with inconsistent movement" % str(movementToRemove))
 
         if not movementToRemove in self._outgoingMovements:
-            raise DtaError("RoadLink %s deleteOutgoingMovement() called to delete "
-                           "inexisting movement" % str(movementToRemove))
+            raise DtaError("RoadLink %s _removeOutgoingMovement() called to delete "
+                           "invalid movement" % str(movementToRemove))
 
+        #movementToRemove.setProhibited()
         self._outgoingMovements.remove(movementToRemove)
         movementToRemove.getOutgoingLink()._incomingMovements.remove(movementToRemove)
 
@@ -723,14 +786,23 @@ class RoadLink(Link):
         
         return False
 
-    def getOrientation(self):
+    def getOrientation(self, atEnd=True):
         """
         Returns the angle of the link in degrees from the North
         measured clockwise. The link shape is taken into account.
+        If there are shape points, and *atEnd* is True, then the orientation
+        is evaluated at the end point of the link, otherwise it's evaluated at
+        the start of the link.
         """
         if self._shapePoints:
-            x1, y1 = self._shapePoints[-2]
-            x2, y2 = self._shapePoints[-1]
+            if atEnd:
+                # skip point -1 because of the centerline issue that makes the first point jump out from the centerline                                
+                x1, y1 = self._shapePoints[-2]
+                x2, y2 = self.getEndNode().getX(), self.getEndNode().getY()
+            else:
+                x1, y1 = self.getStartNode().getX(), self.getStartNode().getY()
+                # skip point 0 because of the centerline issue that makes the first point jump out from the centerline                
+                x2, y2 = self._shapePoints[1]  
         else:
             x1 = self.getStartNode().getX()
             y1 = self.getStartNode().getY()
@@ -750,11 +822,14 @@ class RoadLink(Link):
 
         return orientation * 180 / math.pi
         
-    def getDirection(self):
-        """Return the direction of the link as one of 
-        EB, NB, WB, EB"""
+    def getDirection(self, atEnd=True):
+        """
+        Returns the direction of the link as one of :py:attr:`RoadLink.DIR_EB`,  :py:attr:`RoadLink.DIR_NB`,
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`.  Uses :py:meth:`getOrientation` so the
+        shape points are used with the *atEnd* argument.
+        """
 
-        orientation = self.getOrientation()
+        orientation = self.getOrientation(atEnd)
         if 315 <= orientation or orientation < 45:
             return RoadLink.DIR_NB
         elif 45 <= orientation < 135:
@@ -764,7 +839,43 @@ class RoadLink(Link):
         else:
             return RoadLink.DIR_WB
 
+    def hasRightTurn(self):
+        """
+        Return True if the link has a through turn
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isRightTurn():
+                return True
+        return False
+
+    def getRightTurn(self):
+        """
+        Return the thru movement of the link or raise an error if it does not exist
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isThruTurn():
+                return mov
+        raise DtaError("Link %d does not have a thru movement" % self.getId())
+
     def hasThruTurn(self):
+        """
+        Return True if the link has a through turn
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isThruTurn():
+                return True
+        return False
+
+    def getThruTurn(self):
+        """
+        Return the thru movement of the link or raise an error if it does not exist
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.isLeftTurn():
+                return mov
+        raise DtaError("Link %d does not have a thru movement" % self.getId())
+
+    def hasLeftTurn(self):
         """
         Return True if the link has a through turn
         """
@@ -773,7 +884,7 @@ class RoadLink(Link):
                 return True
         return False
 
-    def getThruTurn(self):
+    def getLeftTurn(self):
         """
         Return the thru movement of the link or raise an error if it does not exist
         """
@@ -787,6 +898,23 @@ class RoadLink(Link):
         Return the free flow speed in MPH
         """
         return self._freeflowSpeed
+
+    def getFreeFlowTTInMin(self):
+        """
+        Return the free flow travel time in minutes
+        """
+        return (self.getLength() / self._freeflowSpeed) * 60.0
             
+    def getGroup(self):
+        """
+        Return the group number fo the link
+        """
+        return self._group
+    
+    def setGroup(self, group):
+        """
+        Set the group number fo the link
+        """
+        self._group = group
         
         

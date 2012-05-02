@@ -20,12 +20,18 @@ class VehicleClassGroup:
     """
     Represents a group (or a set) of VehicleClasses, which are the classNames in :py:class:`VehicleType`.
     """
-    ALL = "All"
-    PROHIBITED = "Prohibited"
-    TRANSIT = "Transit"
+    CLASSDEFINITION_PROHIBITED = "Prohibited"
+    CLASSDEFINITION_ALL        = "All"
+    TRANSIT                    = "Transit"           
 
-    CLASSDEFINITION_PROHIBITED = "-"
-    CLASSDEFINITION_ALL = "*" 
+    @classmethod
+    def getProhibited(cls):
+        """
+        Return a vehicle class group object that prohibits all movements
+        """
+        prohibited = VehicleClassGroup("Prohibited",
+                          VehicleClassGroup.CLASSDEFINITION_PROHIBITED, "#ffff00")
+        return prohibited
 
     def __init__(self, name, classDefinitionString, colorCode):
         """

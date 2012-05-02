@@ -32,7 +32,7 @@ class Scenario(object):
         """
         Constructor.
         
-        *startTime* and *endTime* are datetime.datetime instances.
+        *startTime* and *endTime* are dta.Utils.Time instances.
         """
         self.startTime = startTime
         self.endTime   = endTime
@@ -63,12 +63,14 @@ class Scenario(object):
         """
         *vehicleClassName* is a string
         """
+        #TODO: you should check if it is already there 
         self.vehicleClassNames.append(vehicleClassName)
         
     def addVehicleType(self, vehicleType):
         """
         *vehicleType* is a :py:class:`VehicleType`
         """
+        #TODO:check if already there 
         if not isinstance(vehicleType, VehicleType):
             raise DtaError("Scenario addVehicleType() called with a non VehicleType object: %s" % 
                            str(vehicleType))

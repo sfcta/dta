@@ -61,7 +61,12 @@
 <dl class="method">
 <dt id="dta.Demand.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>net</em>, <em>vehClassName</em>, <em>startTime</em>, <em>endTime</em>, <em>timeStep</em><big>)</big><a class="headerlink" href="#dta.Demand.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Constructor that initializes an empty Demand table that has three dimensions:
+time, origin taz, destination taz.</p>
+<p><em>net</em> is a dta.Network instance
+<em>vehClassName</em> is a string 
+<em>startTime</em>, <em>endTime</em> and <em>timeStep</em> are dta.Utils.Time instancess</p>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="docutils">
@@ -79,7 +84,7 @@
 <tr><td><a class="reference internal" href="#dta.Demand.getNumSlices" title="dta.Demand.getNumSlices"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.getNumSlices</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Demand.getTotalDemand" title="dta.Demand.getTotalDemand"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.getTotalDemand</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Demand.getTotalNumTrips" title="dta.Demand.getTotalNumTrips"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.getTotalNumTrips</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Demand.getValue" title="dta.Demand.getValue"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.getValue</span></tt></a></td>
@@ -88,10 +93,10 @@
 <tr><td><a class="reference internal" href="#dta.Demand.iterTimePeriods" title="dta.Demand.iterTimePeriods"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.iterTimePeriods</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Demand.read" title="dta.Demand.read"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.read</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Demand.readCubeODTable" title="dta.Demand.readCubeODTable"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.readCubeODTable</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Demand.readCubeODTable" title="dta.Demand.readCubeODTable"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.readCubeODTable</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Demand.readDynameqTable" title="dta.Demand.readDynameqTable"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.readDynameqTable</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Demand.removeInvalidODPairs" title="dta.Demand.removeInvalidODPairs"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.removeInvalidODPairs</span></tt></a></td>
@@ -100,7 +105,7 @@
 <tr><td><a class="reference internal" href="#dta.Demand.setValue" title="dta.Demand.setValue"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.setValue</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Demand.write" title="dta.Demand.write"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.write</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Demand.writeDynameqTable" title="dta.Demand.writeDynameqTable"><tt class="xref py py-obj docutils literal"><span class="pre">Demand.writeDynameqTable</span></tt></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -122,9 +127,9 @@ in the list.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Demand.getTotalDemand">
-<tt class="descname">getTotalDemand</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Demand.getTotalDemand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the total number of trips</p>
+<dt id="dta.Demand.getTotalNumTrips">
+<tt class="descname">getTotalNumTrips</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Demand.getTotalNumTrips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the total number of trips for all time periods</p>
 </dd></dl>
 
 <dl class="method">
@@ -140,15 +145,17 @@ in the list.</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="dta.Demand.read">
-<em class="property">classmethod </em><tt class="descname">read</tt><big>(</big><em>net</em>, <em>fileName</em><big>)</big><a class="headerlink" href="#dta.Demand.read" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
 <dt id="dta.Demand.readCubeODTable">
 <em class="property">classmethod </em><tt class="descname">readCubeODTable</tt><big>(</big><em>fileName</em>, <em>net</em>, <em>vehicleClassName</em>, <em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Demand.readCubeODTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the demand (linear format) from the input csv file. The fieldNames 
 should correspond to the names of the vehicle classes.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="dta.Demand.readDynameqTable">
+<em class="property">classmethod </em><tt class="descname">readDynameqTable</tt><big>(</big><em>net</em>, <em>fileName</em><big>)</big><a class="headerlink" href="#dta.Demand.readDynameqTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the dynameq demand stored in the fileName that pertains to the 
+dynameq network a :py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>DynameqNetwork`instance</p>
 </dd></dl>
 
 <dl class="method">
@@ -165,8 +172,8 @@ a path does not exist from origin to destination</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Demand.write">
-<tt class="descname">write</tt><big>(</big><em>fileName</em><big>)</big><a class="headerlink" href="#dta.Demand.write" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.Demand.writeDynameqTable">
+<tt class="descname">writeDynameqTable</tt><big>(</big><em>fileName</em><big>)</big><a class="headerlink" href="#dta.Demand.writeDynameqTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the demand in the dynameq format</p>
 </dd></dl>
 

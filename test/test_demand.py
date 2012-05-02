@@ -20,7 +20,6 @@ import dta
 import os
 import pdb
 
-import la
 import nose.tools 
 import numpy as np
 
@@ -76,7 +75,7 @@ class TestDemand:
 
         net = getTestNet() 
 
-        demand = Demand.read(net, fileName)
+        demand = Demand.readDynameqTable(net, fileName)
         assert demand.getNumSlices() == 4
 
         assert demand.getValue(Time(0, 15), 56, 8) == 4000
@@ -89,28 +88,6 @@ class TestDemand:
         assert not demand.getValue(Time(0, 15), 56, 8) == 4000
         assert demand.getValue(Time(0, 15), 56, 8) == 4001
 
-    def test_larry(self):
-        
-        x = np.array([[[1,2], [3,4]],[[1,2], [3,4]]])
-        label = [['a', 'b'], ['c', 'd'], ['e', 'f']]
-        m = la.larry(x, label, dtype=float)
-
-        assert m.lix[['a'], ['d'], ['e']] == 3.0
-
-        y = np.array([[[1,2], [3,4]],[[1,2], [3,4]]])
-        label2 = [['a', 'b'], ['c', 'd'], ['e', 'f']]
-        m2 = la.larry(y, label2, dtype=float)
-
-        #nose.tools.set_trace()
-
-        m1 = m.copyx()
-        m2 = m2.copyx() 
-
-        result = m1 == m2
-    
-        for elem in result.flat:
-            assert elem 
-
     def test_write(self):
         """
         """
@@ -119,13 +96,13 @@ class TestDemand:
                                 'dynameqNetwork_gearySubset', 'gearysubnet_matx.dqt')
 
         net = getTestNet() 
-        demand = Demand.read(net, fileName)
+        demand = Demand.readDynameqTable(net, fileName)
 
         # TODO: this requires subdir test to exist.  Write this to tempfile.mkdtemp()
         outFileName = "test/testDemand.dqt" 
 
-        demand.write(outFileName)
-        demand2 = Demand.read(net, outFileName)
+        demand.writeDynameqTable(outFileName)
+        demand2 = Demand.readDynameqTable(net, outFileName)
         assert demand == demand2
         os.remove("test/testDemand.dqt")
 
@@ -154,8 +131,3 @@ class TestDemand:
         assert d2.getValue(730, 2, 6) == 500
         assert d2.getValue(800, 2, 6) == 500
 
-# Create the demand matrix 
-# remove all the very short links. This is the only way to move forward.
-# you may need to write the algoritm that finds invalid demand pairs 
-# make a run. Maybe you should make a simple run first 
-# you will need to apply the algorithm that takes care of the overlapping links 

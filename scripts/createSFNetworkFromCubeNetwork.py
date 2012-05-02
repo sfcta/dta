@@ -19,6 +19,7 @@ __license__     = """
 import dta
 import os
 import sys
+import pdb
 
 USAGE = r"""
 
@@ -45,14 +46,14 @@ def addShifts(sanfranciscoCubeNet):
     e.g. some local lanes need to be shifted to be outside the through lanes.
     """
     # geary local
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26595,26591).addShifts(3,3)  # Steiner to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26591,26588).addShifts(3,3)  # Fillmore to Webster
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3)  # Steiner to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3)  # Fillmore to Webster
     
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26588,26591).addShifts(3,3)  # Webster to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26591,26597).addShifts(3,3)  # Fillmore to Avery
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26597,26595).addShifts(3,3)  # Avery to Steiner
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3)  # Webster to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3)  # Fillmore to Avery
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3)  # Avery to Steiner
     # HWY 101 N On-Ramp at Marin / Bayshore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(33752,33084).addShifts(1,0)
+    sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0)
     
 def removeHOVStubs(sanfranciscoDynameqNet):
     """
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     dta.Node.COORDINATE_UNITS   = "feet"
     dta.RoadLink.LENGTH_UNITS   = "miles"
 
-    dta.setupLogging("dtaInfo.log", "dtaDebug.log", logToConsole=True)
+    dta.setupLogging("createSFNetworkFromCubeNetwork.INFO.log", "createSFNetworkFromCubeNetwork.DEBUG.log", logToConsole=True)
     
     # The Geary network was created in an earlier Phase of work, so it already exists as
     # a Dynameq DTA network.  Initialize it from the Dynameq text files.
@@ -131,9 +132,11 @@ if __name__ == '__main__':
     # Generic is an implicit type
 
     # VehicleClassGroups
-    allVCG =                                  dta.VehicleClassGroup(dta.VehicleClassGroup.ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe") 
+    allVCG = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
+        dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
+        "#bebebe")
     sanfranciscoScenario.addVehicleClassGroup(allVCG)
-    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.TRANSIT,    dta.VehicleClassGroup.TRANSIT,                      "#55ff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
     
@@ -148,6 +151,11 @@ if __name__ == '__main__':
     
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
+    centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
+    centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
+                        7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
+                        8339,8832])     # externals
+    #TODO: hard coding below
     sanfranciscoCubeNet.readNetfile \
       (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
        nodeVariableNames=["N","X","Y","OLD_NODE"],
@@ -164,13 +172,13 @@ if __name__ == '__main__':
                           "VALUETOLL_FLAG","PASSTHRU",
                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
                           ],
-       centroidIds                      = range(1,999),
+       centroidIds                      = centroidIds,
+       useOldNodeForId                  = True,
        nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
        nodeLabelEvalStr                 = "None",
        nodeLevelEvalStr                 = "None",
-       nodeOldNodeStr                   = "int(OLD_NODE)",
        linkReverseAttachedIdEvalStr     = "None", #TODO: fix?
        linkFacilityTypeEvalStr          = "int(FT)",
        linkLengthEvalStr                = "float(DISTANCE)",
@@ -180,8 +188,8 @@ if __name__ == '__main__':
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
-       linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")'
-       #linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "")'
+       linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")',
+       linkGroupEvalStr                 = "-1",
        )
     
     # create the movements for the network for all vehicles
@@ -191,7 +199,7 @@ if __name__ == '__main__':
     sanfranciscoCubeNet.applyTurnProhibitions(os.path.join(SF_CUBE_NET_DIR, "turnspm.pen"))
     
     # Read the shape points so curvy streets look curvy
-    sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B", useOldNodeNum=True,
+    sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
                                       skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
                                                                            2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
                                                                            ])
@@ -213,9 +221,6 @@ if __name__ == '__main__':
     # Move the centroid connectors from intersection nodes to midblock locations
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
     sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
-
-    # TODO: why is this necessary?  Where these duplicate connectors came from?
-    # sanfranciscoDynameqNet.removeDuplicateConnectors()
     
     # TODO: I think this isn't necessary; but discuss if the soln below is ok
     # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),

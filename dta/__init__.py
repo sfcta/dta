@@ -26,6 +26,7 @@ __license__     = """
 
 from .Centroid import Centroid
 from .Connector import Connector
+from .CorridorPlots import CountsVsVolumes
 from .CubeNetwork import CubeNetwork
 from .Demand import Demand
 from .DtaError import DtaError
@@ -50,13 +51,14 @@ from .VehicleType import VehicleType
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 
+
 from .Algorithms import dfs 
 
 __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Network', 'DynameqNetwork', 'CubeNetwork',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
-           'Link', 'RoadLink', 'Connector', 'VirtualLink', 'Demand',
+           'Link', 'RoadLink', 'Connector', 'VirtualLink', 'DynameqDemand',
            'PlanCollectionInfo', 'TimePlan', 'TPPlusTransitRoute', 'Route', 'Phase', 'MultiArray',
-           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time'
+           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time', 'CountsVsVolumes'
 ]

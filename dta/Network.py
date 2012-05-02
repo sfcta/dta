@@ -27,11 +27,13 @@ from .DtaError import DtaError
 from .Link import Link
 from .RoadLink import RoadLink
 from .Logger import DtaLogger
+from .Node import Node
 from .RoadNode import RoadNode
 from .TimePlan import PlanCollectionInfo
 from .Scenario import Scenario
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
+from .VehicleType import VehicleType
 from .VehicleClassGroup import VehicleClassGroup
 from .Movement import Movement
 from .Algorithms import * 
@@ -52,6 +54,8 @@ class Network(object):
         Constructor.  Initializes to an empty network, stores reference to given
         scenario (a :py:class:`Scenario` instance).
         """
+        if (not VehicleType.LENGTH_UNITS) or (not Node.COORDINATE_UNITS) or not (RoadLink.LENGTH_UNITS):
+            raise DtaError("Network __init__ failed; Please set VehicleType.LENGTH_UNITS, Node.COORDINATE_UNITS and RoadLink.LENGTH_UNITS.")
         
         #: node id -> node; these can be instances of :py:class:`RoadNode` :py:class:`VirtualNode` or
         #: :py:class:`Centroid`
@@ -238,8 +242,9 @@ class Network(object):
                 
                     mov = Movement.simpleMovementFactory(incomingLink, outgoingLink, vehicleClassGroup)
                 
-                    # if it's a U-Turn and we don't want it, move on
-                    if mov.isUTurn() and not includeUTurns: continue
+                    # if it's a U-Turn and we don't want it, set the movement to prohibited
+                    if mov.isUTurn() and not includeUTurns:
+                        mov.prohibitAllVehicleClassGroups()
                 
                     incomingLink.addOutgoingMovement(mov)
                     movements_added += 1
@@ -491,7 +496,19 @@ class Network(object):
             return True
         except DtaError:
             return False
-
+            
+    def hasCentroidForId(self, nodeId):
+        """
+        Return True if there is a centroid with the given id
+        """
+        try:
+            node = self.getNodeForId(nodeId)
+            if node.isCentroid():
+                return True
+            return False
+        except DtaError:
+            return False
+    
     def hasLinkForId(self, linkId):
         """
         Return True if a link with the given id exists
@@ -511,7 +528,233 @@ class Network(object):
             return True
         except DtaError:
             return False
+    
+    def findLinksForRoadLabels(self, on_street_label, on_direction,
+                                       from_street_label, to_street_label,
+                                       remove_label_spaces=False):
+        """
+        Attempts to find the link(s) with the given *on_street_label* and *on_direction*
+        from the street matching *from_street_label* to the street matching *to_street_label*.
+        
+        *on_street_label*, *from_street_label* and *to_street_label* are checked against 
+        :py:class:`RoadLink` labels and should be upper-case.  If *remove_label_spaces* is True, then
+        the labels will have their spaces stripped before comparison.
+        
+        *on_direction* is one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_NB`,
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`.
+        
+        Raises a :py:class:`DtaError` on failure, returns a list of :py:class:`RoadLink` instances on success.
+        """
+        # first find candidates for the two intersections in question
+        roadnode_from = []
+        roadnode_to   = []
+            
+        for roadnode_candidate in self.iterRoadNodes():
+            # check the streets match
+            streetnames = roadnode_candidate.getStreetNames(incoming=True, outgoing=True)
+            if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
+            
+            if on_street_label in streetnames and from_street_label in streetnames:
+                roadnode_from.append(roadnode_candidate)
+            
+            if on_street_label in streetnames and to_street_label in streetnames:
+                roadnode_to.append(roadnode_candidate)
 
+
+        # Did we fail to find an intersection?
+        if len(roadnode_from)==0:
+            raise DtaError("findLinksForRoadLabels: Couldn't find intersection1 with %s and %s in the Network" % 
+                           (on_street_label, from_street_label))
+        
+        if len(roadnode_to)==0:
+            raise DtaError("findLinksForRoadLabels: Couldn't find intersection2 with %s and %s in the Network" % 
+                           (on_street_label, to_street_label))
+        
+        # DtaLogger.debug("from: %s  to: %s" % (str(roadnode_from), str(roadnode_to)))
+        
+        debug_str = ""
+        
+        # try each candidate from node
+        for start_node in roadnode_from:
+            
+            # Walk from the from node
+            curnode = start_node
+            return_links = []
+            
+            while True:
+                
+                # look for the next link
+                outgoing_link = None
+                for olink in curnode.iterOutgoingLinks():                
+                    olabel = olink.getLabel().upper()
+                    if remove_label_spaces: olabel = olabel.replace(" ","")            
+                    
+                    # DtaLogger.debug("olink %s %s" % (olabel, olink.getDirection() if olink.isRoadLink else "nonroad"))
+                    
+                    # for now, require all links have the given direction
+                    if olink.isRoadLink() and olabel==on_street_label and olink.getDirection()==on_direction:
+                        outgoing_link = olink
+                        break
+                    
+                # nothing found - we got stuck
+                if not outgoing_link:
+                    debug_str += "findLinksForRoadLabels: Couldn't find links from %s to %s on %s %s from %d; "% \
+                                 (from_street_label, to_street_label, on_street_label, on_direction, curnode.getId())
+                    break
+                    
+                # found it; -- make sure it's not already in our list (cycle!)
+                if outgoing_link in return_links:
+                    debug_str += "findLinksForRoadLabels: Found cycle when finding links from %s to %s on %s %s; " % \
+                                 (from_street_label, to_street_label, on_street_label, on_direction)
+                    break
+    
+                # add to our list
+                return_links.append(outgoing_link)
+                
+                # we're finished if we got to the end
+                if outgoing_link.getEndNode() in roadnode_to:
+                    return return_links
+                
+                # continue on
+                curnode = outgoing_link.getEndNode()
+            
+            # ok if we've gotten here, then we reached a break and we were unsuccessful
+            # so we'll continue with the next road_node_from
+            # DtaLogger.debug("Failure")
+            
+        # if we've gotten here then all attempts have failed
+        raise DtaError(debug_str)
+                
+    def findMovementForRoadLabels(self, incoming_street_label, incoming_direction, 
+                                            outgoing_street_label, outgoing_direction,
+                                            intersection_street_label=None,
+                                            roadnode_id=None,
+                                            remove_label_spaces=False,
+                                            use_dir_for_movement=True):
+        """
+        Attempts to find the movement from the given *incoming_street_label* and *incoming_direction*
+        to the given *outgoing_street_label* and *outgoing_direction*.  If this is a through movement or a U-Turn
+        (e.g. *incoming_street_label* == *outgoing_street_label*), then *intersection_street_label* is also required
+        to identify the intersection.
+        
+        *incoming_street_label*, *outgoing_street_label* and *intersection_street_label* are checked against 
+        :py:class:`RoadLink` labels and should be upper-case.  If *remove_label_spaces* is True, then
+        the labels will have their spaces stripped before comparison.
+        
+        *incoming_direction* and *outgoing_direction* are one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_NB`,
+        :py:attr:`RoadLink.DIR_WB` or :py:attr:`RoadLink.DIR_SB`.
+        
+        Pass optional *roadnode_id* to speed things up but if the movement is not found for that :py:class:`RoadNode`,
+        this method will fall back and try to find the movement based on the labels.
+        
+        Pass *use_dir_for_movement* as True if the *incoming_street_label* and *outgoing_street_label* are useful
+        for identifying the intersection but not necessary for the movement (e.g. only the direction needs to match)
+        
+        Raises a :py:class:`DtaError` on failure, returns a :py:class:`Movement` instance on success.
+        """
+        
+        if (incoming_street_label==outgoing_street_label) and (intersection_street_label==None):
+            raise DtaError("findMovementForRoadLabels: intersection_street_label is required when "
+                           "incoming_street_label==outgoing_street_label (%s)" % incoming_street_label)
+            
+        roadnode = None
+        
+        # see if the the given id will do it
+        if roadnode_id:
+            
+            if roadnode_id in self._nodes:
+                roadnode = self.getNodeForId(roadnode_id)
+            
+            if not isinstance(roadnode, RoadNode):
+                roadnode = None
+                DtaLogger.debug("findMovementForRoadLabels: given RoadNode id %d isn't a valid road node" % roadnode_id)
+            else:
+                # check the streets match
+                streetnames = roadnode.getStreetNames(incoming=True, outgoing=True)
+                if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
+                
+                if incoming_street_label not in streetnames:
+                    roadnode = None
+                    DtaLogger.debug("findMovementForRoadLabels: given RoadNode %d doesn't have incoming street %s (streets are %s)" %
+                                    (roadnode_id, incoming_street_label, str(streetnames)))
+                if outgoing_street_label not in streetnames:
+                    roadnode = None
+                    DtaLogger.debug("findMovementForRoadLabels: given RoadNode %d doesn't have outgoing street %s (streets are %s)" %
+                                    (roadnode_id, outgoing_street_label, str(streetnames)))
+                    
+        # Still haven't found the right roadnode; look for it
+        if roadnode==None:
+            
+            for roadnode_candidate in self.iterRoadNodes():
+                # check the streets match
+                streetnames = roadnode_candidate.getStreetNames(incoming=True, outgoing=True)
+                if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
+                
+                if incoming_street_label in streetnames and outgoing_street_label in streetnames:
+                    roadnode = roadnode_candidate
+                    break
+            
+        # Still haven't found it - give up
+        if roadnode==None:
+            raise DtaError("findMovementForRoadLabels: Couldn't find intersection with %s and %s in the Network" % 
+                           (incoming_street_label, outgoing_street_label))
+        
+        #DtaLogger.debug("Found intersection with %s and %s in the network: %d %s" % 
+        #                (incoming_street_label, outgoing_street_label, roadnode.getId(), str(roadnode.getStreetNames())))
+        
+        # Found the intersection; now find the exact incoming link
+        candidate_links = {} # dir -> { name -> link }
+        for ilink in roadnode.iterIncomingLinks():
+            if not ilink.isRoadLink(): continue
+            
+            dir = ilink.getDirection(atEnd=True)
+            if dir not in candidate_links: candidate_links[dir] = {}
+            
+            label = ilink.getLabel().upper()
+            if remove_label_spaces: label = label.replace(" ","")
+            candidate_links[dir][label] = ilink
+        
+        # the direction is enough
+        if use_dir_for_movement and incoming_direction in candidate_links and len(candidate_links[incoming_direction])==1:
+            incoming_link = candidate_links[incoming_direction].values()[0]
+        
+        # direction is ambiguous but both match
+        elif incoming_direction in candidate_links and incoming_street_label in candidate_links[incoming_direction]:
+            incoming_link = candidate_links[incoming_direction][incoming_street_label]
+        
+        # failed
+        else:
+            raise DtaError("findMovementForRoadLabels: Couldn't find incoming link %s %s: %s" %
+                            (incoming_street_label, incoming_direction, str(candidate_links)))
+       
+        # Found the intersection; now find the exact outgoing link      
+        candidate_links = {} # dir -> { name -> link }
+        for olink in roadnode.iterOutgoingLinks():
+            if not olink.isRoadLink(): continue
+            
+            dir = olink.getDirection(atEnd=False)
+            if dir not in candidate_links: candidate_links[dir] = {}
+            
+            label = olink.getLabel().upper()
+            if remove_label_spaces: label = label.replace(" ","")
+            candidate_links[dir][label] = olink
+        
+        # the direction is enough
+        if use_dir_for_movement and outgoing_direction in candidate_links and len(candidate_links[outgoing_direction])==1:
+            outgoing_link = candidate_links[outgoing_direction].values()[0]
+        
+        # direction is ambiguous but both match
+        elif outgoing_direction in candidate_links and outgoing_street_label in candidate_links[outgoing_direction]:
+            outgoing_link = candidate_links[outgoing_direction][outgoing_street_label]
+        
+        # failed
+        else:
+            raise DtaError("findMovementForRoadLabels: Couldn't find outgoing link %s %s: %s" %
+                            (outgoing_street_label, outgoing_direction, str(candidate_links)))            
+
+
+        return incoming_link.getOutgoingMovement(outgoing_link.getEndNode().getId())
+                                                                   
     def removeLink(self, linkToRemove):
         """
         Remove the input link from the network
@@ -522,10 +765,10 @@ class Network(object):
             inMovsToRemove = [mov for mov in linkToRemove.iterIncomingMovements()]
 
             for mov in outMovsToRemove:
-                linkToRemove.removeOutgoingMovement(mov)
+                linkToRemove._removeOutgoingMovement(mov)
 
             for mov in inMovsToRemove:
-                mov.getIncomingLink().removeOutgoingMovement(mov)
+                mov.getIncomingLink()._removeOutgoingMovement(mov)
 
         linkToRemove.getStartNode()._removeOutgoingLink(linkToRemove)
         linkToRemove.getEndNode()._removeIncomingLink(linkToRemove)
@@ -591,8 +834,8 @@ class Network(object):
                                 linkToSplit._numLanes,
                                 linkToSplit._roundAbout,
                                 linkToSplit._level, 
-                                linkToSplit.getLabel() 
-                                )
+                                linkToSplit.getLabel(),
+                                self._maxLinkId + 1)
 
             self.addLink(newLink1)
 
@@ -608,8 +851,8 @@ class Network(object):
                                 linkToSplit._numLanes,
                                 linkToSplit._roundAbout,
                                 linkToSplit._level,
-                                linkToSplit.getLabel()
-                                )
+                                linkToSplit.getLabel(),
+                                self._maxLinkId + 1)
 
             self.addLink(newLink2) 
 
@@ -646,7 +889,7 @@ class Network(object):
                                    newLink1,
                                    newLink2,                               
                                    newLink1._freeflowSpeed,
-                                   self.getScenario().getVehicleClassGroup(VehicleClassGroup.ALL), 
+                                   self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL), 
                                    newLink1._numLanes,
                                    0,
                                    newLink1._numLanes,
@@ -666,14 +909,14 @@ class Network(object):
                                                  midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
                 prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
-                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
                 link1.addOutgoingMovement(prohibitedMovement)
 
                 link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
                                                  midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getEndNode().getId())
                 prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
-                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.PROHIBITED))
+                     self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
 
                 link1.addOutgoingMovement(prohibitedMovement)
 
@@ -1254,8 +1497,8 @@ class Network(object):
                             link1._numLanes,
                             link1._roundAbout,
                             link1._level, 
-                            label
-                            )
+                            label,
+                            self._maxLinkId + 1)
         
         self.addLink(newLink)
 
@@ -1294,6 +1537,89 @@ class Network(object):
         self.removeLink(link2)
         if link1.getEndNode().getCardinality() == (0,0):
             self.removeNode(link1.getEndNode()) 
+            
+    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, skipField=None, skipValueList=None):
+        """
+        Uses the given *linkShapefile* to add shape points to the network, in order to more accurately
+        represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
+        intersections because of the angles involved.
+        
+        *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
+        of the start node and end node IDs within the *linkShapefile*.
+        
+        If *skipField* is passed, then the field given by this name will be checked against the list of values given
+        by *skipValueList*.  This is useful for when there are some bad elements in your shapefile that you want to skip.
+        
+        If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
+        will be used.
+        
+        Does this in two passes; in the first pass, the (a,b) from the shapefile is looked up in the network, and used
+        to add shape points.  In the second pass, the (b,a) from the shapefile is looked up in the network, and used
+        to add shape points **if that link has not already been updated from the first pass**.
+        
+        .. todo:: Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
+                  node should be included too.  However, if we include either the first or the last shape point below,
+                  everything goes crazy.  I'm not sure why?
+        """ 
+
+        sf      = shapefile.Reader(linkShapefile)
+        shapes  = sf.shapes()
+        records = sf.records()
+        
+        links_found         = 0
+        shapepoints_added   = 0
+
+        fields = [field[0] for field in sf.fields]
+        
+        # if the first field is the 'DeletionFlag' -- remove
+        if fields[0] == 'DeletionFlag':
+            fields.pop(0)
+            
+        # If a link with the same (node1,node2) pair is specified more than 
+        # once in the shapefile, only the first one will be used.
+        links_done = {}
+        
+        # two passes - regular and reverse
+        for direction in ["regular","reverse"]:
+            
+            for shape, recordValues in izip(shapes, records):
+
+                assert(len(fields)==len(recordValues))
+                
+                localsdict  = dict(zip(fields, recordValues))
+                
+                # check if we're instructed to skip this one
+                if skipField and (skipField in fields) and (localsdict[skipField] in skipValueList): continue
+                
+                if direction == "regular":
+                    startNodeId = int(localsdict[startNodeIdField])
+                    endNodeId   = int(localsdict[endNodeIdField])
+                else:
+                    startNodeId = int(localsdict[endNodeIdField])
+                    endNodeId   = int(localsdict[startNodeIdField])
+                        
+                # DtaLogger.debug("shape %d %d" % (startNodeId, endNodeId))
+                
+                if (startNodeId, endNodeId) in links_done: continue 
+                    
+                if self.hasLinkForNodeIdPair(startNodeId, endNodeId):
+                    link = self.getLinkForNodeIdPair(startNodeId, endNodeId)
+                    links_found += 1
+                    
+                    # just a straight line - no shape points necessary
+                    if len(shape.points) == 2: continue
+                    
+                    # Dynameq throws away a single, see todo above
+                    if len(shape.points) == 3: continue
+                    
+                    # don't include the first and last, they're already there
+                    link._shapePoints = shape.points[1:-1]
+                    if direction == "reverse": link._shapePoints.reverse()
+                    shapepoints_added += len(shape.points)-2
+                    
+                    links_done[(startNodeId, endNodeId)] = True
+
+        DtaLogger.info("Read %d shape points for %d links from %s" % (shapepoints_added, links_found, linkShapefile))            
                 
     def removeShapePoints(self):
         """

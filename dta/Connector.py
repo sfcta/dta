@@ -41,7 +41,7 @@ class Connector(RoadLink):
         
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
-                 roundAbout, level, label):
+                 roundAbout, level, label, group):
         """
         Constructor. Verifies one node is a RoadNode and the other node is either
         a Centroid or a VirtualNode.
@@ -68,7 +68,7 @@ class Connector(RoadLink):
                           reverseAttachedLinkId=reverseAttachedLinkId, facilityType=Connector.FACILITY_TYPE, 
                           length=length, freeflowSpeed=freeflowSpeed, effectiveLengthFactor=effectiveLengthFactor, 
                           responseTimeFactor=responseTimeFactor, numLanes=numLanes,
-                          roundAbout=roundAbout, level=level, label=label)
+                          roundAbout=roundAbout, level=level, label=label, group=group)
 
 #        TODO: the  5 if statements above can be abbreviated into the following 3
 #        if isinstance(startNode, (Centroid, VirtualNode)) and isinstance(endNode, RoadNode):

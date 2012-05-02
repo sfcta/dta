@@ -55,7 +55,7 @@
 <h1>dta.Connector<a class="headerlink" href="#dta-connector" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Connector">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Connector</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.Connector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.RoadLink.RoadLink</span></tt></p>
 <p>A Connector is a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> that connects a RoadNode with a Centroid or a VirtualNode.</p>
 <p>Why is a Connector a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> rather than a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a>?  
@@ -63,7 +63,7 @@ Many centroid connectors are based on road links; all of them at the boundaries
 Therefore they have the same set of attributes and those attributes are meaningful.</p>
 <dl class="method">
 <dt id="dta.Connector.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.Connector.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Verifies one node is a RoadNode and the other node is either
 a Centroid or a VirtualNode.</p>
 <p>See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.__init__" title="dta.RoadLink.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.__init__()</span></tt></a> for the arg descriptions.</p>
@@ -122,6 +122,9 @@ a Centroid or a VirtualNode.</p>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getFreeFlowSpeedInMPH" title="dta.Connector.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getFreeFlowSpeedInMPH</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.getGroup" title="dta.Connector.getGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getGroup</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getId" title="dta.Connector.getId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getId</span></tt></a></td>
@@ -235,10 +238,13 @@ a Centroid or a VirtualNode.</p>
 <tr><td><a class="reference internal" href="#dta.Connector.iterOutgoingMovements" title="dta.Connector.iterOutgoingMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.iterOutgoingMovements</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.removeOutgoingMovement" title="dta.Connector.removeOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.removeOutgoingMovement</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Connector.prohibitOutgoingMovement" title="dta.Connector.prohibitOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.prohibitOutgoingMovement</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.setEndNode" title="dta.Connector.setEndNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setEndNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.setGroup" title="dta.Connector.setGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setGroup</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.setLabel" title="dta.Connector.setLabel"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setLabel</span></tt></a></td>
@@ -361,9 +367,10 @@ return a tuple of two points (each one being a tuple of two floats) representing
 
 <dl class="method">
 <dt id="dta.Connector.getDirection">
-<tt class="descname">getDirection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getDirection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the direction of the link as one of 
-EB, NB, WB, EB</p>
+<tt class="descname">getDirection</tt><big>(</big><em>atEnd=True</em><big>)</big><a class="headerlink" href="#dta.Connector.getDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the direction of the link as one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>,  <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.  Uses <a class="reference internal" href="#dta.Connector.getOrientation" title="dta.Connector.getOrientation"><tt class="xref py py-meth docutils literal"><span class="pre">getOrientation()</span></tt></a> so the
+shape points are used with the <em>atEnd</em> argument.</p>
 </dd></dl>
 
 <dl class="method">
@@ -388,6 +395,12 @@ EB, NB, WB, EB</p>
 <dt id="dta.Connector.getFreeFlowSpeedInMPH">
 <tt class="descname">getFreeFlowSpeedInMPH</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getFreeFlowSpeedInMPH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the free flow speed in MPH</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getGroup">
+<tt class="descname">getGroup</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the group number fo the link</p>
 </dd></dl>
 
 <dl class="method">
@@ -467,9 +480,12 @@ EB, NB, WB, EB</p>
 
 <dl class="method">
 <dt id="dta.Connector.getOrientation">
-<tt class="descname">getOrientation</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getOrientation" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getOrientation</tt><big>(</big><em>atEnd=True</em><big>)</big><a class="headerlink" href="#dta.Connector.getOrientation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the angle of the link in degrees from the North
-measured clockwise. The link shape is taken into account.</p>
+measured clockwise. The link shape is taken into account.
+If there are shape points, and <em>atEnd</em> is True, then the orientation
+is evaluated at the end point of the link, otherwise it&#8217;s evaluated at
+the start of the link.</p>
 </dd></dl>
 
 <dl class="method">
@@ -570,8 +586,9 @@ See addShifts() for details.</p>
 
 <dl class="method">
 <dt id="dta.Connector.hasOutgoingMovement">
-<tt class="descname">hasOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Connector.hasOutgoingMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the link has an outgoing movement towards nodeId</p>
+<tt class="descname">hasOutgoingMovement</tt><big>(</big><em>nodeId</em>, <em>vehicleClassGroup=None</em><big>)</big><a class="headerlink" href="#dta.Connector.hasOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the link has an outgoing movement towards nodeId.
+Please note that the movement may be prohibited.</p>
 </dd></dl>
 
 <dl class="method">
@@ -624,9 +641,9 @@ See <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.getAngle"
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Connector.removeOutgoingMovement">
-<tt class="descname">removeOutgoingMovement</tt><big>(</big><em>movementToRemove</em><big>)</big><a class="headerlink" href="#dta.Connector.removeOutgoingMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete the input movement</p>
+<dt id="dta.Connector.prohibitOutgoingMovement">
+<tt class="descname">prohibitOutgoingMovement</tt><big>(</big><em>movementToProhibit</em><big>)</big><a class="headerlink" href="#dta.Connector.prohibitOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prohibit the input movement</p>
 </dd></dl>
 
 <dl class="method">
@@ -640,6 +657,12 @@ It does update the the incoming links for both the old and the new end nodes.</p
 called from the <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> itself 
 (e.g. <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes" title="dta.Network.insertVirtualNodeBetweenCentroidsAndRoadNodes"><tt class="xref py py-meth docutils literal"><span class="pre">Network.insertVirtualNodeBetweenCentroidsAndRoadNodes()</span></tt></a>)</p>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.setGroup">
+<tt class="descname">setGroup</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#dta.Connector.setGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the group number fo the link</p>
 </dd></dl>
 
 <dl class="method">

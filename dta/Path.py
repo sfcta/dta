@@ -24,7 +24,6 @@ class Path(object):
     A path in the network represented by a sequence of links
     that are connected to each other
     """
-
     @classmethod
     def writePathsToShp(cls, paths, outFileName):
         """
@@ -54,10 +53,14 @@ class Path(object):
             if not linkUpstream.hasOutgoingMovement(linkDownstream.getEndNodeId()):
                 raise DtaError("Link %d does not have an outgoing movement towards "
                                "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
-
+            mov = linkUpstream.getOutgoingMovement(linkDownstream.getEndNodeId())
+            if mov.isProhibitedToAllVehicleClassGroups():
+                raise DtaError("Link %d does not allow an outgoing movement towards "
+                               "node %d to any vehicle class" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
+                
         if len(self._links) == 0:
             raise DtaError('A path cannot istantiated without any links')
-        self._lengthInMiles = sum([link.getLengthInMiles() for link  in self.iterLinks()])
+        self._lengthInMiles = sum([link.getLength() for link  in self.iterLinks()])
         self._obsTTInMin = {}
 
     def getLengthInMiles(self):
@@ -142,13 +145,13 @@ class Path(object):
         """
         Get the first node in the path
         """
-        return self._links[0].nodeA
+        return self._links[0].getStartNode()
 
     def getLastNode(self):
         """
         Return the last node in the path
         """
-        return self._links[-1].nodeB
+        return self._links[-1].getEndNode()
 
     def getFirstLink(self):
         """
@@ -183,6 +186,30 @@ class Path(object):
         for link in self.iterLinks():
             yield link.getStartNode()
         yield link.getEndNode()
+
+    def getCrossStreetName(self, node):
+        """
+        Return the cross street name for the node
+        that belongs to the path
+        """
+        if node == self.getLastNode():
+            l = self.getLastLink()
+            n = node
+        else:
+            for n, l in izip(self.iterNodes(), self.iterLinks()):            
+                if n == node:
+                    break
+            else:
+                raise DtaError("Node %d does not belong to the path" % node.getId())
+
+        for iLink in n.iterIncomingLinks():
+            if iLink.getLabel() != l.getLabel():
+                return iLink.getLabel()
+        else:
+            return "" 
+            
+            
+      
     
 
 

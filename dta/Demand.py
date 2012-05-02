@@ -25,7 +25,7 @@ import numpy as np
 
 import dta
 from dta.Algorithms import hasPath 
-from .DtaError import DtaError
+from dta.DtaError import DtaError
 from dta.MultiArray import MultiArray
 from dta.Utils import Time
 
@@ -57,29 +57,46 @@ class Demand(object):
         timeSpan = endTime - startTime 
         demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
         totTrips = 0
+        numIntrazonalTrips = 0
         inputStream = open(fileName, "r")
+    
         for record in csv.DictReader(inputStream):
             
-            origin = int(record["ORIGIN"])
-            destination = int(record["DESTINATION"])
+            origin = int(record["O"])
+            destination = int(record["D"])
             trips = float(record[vehicleClassName])
             totTrips += trips
             tripsInHourlyFlows = trips * (60.0 / timeSpan.getMinutes())
             
+            if tripsInHourlyFlows == 0:
+                continue
+            if origin == destination:
+                numIntrazonalTrips += trips
+                continue
+            if not net.hasCentroidForId(origin):
+                dta.DtaLogger.error("Origin zone %d does not exist" % origin)
+                continue 
+            if not net.hasCentroidForId(destination):
+                dta.DtaLogger.error("Destination zone %s does not exist" % destination)
+                continue
             demand.setValue(endTime, origin, destination, tripsInHourlyFlows)
 
-        #msg = "Read %20.2f %s trips" % (totTrips, vehicleClassName)
-       # msg += "     from   cube table %s" % fileName
-
+        dta.DtaLogger.info("The cube table has the following fields: %s" % ",".join(record.keys()))
+          
         dta.DtaLogger.info("Read %10.2f %-16s from %s" % (totTrips, "%s TRIPS" % vehicleClassName, fileName))
-        
-        #dta.DtaLogger.info(msg)
-        
+        if numIntrazonalTrips > 0:
+            dta.DtaLogger.error("Disregarded intrazonal Trips %f" % numIntrazonalTrips)
+        if totTrips - demand.getTotalNumTrips() - numIntrazonalTrips > 1:
+            dta.DtaLogger.error("The total number of trips in the Cube table transfered to Dynameq is not the same.")
+                    
         return demand
 
     @classmethod
-    def read(cls, net, fileName):
-
+    def readDynameqTable(cls, net, fileName):
+        """
+        Read the dynameq demand stored in the fileName that pertains to the 
+        dynameq network a :py:class:`DynameqNetwork`instance
+        """
         input = open(fileName, "rb")
         
         input.next() # <DYNAMEQ>
@@ -131,7 +148,14 @@ class Demand(object):
         return demand
 
     def __init__(self, net, vehClassName, startTime, endTime, timeStep):
-
+        """
+        Constructor that initializes an empty Demand table that has three dimensions:
+        time, origin taz, destination taz. 
+        
+        *net* is a dta.Network instance
+        *vehClassName* is a string 
+        *startTime*, *endTime* and *timeStep* are dta.Utils.Time instancess 
+        """
         self._net = net 
 
         if startTime >= endTime:
@@ -196,24 +220,7 @@ class Demand(object):
         if isinstance(time, datetime.datetime):
             return time.hour * 60 + time.minute 
         elif isinstance(time, datetime.timedelta):
-            return time.seconds / 60 
-
-    def _datetimeToMilitaryTime(self, time):
-        """
-        Return an integer that repreents the time of the day e.g. entering 5:00 PM will return 1700
-        """
-        return time.hour * 100 + time.minute
-        
-    def _militaryTimeToDayTime(self, militaryTime):
-        """
-        Return a datetime object that corresponds to the input military time. For example, if the input 
-        military time is 1700 the following datetime object will be returned datetime(17, 0, 0)
-        """        
-        strTime = str(militaryTime)
-        assert 3 <= len(strTime) <= 4
-        minutes = int(strTime[-2:])
-        hours = int(strTime[:-2])
-        return datetime.datetime(Demand.YEAR, Demand.MONTH, Demand.DAY, hours, minutes)         
+            return time.seconds / 60     
                                                
     def setValue(self, timeLabel, origin, destination, value):
         """
@@ -227,7 +234,7 @@ class Demand(object):
         """
         return self._demandTable[timeLabel, origin, destination]
 
-    def write(self, fileName):
+    def writeDynameqTable(self, fileName):
         """
         Write the demand in the dynameq format
         """

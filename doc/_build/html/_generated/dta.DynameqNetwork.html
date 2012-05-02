@@ -97,6 +97,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.deepcopy" title="dta.DynameqNetwork.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.deepcopy</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.findMovementForRoadLabels" title="dta.DynameqNetwork.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.findMovementForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.getLinkForId" title="dta.DynameqNetwork.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.getLinkForId</span></tt></a></td>
 <td></td>
 </tr>
@@ -158,6 +161,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.handleShortLinks" title="dta.DynameqNetwork.handleShortLinks"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.handleShortLinks</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.hasCentroidForId" title="dta.DynameqNetwork.hasCentroidForId"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.hasCentroidForId</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.hasLinkForId" title="dta.DynameqNetwork.hasLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.hasLinkForId</span></tt></a></td>
@@ -229,9 +235,6 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.removeCentroidConnectorsFromIntersections" title="dta.DynameqNetwork.removeCentroidConnectorsFromIntersections"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.removeCentroidConnectorsFromIntersections</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.DynameqNetwork.removeDuplicateConnectors" title="dta.DynameqNetwork.removeDuplicateConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.removeDuplicateConnectors</span></tt></a></td>
-<td></td>
-</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.removeLink" title="dta.DynameqNetwork.removeLink"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.removeLink</span></tt></a></td>
 <td></td>
 </tr>
@@ -248,9 +251,6 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.renameNode" title="dta.DynameqNetwork.renameNode"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.renameNode</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.DynameqNetwork.retrieveCountListFromCountDracula" title="dta.DynameqNetwork.retrieveCountListFromCountDracula"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.retrieveCountListFromCountDracula</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.splitLink" title="dta.DynameqNetwork.splitLink"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.splitLink</span></tt></a></td>
@@ -277,7 +277,7 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <dt id="dta.DynameqNetwork.addAllMovements">
 <tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addAllMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> and each <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>, 
-makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance) 
+makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> instance)
 from each incoming link to each outgoing link 
 (not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
 <p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
@@ -329,6 +329,38 @@ and that the id is not already used; stores it.</p>
 constituent elements into self (Nodes and Links and Movements, 
 not the scenario). If the originNetwork contains an element 
 with an already existing id this method will throw an exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.findLinksForRoadLabels">
+<tt class="descname">findLinksForRoadLabels</tt><big>(</big><em>on_street_label</em>, <em>on_direction</em>, <em>from_street_label</em>, <em>to_street_label</em>, <em>remove_label_spaces=False</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.findLinksForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to find the link(s) with the given <em>on_street_label</em> and <em>on_direction</em>
+from the street matching <em>from_street_label</em> to the street matching <em>to_street_label</em>.</p>
+<p><em>on_street_label</em>, <em>from_street_label</em> and <em>to_street_label</em> are checked against 
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels and should be upper-case.  If <em>remove_label_spaces</em> is True, then
+the labels will have their spaces stripped before comparison.</p>
+<p><em>on_direction</em> is one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.</p>
+<p>Raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> on failure, returns a list of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances on success.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.findMovementForRoadLabels">
+<tt class="descname">findMovementForRoadLabels</tt><big>(</big><em>incoming_street_label</em>, <em>incoming_direction</em>, <em>outgoing_street_label</em>, <em>outgoing_direction</em>, <em>intersection_street_label=None</em>, <em>roadnode_id=None</em>, <em>remove_label_spaces=False</em>, <em>use_dir_for_movement=True</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.findMovementForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to find the movement from the given <em>incoming_street_label</em> and <em>incoming_direction</em>
+to the given <em>outgoing_street_label</em> and <em>outgoing_direction</em>.  If this is a through movement or a U-Turn
+(e.g. <em>incoming_street_label</em> == <em>outgoing_street_label</em>), then <em>intersection_street_label</em> is also required
+to identify the intersection.</p>
+<p><em>incoming_street_label</em>, <em>outgoing_street_label</em> and <em>intersection_street_label</em> are checked against 
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> labels and should be upper-case.  If <em>remove_label_spaces</em> is True, then
+the labels will have their spaces stripped before comparison.</p>
+<p><em>incoming_direction</em> and <em>outgoing_direction</em> are one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
+<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.</p>
+<p>Pass optional <em>roadnode_id</em> to speed things up but if the movement is not found for that <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>,
+this method will fall back and try to find the movement based on the labels.</p>
+<p>Pass <em>use_dir_for_movement</em> as True if the <em>incoming_street_label</em> and <em>outgoing_street_label</em> are useful
+for identifying the intersection but not necessary for the movement (e.g. only the direction needs to match)</p>
+<p>Raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> on failure, returns a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instance on success.</p>
 </dd></dl>
 
 <dl class="method">
@@ -484,6 +516,12 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.hasCentroidForId">
+<tt class="descname">hasCentroidForId</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasCentroidForId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a centroid with the given id</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.hasLinkForId">
 <tt class="descname">hasLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasLinkForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if a link with the given id exists</p>
@@ -518,18 +556,13 @@ start and end times</p>
 virtual links from <em>startVirtualLinkId</em>.  The new virtual node will be placed along the connector
 link a distance away from the centroid specified by <em>distanceFromCentroid</em> (in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>),
 so it will be in the same location if that argument is specified as zero.</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">the above diagram is false; there must be one Virtual Node per connector or Dynameq errors with
-&#8220;ERROR - the following virtual nodes have multiple entrance/exit connector&#8221;</p>
-</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.iterCentroids">
 <tt class="descname">iterCentroids</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterCentroids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> instances in the network.</p>
-<div class="admonition-todo admonition " id="index-3">
+<div class="admonition-todo admonition " id="index-2">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
@@ -539,7 +572,7 @@ so it will be in the same location if that argument is specified as zero.</p>
 <dt id="dta.DynameqNetwork.iterConnectors">
 <tt class="descname">iterConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances in the network.</p>
-<div class="admonition-todo admonition " id="index-4">
+<div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
@@ -568,7 +601,7 @@ so it will be in the same location if that argument is specified as zero.</p>
 <tt class="descname">iterRoadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterRoadLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator for to the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances in the network that are 
 not instances of <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</p>
-<div class="admonition-todo admonition " id="index-5">
+<div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
@@ -578,7 +611,7 @@ not instances of <a class="reference internal" href="dta.Connector.html#dta.Conn
 <dt id="dta.DynameqNetwork.iterRoadNodes">
 <tt class="descname">iterRoadNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterRoadNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances in the network.</p>
-<div class="admonition-todo admonition " id="index-6">
+<div class="admonition-todo admonition " id="index-5">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
@@ -588,7 +621,7 @@ not instances of <a class="reference internal" href="dta.Connector.html#dta.Conn
 <dt id="dta.DynameqNetwork.iterVirtualLinks">
 <tt class="descname">iterVirtualLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterVirtualLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances in the network.</p>
-<div class="admonition-todo admonition " id="index-7">
+<div class="admonition-todo admonition " id="index-6">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
@@ -598,7 +631,7 @@ not instances of <a class="reference internal" href="dta.Connector.html#dta.Conn
 <dt id="dta.DynameqNetwork.iterVirtualNodes">
 <tt class="descname">iterVirtualNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterVirtualNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instances in the network.</p>
-<div class="admonition-todo admonition " id="index-8">
+<div class="admonition-todo admonition " id="index-7">
 <p class="first admonition-title">Todo</p>
 <p class="last">Move this to <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>.</p>
 </div>
@@ -618,7 +651,7 @@ error</p>
 <dd><p>This method will create a polygon around the current 
 (primary network). Every node or link of the secondary network 
 that is not in the polygon will be copied.</p>
-<div class="admonition-todo admonition " id="index-9">
+<div class="admonition-todo admonition " id="index-8">
 <p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
@@ -664,6 +697,29 @@ current location +/- <em>maxDistToMove</em>, where <em>maxDistToMove</em> is in 
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.readLinkShape">
+<tt class="descname">readLinkShape</tt><big>(</big><em>linkShapefile</em>, <em>startNodeIdField</em>, <em>endNodeIdField</em>, <em>skipField=None</em>, <em>skipValueList=None</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.readLinkShape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the given <em>linkShapefile</em> to add shape points to the network, in order to more accurately
+represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
+intersections because of the angles involved.</p>
+<p><em>startNodeIdField</em> and <em>endNodeIdField</em> are the column headers (so they&#8217;re strings)
+of the start node and end node IDs within the <em>linkShapefile</em>.</p>
+<p>If <em>skipField</em> is passed, then the field given by this name will be checked against the list of values given
+by <em>skipValueList</em>.  This is useful for when there are some bad elements in your shapefile that you want to skip.</p>
+<p>If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
+will be used.</p>
+<p>Does this in two passes; in the first pass, the (a,b) from the shapefile is looked up in the network, and used
+to add shape points.  In the second pass, the (b,a) from the shapefile is looked up in the network, and used
+to add shape points <strong>if that link has not already been updated from the first pass</strong>.</p>
+<div class="admonition-todo admonition " id="index-9">
+<p class="first admonition-title">Todo</p>
+<p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
+node should be included too.  However, if we include either the first or the last shape point below,
+everything goes crazy.  I&#8217;m not sure why?</p>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.readSimResults">
 <tt class="descname">readSimResults</tt><big>(</big><em>simStartTimeInMin</em>, <em>simEndTimeInMin</em>, <em>simTimeStepInMin</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.readSimResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the movement and link travel times and flows</p>
@@ -702,13 +758,6 @@ created node.</p>
 <p class="first admonition-title">Todo</p>
 <p class="last">why is this in <a class="reference internal" href="#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a> rather than <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>?</p>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.DynameqNetwork.removeDuplicateConnectors">
-<tt class="descname">removeDuplicateConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeDuplicateConnectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove duplicate connectors that connect from the
-same centroid to the same road node</p>
 </dd></dl>
 
 <dl class="method">
@@ -752,16 +801,6 @@ the other kind?</p>
 <dt id="dta.DynameqNetwork.renameNode">
 <tt class="descname">renameNode</tt><big>(</big><em>oldNodeId</em>, <em>newNodeId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.renameNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Give the node with oldNodeId the new id</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.DynameqNetwork.retrieveCountListFromCountDracula">
-<tt class="descname">retrieveCountListFromCountDracula</tt><big>(</big><em>countDraculaReader</em>, <em>starttime</em>, <em>period</em>, <em>number</em>, <em>tolerance</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.retrieveCountListFromCountDracula" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes counts to movements from CountDracula
-starttime = startitme for counts
-period = interval for each count
-number = total counts = (endtime-starttime)/period
-tolerance = tolerance for matching nodes in two databases in feet (5 ft is appropriate)</p>
 </dd></dl>
 
 <dl class="method">

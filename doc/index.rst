@@ -14,6 +14,7 @@ Required python modules:
  * `la <http://pypi.python.org/pypi/la>`_ Labeled numpy arrays.  Used for Demand data.
  * `Bottleneck <http://pypi.python.org/pypi/Bottleneck>`_ Fast NumPy array functions. Required by la.  Note: It might be easier to install a pre-compiled version of this, as directed on the documentation page.
  * `pyshp <http://code.google.com/p/pyshp/>`_ Python Shapefile Library for interpretting shapefiles for road geometry and for exporting shapefiles.
+ * `pyparsing <http://pyparsing.wikispaces.com/>`_  Enables parsing using simple grammars.  Used for parsing TPPlus transit line files.
 
 Optional python modules:
  * `sphinx <http://sphinx.pocoo.org>`_ Python documentation generator.

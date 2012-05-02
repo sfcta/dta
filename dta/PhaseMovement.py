@@ -20,29 +20,31 @@ from .DtaError import DtaError
 
 class PhaseMovement(object):
     """
-    Documentation?
+    Represents a movement specific to a particular phase 
     """
 
-    CUSTOM = 0
-    PROTECTED = 1
+    CUSTOM = 0        #the priorities of this movement related to other movements are custom defined
+    PROTECTED = 1     
     PERMITTED = 2
         
     def __init__(self, movement, capacityTag):
-
+        """
+        Constructor that accepts
+        a :py:class:`Movement' object representing
+        one of the following flags [PhaseMovement.CUSTOM, PhaseMovement.PROTECTED, PhaseMovement.PERMITTED]         
+        """
         self._movement = movement
-        assert capacityTag in [PhaseMovement.PROTECTED, PhaseMovement.PERMITTED] 
+        if not capacityTag in [PhaseMovement.PROTECTED, PhaseMovement.PERMITTED]:
+            raise DtaError("Capacity tag %d does not correspond to a protected or permitted movement" % capacityTag)                            
         self._capacityTag = capacityTag
 
-    def __repr__(self):
-        """Return the standard string representaton of the phase 
-        movement"""
+    def getDynameqStr(self): 
+        """
+        Return the dynameq string representaton of the phase 
+        movement
+        """
         return "%s %s %d" % (self.getIncomingLink().getId(), self.getOutgoingLink().getId(), 
                              self._capacityTag)
-
-    def __str__(self):
-        """Return the standard string representaton of the phase 
-        movement"""
-        return self.__repr__()
 
     def getId(self):
         """
@@ -64,25 +66,25 @@ class PhaseMovement(object):
     
     def getAtNode(self):
         """
-        Returns the node at which the movement is happening
+        Returns the :py:class:`Node` at which the movement is happening
         """
         return self._movement._node  
     
     def getStartNode(self):
         """
-        Returns the start node of incomingLink, a :py:class:`Link` instance
+        Returns the start :py:class:`Node` of the movement's incomingLink
         """
         return self._movement._incomingLink.getStartNode()
     
     def getEndNode(self):
         """
-        Returns the end node of outgoingLink, a :py:class:`Link` instance
+        Returns the end :py:class:`Node` of the movement's outgoing link
         """        
         return self._movement._outgoingLink.getEndNode()
 
     def getMovement(self):
         """
-        Return the underlying movememnt of the phase movement
+        Return the underlying :py:class:`Movement` of the phase movement
         """
         return self._movement
 
@@ -121,13 +123,13 @@ class PhaseMovement(object):
 
     def getStartNodeId(self):
         """
-        Returns the start node of incomingLink, a :py:class:`Link` instance
+        Returns the start node id
         """
         return self._movement._incomingLink.getStartNodeId()
     
     def getEndNodeId(self):
         """
-        Returns the end node of outgoingLink, a :py:class:`Link` instance
+        Returns the end node id
         """        
         return self._movement._outgoingLink.getEndNodeId()
 
@@ -163,13 +165,15 @@ class PhaseMovement(object):
 
     def isInConflict(self, other):
         """
-        Return True if the current movement and the input one are in conflict
+        other is an instance of :py:class:`Movement`. The method returns 
+        True if the current movement and the input one are in conflict
         """
         return self._movement.isInConflict(other)
 
     def getCenterLine(self):
         """
-        Return a polyline representing the movement
+        Return a tuple of (x,y) coordinates representing the centerline of the
+        movement
         """
         return self._movement.getCenterLine()
 

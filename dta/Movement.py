@@ -16,7 +16,8 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import pdb 
+import pdb
+import copy
 import math
 from itertools import izip
 from collections import defaultdict
@@ -27,7 +28,7 @@ from .Node import Node
 from .RoadNode import RoadNode
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import getMidPoint, lineSegmentsCross, polylinesCross
-from .Algorithms import pairwise 
+from .Algorithms import pairwise
 
 class Movement(object):
     """
@@ -41,6 +42,9 @@ class Movement(object):
     DIR_LT      = 'LT'
     DIR_TH      = 'TH'
     PROTECTED_CAPACITY_PER_HOUR_PER_LANE = 1900
+
+    PERMITTED_ALL = "all"
+    PROHIBITED_ALL = "prohibited"
     
     @classmethod
     def simpleMovementFactory(cls, incomingLink, outgoingLink, vehicleClassGroup):
@@ -101,10 +105,10 @@ class Movement(object):
         self._outgoingLane  = outgoingLane
         self._followupTime  = followupTime
         
-        self._countsList = []        
         self._centerline = self.getCenterLine()
         
-        self._simVolume = defaultdict(int)      # indexed by timeperiod
+        self._simOutVolume = defaultdict(int)      # indexed by timeperiod
+        self._simInVolume = defaultdict(int)      # indexed by timeperiod
         self._simMeanTT = defaultdict(float)    # indexed by timeperiod
         self._penalty   = 0
         self._timeVaryingCosts = []
@@ -144,18 +148,6 @@ class Movement(object):
         """
         return self._outgoingLink.getEndNode()
     
-    def getCountList(self):
-        """
-        Returns countslist saved for the movement
-        """
-        return self._countsList
-    
-    def setCountsFromCountDracula(self, countsListFromCountDracula):
-        """
-        Inserts the countlist
-        """
-        self._countsList = countsListFromCountDracula
-        
     def getStartNode(self):
         """
         Returns the start node of incomingLink, a :py:class:`Link` instance
@@ -328,17 +320,21 @@ class Movement(object):
     def getProtectedCapacity(self, planInfo=None):
         """
         Return the capacity of the movement in vehicles per hour
-        """        
+        """
+        
         if self._node.hasTimePlan(planInfo=planInfo):
             tp = self._node.getTimePlan(planInfo=planInfo)
             greenTime = 0
             for phase in tp.iterPhases():
                 if phase.hasMovement(self.getStartNodeId(), self.getEndNodeId()):
-                    greenTime += phase.getGreen()
-
-            return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
-        else:
-            return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+                    mov = phase.getMovement(self.getStartNodeId(), self.getEndNodeId())
+                    if mov.isProtected:
+                        greenTime += phase.getGreen()
+            if greenTime > 0:                
+                return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+        raise DtaError("The movement %s does does not operate under a protected phase"
+                       % self.getId())
+         #return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
                 
     def _checkInputTimeStep(self, startTimeInMin, endTimeInMin):
         """The input time step should always be equal to the sim time step"""
@@ -372,8 +368,10 @@ class Movement(object):
             raise DtaError('Time period from %d to %d is out of '
                                    'simulation time' % (startTimeInMin, endTimeInMin))
         
-    def getSimVolume(self, startTimeInMin, endTimeInMin):
-        """Return the flow from the start to end"""
+    def getSimOutVolume(self, startTimeInMin, endTimeInMin):
+        """
+        Return the outgoing flow from the start to end
+        """
 
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
@@ -381,14 +379,34 @@ class Movement(object):
         result = 0
         for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
                                              self.simTimeStepInMin)):
-            result += self._simVolume[stTime, enTime]
-
+            result += self._simOutVolume[stTime, enTime]
         return result
 
-    def getSimFlow(self, startTimeInMin, endTimeInMin):
+    def getSimOutFlow(self, startTimeInMin, endTimeInMin):
+        """
+        Get the outgoing flow for the specified time period 
+        in vph
+        """
+        volume = self.getSimOutVolume(startTimeInMin, endTimeInMin)
+        return  60.0 / (endTimeInMin - startTimeInMin) * volume
+
+    def getSimInVolume(self, startTimeInMin, endTimeInMin):
+        """
+        Return the incoming flow from the start to end
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        result = 0
+        for stTime, enTime in pairwise(range(startTimeInMin, endTimeInMin + 1, 
+                                             self.simTimeStepInMin)):
+            result += self._simInVolume[stTime, enTime]
+        return result
+
+    def getSimInFlow(self, startTimeInMin, endTimeInMin):
         """Get the simulated flow for the specified time period 
         in vph"""
-        volume = self.getSimVolume(startTimeInMin, endTimeInMin)
+        volume = self.getSimInVolume(startTimeInMin, endTimeInMin)
         return  60.0 / (endTimeInMin - startTimeInMin) * volume
 
     def getSimTTInMin(self, startTimeInMin, endTimeInMin):
@@ -405,7 +423,7 @@ class Movement(object):
         if (startTimeInMin, endTimeInMin) in self._simMeanTT:
             return self._simMeanTT[startTimeInMin, endTimeInMin]
 
-        for (stTime, enTime), flow in self._simVolume.iteritems():
+        for (stTime, enTime), flow in self._simOutVolume.iteritems():
             if stTime >= startTimeInMin and enTime <= endTimeInMin:
                 binTT = self._simMeanTT[(stTime, enTime)]
 
@@ -417,13 +435,13 @@ class Movement(object):
                 else:
                     raise DtaError("Movement %s has flow:%f and TT:%f "
                                            "for time period from %d to %d"  % 
-                                           (self.iid, flow, binTT, 
+                                           (self.getId(), flow, binTT, 
                                             startTimeInMin, endTimeInMin))
 
         if totalFlow > 0:
             return totalTime / float(totalFlow) + self._penalty
         else:
-            return (self._incomingLink.getLengthInMiles() / 
+            return (self._incomingLink.getLength() / 
                 float(self._incomingLink.getFreeFlowSpeedInMPH()) * 60 + self._penalty)
 
     def getSimSpeedInMPH(self, startTimeInMin, endTimeInMin):
@@ -448,7 +466,7 @@ class Movement(object):
         """
         Return the free flow travel time in minutes
         """
-        return self.incomingLink.getFreeFlowTTInMin()
+        return self._incomingLink.getFreeFlowTTInMin()
 
     def getTimeVaryingCostAt(self, timeInMin):
         """
@@ -464,14 +482,23 @@ class Movement(object):
         """
         return self._timeStep
     
-    def setSimVolume(self, startTimeInMin, endTimeInMin, flow):
+    def setSimOutVolume(self, startTimeInMin, endTimeInMin, flow):
         """
-        Specify the simulated flow (vehicles per HOUR) for the supplied time period
+        Specify the simulated outgoing flow (vehicles per HOUR) for the supplied time period
         """
         self._validateInputTimes(startTimeInMin, endTimeInMin)
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
-        self._simVolume[startTimeInMin, endTimeInMin] = flow
+        self._simOutVolume[startTimeInMin, endTimeInMin] = flow
+
+    def setSimInVolume(self, startTimeInMin, endTimeInMin, flow):
+        """
+        Specify the simulated incoming flow (vehicles per HOUR) for the supplied time period
+        """
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkInputTimeStep(startTimeInMin, endTimeInMin)
+
+        self._simInVolume[startTimeInMin, endTimeInMin] = flow
 
     def setSimTTInMin(self, startTimeInMin, endTimeInMin, averageTTInMin):
         """
@@ -482,18 +509,18 @@ class Movement(object):
         self._checkInputTimeStep(startTimeInMin, endTimeInMin)
 
         if averageTTInMin < 0:
-            raise DtaError("The travel time on movement cannot be negative" %
-                                   self.iid)
+            raise DtaError("The travel time on movement %s cannot be negative" %
+                                   str(self.getId()))
         if averageTTInMin == 0:
-            if self.getSimFlow(startTimeInMin, endTimeInMin) > 0:
+            if self.getSimOutFlow(startTimeInMin, endTimeInMin) > 0:
                 raise DtaError("The travel time on movement %s with flow %d from %d to %d "
                                        "cannot be 0" % (self.iid, 
-                                                        self.getSimFlow(startTimeInMin, endTimeInMin),
+                                                        self.getSimOutFlow(startTimeInMin, endTimeInMin),
                                                         startTimeInMin, endTimeInMin))
             else:
                 return
 
-        if self.getSimFlow(startTimeInMin, endTimeInMin) == 0:
+        if self.getSimOutFlow(startTimeInMin, endTimeInMin) == 0:
             raise DtaError('Cannot set the travel time on a movement with zero flow')
 
         self._simMeanTT[startTimeInMin, endTimeInMin] = averageTTInMin
@@ -520,8 +547,23 @@ class Movement(object):
         """
         Return the vehicle class group
         """
-        return self._permission 
+        return self._permission
 
+    def setVehicleClassGroup(self, vehicleClassGroup):
+        """
+        Set the vehicle class group for this movement
+        """
+        self._permission = vehicleClassGroup
 
+    def isProhibitedToAllVehicleClassGroups(self):
+        """
+        Return True if the movement is prohibited for all vehicles
+        """
+        return self._permission.allowsNone()
 
-    
+    def prohibitAllVehicleClassGroups(self):
+        """
+        Set the movement to prohibited to all vehicles
+        """
+        self._permission = VehicleClassGroup.getProhibited()
+
