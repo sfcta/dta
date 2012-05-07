@@ -23,6 +23,10 @@ import pdb
 import numpy as np
 import pylab as plt 
 
+import dta
+from dta.Utils import Time
+from dta.DtaError import DtaError 
+
 class CountsVsVolumes(object):
     
     def __init__(self, net, path, reverse):
@@ -75,6 +79,14 @@ class CountsVsVolumes(object):
         linkInVolumes = []
         leftTurnVolumes = []
         rightTurnVolumes = []
+        thruCapacities = []
+
+        start = Time(startTimeInMin / 60, startTimeInMin % 60)
+        end = Time(endTimeInMin / 60, endTimeInMin % 60)
+        if self._net.hasPlanCollectionInfo(start, end):         
+            planInfo = self._net.getPlanCollectionInfo(start, end)
+        else:
+            planInfo = None
          
         for edge in self._path.iterLinks():
             edgeVolume = edge.getSimOutVolume(startTimeInMin, endTimeInMin)
@@ -91,13 +103,22 @@ class CountsVsVolumes(object):
                 rightTurnVolume = rightTurn.getSimOutVolume(startTimeInMin, endTimeInMin)
             else:
                 rightTurn = 0
+            if edge.hasThruTurn() and planInfo:
+                thruTurn = edge.getThruTurn()
+                try: 
+                    thruCapacity = thruTurn.getCapacity(planInfo=planInfo)
+                except DtaError, e:
+                    thruCapacity = 0
+            else:
+                thruCapacity = 0
 
             linkOutVolumes.append(edgeVolume)
             linkInVolumes.append(edgeInVolume)
             leftTurnVolumes.append(leftTurnVolume)
             rightTurnVolumes.append(rightTurnVolume)
+            thruCapacities.append(thruCapacity)
 
-        return linkOutVolumes, linkInVolumes, leftTurnVolumes, rightTurnVolumes
+        return linkOutVolumes, linkInVolumes, leftTurnVolumes, rightTurnVolumes, thruCapacities
 
     def getCountsAlongCorridor(self, startTimeInMin, endTimeInMin):
         """Generator method that returns the edge, left turn and right turn
@@ -220,7 +241,11 @@ class CountsVsVolumes(object):
         return ax
 
 
-    def writeVolumesVsCounts(self, startTimeInMin, endTimeInMin, outPlotFileName):
+    def writeVolumesVsCounts(self, startTimeInMin, endTimeInMin, outPlotFileName, svg=False):
+        """
+        Export the corridor volume plot to the outPlotFileName. The volumes to be summarized are from
+        startTime to endTime. 
+        """
         
         plt.clf()
         plt.cla()
@@ -235,10 +260,10 @@ class CountsVsVolumes(object):
         #par2.spines["right"].set_position(("axes", 1.2))
         #par2.spines["right"].set_visible(True)
 
-
         names = self.getIntersectionNames()
         locations = np.array(self.getIntersectionLocations())
-        linkOutVolumes, linkInVolumes, ltVolumes, rtVolumes = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
+        linkOutVolumes, linkInVolumes, ltVolumes, rtVolumes, thruCapacities = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
+        #linkCapacities, ltCapacities = self.getCapacitiesAlongCorridor(startTimeInMin, endTimeInMin) 
 
         #throuCapacities = [link.getCapacity(startTimeInMin, endTimeInMin) for link in self._path.iterLinks()]
 
@@ -261,22 +286,51 @@ class CountsVsVolumes(object):
             speedValuesToPlot.append(speedsAlongCorridor[i])            
             
         ax.plot(newLocations, valuesToPlot, c='b')
+
         ax.set_xticks(locations)
         ax.set_xticklabels(names, rotation=90)
+        ax.set_ylim(0, int(max(valuesToPlot)) + 1)
+
+        #ax.plot(newLocations[1:9], [400, 400, 500, 500, 400, 400, 500, 500], c="r", label="Capacities")
+        ax.plot(newLocations[1:3], [400, 400], c="r", label="Capacities")        
+        ax.plot(newLocations[3:5], [500, 500], c="r", label="Capacities")
+        ax.plot(newLocations[5:7], [400, 400], c="r", label="Capacities")
+        ax.plot(newLocations[7:9], [500, 500], c="r", label="Capacities")
+
+        
         ax.grid(True)
 
-        p2, = speedAxis.plot(newLocations, speedValuesToPlot, "r-", label="Link Speeds")
+        p2, = speedAxis.plot(newLocations, speedValuesToPlot, "g-", label="Link Speeds")
         speedAxis.set_ylim(0, int(max(speedsAlongCorridor) + 1))
+
+        #ax.legend(loc=1)
+        speedAxis.set_ylabel('Link Speeds (mph)')        
 
         
         #############################
 
         ax = plt.subplot(312)
 
-        ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes Off")
-        ax.bar(locations[1:], rtVolumes, BAR_WIDTH, color='y', label="RT Volumes Off") 
-        ax.set_xticks(locations)
-        ax.set_xticklabels(["" for i in range(len(locations))])
+        #for i in range(len(rtVolumes)):
+        #    if rtVolumes[i] == 0:
+        #        rtVolumes[i] = rtVolumes[i] + 50
+        #    if ltVolumes[i] == 0:
+        #        ltVolumes[i] = ltVolumes[i] + 50 
+            
+
+        pdb.set_trace()
+        ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, width=BAR_WIDTH,bottom=0, color='r', label="LT Volumes Off")
+        ax.bar(locations[1:], rtVolumes, width=BAR_WIDTH, bottom=0, color='y', label="RT Volumes Off")
+
+        #newLocations2 = locations[1:]
+        #for i in range(len(newLocations2)):
+        #    newLocations2[i] = newLocations2[i] + i * BAR_WIDTH
+        
+        #ax.bar(newLocations2 - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes Off")
+        #ax.bar(newLocations2, rtVolumes, BAR_WIDTH, color='y', label="RT Volumes Off") 
+        
+        #ax.set_xticks(locations)
+        #ax.set_xticklabels(["" for i in range(len(locations))])
 
         ax.legend(loc=2)
         ax.set_ylabel('Vehicles Per Hour')        
@@ -293,8 +347,11 @@ class CountsVsVolumes(object):
 
         ax.legend(loc=2)
         ax.set_ylabel('Vehicles Per Hour')
-        
-        plt.savefig(outPlotFileName)
+
+        if not svg:
+            plt.savefig(outPlotFileName)
+        else:
+            plt.savefig(outPlotFileName, format="svg")
     
         
 

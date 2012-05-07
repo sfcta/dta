@@ -219,7 +219,18 @@ class TestNetwork(object):
 
         for pInfo in net.iterPlanCollectionInfo():
             pInfo
-        
+
+    def test_getPlanInfo(self):
+
+        net = getSimpleNet()
+        net.addPlanCollectionInfo(Time(7, 0), Time(9, 0), "test1", "test1")
+
+        pi = net.getPlanCollectionInfo(Time(7, 0), Time(9, 0))
+
+        start, end = pi.getTimePeriod()
+        assert start.getMinutes() == 7 * 60
+        assert end.getMinutes() == 9 * 60 
+              
     def test_1getNum(self):
 
         net = getSimpleNet() 

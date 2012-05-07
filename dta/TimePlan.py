@@ -69,8 +69,8 @@ class TimePlan(object):
     
     """
 
-    DYNAMEQ_CONTROL_TYPE_CONSTANT = 0
-    DYNAMEQ_CONTROL_TYPE_PRETIMED = 1
+    CONTROL_TYPE_CONSTANT = 0
+    CONTROL_TYPE_PRETIMED = 1
     
     TURN_ON_RED_YES = 1
     TURN_ON_RED_NO = 0

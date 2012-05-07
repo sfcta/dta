@@ -317,21 +317,23 @@ class Movement(object):
         """
         return self._numLanes
 
-    def getProtectedCapacity(self, planInfo=None):
+    def getProtectedCapacity(self, planInfo):
         """
         Return the capacity of the movement in vehicles per hour
+        This method calulates the capacity of of the movement by
+        adding the green times of all the phases this movement
+        participates in. 
         """
-        
         if self._node.hasTimePlan(planInfo=planInfo):
             tp = self._node.getTimePlan(planInfo=planInfo)
             greenTime = 0
-            for phase in tp.iterPhases():
+            for phase in tp.iterPhases():                                
                 if phase.hasMovement(self.getStartNodeId(), self.getEndNodeId()):
                     mov = phase.getMovement(self.getStartNodeId(), self.getEndNodeId())
                     if mov.isProtected:
                         greenTime += phase.getGreen()
             if greenTime > 0:                
-                return greenTime / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
+                return float(greenTime) / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
         raise DtaError("The movement %s does does not operate under a protected phase"
                        % self.getId())
          #return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE

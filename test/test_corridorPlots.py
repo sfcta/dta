@@ -17,9 +17,12 @@ __license__     = """
 """
 import pdb 
 import os
-import dta
+
 from itertools import izip
 import random
+
+import dta
+from dta.Utils import Time
 
 dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
@@ -64,8 +67,8 @@ def getGearySubNet():
         link._label  = str(link.getId())
         for mov in link.iterOutgoingMovements():
             for start, end in izip(range(0, 60, 15), range(15, 61, 15)):
-                mov.setSimOutVolume(start, end, random.randint(500, 1000))
-                mov.setSimInVolume(start, end, random.randint(500, 1000))
+                mov.setSimOutVolume(start, end, random.randint(20, 50))
+                mov.setSimInVolume(start, end, random.randint(20, 50))
                 mov.cost = link.euclideanLength()
                 randInt = random.randint(2,4) 
                 tt = mov.getFreeFlowTTInMin() * float(randInt)
@@ -89,10 +92,57 @@ class TestCorridorPlots:
 
     def test_volumes(self):
 
-
         net = getGearySubNet()
+        
+        net.addPlanCollectionInfo(Time(7, 0), Time(9, 0), "test1", "test1")
+        pi = net.getPlanCollectionInfo(Time(7, 0), Time(9, 0))
 
-        #pdb.set_trace()
+        node = net.getNodeForId(25956)
+
+                
+        for link in node.iterIncomingLinks():
+            for mov in link.iterOutgoingMovements(): 
+                if mov.isUTurn():
+                    link.prohibitOutgoingMovement(mov) 
+                    
+                
+        tp = dta.TimePlan(node, 0, pi)
+        p1 = dta.Phase(tp, 40, 3, 2)
+        p1Movs = [mov for mov in net.getLinkForId(101674).iterOutgoingMovements()]
+        p1Movs.extend([mov for mov in net.getLinkForId(14597).iterOutgoingMovements()])
+
+        for mov in p1Movs:
+            
+            pMov = dta.PhaseMovement.PhaseMovement(mov, 1)
+            if pMov.isUTurn():
+                continue
+            if mov.isLeftTurn():
+                pMov.setPermitted() 
+            p1.addMovement(pMov)
+
+        p2 = dta.Phase(tp, 40, 3, 2) 
+        p2Movs = [mov for mov in net.getLinkForId(14620).iterOutgoingMovements()]
+        p2Movs.extend([mov for mov in net.getLinkForId(14582).iterOutgoingMovements()])
+
+        for mov in p2Movs:
+            pMov = dta.PhaseMovement.PhaseMovement(mov, 1)
+            if pMov.isUTurn():
+                continue 
+            if mov.isLeftTurn():
+                pMov.setPermitted()
+            p2.addMovement(pMov)
+
+
+
+        tp.addPhase(p1)
+        tp.addPhase(p2)
+
+        node.addTimePlan(tp)
+
+        mov = net.getLinkForId(101674).getOutgoingMovement(25958)
+        mov.getProtectedCapacity(planInfo=pi) 
+        
+        pdb.set_trace()
 
         net.writeLinksToShp("gearySubnet_links")
         net.writeNodesToShp("gearySubnet_nodes")
@@ -119,7 +169,7 @@ class TestCorridorPlots:
         print "locations=", volumesVsCounts.getIntersectionLocations()
 
         print "volumes=", volumesVsCounts.getVolumesAlongCorridor(0, 60)
-        volumesVsCounts.writeVolumesVsCounts(0, 60, 'test')
+        volumesVsCounts.writeVolumesVsCounts(0, 60, 'testplot2')
 
         
         

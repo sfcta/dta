@@ -36,7 +36,8 @@ from .VirtualNode import VirtualNode
 from .VehicleType import VehicleType
 from .VehicleClassGroup import VehicleClassGroup
 from .Movement import Movement
-from .Algorithms import * 
+from .Algorithms import *
+from .Utils import Time 
 
 class Network(object):
     """
@@ -120,33 +121,50 @@ class Network(object):
 
                     cLink.addOutgoingMovement(cMov)
 
-    def addPlanCollectionInfo(self, militaryStartTime, militaryEndTime, name, description):
+    def addPlanCollectionInfo(self, startTime, endTime, name, description):
         """
-        Add a time plan collection with the given characteristics
+        startTime :py:class:`Utils.Time` instance 
+        endTime :py:class:`Utils.Time` instance 
+
+        name: a string that identifies the plan collection
+        description: a string that gives more infromation about the plan collection        
         """
-        if self.hasPlanCollectionInfo(militaryStartTime, militaryEndTime):
+        if not (isinstance(startTime, Time) and isinstance(startTime, Time)):
+            raise DtaError("Start time and End Time should be instances of `Utils.Time` objects") 
+        
+        if self.hasPlanCollectionInfo(startTime, endTime):
             raise DtaError("The network already has a plan collection info from %d to %d"
-                           % (militaryStartTime, militaryEndTime))
-        planInfo = PlanCollectionInfo(militaryStartTime, militaryEndTime, name, description)   
-        self._planInfo[militaryStartTime, militaryEndTime] = planInfo
+                           % (startTime, endTime))
+        planInfo = PlanCollectionInfo(startTime, endTime, name, description)   
+        self._planInfo[startTime, endTime] = planInfo
         return planInfo
 
-    def hasPlanCollectionInfo(self, militaryStartTime, militaryEndTime):
+    def hasPlanCollectionInfo(self, startTime, endTime):
         """
         Return True if the network has a time plan connection for the given
         start and end times
+        startTime :py:class:`Utils.Time` instance 
+        endTime :py:class:`Utils.Time` instance         
         """
-        return True if (militaryStartTime, militaryEndTime) in self._planInfo else False
+        if not (isinstance(startTime, Time) and isinstance(startTime, Time)):
+            raise DtaError("Start time and End Time should be instances of `Utils.Time` objects") 
+        
+        return True if (startTime, endTime) in self._planInfo else False
 
-    def getPlanCollectionInfo(self, militaryStartTime, militaryEndTime):
+    def getPlanCollectionInfo(self, startTime, endTime):
         """
         Return the plan collection info for the given input times
+        startTime :py:class:`Utils.Time` instance 
+        endTime :py:class:`Utils.Time` instance                 
         """
-        if self.hasPlanCollectionInfo(militaryStartTime, militaryEndTime):
-            return self._planInfo[militaryStartTime, militaryEndTime]
+        if not (isinstance(startTime, Time) and isinstance(startTime, Time)):
+            raise DtaError("Start time and End Time should be instances of `Utils.Time` objects") 
+        
+        if self.hasPlanCollectionInfo(startTime, endTime):
+            return self._planInfo[startTime, endTime]
         else:
             raise DtaError("The network does not have a plan collection from %d to %d"
-                           % (militaryStartTime, militaryEndTime))
+                           % (startTime, endTime))
 
     def iterPlanCollectionInfo(self):
         """
