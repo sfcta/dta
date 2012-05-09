@@ -461,7 +461,7 @@ class ShortestPaths(object):
                 print 'Virtual Node Included = ', pivotVertex.getId()
             for edge in pivotVertex.iterOutgoingLinks():
                 if not edge.isVirtualLink():
-                    newLabel = pivotVertex.label + edge.getLength()
+                    newLabel = pivotVertex.label + edge._calculateEuclideanLength()
                     downstreamVertex = edge.getEndNode()
                     if not downstreamVertex.isVirtualNode():
                         if newLabel < downstreamVertex.label:

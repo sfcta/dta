@@ -131,12 +131,12 @@ class TPPlus2Dynameq(object):
                         numnewlinks+=1
                         dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                         dSegment = dRoute.addSegment(dLink, 0)
-                        #if dNodeB.getId()==24666 and dNodeA.getId()==24564:
-                        #    print 'New Link Added = ',dLink.getId()
+                        if numnewlinks>2:
+                            print 'New Link Added = ',dLink.getId()
 
                     if numnewlinks>2:
                         print 'NodeStart = ',dNodeA.getId(),', NodeEnd =',dNodeB.getId(),', Number of new links added = ',numnewlinks
-
+                            
                     tNodeB = tRoute.getTransitNode(dNodeB.getId())
                     if tNodeB.isStop:
                         dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
@@ -152,7 +152,6 @@ if __name__ == "__main__":
     INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
     INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
     TRANSIT_LINES                 = sys.argv[3]
-    #SF_CUBE_NET_FIL               = sys.argv[4]
 
     dta.VehicleType.LENGTH_UNITS= "feet"
     dta.Node.COORDINATE_UNITS   = "feet"
@@ -166,12 +165,14 @@ if __name__ == "__main__":
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
 
 
-    #projectFolder2 = "C:/SFCTA/dta/testdata/ReneeTransitTest/"
-    #net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
-    #net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
+    projectFolder2 = "C:/SFCTA2/dta/testdata/ReneeTransitTest/"
+    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
+    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
+
+
     
     for tpplusRoute in dta.TPPlusTransitRoute.read(net, TRANSIT_LINES):
-
+        #print 'Route = ',dta.TPPlusTransitRoute.getRouteName(tpplusRoute)
         dynameqRoute = TPPlus2Dynameq.convertRoute(net, tpplusRoute)
         
 
