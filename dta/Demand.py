@@ -34,24 +34,15 @@ class Demand(object):
     Class that represents the demand matrix for a :py:class:`Network`
     """
 
-    FORMAT_LINEAR = 'FORMAT:linear'
-    FORMAT_FULL = 'FORMAT:full'    
-    HEADER_LINE1 = '*DEMAND MATRIX ASCII FILE [FULL FORMAT]- GENERATED'
-    VEHCLASS_SECTION = 'VEH_CLASS'
-    DEFAULT_VEHCLASS = 'Default'
-    DATA_SECTION = 'DATA'
-    SLICE_SECTION = 'SLICE'
-
-    YEAR = 2010
-    MONTH = 1
-    DAY = 1
-
     @classmethod
     def readCubeODTable(cls, fileName, net, vehicleClassName, 
                         startTime, endTime):
         """
-        Reads the demand (linear format) from the input csv file. The fieldNames 
-        should correspond to the names of the vehicle classes. 
+        Reads the demand (linear format) from the input csv file and returns a demand instance.
+        * *fileName* is a csv file with the fields: "Origin, Destination, <vehicle class name>[demand]"
+        * *net* is an instance of :py:class:'Network'
+        * *vehicleClassName* is the vehicle class that you want to read from the input csv and should correspond to the names of the vehicle classes 
+        * *startTime* and *endTime* are dta.Utils.Time instances 
         """
 
         timeSpan = endTime - startTime 
@@ -154,7 +145,7 @@ class Demand(object):
         
         *net* is a dta.Network instance
         *vehClassName* is a string 
-        *startTime*, *endTime* and *timeStep* are dta.Utils.Time instancess 
+        *startTime*, *endTime* and *timeStep* are dta.Utils.Time instances 
         """
         self._net = net 
 
@@ -234,20 +225,39 @@ class Demand(object):
         """
         return self._demandTable[timeLabel, origin, destination]
 
-    def writeDynameqTable(self, fileName):
+    def writeDynameqTable(self, fileName, format='full'):
         """
         Write the demand in the dynameq format
+        .. todo:: implement linear writing
         """
+        
+        if format != 'full':
+            raise DtaError("Unimplemented Matrix Format specified: %s" % (format))
+            
+        FORMAT_LINEAR    = 'FORMAT:linear'
+        FORMAT_FULL      = 'FORMAT:full'    
+        HEADER_LINE1     = '*DEMAND MATRIX ASCII FILE [FULL FORMAT]- GENERATED'
+        VEHCLASS_SECTION = 'VEH_CLASS'
+        DEFAULT_VEHCLASS = 'Default'
+        DATA_SECTION     = 'DATA'
+        SLICE_SECTION    = 'SLICE'
+        
         outputStream = open(fileName, "w") 
 
         outputStream.write("<DYNAMEQ>\n<VERSION_1.7>\n<MATRIX_FILE>\n")
         outputStream.write('%s %s %s\n' % ("Created by python DTA by SFCTA", 
                                            datetime.datetime.now().strftime("%x"), 
                                            datetime.datetime.now().strftime("%X")))
-        outputStream.write('%s\n' % Demand.FORMAT_FULL)
-        outputStream.write('%s\n' % Demand.VEHCLASS_SECTION)
+        if format == 'full':
+            outputStream.write('%s\n' % FORMAT_FULL)
+        elif format == 'linear':
+            outputStream.write('%s\n' % FORMAT_LINEAR)
+        else:
+             raise DtaError("Don't understand Dynameq Output Matrix Format: %s" % (format))
+             
+        outputStream.write('%s\n' % VEHCLASS_SECTION)
         outputStream.write('%s\n' % self.vehClassName)
-        outputStream.write('%s\n' % Demand.DATA_SECTION)
+        outputStream.write('%s\n' % DATA_SECTION)
         outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
                                          self.endTime.strftime("%H:%M")))
 
