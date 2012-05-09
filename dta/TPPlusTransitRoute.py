@@ -256,6 +256,12 @@ class TPPlusTransitRoute(object):
                 body += '-%s, ACCESS=%f.2, DELAY=%f.2, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
 
         return header + body[:-2] + '\n'
+
+    def getRouteName(self):
+
+        name = 'LINE NAME=%s' % self.name
+
+        return name
         
     def addTransitNode(self, nodeId, isStop, access, delay):
         """

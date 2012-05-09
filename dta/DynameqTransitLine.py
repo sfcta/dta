@@ -206,13 +206,26 @@ class TransitLine(object):
         allSegments=list(self.iterSegments())
         for upSegment, downSegment in izip(allSegments,allSegments[1:]):
             upLink = upSegment.link
+            upNode = upLink.getEndNode()
             downLink = downSegment.link
+            downNode = downLink.getEndNode()
+
+            movecheck = False
            
-            if not upLink.hasOutgoingMovement(downLink.getEndNodeId()):
+            #if not upLink.hasOutgoingMovement(downLink.getEndNodeId()):
+            for mov in upNode.iterOutgoingLinks():
+                if mov.getEndNode()==downNode:
+                    movecheck = True
+            
+            #if not upNode.hasOutgoingLinkForNodeId(downNode):
+            if not movecheck :
                 errorMessage = "Route %20s cannot excecute movement from link %15s to link %15s " % \
                 (self.label, str(upLink.getIid()), str(downLink.getIid()))
 
                 dta.DtaLogger.error(errorMessage)
+                #print 'outgoing movements:'
+                #for mov in upNode.iterOutgoingLinks():
+                #    print mov.getEndNode().getId()
 
 def correctTransitLineUsingSP(net, transitLine):
     
