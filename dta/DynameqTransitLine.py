@@ -16,6 +16,8 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# TODO: rename this file to TransitLine
+
 import re
 import dta
 from itertools import izip
@@ -38,6 +40,9 @@ class TransitSegment(object):
                           str(self.lane), '%8.6f' % self.dwell, self.stopside]) + '\n'
         
 class TransitLine(object):
+    """
+    Transit Line representation for a DTA Network.
+    """
 
     @classmethod
     def read(cls, net, fileName):
@@ -73,16 +78,28 @@ class TransitLine(object):
         inputStream.close()
         raise StopIteration
     
-    def __init__(self, net, id_, label, litype, vtype, stime, hway, dep):
+    def __init__(self, net, id, label, litype, vtype, stime, hway, dep):
+        """
+        Constructor.
         
-        self._net = net
-        self._id = id_
-        self.label = label
+        * *net* is a :py:class:`Network` instance
+        * *id* is a string ID for the transit line
+        * *label* is a string label (what's the difference between the *id* and the *label* ?)
+        * *litype* is a string representing line type (more?)
+        * *vtype* is a string representing vehicle type (more?)
+        * *stime* is a string representing the start time for the transit line
+        * *hway* is the line headway
+        * *dep* is the number of departures, an integer
+        
+        """
+        self._net   = net
+        self._id    = id
+        self.label  = label
         self.litype = litype
-        self.vtype = vtype
-        self.stime = stime
-        self.hway = hway
-        self.dep = dep
+        self.vtype  = vtype
+        self.stime  = stime
+        self.hway   = hway
+        self.dep    = dep
 
         self._segments = []
 

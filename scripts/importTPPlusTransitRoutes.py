@@ -16,7 +16,6 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import csv
-import logging
 import os
 import sys
 from itertools import izip
@@ -29,11 +28,20 @@ from dta.Algorithms import ShortestPaths
 from dta.CubeNetwork import CubeNetwork
 #from dta.Network import Network
 
-#from pbCore.utils.itertools2 import pairwise
-#from pbCore.dynameq.transitLine import TransitLine
-#from pbModels.algorithms.shortestPaths import ShortestPaths
-#from pbCore.dynameq.error import TPPlus2DynameqError
+USAGE = r"""
 
+ python importTPPlusTransitRoutes.py dynameq_net_dir dynameq_net_prefix tpplus_transit.lin
+ 
+ e.g.
+ 
+ python importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\transitPM.lin
+ 
+ This script reads the dynameq network in the given directory, as well as the given Cube TPPlus transit line file,
+ and converts the transit lines into DTA transit lines, outputting them in Dynameq format as 
+ [dynameq_net_dir]\[dynameq_net_prefix]_ptrn.dqt
+ 
+ """
+ 
 def convertHeadway2HHMM(headwayInMin):
 
     hours = headwayInMin / 60
@@ -72,56 +80,60 @@ class TPPlus2Dynameq(object):
     """Converts TPPlus Network elemements to the equivalent Dynameq ones"""
     
     @classmethod
-    def convertRoute(cls, dynameqNet, tpplusRoute, doShortestPath=True):
-        """Convert the input tpplusRoute to an equivalent Dynameq route"""
+    def convertRoute(cls, dtaNetwork, tpplusRoute, doShortestPath=True):
+        """
+        Convert the given input *tpplusRoute*, which is an instance of :py:class:`TPPlusTransitRoute`
+        to an equivalent DTA transit line.  Returns an instance of a :py:class:`TransitLine`.
+        
+        Links on the route are checked against the given *dtaNetwork* (an instance of :py:class:`Network`).
+        If *doShortestPath* is True, then a shortest path is searched for on the *dtaNetwork* and that
+        is included (so this is assuming that the *tpplusRoute* is missing some nodes).  If
+        *doShortestPath* is False, these links are dropped (?).
+        
+        ..TODO:: They're not all buses; enable communication about this fact.
+        ..TODO:: Move this to something in dta; it does not belong in scripts.
+        
+        """
         DWELL_TIME = 30
 
-        tRoute = tpplusRoute
-
-        for edge in dynameqNet.iterLinks():
+        for edge in dtaNetwork.iterLinks():
             edge.cost = edge.euclideanLength()
             if edge.isConnector():
                 edge.cost = sys.maxint
         
         dNodeSequence = []
-        for tNode in tRoute.iterTransitNodes():
-            if not dynameqNet.hasNodeForId(tNode.nodeId):
-                errorMessage = ('Node id %d does not exist in the Dynameq network' % tNode.nodeId)
-                print 'Node ',tNode.nodeId,' does not exist.'
+        for tNode in tpplusRoute.iterTransitNodes():
+            if not dtaNetwork.hasNodeForId(tNode.nodeId):
+                dta.DtaLogger.warn('Node id %d does not exist in the Dynameq network' % tNode.nodeId)
                 continue
-            dNode = dynameqNet.getNodeForId(tNode.nodeId)
+            dNode = dtaNetwork.getNodeForId(tNode.nodeId)
             dNodeSequence.append(dNode)
 
         if len(dNodeSequence) == 0:
-            errorMessage = ('Tpplus route %s cannot be converted to Dynameq because '
-                            'none of its nodes is in the Dynameq network' % tRoute.name)
-            logging.error(errorMessage)
-
-            dta.DtaLogger.error(errorMessage)
+             dta.DtaLogger.error('Tpplus route %s cannot be converted to Dynameq because '
+                                 'none of its nodes is in the Dynameq network' % tpplusRoute.name)
                                               
         if len(dNodeSequence) == 1:
-            errorMessage = ('Tpplus route %s cannot be converted to Dyanmeq because only '
-                                      'one of its nodes is in the Dynameq network' % tRoute.name)
-            logging.error(errorMessage)            
-            dta.DtaLogger.error(errorMessage)
+             dta.DtaLogger.error('Tpplus route %s cannot be converted to Dyanmeq because only '
+                                 'one of its nodes is in the Dynameq network' % tpplusRoute.name)
 
-        dRoute = dta.DynameqTransitLine.TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
+        dRoute = dta.DynameqTransitLine.TransitLine(dtaNetwork, tpplusRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
         for dNodeA, dNodeB in izip(dNodeSequence, dNodeSequence[1:]):
                
-            if dynameqNet.hasLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId()):
-                dLink = dynameqNet.getLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId())
+            if dtaNetwork.hasLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId()):
+                dLink = dtaNetwork.getLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId())
                 dSegment = dRoute.addSegment(dLink, 0)
                 #print 'added link', dLink.iid
 
-                tNodeB = tRoute.getTransitNode(dNodeB.getId())
+                tNodeB = tpplusRoute.getTransitNode(dNodeB.getId())
                 if tNodeB.isStop:
-                    dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
+                    dSegment.dwell = 60*tpplusRoute.getTransitDelay(dNodeB.getId())
                     #print 'Delay = ',dSegment.dwell
             else:
                 if doShortestPath:
-                    print 'I am running the SP. Root node', dNodeA.getId()
-                    #ShortestPaths.labelSettingWithLabelsOnNodes(dynameqNet, dNodeA, dNodeB)
-                    ShortestPaths.labelCorrectingWithLabelsOnNodes(dynameqNet, dNodeA)
+                    dta.DtaLogger.debug('Running the SP from Root node %d' % dNodeA.getId())
+                    #ShortestPaths.labelSettingWithLabelsOnNodes(dtaNetwork, dNodeA, dNodeB)
+                    ShortestPaths.labelCorrectingWithLabelsOnNodes(dtaNetwork, dNodeA)
                     if dNodeB.label == sys.maxint:
                         continue
 
@@ -129,17 +141,17 @@ class TPPlus2Dynameq(object):
                     numnewlinks = 0
                     for pathNodeA, pathNodeB in izip(pathNodes, pathNodes[1:]):
                         numnewlinks+=1
-                        dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
+                        dLink = dtaNetwork.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                         dSegment = dRoute.addSegment(dLink, 0)
                         #if dNodeB.getId()==24666 and dNodeA.getId()==24564:
                         #    print 'New Link Added = ',dLink.getId()
 
                     if numnewlinks>2:
-                        print 'NodeStart = ',dNodeA.getId(),', NodeEnd =',dNodeB.getId(),', Number of new links added = ',numnewlinks
+                        dta.DtaLogger.debug('NodeStart = %d, NodeEnd = %d, Number of new links added = %d' % (dNodeA.getId(), dNodeB.getId(), numnewlinks))
 
-                    tNodeB = tRoute.getTransitNode(dNodeB.getId())
+                    tNodeB = tpplusRoute.getTransitNode(dNodeB.getId())
                     if tNodeB.isStop:
-                        dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
+                        dSegment.dwell = 60*tpplusRoute.getTransitDelay(dNodeB.getId())
                 else:
                     pass
                         
