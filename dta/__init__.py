@@ -46,7 +46,7 @@ from .Path import Path
 from .Scenario import Scenario
 from .TimePlan import PlanCollectionInfo, TimePlan
 from .TPPlusTransitRoute import TPPlusTransitNode, TPPlusTransitRoute
-from .DynameqTransitLine import TransitLine, TransitSegment
+from .TransitLine import TransitLine, TransitSegment
 from .Utils import crossProduct, direction, lineSegmentsCross, onSegment, Time
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType

@@ -16,8 +16,6 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# TODO: rename this file to TransitLine
-
 import re
 import dta
 import time
