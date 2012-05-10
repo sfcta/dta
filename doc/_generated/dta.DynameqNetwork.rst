@@ -21,6 +21,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.addPlanCollectionInfo
       ~DynameqNetwork.areIDsUnique
       ~DynameqNetwork.deepcopy
+      ~DynameqNetwork.findLinksForRoadLabels
       ~DynameqNetwork.findMovementForRoadLabels
       ~DynameqNetwork.getLinkForId
       ~DynameqNetwork.getLinkForNodeIdPair
@@ -64,6 +65,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds2
       ~DynameqNetwork.moveVirtualNodesToAvoidShortConnectors
       ~DynameqNetwork.read
+      ~DynameqNetwork.readLinkShape
       ~DynameqNetwork.readSimResults
       ~DynameqNetwork.removeCentroidConnectorFromIntersection
       ~DynameqNetwork.removeCentroidConnectorsFromIntersections

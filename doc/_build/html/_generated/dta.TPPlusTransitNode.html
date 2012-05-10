@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.Algorithms &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.TPPlusTransitNode &mdash; DTA Anyway v1.0 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.Demand" href="dta.Demand.html" />
+    <link rel="next" title="dta.TPPlusTransitRoute" href="dta.TPPlusTransitRoute.html" />
     <link rel="prev" title="dta.PhaseMovement" href="dta.PhaseMovement.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dta.Demand.html" title="dta.Demand"
+          <a href="dta.TPPlusTransitRoute.html" title="dta.TPPlusTransitRoute"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="dta.PhaseMovement.html" title="dta.PhaseMovement"
@@ -51,12 +51,37 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="dta-algorithms">
-<h1>dta.Algorithms<a class="headerlink" href="#dta-algorithms" title="Permalink to this headline">¶</a></h1>
-<dl class="data">
-<dt id="dta.Algorithms">
-<tt class="descclassname">dta.</tt><tt class="descname">Algorithms</tt><a class="headerlink" href="#dta.Algorithms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Algorithms for use throughout DTA Anyway</p>
+  <div class="section" id="dta-tpplustransitnode">
+<h1>dta.TPPlusTransitNode<a class="headerlink" href="#dta-tpplustransitnode" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.TPPlusTransitNode">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TPPlusTransitNode</tt><big>(</big><em>nodeId</em>, <em>isStop</em>, <em>access</em>, <em>delay</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Representation of a transit node for a <a class="reference internal" href="dta.TPPlusTransitRoute.html#dta.TPPlusTransitRoute" title="dta.TPPlusTransitRoute"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitRoute</span></tt></a></p>
+<dl class="method">
+<dt id="dta.TPPlusTransitNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>nodeId</em>, <em>isStop</em>, <em>access</em>, <em>delay</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitNode.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic transit node in a <a class="reference internal" href="dta.TPPlusTransitRoute.html#dta.TPPlusTransitRoute" title="dta.TPPlusTransitRoute"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitRoute</span></tt></a>.</p>
+<ul class="simple">
+<li><em>nodeId</em> is a node number</li>
+<li><em>isStop</em> is a boolean</li>
+<li><em>access</em> is an integer</li>
+<li><em>delay</em> is a float representing the delay at this node, in minutes</li>
+</ul>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitNode.__init__" title="dta.TPPlusTransitNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(nodeId,&nbsp;isStop,&nbsp;access,&nbsp;delay)</td>
+<td>Basic transit node in a <a class="reference internal" href="dta.TPPlusTransitRoute.html#dta.TPPlusTransitRoute" title="dta.TPPlusTransitRoute"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitRoute</span></tt></a>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -71,11 +96,11 @@
   <p class="topless"><a href="dta.PhaseMovement.html"
                         title="previous chapter">dta.PhaseMovement</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="dta.Demand.html"
-                        title="next chapter">dta.Demand</a></p>
+  <p class="topless"><a href="dta.TPPlusTransitRoute.html"
+                        title="next chapter">dta.TPPlusTransitRoute</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../_sources/_generated/dta.Algorithms.txt"
+    <li><a href="../_sources/_generated/dta.TPPlusTransitNode.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -105,7 +130,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dta.Demand.html" title="dta.Demand"
+          <a href="dta.TPPlusTransitRoute.html" title="dta.TPPlusTransitRoute"
              >next</a> |</li>
         <li class="right" >
           <a href="dta.PhaseMovement.html" title="dta.PhaseMovement"

@@ -100,6 +100,9 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <tr><td><a class="reference internal" href="#dta.Network.deepcopy" title="dta.Network.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">Network.deepcopy</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Network.findLinksForRoadLabels" title="dta.Network.findLinksForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">Network.findLinksForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Network.findMovementForRoadLabels" title="dta.Network.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">Network.findMovementForRoadLabels</span></tt></a></td>
 <td></td>
 </tr>
@@ -217,6 +220,9 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <tr><td><a class="reference internal" href="#dta.Network.moveVirtualNodesToAvoidShortConnectors" title="dta.Network.moveVirtualNodesToAvoidShortConnectors"><tt class="xref py py-obj docutils literal"><span class="pre">Network.moveVirtualNodesToAvoidShortConnectors</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Network.readLinkShape" title="dta.Network.readLinkShape"><tt class="xref py py-obj docutils literal"><span class="pre">Network.readLinkShape</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Network.removeLink" title="dta.Network.removeLink"><tt class="xref py py-obj docutils literal"><span class="pre">Network.removeLink</span></tt></a></td>
 <td></td>
 </tr>
@@ -288,8 +294,11 @@ and that the id is not already used; stores it.</p>
 
 <dl class="method">
 <dt id="dta.Network.addPlanCollectionInfo">
-<tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.Network.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a time plan collection with the given characteristics</p>
+<tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.Network.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
+<p>name: a string that identifies the plan collection
+description: a string that gives more infromation about the plan collection</p>
 </dd></dl>
 
 <dl class="method">
@@ -455,8 +464,10 @@ another connector</p>
 
 <dl class="method">
 <dt id="dta.Network.getPlanCollectionInfo">
-<tt class="descname">getPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em><big>)</big><a class="headerlink" href="#dta.Network.getPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the plan collection info for the given input times</p>
+<tt class="descname">getPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Network.getPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the plan collection info for the given input times
+startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
 </dd></dl>
 
 <dl class="method">
@@ -517,9 +528,11 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 
 <dl class="method">
 <dt id="dta.Network.hasPlanCollectionInfo">
-<tt class="descname">hasPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em><big>)</big><a class="headerlink" href="#dta.Network.hasPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">hasPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Network.hasPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the network has a time plan connection for the given
-start and end times</p>
+start and end times
+startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
 </dd></dl>
 
 <dl class="method">

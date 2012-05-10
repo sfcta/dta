@@ -100,6 +100,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.deepcopy" title="dta.CubeNetwork.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.deepcopy</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.CubeNetwork.findLinksForRoadLabels" title="dta.CubeNetwork.findLinksForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.findLinksForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.CubeNetwork.findMovementForRoadLabels" title="dta.CubeNetwork.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">CubeNetwork.findMovementForRoadLabels</span></tt></a></td>
 <td></td>
 </tr>
@@ -300,8 +303,11 @@ and that the id is not already used; stores it.</p>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.addPlanCollectionInfo">
-<tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a time plan collection with the given characteristics</p>
+<tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
+<p>name: a string that identifies the plan collection
+description: a string that gives more infromation about the plan collection</p>
 </dd></dl>
 
 <dl class="method">
@@ -473,8 +479,10 @@ another connector</p>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.getPlanCollectionInfo">
-<tt class="descname">getPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the plan collection info for the given input times</p>
+<tt class="descname">getPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.getPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the plan collection info for the given input times
+startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
 </dd></dl>
 
 <dl class="method">
@@ -535,9 +543,11 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 
 <dl class="method">
 <dt id="dta.CubeNetwork.hasPlanCollectionInfo">
-<tt class="descname">hasPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">hasPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.CubeNetwork.hasPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the network has a time plan connection for the given
-start and end times</p>
+start and end times
+startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
 </dd></dl>
 
 <dl class="method">

@@ -28,10 +28,12 @@ dta.Movement
       ~Movement.getOriginNode
       ~Movement.getOutgoingLink
       ~Movement.getProtectedCapacity
-      ~Movement.getSimFlow
+      ~Movement.getSimInFlow
+      ~Movement.getSimInVolume
+      ~Movement.getSimOutFlow
+      ~Movement.getSimOutVolume
       ~Movement.getSimSpeedInMPH
       ~Movement.getSimTTInMin
-      ~Movement.getSimVolume
       ~Movement.getStartNode
       ~Movement.getStartNodeId
       ~Movement.getTimeVaryingCostAt
@@ -46,8 +48,9 @@ dta.Movement
       ~Movement.isUTurn
       ~Movement.prohibitAllVehicleClassGroups
       ~Movement.setPenaltyInMin
+      ~Movement.setSimInVolume
+      ~Movement.setSimOutVolume
       ~Movement.setSimTTInMin
-      ~Movement.setSimVolume
       ~Movement.setTimeVaryingCosts
       ~Movement.setVehicleClassGroup
       ~Movement.simpleMovementFactory

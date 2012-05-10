@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.DtaError" href="dta.DtaError.html" />
-    <link rel="prev" title="dta.Algorithms" href="dta.Algorithms.html" /> 
+    <link rel="prev" title="dta.TransitSegment" href="dta.TransitSegment.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,7 +40,7 @@
           <a href="dta.DtaError.html" title="dta.DtaError"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="dta.Algorithms.html" title="dta.Algorithms"
+          <a href="dta.TransitSegment.html" title="dta.TransitSegment"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -65,7 +65,7 @@
 time, origin taz, destination taz.</p>
 <p><em>net</em> is a dta.Network instance
 <em>vehClassName</em> is a string 
-<em>startTime</em>, <em>endTime</em> and <em>timeStep</em> are dta.Utils.Time instancess</p>
+<em>startTime</em>, <em>endTime</em> and <em>timeStep</em> are dta.Utils.Time instances</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -147,8 +147,11 @@ in the list.</p>
 <dl class="classmethod">
 <dt id="dta.Demand.readCubeODTable">
 <em class="property">classmethod </em><tt class="descname">readCubeODTable</tt><big>(</big><em>fileName</em>, <em>net</em>, <em>vehicleClassName</em>, <em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.Demand.readCubeODTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads the demand (linear format) from the input csv file. The fieldNames 
-should correspond to the names of the vehicle classes.</p>
+<dd><p>Reads the demand (linear format) from the input csv file and returns a demand instance.
+* <em>fileName</em> is a csv file with the fields: &#8220;Origin, Destination, &lt;vehicle class name&gt;[demand]&#8221;
+* <em>net</em> is an instance of :py:class:&#8217;Network&#8217;
+* <em>vehicleClassName</em> is the vehicle class that you want to read from the input csv and should correspond to the names of the vehicle classes 
+* <em>startTime</em> and <em>endTime</em> are dta.Utils.Time instances</p>
 </dd></dl>
 
 <dl class="classmethod">
@@ -173,8 +176,9 @@ a path does not exist from origin to destination</p>
 
 <dl class="method">
 <dt id="dta.Demand.writeDynameqTable">
-<tt class="descname">writeDynameqTable</tt><big>(</big><em>fileName</em><big>)</big><a class="headerlink" href="#dta.Demand.writeDynameqTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write the demand in the dynameq format</p>
+<tt class="descname">writeDynameqTable</tt><big>(</big><em>fileName</em>, <em>format='full'</em><big>)</big><a class="headerlink" href="#dta.Demand.writeDynameqTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the demand in the dynameq format
+.. todo:: implement linear writing</p>
 </dd></dl>
 
 </dd></dl>
@@ -188,8 +192,8 @@ a path does not exist from origin to destination</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="dta.Algorithms.html"
-                        title="previous chapter">dta.Algorithms</a></p>
+  <p class="topless"><a href="dta.TransitSegment.html"
+                        title="previous chapter">dta.TransitSegment</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="dta.DtaError.html"
                         title="next chapter">dta.DtaError</a></p>
@@ -228,7 +232,7 @@ a path does not exist from origin to destination</p>
           <a href="dta.DtaError.html" title="dta.DtaError"
              >next</a> |</li>
         <li class="right" >
-          <a href="dta.Algorithms.html" title="dta.Algorithms"
+          <a href="dta.TransitSegment.html" title="dta.TransitSegment"
              >previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>

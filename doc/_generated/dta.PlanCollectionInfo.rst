@@ -14,6 +14,7 @@ dta.PlanCollectionInfo
    .. autosummary::
    
       ~PlanCollectionInfo.__init__
+      ~PlanCollectionInfo.getDynameqStr
       ~PlanCollectionInfo.getTimePeriod
    
    

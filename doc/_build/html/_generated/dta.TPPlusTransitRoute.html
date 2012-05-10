@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.TPPlusTransitRoute &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.TransitLine" href="dta.TransitLine.html" />
+    <link rel="prev" title="dta.TPPlusTransitNode" href="dta.TPPlusTransitNode.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dta.TransitLine.html" title="dta.TransitLine"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.TPPlusTransitNode.html" title="dta.TPPlusTransitNode"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-tpplustransitroute">
+<h1>dta.TPPlusTransitRoute<a class="headerlink" href="#dta-tpplustransitroute" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.TPPlusTransitRoute">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TPPlusTransitRoute</tt><big>(</big><em>net</em>, <em>name</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Representation of a transit line read from Cube line file (TRNBUILD or PT)</p>
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>net</em>, <em>name</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.__init__" title="dta.TPPlusTransitRoute.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.addTransitNode" title="dta.TPPlusTransitRoute.addTransitNode"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.addTransitNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.getHeadway" title="dta.TPPlusTransitRoute.getHeadway"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.getHeadway</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.getNumStops" title="dta.TPPlusTransitRoute.getNumStops"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.getNumStops</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.getNumTransitNodes" title="dta.TPPlusTransitRoute.getNumTransitNodes"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.getNumTransitNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.getRouteName" title="dta.TPPlusTransitRoute.getRouteName"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.getRouteName</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.getTransitDelay" title="dta.TPPlusTransitRoute.getTransitDelay"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.getTransitDelay</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.getTransitNode" title="dta.TPPlusTransitRoute.getTransitNode"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.getTransitNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.hasTransitNode" title="dta.TPPlusTransitRoute.hasTransitNode"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.hasTransitNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.isFirstNode" title="dta.TPPlusTransitRoute.isFirstNode"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.isFirstNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.isLastNode" title="dta.TPPlusTransitRoute.isLastNode"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.isLastNode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.iterTransitNodes" title="dta.TPPlusTransitRoute.iterTransitNodes"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.iterTransitNodes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.iterTransitStops" title="dta.TPPlusTransitRoute.iterTransitStops"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.iterTransitStops</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.read" title="dta.TPPlusTransitRoute.read"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.read</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TPPlusTransitRoute.toTransitLine" title="dta.TPPlusTransitRoute.toTransitLine"><tt class="xref py py-obj docutils literal"><span class="pre">TPPlusTransitRoute.toTransitLine</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.addTransitNode">
+<tt class="descname">addTransitNode</tt><big>(</big><em>nodeId</em>, <em>isStop</em>, <em>access</em>, <em>delay</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.addTransitNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a node with the given parameters to the route.  See <a class="reference internal" href="dta.TPPlusTransitNode.html#dta.TPPlusTransitNode.__init__" title="dta.TPPlusTransitNode.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TPPlusTransitNode.__init__()</span></tt></a> for parameter info.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.getHeadway">
+<tt class="descname">getHeadway</tt><big>(</big><em>indexnum</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.getHeadway" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the float representing the headway, in minutes.
+<em>indexnum</em> is 1 through 5, an index into the list of time periods</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.getNumStops">
+<tt class="descname">getNumStops</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.getNumStops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of stops the route makes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.getNumTransitNodes">
+<tt class="descname">getNumTransitNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.getNumTransitNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of transit nodes in the route</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.getRouteName">
+<tt class="descname">getRouteName</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.getRouteName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.getTransitDelay">
+<tt class="descname">getTransitDelay</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.getTransitDelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the delay for the transit node with the given id, in minutes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.getTransitNode">
+<tt class="descname">getTransitNode</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.getTransitNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the transit node with the given id; this is an instance of <a class="reference internal" href="dta.TPPlusTransitNode.html#dta.TPPlusTransitNode" title="dta.TPPlusTransitNode"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitNode</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.hasTransitNode">
+<tt class="descname">hasTransitNode</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.hasTransitNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the route has a node with the given id otherwise false</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.isFirstNode">
+<tt class="descname">isFirstNode</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.isFirstNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the input node id is the first node in the route</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.isLastNode">
+<tt class="descname">isLastNode</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.isLastNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the input node id is the last node in the route</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.iterTransitNodes">
+<tt class="descname">iterTransitNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.iterTransitNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator to the transit nodes, which are instances of <a class="reference internal" href="dta.TPPlusTransitNode.html#dta.TPPlusTransitNode" title="dta.TPPlusTransitNode"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitNode</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.iterTransitStops">
+<tt class="descname">iterTransitStops</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.iterTransitStops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator for the <a class="reference internal" href="dta.TPPlusTransitNode.html#dta.TPPlusTransitNode" title="dta.TPPlusTransitNode"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitNode</span></tt></a> instances that are stops.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="dta.TPPlusTransitRoute.read">
+<em class="property">classmethod </em><tt class="descname">read</tt><big>(</big><em>net</em>, <em>fileName</em>, <em>includeOnlyNetNodes=False</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.TPPlusTransitRoute.toTransitLine">
+<tt class="descname">toTransitLine</tt><big>(</big><em>dtaNetwork</em>, <em>dtaRouteId</em>, <em>MODE_TO_LITYPE</em>, <em>headwayIndex</em>, <em>startTime</em>, <em>demandDurationInMin</em>, <em>doShortestPath=True</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.toTransitLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this instance to an equivalent DTA transit line.  Returns an instance of a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>.</p>
+<p>Links on the route are checked against the given <em>dtaNetwork</em> (an instance of <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>).
+If <em>doShortestPath</em> is True, then a shortest path is searched for on the <em>dtaNetwork</em> and that
+is included (so this is assuming that the calling instance is missing some nodes; this can happen, for example, 
+if the DTA network has split links for centroid connectors, etc.).
+If <em>doShortestPath</em> is False, these links are dropped (?).</p>
+<p>Other arguments:</p>
+<ul class="simple">
+<li><em>dtaRouteId</em> is the id number for the new <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a> instance.</li>
+<li><em>MODE_TO_LITYPE</em> maps the <tt class="xref py py-attr docutils literal"><span class="pre">TPPlusTransitRoute.mode</span></tt> attribute (strings) to a line type
+(either <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine.LINE_TYPE_BUS" title="dta.TransitLine.LINE_TYPE_BUS"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_TYPE_BUS</span></tt></a> or <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine.LINE_TYPE_TRAM" title="dta.TransitLine.LINE_TYPE_TRAM"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_TYPE_TRAM</span></tt></a>)</li>
+<li><em>headwayIndex</em> is the index into the frequencies to use for the headway (for use with
+<a class="reference internal" href="#dta.TPPlusTransitRoute.getHeadway" title="dta.TPPlusTransitRoute.getHeadway"><tt class="xref py py-meth docutils literal"><span class="pre">TPPlusTransitRoute.getHeadway()</span></tt></a>)</li>
+<li><em>startTime</em> is the start time for the bus line (and instance of <a class="reference internal" href="dta.Time.html#dta.Time" title="dta.Time"><tt class="xref py py-class docutils literal"><span class="pre">Time</span></tt></a>),
+and <em>demandDurationInMin</em> is used for calculating the number of transit vehicle
+departures that will be dispatched.</li>
+</ul>
+<p>Note that the start time for the <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a> instance will be randomized within 
+[<em>startTime</em>, <em>startTime</em> + the headway).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.TPPlusTransitNode.html"
+                        title="previous chapter">dta.TPPlusTransitNode</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.TransitLine.html"
+                        title="next chapter">dta.TransitLine</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.TPPlusTransitRoute.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dta.TransitLine.html" title="dta.TransitLine"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.TPPlusTransitNode.html" title="dta.TPPlusTransitNode"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

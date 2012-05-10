@@ -97,6 +97,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.deepcopy" title="dta.DynameqNetwork.deepcopy"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.deepcopy</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.findLinksForRoadLabels" title="dta.DynameqNetwork.findLinksForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.findLinksForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.findMovementForRoadLabels" title="dta.DynameqNetwork.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.findMovementForRoadLabels</span></tt></a></td>
 <td></td>
 </tr>
@@ -226,6 +229,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.read" title="dta.DynameqNetwork.read"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.read</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.readLinkShape" title="dta.DynameqNetwork.readLinkShape"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readLinkShape</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.readSimResults" title="dta.DynameqNetwork.readSimResults"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readSimResults</span></tt></a></td>
 <td></td>
 </tr>
@@ -312,8 +318,11 @@ and that the id is not already used; stores it.</p>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.addPlanCollectionInfo">
-<tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a time plan collection with the given characteristics</p>
+<tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
+<p>name: a string that identifies the plan collection
+description: a string that gives more infromation about the plan collection</p>
 </dd></dl>
 
 <dl class="method">
@@ -479,8 +488,10 @@ another connector</p>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.getPlanCollectionInfo">
-<tt class="descname">getPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the plan collection info for the given input times</p>
+<tt class="descname">getPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the plan collection info for the given input times
+startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
 </dd></dl>
 
 <dl class="method">
@@ -541,9 +552,11 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.hasPlanCollectionInfo">
-<tt class="descname">hasPlanCollectionInfo</tt><big>(</big><em>militaryStartTime</em>, <em>militaryEndTime</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">hasPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the network has a time plan connection for the given
-start and end times</p>
+start and end times
+startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
+endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
 </dd></dl>
 
 <dl class="method">
