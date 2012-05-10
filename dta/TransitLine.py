@@ -24,7 +24,7 @@ from dta.Algorithms import pairwise
 
 class TransitSegment(object):        
     """
-    A piece of a :py:class:`TransitLine`.
+    A piece of a :py:class:`TransitLine`, basically a link with a transit line on it.
     """
     #: If the transit lane is unspecified use this for the *lane* arg to :py:meth:`TransitSegment.__init__`
     TRANSIT_LANE_UNSPECIFIED = 0
@@ -72,8 +72,8 @@ class TransitSegment(object):
         
 class TransitLine(object):
     """
-    Transit Line representation for a DTA Network.  A Transit Line consists of a set of attributes and
-    a list of :py:class:`TransitSegment` instances.
+    Transit Line representation for a DTA Network.
+    A Transit Line consists of a set of attributes and a list of :py:class:`TransitSegment` instances.
     """
 
     #: If the transit line is a bus, pass this as the *litype* arg of :py:meth:`TransitLine.__init__`
