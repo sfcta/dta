@@ -18,15 +18,9 @@ __license__     = """
 
 import re
 from itertools import izip
-import pdb
 from collections import defaultdict
-
-import nose.tools
 from pyparsing import *
-
 from dta.DtaError import DtaError
-
-import re
 
 def iterRecords(iterable, is_separator=re.compile(r"^a"), 
                 is_comment = re.compile(r"^#"), 
@@ -123,8 +117,8 @@ def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
         
     for segment in bodyFields:
         
-        access = TransitNode.ACCESS_BOTH
-        delay = TransitNode.DELAY_VAL
+        access = TPPlusTransitNode.ACCESS_BOTH
+        delay = TPPlusTransitNode.DELAY_VAL
 
         parsedSegment = getDictOfParsedElements(segment)
 
@@ -165,29 +159,41 @@ def parseRoute(net, routeAsString, includeOnlyNetNodes=False):
 
     return route
         
-class TransitNode(object):
+class TPPlusTransitNode(object):
+    """
+    Representation of a transit node for a :py:class:`TPPlusTransitRoute`
+    """
 
-    ACCESS_BOARD = '1'
-    ACCESS_ALIGHT = '2'
-    ACCESS_BOTH = '0'
-    DELAY_VAL = '0.0'
+    ACCESS_BOARD    = 1
+    ACCESS_ALIGHT   = 2
+    ACCESS_BOTH     = 0
+    DELAY_VAL       = 0.0
 
     def __init__(self, nodeId, isStop, access, delay):
+        """
+        Basic transit node in a :py:class:`TPPlusTransitRoute`.
         
-        #self.node = None # transitNode
+        * *nodeId* is a node number
+        * *isStop* is a boolean
+        * *access* is an integer
+        * *delay* is a float representing the delay at this node, in minutes
+        """
         self.nodeId = nodeId
         self.isStop = isStop
         self.access = access
-        self.delay = delay
+        self.delay  = delay
 
     def __repr__(self):
         
         if self.isStop:
-            return "%s, ACCESS=%f.2, DELAY=%f.2, \n" % (self.nodeId, self.access, self.delay)
+            return "%s, ACCESS=%d, DELAY=%.2f, \n" % (self.nodeId, self.access, self.delay)
         else:
-            return "-%s, ACCESS=%f.2, DELAY=%f.2, \n" % (self.nodeId, self.access, self.delay)
+            return "-%s, ACCESS=%d, DELAY=%.2f, \n" % (self.nodeId, self.access, self.delay)
 
 class TPPlusTransitRoute(object):
+    """
+    Representation of a transit line read from Cube line file (TRNBUILD or PT)
+    """
 
     extAttributes = ['RUNTIME', 'ONEWAY', 'MODE', 'OWNER', 'XYSPEED', 'TIMEFAC', 'FREQ[1]', 
                      'FREQ[2]', 'FREQ[3]', 'FREQ[4]', 'FREQ[5]']
@@ -209,22 +215,22 @@ class TPPlusTransitRoute(object):
     
     def __init__(self, net, name):
         
-        self._net = net
+        self._net       = net
         if name.startswith('"') and name.endswith('"'):
             name = name[1:-1]
-        self.name = name
-        self.color = None
-        self.mode = None
-        self.oneway = None
-        self.owner = None
-        self.timefac = None
-        self.xySpeed = None
-        self.freq1 = None
-        self.freq2 = None
-        self.freq3 = None
-        self.freq4 = None
-        self.freq5 = None
-        self.runtime = None
+        self.name       = name
+        self.color      = None
+        self.mode       = None
+        self.oneway     = None
+        self.owner      = None
+        self.timefac    = None
+        self.xySpeed    = None
+        self.freq1      = None
+        self.freq2      = None
+        self.freq3      = None
+        self.freq4      = None
+        self.freq5      = None
+        self.runtime    = None
         self._transitNodes = []
 
         self.attributes = {'RUNTIME':self.__dict__['runtime'], 
@@ -251,9 +257,9 @@ class TPPlusTransitRoute(object):
         body = ', N='
         for transitNode in self.iterTransitNodes():
             if transitNode.isStop:
-                body += '%s, ACCESS=%f.2, DELAY=%f.2, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
+                body += '%s, ACCESS=%d, DELAY=%.2f, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
             else:
-                body += '-%s, ACCESS=%f.2, DELAY=%f.2, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
+                body += '-%s, ACCESS=%d, DELAY=%.2f, \n' % (transitNode.nodeId, transitNode.access, transitNode.delay) 
 
         return header + body[:-2] + '\n'
 
@@ -262,67 +268,102 @@ class TPPlusTransitRoute(object):
         name = 'LINE NAME=%s' % self.name
 
         return name
+    
+    def getHeadway(self, indexnum):
+        """
+        Returns the float representing the headway, in minutes.
+        *indexnum* is 1 through 5, an index into the list of time periods
+        """
+        if indexnum == 1:
+            return float(self.freq1)
+        elif indexnum == 2:
+            return float(self.freq2)
+        elif indexnum == 3:
+            return float(self.freq3)
+        elif indexnum == 4:
+            return float(self.freq4)
+        elif indexnum == 5:
+            return float(self.freq5)
+        raise DtaError("TPPlusTransitRoute.getHeadway() received invalid index num " + str(indexnum))
         
     def addTransitNode(self, nodeId, isStop, access, delay):
         """
-        Add a node with the given input id to the transit route
+        Add a node with the given parameters to the route.  See :py:meth:`TPPlusTransitNode.__init__` for parameter info.
         """        
-        transitNode = TransitNode(nodeId, isStop, access, delay)
+        transitNode = TPPlusTransitNode(nodeId, isStop, access, delay)
         self._transitNodes.append(transitNode)
 
     def getTransitNode(self, nodeId):
-        """Return the transit node with the given id"""
+        """
+        Return the transit node with the given id; this is an instance of :py:class:`TPPlusTransitNode`
+        """
         for transitNode in self.iterTransitNodes():
             if transitNode.nodeId == nodeId:
                 return transitNode
         raise TPPlusError("Node %s is not in the route %s" % (nodeId, self.name))
 
     def getTransitDelay(self, nodeId):
-        """Return the transit node with the given id"""
+        """
+        Return the delay for the transit node with the given id, in minutes.
+        """
         for transitNode in self.iterTransitNodes():
             if transitNode.nodeId == nodeId :
                 return transitNode.delay
 
     def hasTransitNode(self, nodeId):
-        """Return True if the route has a node with the given id otherwise false"""
+        """
+        Return True if the route has a node with the given id otherwise false
+        """
         return nodeId in [tn.nodeId for tn in self.iterTransitNodes()]
         
     def iterTransitNodes(self):
-        """Return an iterator to the transit nodes"""
+        """
+        Return an iterator to the transit nodes, which are instances of :py:class:`TPPlusTransitNode`
+        """
         return iter(self._transitNodes)
 
     def iterTransitStops(self):
-
+        """
+        Iterator for the :py:class:`TPPlusTransitNode` instances that are stops.
+        """
         for trNode in self.iterTransitNodes():
             if trNode.isStop:
                 yield trNode
 
     def isFirstNode(self, nodeId):
-        """Return True if the input node id belongs to the first transit node 
-        of the route"""
+        """
+        Return True if the input node id is the first node in the route
+
+        """
         if self.getNumTransitNodes() == 0:
-            raise TPPluseError("Route %s does not have any transit nodes" % self.name)
+            raise DtaError("TPPlusTransitRoute.isFirstNode(): Route %s does not have any transit nodes" % self.name)
         if self._transitNodes[0].nodeId == nodeId:
             return True
         else:
             return False
 
     def isLastNode(self, nodeId):
-        """Return True if the input node id is the last node in the route"""
+        """
+        Return True if the input node id is the last node in the route
+        """
 
         if self.getNumTransitNodes() == 0:
-            raise TPPluseError("Route %s does not have any transit nodes" % self.name)
+            raise DtaError("TPPlusTransitRoute.isLastNode(): Route %s does not have any transit nodes" % self.name)
         if self._transitNodes[-1].nodeId == nodeId:
             return True
         else:
             return False
 
     def getNumTransitNodes(self):
-        """Return the number of transit nodes in the route"""
+        """
+        Return the number of transit nodes in the route
+        """
         return len(self._transitNodes)
 
     def getNumStops(self):
-        """Return the number of stops the route makes"""
+        """
+        Return the number of stops the route makes
+        """
         return sum([tr.isStop for tr in self.iterTransitNodes()])
 
 

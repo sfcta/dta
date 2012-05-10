@@ -440,9 +440,9 @@ class Time(datetime.time):
         minutes = minutes % 60
         return Time(hours, minutes) 
     
-    def __init__(self, hours, minutes):
+    def __init__(self, hours, minutes, seconds=0):
 
-        datetime.time.__init__(hours, minutes)
+        datetime.time.__init__(hours, minutes, seconds)
 
     def __lt__(self, other):
         """
