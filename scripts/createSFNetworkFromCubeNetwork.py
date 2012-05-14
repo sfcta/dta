@@ -17,26 +17,27 @@ __license__     = """
 """
 
 import dta
+import getopt
 import os
 import sys
 import pdb
 
 USAGE = r"""
 
- python createSFNetworkFromCubeNetwork.py geary_dynameq_net_dir geary_dynameq_net_prefix sf_cube_net_dir [cube_attach_shapefile]
+ python createSFNetworkFromCubeNetwork.py  [-n output_nodes.shp] [-l output_links.shp] geary_dynameq_net_dir geary_dynameq_net_prefix sf_cube_net_file sf_cube_turnpen_file [cube_attach_shapefile]
  
  e.g.
  
- python createSFNetworkFromCubeNetwork.py Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010 Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+ python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010 Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
  
  This script reads the San Francisco Cube network (SanFranciscoSubArea_2010.net) and optionally the *cube_attach_shapefile*
  and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.
  
   * Currently, it ignores the first two args (they are for the Geary DTA network, which we're skipping for now; leaving it there for future)
-  * The third arg is the location of the San Francisco Cube network for conversion to a Dynameq DTA network, this is where
-    the script finds:
-    * `SanFranciscoSubArea_2010.net`, the actual Cube network
-    * `turnspm.pen`, the prohibited turns file
+  * The third arg is the San Francisco Cube network for conversion to a Dynameq DTA network
+  * The fourth arg is the turn penalty file to use
+  * An optional fifth argument is the shapefile to use to add shape points to the roadway network (to show road curvature, etc)
+  * Optional shapefile outputs: -n to specify a node shapefile output, -l to specify a link shapefile output
  
  """
 
@@ -86,17 +87,29 @@ def removeHOVStubs(sanfranciscoDynameqNet):
 
 if __name__ == '__main__':
     
-    if len(sys.argv) <= 4:
+    optlist, args = getopt.getopt(sys.argv[1:], "n:l:")
+
+    if len(args) <= 4:
         print USAGE
         sys.exit(2)
     
-    GEARY_DYNAMEQ_NET_DIR       = sys.argv[1] 
-    GEARY_DYNAMEQ_NET_PREFIX    = sys.argv[2]
-    SF_CUBE_NET_DIR             = sys.argv[3]   # TODO: change this to cube net name 
-    #SF_CUBE_TURN_PROHIBITIONS   = sys.argv[4]
-    if len(sys.argv) > 4:
-        SF_CUBE_SHAPEFILE       = sys.argv[4]
+    GEARY_DYNAMEQ_NET_DIR       = args[0] 
+    GEARY_DYNAMEQ_NET_PREFIX    = args[1]
+    SF_CUBE_NET_FILE            = args[2]
+    SF_CUBE_TURN_PROHIBITIONS   = args[3]
+    
+    SF_CUBE_SHAPEFILE           = None
+    if len(args) > 4:
+        SF_CUBE_SHAPEFILE       = args[4]
 
+    OUTPUT_NODE_SHAPEFILE       = None
+    OUTPUT_LINK_SHAPEFILE       = None
+    for (opt,arg) in optlist:
+        if opt=="-n":
+            OUTPUT_NODE_SHAPEFILE   = arg
+        elif opt=="-l":
+            OUTPUT_LINK_SHAPEFILE    = arg
+            
     # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
     dta.VehicleType.LENGTH_UNITS= "feet"
     dta.Node.COORDINATE_UNITS   = "feet"
@@ -157,7 +170,7 @@ if __name__ == '__main__':
                         8339,8832])     # externals
     #TODO: hard coding below
     sanfranciscoCubeNet.readNetfile \
-      (netFile=os.path.join(SF_CUBE_NET_DIR,"SanFranciscoSubArea_2010.net"),
+      (netFile=SF_CUBE_NET_FILE,
        nodeVariableNames=["N","X","Y","OLD_NODE"],
        linkVariableNames=["A","B","TOLL","USE",
                           "CAP","AT","FT","STREETNAME","TYPE",
@@ -196,13 +209,14 @@ if __name__ == '__main__':
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
     
     # Apply the turn prohibitions
-    sanfranciscoCubeNet.applyTurnProhibitions(os.path.join(SF_CUBE_NET_DIR, "turnspm.pen"))
+    sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     
     # Read the shape points so curvy streets look curvy
-    sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
-                                      skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
-                                                                           2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
-                                                                           ])
+    if SF_CUBE_SHAPEFILE:
+        sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
+                                          skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
+                                                                               2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
+                                                                               ])
     
     # Some special links needing shifts
     addShifts(sanfranciscoCubeNet)
@@ -246,9 +260,9 @@ if __name__ == '__main__':
         sanfranciscoDynameqNet.removeUnconnectedNodes()
     sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")
  
-    #the folowing two lines export the network as shapefile 
-    #sanfranciscoDynameqNet.writeNodesToShp("sf_nodes")
-    #sanfranciscoDynameqNet.writeLinksToShp("sf_links") 
+    # export the network as shapefiles if requested 
+    if OUTPUT_NODE_SHAPEFILE: sanfranciscoDynameqNet.writeNodesToShp(OUTPUT_NODE_SHAPEFILE)
+    if OUTPUT_LINK_SHAPEFILE: sanfranciscoDynameqNet.writeLinksToShp(OUTPUT_LINK_SHAPEFILE) 
  
     exit(0)
     
