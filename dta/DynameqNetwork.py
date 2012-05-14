@@ -683,7 +683,7 @@ class DynameqNetwork(Network):
                     advancedfile_object.write("%9d %12d %12d\n" % (linkId, startShift, endShift))
                     
                     count += 1
-        DtaLogger.info("Write %8d %-16s to %s" % (count, "SHIFTS", advancedfile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "SHIFTS", advancedfile_object.name))
         
     def _addShapePointsToLink(self, fields):
         """
@@ -718,7 +718,7 @@ class DynameqNetwork(Network):
                                                y))
                     
                     count += 1
-        DtaLogger.info("Write %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "VERTICES", advancedfile_object.name))
 
     def _writeControlFile(self, ctrl_object):
         """
@@ -1113,45 +1113,3 @@ class DynameqNetwork(Network):
                 mov.simEndTimeInMin = simEndTimeInMin
 
         self._readMovementOutFlowsAndTTs()
-
-    def writeLinksToShp(self, name):
-        """
-        Export all the links to a shapefile with the given name (without the shp extension)
-        """
-        w = shapefile.Writer(shapefile.POLYLINE) 
-        w.field("ID", "N", 10)
-        w.field("Start", "N", 10)
-        w.field("End", "N", 10)
-
-        w.field("IsRoad", "C", 10) 
-        w.field("IsConn", "C", 10) 
-        w.field("IsVirtual", "C", 10)
-        w.field("Label", "C", 60)
-        w.field("facType", "N", 10)
-        w.field("numLanes", "N", 10)
-
-        for link in self.iterLinks():
-            if link.isVirtualLink():
-                centerline = ((link._startNode.getX(), link._startNode.getY()),
-                            (link._endNode.getX(), link._endNode.getY()))
-                w.line(parts=[centerline])
-            elif link.getNumShapePoints() == 0:                
-                w.line(parts=[link.getCenterLine()])
-            else:
-                w.line(parts=[link._shapePoints])
-            if link.isVirtualLink():
-                label = ""
-            else:
-                label = link.getLabel()
-            if not link.isVirtualLink():
-                w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
-                     link._facilityType, link._numLanes)
-            else:
-                w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
-                     0, 0)
-
-                
-
-        w.save(name)

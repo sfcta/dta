@@ -1405,22 +1405,32 @@ class Network(object):
         w.field("IsConn", "C", 10) 
         w.field("IsVirtual", "C", 10)
         w.field("Label", "C", 60)
-
+        w.field("facType", "N", 10)
+        w.field("numLanes", "N", 10)
+        
         for link in self.iterLinks():
             if link.isVirtualLink():
+                
                 centerline = ((link._startNode.getX(), link._startNode.getY()),
                             (link._endNode.getX(), link._endNode.getY()))
                 w.line(parts=[centerline])
-            elif link.getNumShapePoints() == 0:                
-                w.line(parts=[link.getCenterLine()])
+                label       = ""
+                facType     = -1
+                numLanes    = -1
             else:
-                w.line(parts=[link._shapePoints])
-            if link.isVirtualLink():
-                label = ""
-            else:
-                label = link.getLabel()
+                centerline  = link.getCenterLine()
+                shapepoints = copy.deepcopy(link._shapePoints)
+                shapepoints.insert(0,centerline[0])
+                shapepoints.append(centerline[1])
+                    
+                w.line(parts=[shapepoints])
+                label       = link.getLabel()
+                facType     = link.getFacilityType()
+                numLanes    = link.getNumLanes()
+                
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label)
+                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
+                     facType, numLanes)
 
         w.save(name)
 
