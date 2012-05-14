@@ -758,6 +758,9 @@ class DynameqNetwork(Network):
             if not node.hasConnector():
                 continue 
             
+            if node.isJunction(countRoadNodesOnly=True):
+                continue
+            
             connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
                         
             for con in connectors:
@@ -767,6 +770,9 @@ class DynameqNetwork(Network):
                 except DtaError, e:
                     DtaLogger.error("removeCentroidConnectorsFromIntersections(node=%d, con=%d) errored: %s" % 
                                     (node.getId(), con.getId(), str(e)))
+
+
+        self._removeDuplicateConnectors()
 
         #fix the number of lanes on the new connectors
         for node in self.iterNodes():
@@ -801,7 +807,17 @@ class DynameqNetwork(Network):
                                self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
                             ilink.addOutgoingMovement(allowedMovement)
                             
-        self._removeDuplicateConnectors()
+            for mov in node.iterMovements():
+                if not mov.isThruTurn():
+                    continue
+                    
+                if mov.getIncomingLink().isConnector() and mov.getOutgoingLink().isRoadLink():
+                    mov.getIncomingLink().setNumLanes(mov.getOutgoingLink().getNumLanes())
+                
+                if mov.getIncomingLink().isRoadLink() and mov.getOutgoingLink().isConnector():
+                    mov.getOutgoingLink().setNumLanes(mov.getIncomingLink().getNumLanes())
+                            
+
                     
     def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
         """
@@ -1097,3 +1113,45 @@ class DynameqNetwork(Network):
                 mov.simEndTimeInMin = simEndTimeInMin
 
         self._readMovementOutFlowsAndTTs()
+
+    def writeLinksToShp(self, name):
+        """
+        Export all the links to a shapefile with the given name (without the shp extension)
+        """
+        w = shapefile.Writer(shapefile.POLYLINE) 
+        w.field("ID", "N", 10)
+        w.field("Start", "N", 10)
+        w.field("End", "N", 10)
+
+        w.field("IsRoad", "C", 10) 
+        w.field("IsConn", "C", 10) 
+        w.field("IsVirtual", "C", 10)
+        w.field("Label", "C", 60)
+        w.field("facType", "N", 10)
+        w.field("numLanes", "N", 10)
+
+        for link in self.iterLinks():
+            if link.isVirtualLink():
+                centerline = ((link._startNode.getX(), link._startNode.getY()),
+                            (link._endNode.getX(), link._endNode.getY()))
+                w.line(parts=[centerline])
+            elif link.getNumShapePoints() == 0:                
+                w.line(parts=[link.getCenterLine()])
+            else:
+                w.line(parts=[link._shapePoints])
+            if link.isVirtualLink():
+                label = ""
+            else:
+                label = link.getLabel()
+            if not link.isVirtualLink():
+                w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
+                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
+                     link._facilityType, link._numLanes)
+            else:
+                w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
+                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
+                     0, 0)
+
+                
+
+        w.save(name)

@@ -214,20 +214,23 @@ if __name__ == '__main__':
     # Why would we want to do this?
     # sanfranciscoDynameqNet.removeShapePoints()
     
+    # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    removeHOVStubs(sanfranciscoDynameqNet)
+    
     # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq
     sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000,
                                                                          distanceFromCentroid=50)
     
     # Move the centroid connectors from intersection nodes to midblock locations
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
+        
     sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
     
     # TODO: I think this isn't necessary; but discuss if the soln below is ok
     # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),
     #                                                              maxDistToMove=100) # feet
 
-    # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
-    removeHOVStubs(sanfranciscoDynameqNet)
+
 
     # right now this warns; I think some of the handling above might be joined into this (especially if this
     # is the problem the method is meant to solve)
@@ -242,6 +245,11 @@ if __name__ == '__main__':
     if sanfranciscoDynameqNet.getNumRoadNodes() > 12500:
         sanfranciscoDynameqNet.removeUnconnectedNodes()
     sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")
+ 
+    #the folowing two lines export the network as shapefile 
+    #sanfranciscoDynameqNet.writeNodesToShp("sf_nodes")
+    #sanfranciscoDynameqNet.writeLinksToShp("sf_links") 
+ 
     exit(0)
     
     # Merge them together
@@ -250,4 +258,5 @@ if __name__ == '__main__':
     
     # Write the result.  sanfrancisco_dta is a DynameqNetwork
     sanfranciscoNet.write(dir = ".", file_prefix="sf")
+    
     
