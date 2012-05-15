@@ -1566,7 +1566,7 @@ class Network(object):
         if link1.getEndNode().getCardinality() == (0,0):
             self.removeNode(link1.getEndNode()) 
             
-    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, skipField=None, skipValueList=None):
+    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, skipEvalStr=None):
         """
         Uses the given *linkShapefile* to add shape points to the network, in order to more accurately
         represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
@@ -1575,9 +1575,10 @@ class Network(object):
         *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
         of the start node and end node IDs within the *linkShapefile*.
         
-        If *skipField* is passed, then the field given by this name will be checked against the list of values given
-        by *skipValueList*.  This is useful for when there are some bad elements in your shapefile that you want to skip.
-        
+        Optional argument *skipEvalStr* will be eval()ed by python, and if the expression returns True,
+        the row will be skipped.  For example, to skip a specific couple of entries, the caller could pass
+        ``"OBJECTID in [5234,2798]"``.
+
         If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
         will be used.
         
@@ -1617,7 +1618,7 @@ class Network(object):
                 localsdict  = dict(zip(fields, recordValues))
                 
                 # check if we're instructed to skip this one
-                if skipField and (skipField in fields) and (localsdict[skipField] in skipValueList): continue
+                if skipEvalStr and eval(skipEvalStr, globals(), localsdict): continue
                 
                 if direction == "regular":
                     startNodeId = int(localsdict[startNodeIdField])

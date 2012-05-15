@@ -212,12 +212,12 @@ if __name__ == '__main__':
     sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     
     # Read the shape points so curvy streets look curvy
+    # 5234 # Skip this one link at Woodside/Portola because it overlaps
+    # 2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
     if SF_CUBE_SHAPEFILE:
         sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
-                                          skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
-                                                                               2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
-                                                                               ])
-    
+                                          skipEvalStr="(OBJECTID in [5234,2798]) or (MEDIANDIV==1)")
+     
     # Some special links needing shifts
     addShifts(sanfranciscoCubeNet)
     
