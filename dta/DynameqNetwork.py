@@ -908,73 +908,8 @@ class DynameqNetwork(Network):
             self.addLink(newConnector)
             #TODO: do the movements 
             return newConnector 
-    
-    def iterVirtualNodes(self):
-        """
-        Return an iterator to the :py:class:`VirtualNode` instances in the network.
-        
-        .. todo:: Move this to :py:class:`Network`.
-        
-        """
-        for node in self.iterNodes():
-            if isinstance(node, VirtualNode):
-                yield node 
 
-    def iterRoadNodes(self):
-        """
-        Return an iterator to the :py:class:`RoadNode` instances in the network.
-        
-        .. todo:: Move this to :py:class:`Network`.
-        
-        """
-        for node in self.iterNodes():
-            if isinstance(node, RoadNode):
-                yield node
 
-    def iterCentroids(self):
-        """
-        Return an iterator to the :py:class:`Centroid` instances in the network.
-
-        .. todo:: Move this to :py:class:`Network`.
-        
-        """
-        for node in self.iterNodes():
-            if isinstance(node, Centroid):
-                yield node 
-
-    def iterVirtualLinks(self):
-        """
-        Return an iterator to the :py:class:`VirtualLink` instances in the network.
-
-        .. todo:: Move this to :py:class:`Network`.
-
-        """
-        for link in self.iterLinks():
-            if isinstance(link, VirtualLink):
-                yield link
-
-    def iterRoadLinks(self):
-        """
-        Return an iterator for to the :py:class:`RoadLink` instances in the network that are 
-        not instances of :py:class:`Connector`.
-        
-        .. todo:: Move this to :py:class:`Network`.
-
-        """
-        for link in self.iterLinks():
-            if link.isRoadLink():
-                yield link 
-
-    def iterConnectors(self):
-        """
-        Return an iterator to the :py:class:`Connector` instances in the network.
-
-        .. todo:: Move this to :py:class:`Network`.
-        
-        """
-        for link in self.iterLinks():
-            if isinstance(link, Connector):
-                yield link
 
     def _readMovementOutFlowsAndTTs(self):
         """

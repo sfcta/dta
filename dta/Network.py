@@ -477,10 +477,27 @@ class Network(object):
 
     def iterRoadNodes(self):
         """
-        Return an iterator to the road node collection
+        Return an iterator to the :py:class:`RoadNode` instances in the network.
         """
         for node in self.iterNodes():
             if node.isRoadNode():
+                yield node
+
+    def iterVirtualNodes(self):
+        """
+        Return an iterator to the :py:class:`VirtualNode` instances in the network.
+        """
+        for node in self.iterNodes():
+            if isinstance(node, VirtualNode):
+                yield node
+
+
+    def iterCentroids(self):
+        """
+        Return an iterator to the :py:class:`Centroid` instances in the network.
+        """
+        for node in self.iterNodes():
+            if isinstance(node, Centroid):
                 yield node
 
     def iterLinks(self):
@@ -491,7 +508,8 @@ class Network(object):
 
     def iterRoadLinks(self):
         """
-        Return an iterator to all the RoadLinks in the network (that are not connectors)
+        Return an iterator for to the :py:class:`RoadLink` instances in the network that are
+        not instances of :py:class:`Connector`.
         """
         for link in self.iterLinks():
             if link.isRoadLink():
@@ -499,11 +517,19 @@ class Network(object):
 
     def iterConnectors(self):
         """
-        Return an iterator to all the connectors in the network
+        Return an iterator to the :py:class:`Connector` instances in the network.
         """
         for link in self.iterLinks():
             if link.isConnector():
-                yield link 
+                yield link
+
+    def iterVirtualLinks(self):
+        """
+        Return an iterator to the :py:class:`VirtualLink` instances in the network.
+        """
+        for link in self.iterLinks():
+            if isinstance(link, VirtualLink):
+                yield link
 
     def hasNodeForId(self, nodeId):
         """
