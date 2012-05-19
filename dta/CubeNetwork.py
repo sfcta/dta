@@ -126,7 +126,9 @@ ENDRUN
                  linkRoundAboutEvalStr,
                  linkLevelEvalStr,
                  linkLabelEvalStr,
-                 linkGroupEvalStr):
+                 linkGroupEvalStr,
+                 linkSkipEvalStr=None,
+                 additionalLocals={}):
         """
         Reads the network from the given csv files.
         * *nodesCsvFilename* is the csv with the node data; *nodeVariableNames* are the column names.
@@ -180,6 +182,8 @@ ENDRUN
         * *linkGroupEvalStr* indicates how to set the *group* for :py:class:`RoadLink`
           and :py:class:`Connector` instances.
         
+        Last, use *linkSkipEvalStr* to skip import of certain links, and 
+        use  *additionalLocals* is a dictionary to add to the locals dict for the ``eval`` calls above.
         """
         # need to keep this for reading links
         N_to_OldNode = {}
@@ -203,7 +207,7 @@ ENDRUN
             x  = float(fields[xIndex])
             y  = float(fields[yIndex])
             
-            localsdict = {}
+            localsdict = dict(additionalLocals.items())
             for i,nodeVarName in enumerate(nodeVariableNames):
                 localsdict[nodeVarName] = fields[i].strip("' ") # Cube csv strings are in single quotes
             
@@ -246,10 +250,12 @@ ENDRUN
             nodeA = self.getNodeForId(a)
             nodeB = self.getNodeForId(b)
             
-            localsdict = {}
+            localsdict = dict(additionalLocals.items())
             for i,linkVarName in enumerate(linkVariableNames):
                 localsdict[linkVarName] = fields[i].strip("' ") # Cube csv strings are in single quotes
-                
+
+            if linkSkipEvalStr and eval(linkSkipEvalStr, globals(), localsdict): continue
+                            
             newLink = None
             if isinstance(nodeA, Centroid) or isinstance(nodeB, Centroid):
                 localsdict['isConnector'] = True
