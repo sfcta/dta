@@ -19,6 +19,7 @@ __license__     = """
 import dta
 import os
 import pdb
+import random
 
 import nose.tools 
 import numpy as np
@@ -28,7 +29,7 @@ from dta.Demand import Demand
 from dta.Utils import Time
 from dta.DynameqNetwork import DynameqNetwork 
 from dta.DynameqScenario import DynameqScenario 
-from dta.Utils import Time
+from dta.Utils import Time, plotTripHistogram
 
 dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
@@ -62,12 +63,10 @@ class TestDemand:
         startTime = Time(8, 30)
         endTime = Time(9, 30)
         timeStep = Time(0, 15)
-        demand = Demand(net, Demand.DEFAULT_VEHCLASS, startTime, endTime, timeStep)
+        demand = Demand(net, "Default", startTime, endTime, timeStep)
 
         print [tp for tp in demand.iterTimePeriods()]
         
-
-
     def test_1read(self):
         
         fileName = os.path.join(os.path.dirname(__file__), '..', 'testdata', 
@@ -88,6 +87,23 @@ class TestDemand:
         assert not demand.getValue(Time(0, 15), 56, 8) == 4000
         assert demand.getValue(Time(0, 15), 56, 8) == 4001
 
+    def test_plotHistogram(self):
+        
+        fileName = os.path.join(os.path.dirname(__file__), '..', 'testdata', 
+                                'dynameqNetwork_gearySubset', 'gearysubnet_matx.dqt')
+
+        net = getTestNet() 
+        demand = Demand.readDynameqTable(net, fileName)
+
+        for startTime in range(0, 45, 15):
+            for o in net.iterCentroids():
+                for d in net.iterCentroids():
+                    demand.setValue(Time(0, startTime + 15), o.getId(), d.getId(), random.random() * 10) 
+
+        _npyArray = demand._demandTable.getNumpyArray()
+            
+        plotTripHistogram(_npyArray, "tripHistogram") 
+            
     def test_write(self):
         """
         """

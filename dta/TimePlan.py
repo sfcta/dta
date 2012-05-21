@@ -184,7 +184,7 @@ class TimePlan(object):
 
     def getOffset(self):
         """
-        Return the offset
+        Return the offset as an integer or float
         """
         return self._offset
 
@@ -211,7 +211,7 @@ class TimePlan(object):
 
     def getCycleLength(self):
         """
-        Return the cycle length in seconds
+        Return the cycle length in seconds as an integer or float
         """
         return sum([phase._green + phase._yellow + phase._red for phase in self.iterPhases()])
 
@@ -223,7 +223,7 @@ class TimePlan(object):
 
     def setSyncPhase(self, phaseId):
         """
-        Set the phase with input id the as the sync phase.  
+        Set the phase with input id (an integer) the as the sync phase.  
         """
         if syncPhase <= 0:
             raise DtaError("Node %s. The sync phase %d cannot be less than 1 or greater than "

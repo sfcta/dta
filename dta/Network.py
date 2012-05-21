@@ -475,6 +475,14 @@ class Network(object):
         """
         return self._nodes.itervalues()
 
+    def iterCentroids(self):
+        """
+        Return an iterator to the road node collection
+        """
+        for node in self.iterNodes():
+            if node.isCentroid():
+                yield node
+
     def iterRoadNodes(self):
         """
         Return an iterator to the road node collection
@@ -482,6 +490,7 @@ class Network(object):
         for node in self.iterNodes():
             if node.isRoadNode():
                 yield node
+
 
     def iterLinks(self):
         """
