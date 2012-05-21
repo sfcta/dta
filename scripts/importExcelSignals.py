@@ -1402,7 +1402,7 @@ def convertSignalToDynameq(node, card, planInfo):
     startTime, endTime = planInfo.getTimePeriod()
     cso = card.selectCSO(startTime, endTime)
     if not cso:
-        dta.dtaLogger.error("Unable to find CSO") 
+        dta.DtaLogger.error("Unable to find CSO") 
         raise dta.DtaError("Unable to find CSO")
     
     offset = card.signalTiming[cso].offset
@@ -1580,14 +1580,15 @@ if __name__ == "__main__":
     excelCards = parseExcelCardsToSignalObjects(EXCEL_DIR)
     assignCardNames(excelCards)
 
-    in2 = open("test.pkl", "rb")
-    data2 = pickle.load(in2)
-    in2.close()    
-
-    for i in range(len(excelCards)):
-        excelCards[i].mappedStreet = data2[i][0]
-        excelCards[i].mappedNodeName = data2[i][1]
-        excelCards[i].mappedNodeId = data2[i][2]
+    if False: # test/development
+        in2 = open("test.pkl", "rb")
+        data2 = pickle.load(in2)
+        in2.close()    
+    
+        for i in range(len(excelCards)):
+            excelCards[i].mappedStreet = data2[i][0]
+            excelCards[i].mappedNodeName = data2[i][1]
+            excelCards[i].mappedNodeId = data2[i][2]
 
     cards = excelCards 
     cards = getMappedCards(net, EXCEL_DIR) 

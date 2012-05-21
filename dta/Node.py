@@ -367,7 +367,7 @@ class Node(object):
         """
         return not self.isJunction() 
 
-    def isJunction(self):
+    def isJunction(self, countRoadNodesOnly=False):
         """
         Return True if this node is a junction. 
         
@@ -375,7 +375,7 @@ class Node(object):
         """
         if self.getNumOutgoingLinks() == 1 or self.getNumIncomingLinks() == 1:
             return True
-        if self.isShapePoint():
+        if self.isShapePoint(countRoadNodesOnly=countRoadNodesOnly):
             return True 
 
         return False 
