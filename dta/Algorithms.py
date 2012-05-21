@@ -399,11 +399,12 @@ class ShortestPaths(object):
 
     @classmethod
     def labelCorrectingWithLabelsOnLinks(cls, graph, sourceLink):
-        """Implementation of Pape's shortest path
+        """
+        Implementation of Pape's shortest path
         using a deque. Links are inserted to the 
         left of the deque if they have been already 
         visited. Otherwise they are inserted to the
-        right of the deque
+        right of the deque.
 
         Movements need to have a cost attribute
 
@@ -435,13 +436,23 @@ class ShortestPaths(object):
                         
     @classmethod
     def labelCorrectingWithLabelsOnNodes(cls, graph, sourceVertex):
-        """Implementation of Pape's shortest path
+        """
+        Implementation of Pape's shortest path
         using a deque. Vertices are inserted to the 
         left of the deque if they have been already 
         visited. Otherwise they are inserted to the
         right of the deque
 
-        To work edges should have a cost attribute
+        *graph* is an instance of a :py:class:`Network`.
+        The edge cost used is given by :py:meth:`Link.euclideanLength`.
+        :py:class:`VirtualLink` instances and :py:class:`VirtualNode` instances
+        are not included in the shortest path.
+        
+        :py:class:`Node` instances have the following set:
+        
+        * *label* is set to the cost
+        * *alreadyVisited* is a boolean
+        * *predVertex* references the previous vertex Node
         
         """
 
@@ -457,62 +468,86 @@ class ShortestPaths(object):
         while verticesToExamine:
             pivotVertex = verticesToExamine.popleft()
             pivotVertex.alreadyVisited = True
-            if pivotVertex.isVirtualNode():
-                print 'Virtual Node Included = ', pivotVertex.getId()
+
             for edge in pivotVertex.iterOutgoingLinks():
-                if not edge.isVirtualLink():
-                    newLabel = pivotVertex.label + edge._calculateEuclideanLength()
-                    downstreamVertex = edge.getEndNode()
-                    if not downstreamVertex.isVirtualNode():
-                        if newLabel < downstreamVertex.label:
-                            downstreamVertex.label = newLabel
-                            downstreamVertex.predVertex = pivotVertex
-                            if downstreamVertex.alreadyVisited:
-                                verticesToExamine.appendleft(downstreamVertex)
-                            else:
-                                verticesToExamine.append(downstreamVertex)
+
+                # VirtualLink instances are not included in the shortest path.
+                if edge.isVirtualLink(): continue
+                
+                downstreamVertex = edge.getEndNode()
+                
+                # VirtualNode instances are not included in the shortest path.
+                if downstreamVertex.isVirtualNode(): continue
+                
+                # The edge cost used is given by :py:meth:`Link.euclideanLength`.
+                newLabel = pivotVertex.label + edge.euclideanLength()
+                
+                if newLabel < downstreamVertex.label:
+                    downstreamVertex.label = newLabel
+                    downstreamVertex.predVertex = pivotVertex
+                    if downstreamVertex.alreadyVisited:
+                        verticesToExamine.appendleft(downstreamVertex)
+                    else:
+                        verticesToExamine.append(downstreamVertex)
 
 
     @classmethod
     def labelSettingWithLabelsOnNodes(cls, graph, sourceVertex, endVertex):
-        """Implementation of Pape's shortest path
+        """
+        Implementation of Pape's shortest path
         using a deque. Vertices are inserted to the 
         left of the deque if they have been already 
         visited. Otherwise they are inserted to the
         right of the deque
 
-        To work edges should have a cost attribute
+        *graph* is an instance of a :py:class:`Network`.
+        The edge cost used is given by :py:meth:`Link.euclideanLength`.
+        :py:class:`VirtualLink` instances and :py:class:`VirtualNode` instances
+        are not included in the shortest path.
+        
+        :py:class:`Node` instances have the following set:
+        
+        * *label* is set to the cost
+        * *alreadySet* is a boolean
+        * *predVertex* references the previous vertex Node
         
         """
 
         for vertex in graph.iterNodes():
-            vertex.label = sys.maxint
-            vertex.alreadySet = False
-            vertex.predVertex = None
-            mincostVertex = sourceVertex
+            vertex.label        = sys.maxint
+            vertex.alreadySet   = False
+            vertex.predVertex   = None
+            mincostVertex       = sourceVertex
 
-        sourceVertex.label = 0
-        verticesToExamine = deque()
-        verticesSet=deque()
+        sourceVertex.label      = 0
+        verticesToExamine       = deque()
+        verticesSet             = deque()
         verticesSet.appendleft(sourceVertex)
-        pivotVertex = sourceVertex
+        pivotVertex             = sourceVertex
                 
         while pivotVertex != endVertex :
             mincost = 0
             pivotVertex = verticesSet.popleft()
             pivotVertex.alreadySet = True
-            #if pivotVertex.isVirtualNode:
-                #print 'Virtual Node Included = ', pivotVertex.getId()
+
             for edge in pivotVertex.iterOutgoingLinks():
-                if not edge.isVirtualLink():                 
-                    newLabel = pivotVertex.label + edge.getLength()
-                    downstreamVertex = edge.getEndNode()
-                    if not downstreamVertex.isVirtualNode():
-                        if newLabel < downstreamVertex.label:
-                            downstreamVertex.label = newLabel
-                            downstreamVertex.predVertex = pivotVertex
-                            if not downstreamVertex.alreadySet:
-                                verticesToExamine.appendleft(downstreamVertex)
+                
+                # VirtualLink instances are not included in the shortest path.  
+                if edge.isVirtualLink(): continue
+                downstreamVertex = edge.getEndNode()
+
+                # VirtualNode instances are not included in the shortest path.
+                if downstreamVertex.isVirtualNode(): continue
+                
+                # The edge cost used is given by :py:meth:`Link.euclideanLength`.
+                newLabel = pivotVertex.label + edge.euclideanLength()
+                
+                if newLabel < downstreamVertex.label:
+                    downstreamVertex.label = newLabel
+                    downstreamVertex.predVertex = pivotVertex
+                    if not downstreamVertex.alreadySet:
+                        verticesToExamine.appendleft(downstreamVertex)
+                        
             for updateVertex in verticesToExamine:
                 if mincost==0:
                     mincost = updateVertex.label

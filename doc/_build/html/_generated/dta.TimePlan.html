@@ -57,20 +57,14 @@
 <dt id="dta.TimePlan">
 <em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TimePlan</tt><big>(</big><em>node</em>, <em>offset</em>, <em>planCollectionInfo</em>, <em>syncPhase=1</em>, <em>turnOnRed=1</em><big>)</big><a class="headerlink" href="#dta.TimePlan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Represents a Dynameq timeplan</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Dynameq, eh?  What about just DTA?  And the Dynameq subclass?  And a holistic description
-of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
-</div>
+<p>Represents gereric signal timeplan</p>
 <dl class="method">
 <dt id="dta.TimePlan.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>node</em>, <em>offset</em>, <em>planCollectionInfo</em>, <em>syncPhase=1</em>, <em>turnOnRed=1</em><big>)</big><a class="headerlink" href="#dta.TimePlan.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor.</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">Documentation?</p>
-</div>
+<dd><p>Constructor.
+:py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>RoadNode&#8217;: the node the signal applies
+offset: a positive integer representing the offset of the 
+:py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>PlanCollectionInfo&#8217;: containing information about the start and end times of the time plan</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -87,6 +81,9 @@ of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.TimePlan.getCycleLength" title="dta.TimePlan.getCycleLength"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getCycleLength</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TimePlan.getDynameqStr" title="dta.TimePlan.getDynameqStr"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getDynameqStr</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.TimePlan.getNode" title="dta.TimePlan.getNode"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getNode</span></tt></a></td>
@@ -113,7 +110,7 @@ of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
 <tr><td><a class="reference internal" href="#dta.TimePlan.iterPhases" title="dta.TimePlan.iterPhases"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.iterPhases</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.read" title="dta.TimePlan.read"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.read</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.TimePlan.readDynameqPlans" title="dta.TimePlan.readDynameqPlans"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.readDynameqPlans</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.TimePlan.setPermittedMovements" title="dta.TimePlan.setPermittedMovements"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.setPermittedMovements</span></tt></a></td>
@@ -140,9 +137,15 @@ of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.TimePlan.getDynameqStr">
+<tt class="descname">getDynameqStr</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TimePlan.getDynameqStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Dynameq parsable string that represents the time plan</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.TimePlan.getNode">
 <tt class="descname">getNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TimePlan.getNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the node the timeplan applies</p>
+<dd><p>Return the node instance the timeplan applies</p>
 </dd></dl>
 
 <dl class="method">
@@ -166,7 +169,7 @@ of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
 <dl class="method">
 <dt id="dta.TimePlan.getPhase">
 <tt class="descname">getPhase</tt><big>(</big><em>phaseNum</em><big>)</big><a class="headerlink" href="#dta.TimePlan.getPhase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the phase with the given index</p>
+<dd><p>Return the phase instance with the given index</p>
 </dd></dl>
 
 <dl class="method">
@@ -188,25 +191,28 @@ of what a &#8220;time plan&#8221; is, anyhow?  (No it&#8217;s not obvious.)</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="dta.TimePlan.read">
-<em class="property">classmethod </em><tt class="descname">read</tt><big>(</big><em>net</em>, <em>fileName</em><big>)</big><a class="headerlink" href="#dta.TimePlan.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method reads the time plans contained in the fileName
-file and adds them to the Dynameq Network object</p>
+<dt id="dta.TimePlan.readDynameqPlans">
+<em class="property">classmethod </em><tt class="descname">readDynameqPlans</tt><big>(</big><em>net</em>, <em>fileName</em><big>)</big><a class="headerlink" href="#dta.TimePlan.readDynameqPlans" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method reads the Dynameq time plans contained in the input
+ascii filename and adds them to the provided dynameq network object.
+#TODO: add version number</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.TimePlan.setPermittedMovements">
 <tt class="descname">setPermittedMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TimePlan.setPermittedMovements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Goes over the movements of the phase. If two protected movements
-conflict with each other it sets the one with the fewer number of
-lanes as a permitted one unless if both movements are
-through movmeents. In this case it raises an error.</p>
+<dd><p>Examines all the movements in the timeplan pairwise and if two movements
+conflict with each other it sets the lower priority movement as
+permitted. For examle, if a protected left turn conflicts with a
+protected through movement it sets the left turn as permitted.
+If two through movements conflict with each other and are both
+protected an error is being raised.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.TimePlan.setSyncPhase">
-<tt class="descname">setSyncPhase</tt><big>(</big><em>syncPhase</em><big>)</big><a class="headerlink" href="#dta.TimePlan.setSyncPhase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the syncing phase to the input value</p>
+<tt class="descname">setSyncPhase</tt><big>(</big><em>phaseId</em><big>)</big><a class="headerlink" href="#dta.TimePlan.setSyncPhase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the phase with input id the as the sync phase.</p>
 </dd></dl>
 
 <dl class="method">

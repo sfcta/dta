@@ -55,17 +55,17 @@
 <h1>dta.Phase<a class="headerlink" href="#dta-phase" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Phase">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Phase</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType</em><big>)</big><a class="headerlink" href="#dta.Phase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Phase</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType=0</em><big>)</big><a class="headerlink" href="#dta.Phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Represents a dynameq phase.</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Dynameq?  There should be a Dynameq subclass.</p>
-</div>
+<p>Represents a generic phase class that can contain one or more 
+:py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>PhaseMovement&#8217; objects.</p>
 <dl class="method">
 <dt id="dta.Phase.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType</em><big>)</big><a class="headerlink" href="#dta.Phase.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descname">__init__</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType=0</em><big>)</big><a class="headerlink" href="#dta.Phase.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. 
+:py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>TimePlan&#8217; is the timeplan instance the phase
+green, red, and yellow is the green, yellow, and red times respectively</p>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table border="1" class="docutils">
@@ -78,9 +78,6 @@
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Phase.addMovement" title="dta.Phase.addMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.addMovement</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.Phase.deleteMovement" title="dta.Phase.deleteMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.deleteMovement</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Phase.getGreen" title="dta.Phase.getGreen"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.getGreen</span></tt></a></td>
@@ -113,7 +110,7 @@
 <tr><td><a class="reference internal" href="#dta.Phase.iterMovements" title="dta.Phase.iterMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.iterMovements</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Phase.read" title="dta.Phase.read"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.read</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Phase.readFromDynameqString" title="dta.Phase.readFromDynameqString"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.readFromDynameqString</span></tt></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -121,13 +118,8 @@
 <dl class="method">
 <dt id="dta.Phase.addMovement">
 <tt class="descname">addMovement</tt><big>(</big><em>movement</em><big>)</big><a class="headerlink" href="#dta.Phase.addMovement" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="dta.Phase.deleteMovement">
-<tt class="descname">deleteMovement</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Phase.deleteMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add the movement with the provided iid to the list of movements 
-served by the phase</p>
+<dd><p>Add the input movement to the phase. If the movement
+allready exists and exception will be thrown</p>
 </dd></dl>
 
 <dl class="method">
@@ -194,9 +186,13 @@ input start node to end node</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="dta.Phase.read">
-<em class="property">classmethod </em><tt class="descname">read</tt><big>(</big><em>net</em>, <em>timeplan</em>, <em>lineIter</em><big>)</big><a class="headerlink" href="#dta.Phase.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>read a phase string from the line iterator and return a Phase instance</p>
+<dt id="dta.Phase.readFromDynameqString">
+<em class="property">classmethod </em><tt class="descname">readFromDynameqString</tt><big>(</big><em>net</em>, <em>timeplan</em>, <em>lineIter</em><big>)</big><a class="headerlink" href="#dta.Phase.readFromDynameqString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the dynameq phase string defined in multiple lines of text and returns a
+Dynameq phase object. 
+lineIter is an iterator over the lines of a text file containing the Dynameq phase info. 
+net is an instance of :py:class:<a href="#id5"><span class="problematic" id="id6">`</span></a>DynameqNetwork&#8217;
+timePlan is an instance of :py:class:<a href="#id7"><span class="problematic" id="id8">`</span></a>TimePlan&#8217;</p>
 </dd></dl>
 
 </dd></dl>

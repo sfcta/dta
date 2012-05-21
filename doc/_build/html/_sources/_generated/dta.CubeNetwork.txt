@@ -22,6 +22,7 @@ dta.CubeNetwork
       ~CubeNetwork.applyTurnProhibitions
       ~CubeNetwork.areIDsUnique
       ~CubeNetwork.deepcopy
+      ~CubeNetwork.findLinksForRoadLabels
       ~CubeNetwork.findMovementForRoadLabels
       ~CubeNetwork.getLinkForId
       ~CubeNetwork.getLinkForNodeIdPair

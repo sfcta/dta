@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta.TransitSegment &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="next" title="dta.Demand" href="dta.Demand.html" />
+    <link rel="prev" title="dta.TransitLine" href="dta.TransitLine.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dta.Demand.html" title="dta.Demand"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dta.TransitLine.html" title="dta.TransitLine"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dta-transitsegment">
+<h1>dta.TransitSegment<a class="headerlink" href="#dta-transitsegment" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dta.TransitSegment">
+<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TransitSegment</tt><big>(</big><em>id</em>, <em>link</em>, <em>label</em>, <em>lane</em>, <em>dwell</em>, <em>stopside</em><big>)</big><a class="headerlink" href="#dta.TransitSegment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A piece of a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>, basically a link with a transit line on it.</p>
+<dl class="method">
+<dt id="dta.TransitSegment.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>link</em>, <em>label</em>, <em>lane</em>, <em>dwell</em>, <em>stopside</em><big>)</big><a class="headerlink" href="#dta.TransitSegment.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A link in a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>.  The arguments are:</p>
+<ul class="simple">
+<li><em>id</em> segment identifier</li>
+<li><em>start</em> starting node ID</li>
+<li><em>end</em> ending node ID</li>
+<li><em>label</em> user-defined label for the segment or stop, a string</li>
+<li><em>tlane</em> is the lane used by the transit line. Use <a class="reference internal" href="#dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED" title="dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.TRANSIT_LANE_UNSPECIFIED</span></tt></a>, 1 for the outside lane, 2 for the next in, etc</li>
+<li><em>dwell</em> is the average dwell time in seconds, a float</li>
+<li><em>stopside</em> is one of <a class="reference internal" href="#dta.TransitSegment.STOP_EXIT_LANE" title="dta.TransitSegment.STOP_EXIT_LANE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.STOP_EXIT_LANE</span></tt></a>, <a class="reference internal" href="#dta.TransitSegment.STOP_OUTSIDE" title="dta.TransitSegment.STOP_OUTSIDE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.STOP_OUTSIDE</span></tt></a>, or <a class="reference internal" href="#dta.TransitSegment.STOP_INSIDE" title="dta.TransitSegment.STOP_INSIDE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.STOP_INSIDE</span></tt></a></li>
+</ul>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#dta.TransitSegment.__init__" title="dta.TransitSegment.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(id,&nbsp;link,&nbsp;label,&nbsp;lane,&nbsp;dwell,&nbsp;stopside)</td>
+<td>A link in a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>.  The arguments are:</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TransitSegment.getDynameqHeaderStr" title="dta.TransitSegment.getDynameqHeaderStr"><tt class="xref py py-obj docutils literal"><span class="pre">getDynameqHeaderStr</span></tt></a>()</td>
+<td>Returns the Dynameq-formatted header string (the start of the file preceding the actual transit line data</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.TransitSegment.getDynameqStr" title="dta.TransitSegment.getDynameqStr"><tt class="xref py py-obj docutils literal"><span class="pre">getDynameqStr</span></tt></a>()</td>
+<td>Returns the Dynameq-formatted string representation of the transit segments.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dta.TransitSegment.STOP_EXIT_LANE">
+<tt class="descname">STOP_EXIT_LANE</tt><a class="headerlink" href="#dta.TransitSegment.STOP_EXIT_LANE" title="Permalink to this definition">¶</a></dt>
+<dd><p>What do these mean?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.TransitSegment.STOP_INSIDE">
+<tt class="descname">STOP_INSIDE</tt><a class="headerlink" href="#dta.TransitSegment.STOP_INSIDE" title="Permalink to this definition">¶</a></dt>
+<dd><p>What do these mean?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.TransitSegment.STOP_OUTSIDE">
+<tt class="descname">STOP_OUTSIDE</tt><a class="headerlink" href="#dta.TransitSegment.STOP_OUTSIDE" title="Permalink to this definition">¶</a></dt>
+<dd><p>What do these mean?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED">
+<tt class="descname">TRANSIT_LANE_UNSPECIFIED</tt><a class="headerlink" href="#dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the transit lane is unspecified use this for the <em>lane</em> arg to <a class="reference internal" href="#dta.TransitSegment.__init__" title="dta.TransitSegment.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TransitSegment.__init__()</span></tt></a></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="dta.TransitSegment.getDynameqHeaderStr">
+<em class="property">classmethod </em><tt class="descname">getDynameqHeaderStr</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TransitSegment.getDynameqHeaderStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Dynameq-formatted header string (the start of the file preceding the actual transit line data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TransitSegment.getDynameqStr">
+<tt class="descname">getDynameqStr</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TransitSegment.getDynameqStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Dynameq-formatted string representation of the transit segments.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dta.TransitLine.html"
+                        title="previous chapter">dta.TransitLine</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dta.Demand.html"
+                        title="next chapter">dta.Demand</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_generated/dta.TransitSegment.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dta.Demand.html" title="dta.Demand"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dta.TransitLine.html" title="dta.TransitLine"
+             >previous</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

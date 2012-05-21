@@ -20,6 +20,7 @@ dta.RoadLink
       ~RoadLink.addShifts
       ~RoadLink.coordinatesAlongLink
       ~RoadLink.euclideanLength
+      ~RoadLink.euclideanLengthInLengthUnits
       ~RoadLink.getAngle
       ~RoadLink.getCenterLine
       ~RoadLink.getDirection
@@ -27,10 +28,12 @@ dta.RoadLink
       ~RoadLink.getEndNodeId
       ~RoadLink.getFacilityType
       ~RoadLink.getFreeFlowSpeedInMPH
+      ~RoadLink.getFreeFlowTTInMin
       ~RoadLink.getGroup
       ~RoadLink.getId
       ~RoadLink.getIid
       ~RoadLink.getLabel
+      ~RoadLink.getLeftTurn
       ~RoadLink.getLength
       ~RoadLink.getLengthInCoordinateUnits
       ~RoadLink.getMidPoint
@@ -46,21 +49,27 @@ dta.RoadLink
       ~RoadLink.getOutline
       ~RoadLink.getReferenceAngle
       ~RoadLink.getReferenceAngleInDegrees
+      ~RoadLink.getRightTurn
       ~RoadLink.getShifts
-      ~RoadLink.getSimFlow
+      ~RoadLink.getSimInFlow
+      ~RoadLink.getSimInVolume
+      ~RoadLink.getSimOutFlow
+      ~RoadLink.getSimOutVolume
       ~RoadLink.getSimSpeedInMPH
       ~RoadLink.getSimTTInMin
-      ~RoadLink.getSimVolume
       ~RoadLink.getStartNode
       ~RoadLink.getStartNodeId
       ~RoadLink.getThruTurn
+      ~RoadLink.hasLeftTurn
       ~RoadLink.hasOutgoingMovement
+      ~RoadLink.hasRightTurn
       ~RoadLink.hasSameAttributes
       ~RoadLink.hasThruTurn
       ~RoadLink.isConnector
       ~RoadLink.isOverlapping
       ~RoadLink.isRoadLink
       ~RoadLink.isVirtualLink
+      ~RoadLink.iterIncidentMovements
       ~RoadLink.iterIncomingMovements
       ~RoadLink.iterOutgoingMovements
       ~RoadLink.prohibitOutgoingMovement
@@ -68,8 +77,8 @@ dta.RoadLink
       ~RoadLink.setLabel
       ~RoadLink.setLength
       ~RoadLink.setNumLanes
+      ~RoadLink.setSimOutVolume
       ~RoadLink.setSimTTInMin
-      ~RoadLink.setSimVolume
    
    
 

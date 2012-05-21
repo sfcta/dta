@@ -24,6 +24,7 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from .Algorithms import ShortestPaths
 from .Centroid import Centroid
 from .Connector import Connector
 from .CorridorPlots import CountsVsVolumes
@@ -44,7 +45,8 @@ from .RoadNode import RoadNode
 from .Path import Path
 from .Scenario import Scenario
 from .TimePlan import PlanCollectionInfo, TimePlan
-from .TPPlusTransitRoute import TPPlusTransitRoute
+from .TPPlusTransitRoute import TPPlusTransitNode, TPPlusTransitRoute
+from .TransitLine import TransitLine, TransitSegment
 from .Utils import crossProduct, direction, lineSegmentsCross, onSegment, Time
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
@@ -59,6 +61,8 @@ __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
            'Link', 'RoadLink', 'Connector', 'VirtualLink', 'DynameqDemand',
-           'PlanCollectionInfo', 'TimePlan', 'TPPlusTransitRoute', 'Route', 'Phase', 'MultiArray',
-           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time', 'CountsVsVolumes'
+           'PlanCollectionInfo', 'TimePlan',
+           'TPPlusTransitNode', 'TPPlusTransitRoute', 'TransitLine', 'TransitSegment',
+           'Route', 'Phase', 'MultiArray',
+           'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time', 'CountsVsVolumes', 'ShortestPaths'
 ]

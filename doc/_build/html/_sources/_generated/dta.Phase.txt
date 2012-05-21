@@ -15,7 +15,6 @@ dta.Phase
    
       ~Phase.__init__
       ~Phase.addMovement
-      ~Phase.deleteMovement
       ~Phase.getGreen
       ~Phase.getMovement
       ~Phase.getNumMovements
@@ -26,7 +25,7 @@ dta.Phase
       ~Phase.hasPermittedMovement
       ~Phase.hasProtectedMovement
       ~Phase.iterMovements
-      ~Phase.read
+      ~Phase.readFromDynameqString
    
    
 

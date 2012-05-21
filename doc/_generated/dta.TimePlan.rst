@@ -16,6 +16,7 @@ dta.TimePlan
       ~TimePlan.__init__
       ~TimePlan.addPhase
       ~TimePlan.getCycleLength
+      ~TimePlan.getDynameqStr
       ~TimePlan.getNode
       ~TimePlan.getNodeId
       ~TimePlan.getNumPhases
@@ -24,7 +25,7 @@ dta.TimePlan
       ~TimePlan.getPlanInfo
       ~TimePlan.isValid
       ~TimePlan.iterPhases
-      ~TimePlan.read
+      ~TimePlan.readDynameqPlans
       ~TimePlan.setPermittedMovements
       ~TimePlan.setSyncPhase
       ~TimePlan.validate

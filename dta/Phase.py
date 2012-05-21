@@ -80,8 +80,7 @@ class Phase(object):
         """
         Constructor. 
         :py:class:`TimePlan' is the timeplan instance the phase
-        green, red, and yellow is the green, yellow, and red times respectively
-
+        green, red, and yellow are the green, yellow, and red times respectively (int or float) 
         """
         self._timePlan = timePlan
         self._node = timePlan.getNode()
@@ -92,9 +91,9 @@ class Phase(object):
 
         self._movements= []
 
-    def __repr__(self):
+    def getDynameqStr(self):
         """
-        Return the string representation of the phase
+        Return the dynameq representation of the phase as a string
         """
         if int(self._green) == self._green:
             green = str(int(self._green))
@@ -114,12 +113,6 @@ class Phase(object):
         header = "PHASE\n%s %s %s %d" % (green, yellow, red, self._phaseType)
         body = "\n".join([repr(mov) for mov in self.iterMovements()]) 
         return "%s\n%s" % (header, body)
-
-    def __str__(self):
-        """
-        Return the string represtation of the phase
-        """
-        return self.__str__()
 
     def addMovement(self, movement):
         """
@@ -203,18 +196,18 @@ class Phase(object):
 
     def getGreen(self):
         """
-        Return the green time
+        Return the green time as an integer or float 
         """
         return self._green
 
     def getYellow(self):
         """
-        Return the yellow time
+        Return the yellow time as an integer or float 
         """
         return self._yellow
 
     def getRed(self):
         """
-        Return the red time
+        Return the red time as an integer or float 
         """
         return self._red 

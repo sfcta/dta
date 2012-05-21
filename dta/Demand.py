@@ -86,8 +86,11 @@ class Demand(object):
     def readDynameqTable(cls, net, fileName):
         """
         Read the dynameq demand stored in the fileName that pertains to the 
-        dynameq network a :py:class:`DynameqNetwork`instance
+        dynameq network a :py:class:`DynameqNetwork`instance. This method reads
+        only rectangular demand tables 
         """
+        DYNAMEQ_FORMAT_FULL = "FORMAT:full" 
+        
         input = open(fileName, "rb")
         
         input.next() # <DYNAMEQ>
@@ -95,14 +98,12 @@ class Demand(object):
         input.next() # <MATRIX_FILE> 
         input.next() # * comment 
         line = input.next().strip() 
-        if line != Demand.FORMAT_FULL:
+        if line != DYNAMEQ_FORMAT_FULL:
             raise DtaError("I cannot read a demand format other than %s" % Demand.FORMAT_FULL)
         input.next() # VEH_CLASS 
         line = input.next().strip() 
 
         vehClassName = line
-        #if line != Demand.DEFAULT_VEHCLASS:
-        #    raise DtaError("I read a vehicle class other than the default one currently") 
         input.next() #DATA 
         line = input.next().strip()         
 

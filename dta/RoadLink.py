@@ -1,4 +1,4 @@
-__copyright__   = "Copyright 2011 SFCTA"
+_copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
 
@@ -99,7 +99,7 @@ class RoadLink(Link):
 
         #TODO:you should give a warnign when the input link length is weird
         if length is None or length is -1:
-            self._length = self._calculateEuclideanLength()
+            self._length = self.euclideanLengthInLengthUnits()
         else:
             self._length = length
             
@@ -528,7 +528,7 @@ class RoadLink(Link):
         return self._numLanes
 
 
-    def _calculateEuclideanLength(self):
+    def euclideanLengthInLengthUnits(self):
         """
         Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.        
         """
@@ -551,7 +551,7 @@ class RoadLink(Link):
         if self._length != -1:
             return self._length
         else:
-            return self._calculateEuclideanLength()
+            return self.euclideanLengthInLengthUnits()
                 
     def getLengthInCoordinateUnits(self):
         """

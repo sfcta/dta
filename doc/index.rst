@@ -94,13 +94,23 @@ Signal classes
    dta.Phase
    dta.PhaseMovement
    
+Transit classes
+=================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+   
+   dta.TPPlusTransitNode
+   dta.TPPlusTransitRoute
+   dta.TransitLine
+   dta.TransitSegment
+   
 Misc
 ================
 .. autosummary::
    :nosignatures:
    :toctree: _generated
 
-   dta.Algorithms
    dta.Demand   
    dta.DtaError
    dta.DtaLogger
@@ -108,6 +118,7 @@ Misc
    dta.MultiArray
    dta.Network
    dta.Path
+   dta.ShortestPaths
    dta.Time
    dta.Utils
    

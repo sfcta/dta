@@ -21,6 +21,7 @@ dta.Network
       ~Network.addPlanCollectionInfo
       ~Network.areIDsUnique
       ~Network.deepcopy
+      ~Network.findLinksForRoadLabels
       ~Network.findMovementForRoadLabels
       ~Network.getLinkForId
       ~Network.getLinkForNodeIdPair
@@ -60,6 +61,7 @@ dta.Network
       ~Network.mergeSecondaryNetworkBasedOnLinkIds
       ~Network.mergeSecondaryNetworkBasedOnLinkIds2
       ~Network.moveVirtualNodesToAvoidShortConnectors
+      ~Network.readLinkShape
       ~Network.removeLink
       ~Network.removeNode
       ~Network.removeShapePoints

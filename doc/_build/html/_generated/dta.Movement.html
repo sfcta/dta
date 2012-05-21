@@ -135,16 +135,22 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.getProtectedCapacity" title="dta.Movement.getProtectedCapacity"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getProtectedCapacity</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimFlow" title="dta.Movement.getSimFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimFlow</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimInFlow" title="dta.Movement.getSimInFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimInFlow</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimInVolume" title="dta.Movement.getSimInVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimInVolume</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimOutFlow" title="dta.Movement.getSimOutFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimOutFlow</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getSimOutVolume" title="dta.Movement.getSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimOutVolume</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getSimSpeedInMPH" title="dta.Movement.getSimSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimSpeedInMPH</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getSimTTInMin" title="dta.Movement.getSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimTTInMin</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimVolume" title="dta.Movement.getSimVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimVolume</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getStartNode" title="dta.Movement.getStartNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getStartNode</span></tt></a></td>
@@ -189,10 +195,13 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.setPenaltyInMin" title="dta.Movement.setPenaltyInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setPenaltyInMin</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setSimTTInMin" title="dta.Movement.setSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimTTInMin</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Movement.setSimInVolume" title="dta.Movement.setSimInVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimInVolume</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setSimVolume" title="dta.Movement.setSimVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimVolume</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Movement.setSimOutVolume" title="dta.Movement.setSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimOutVolume</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setSimTTInMin" title="dta.Movement.setSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimTTInMin</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.setTimeVaryingCosts" title="dta.Movement.setTimeVaryingCosts"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setTimeVaryingCosts</span></tt></a></td>
@@ -286,15 +295,37 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 
 <dl class="method">
 <dt id="dta.Movement.getProtectedCapacity">
-<tt class="descname">getProtectedCapacity</tt><big>(</big><em>planInfo=None</em><big>)</big><a class="headerlink" href="#dta.Movement.getProtectedCapacity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the capacity of the movement in vehicles per hour</p>
+<tt class="descname">getProtectedCapacity</tt><big>(</big><em>planInfo</em><big>)</big><a class="headerlink" href="#dta.Movement.getProtectedCapacity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the capacity of the movement in vehicles per hour
+This method calulates the capacity of of the movement by
+adding the green times of all the phases this movement
+participates in.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Movement.getSimFlow">
-<tt class="descname">getSimFlow</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getSimFlow" title="Permalink to this definition">¶</a></dt>
+<dt id="dta.Movement.getSimInFlow">
+<tt class="descname">getSimInFlow</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getSimInFlow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the simulated flow for the specified time period 
 in vph</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getSimInVolume">
+<tt class="descname">getSimInVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getSimInVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the incoming flow from the start to end</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getSimOutFlow">
+<tt class="descname">getSimOutFlow</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getSimOutFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the outgoing flow for the specified time period 
+in vph</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getSimOutVolume">
+<tt class="descname">getSimOutVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getSimOutVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the outgoing flow from the start to end</p>
 </dd></dl>
 
 <dl class="method">
@@ -310,12 +341,6 @@ miles per hour</p>
 <dd><p>Return the mean movement travel time in minutes of 
 for all the vehicles that entered the link between the 
 input times</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.Movement.getSimVolume">
-<tt class="descname">getSimVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getSimVolume" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the flow from the start to end</p>
 </dd></dl>
 
 <dl class="method">
@@ -405,16 +430,22 @@ UTURN, RT, RT2, LT2, LT, TH</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Movement.setSimInVolume">
+<tt class="descname">setSimInVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>flow</em><big>)</big><a class="headerlink" href="#dta.Movement.setSimInVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the simulated incoming flow (vehicles per HOUR) for the supplied time period</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.setSimOutVolume">
+<tt class="descname">setSimOutVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>flow</em><big>)</big><a class="headerlink" href="#dta.Movement.setSimOutVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the simulated outgoing flow (vehicles per HOUR) for the supplied time period</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Movement.setSimTTInMin">
 <tt class="descname">setSimTTInMin</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>averageTTInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.setSimTTInMin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the simulated average travel time for the 
 input time period</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.Movement.setSimVolume">
-<tt class="descname">setSimVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>flow</em><big>)</big><a class="headerlink" href="#dta.Movement.setSimVolume" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specify the simulated flow (vehicles per HOUR) for the supplied time period</p>
 </dd></dl>
 
 <dl class="method">

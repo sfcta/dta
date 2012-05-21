@@ -11,6 +11,7 @@ Utility functions for use throughout DTA Anyway.
 .. autofunction:: dta.onSegment
 
 """
+import pylab as plt
 import pdb
 
 __copyright__   = "Copyright 2011 SFCTA"
@@ -440,9 +441,9 @@ class Time(datetime.time):
         minutes = minutes % 60
         return Time(hours, minutes) 
     
-    def __init__(self, hours, minutes):
+    def __init__(self, hours, minutes, seconds=0):
 
-        datetime.time.__init__(hours, minutes)
+        datetime.time.__init__(hours, minutes, seconds)
 
     def __lt__(self, other):
         """
@@ -516,4 +517,57 @@ class Time(datetime.time):
         object.
         """
         return self.hour * 60 + self.minute 
+
+def bucketRounding(matrix, decimalPosition):
+    """
+    This method applies bucket rounding to the input numpy matrix in place.
+    The decimal position is identified by the the input integer decimalPosition
+    The matrix rounding algorithm will preserve row sums but will not preserve
+    column sums
+    """
+    numRows = matrix.shape[0]
+    numCols = matrix.shape[1]
+
+    levelOfAccuracy = 1.0 / 10 ** decimalPosition
+    numRows = matrix.shape[0]
+    numCols = matrix.shape[1]
+    bucket = 0
+    for i in range(numRows):
+        for j in range(numCols):
+            value = matrix[i,j]
+            roundedValue = round(matrix[i,j], decimalPosition)
+            bucket += value - roundedValue
+            if bucket > levelOfAccuracy:
+                finalValue = roundedValue + levelOfAccuracy
+                bucket -= levelOfAccuracy
+            elif bucket < -levelOfAccuracy and roundedValue >= levelOfAccuracy:
+                finalValue = roundedValue - levelOfAccuracy
+                bucket += levelOfAccuracy
+            else:
+                finalValue = roundedValue
+            matrix[i,j] = finalValue
+
+def getNumZeroEntries(matrix):
+    """
+    Return the number of cells(=OD Pairs) in the input matrix with zero values
+    """
+    return (matrix == 0).sum()
+
+def plotTripHistogram(matrix, outputFile):
+    """
+    Plot a histogram of the cell values and write the result in the outputFile
+    *matrix* is a numpy array 
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.grid(True)
+
+    ax.hist(matrix.flat, bins=100, facecolor='green', alpha=0.75, log=True)
+    ax.set_xlabel('OD trips')
+    ax.set_ylabel('Frequency')
+    ax.set_title("%s. Trip Frequency. Sum = %.0f"  %
+                 (outputFile, matrix.sum()))
+    plt.savefig("%s" % outputFile)
+    plt.cla()
+
 

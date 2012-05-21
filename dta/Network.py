@@ -352,6 +352,181 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
+    def removeCentroidConnectorsFromIntersections(self, splitReverseLinks=False):
+        """
+        Remove centroid connectors from intersections and attach them to midblock locations.
+        If there is not a node defining a midblock location the algorithm will split the 
+        relevant links (in both directions) and attach the connector to the newly 
+        created node.
+        
+        Before:
+        
+        .. image:: /images/removeCentroidConnectors1.png
+           :height: 300px
+        
+        After:
+        
+        .. image:: /images/removeCentroidConnectors2.png
+           :height: 300px
+                
+        """
+
+        allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]
+        for node in allRoadNodes: 
+
+            if not node.hasConnector():
+                continue 
+            
+            if node.isJunction(countRoadNodesOnly=True):
+                continue
+            
+            connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]
+                        
+            for con in connectors:
+                try:
+                    self.removeCentroidConnectorFromIntersection(node, con, splitReverseLink=splitReverseLinks) 
+                    #DtaLogger.info("Removed centroid connectors from intersection %d" % node.getId())
+                except DtaError, e:
+                    DtaLogger.error("removeCentroidConnectorsFromIntersections(node=%d, con=%d) errored: %s" % 
+                                    (node.getId(), con.getId(), str(e)))
+
+
+        self._removeDuplicateConnectors()
+
+        #fix the number of lanes on the new connectors
+        for node in self.iterNodes():
+
+            if not node.isRoadNode():
+                continue 
+            if not node.hasConnector():
+                continue 
+            if node.isIntersection():                
+                for link in node.iterAdjacentLinks():
+                    if link.isConnector():
+                        link.setNumLanes(1) 
+
+            #remove the connector to connector movements
+            movementsToDelete = []
+            
+            for ilink in node.iterIncomingLinks():                
+                for olink in node.iterOutgoingLinks():
+                    if ilink.isConnector() and olink.isConnector():
+                        if ilink.hasOutgoingMovement(olink.getEndNodeId()):
+                            mov = ilink.getOutgoingMovement(olink.getEndNodeId())
+                            ilink.prohibitOutgoingMovement(mov)
+                            #ilink.removeOutgoingMovement(mov)
+                        else:
+                            prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
+                                 self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
+                            ilink.addOutgoingMovement(prohibitedMovement) 
+                    else:
+                        if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
+                            
+                            allowedMovement = Movement.simpleMovementFactory(ilink, olink,
+                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
+                            ilink.addOutgoingMovement(allowedMovement)
+                            
+            for mov in node.iterMovements():
+                if not mov.isThruTurn():
+                    continue
+                    
+                if mov.getIncomingLink().isConnector() and mov.getOutgoingLink().isRoadLink():
+                    mov.getIncomingLink().setNumLanes(mov.getOutgoingLink().getNumLanes())
+                
+                if mov.getIncomingLink().isRoadLink() and mov.getOutgoingLink().isConnector():
+                    mov.getOutgoingLink().setNumLanes(mov.getIncomingLink().getNumLanes())
+                            
+
+                    
+    def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
+        """
+        Remove the input connector for an intersection and attach it to a midblock 
+        location. If a midblock location does does not exist a RoadLink close
+        to the connector is split in half and the connector is attached to the new 
+        midblock location
+        
+        .. todo:: I would like more detail about this.  How are movements handled for VehicleClassGroups?
+                  Also, rename to "moveConnectorsFromIntersectionsToMidblocks"; this sounds like a delete operation.
+        """
+        if not isinstance(roadNode, RoadNode):
+            raise DtaError("Input Node %d is not a RoadNode" % roadNode.getId())
+        if not isinstance(connector, Connector):
+            raise DtaError("Input Link %s is not a Connector" % connector.getId())
+        
+        if not roadNode.hasConnector():
+            raise DtaError("RoadNode %d does not have a connector attached to it"
+                           % roadNode.getId())
+
+        centroid = connector.getCentroid()
+        candidateLinks = roadNode.getCandidateLinksForSplitting(connector)
+
+        nodeToAttachConnector = None
+
+        if len(candidateLinks) >= 2: 
+
+            cNode1 = candidateLinks[0].getOtherEnd(roadNode)
+            cNode2 = candidateLinks[1].getOtherEnd(roadNode)
+            
+            #if cNode1.isShapePoint(countRoadNodesOnly=True) and not centroid.isConnectedToRoadNode(cNode1):
+            if cNode1.isShapePoint(countRoadNodesOnly=True):
+                nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode)
+            elif cNode2.isShapePoint(countRoadNodesOnly=True):#  and not centroid.isConnectedToRoadNode(cNode2):            
+                nodeToAttachConnector = candidateLinks[1].getOtherEnd(roadNode)
+            else:                    
+                nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink)
+
+        elif len(candidateLinks) == 1:
+            
+            cNode = candidateLinks[0].getOtherEnd(roadNode)            
+            if cNode.isShapePoint(countRoadNodesOnly=True):# and not centroid.isConnectedToRoadNode(cNode):
+                nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode) 
+            else:
+                nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink) 
+        else:
+            raise DtaError("Centroid connector(s) were not removed from intersection %d" % roadNode.getId())
+                    
+        if connector.startIsRoadNode():
+            virtualNode = connector.getEndNode() 
+
+            newConnector = Connector(connector.getId(),
+                                     nodeToAttachConnector,
+                                     virtualNode,
+                                     None,
+                                     -1,  # don't assign a length
+                                     connector._freeflowSpeed,
+                                     connector._effectiveLengthFactor,
+                                     connector._responseTimeFactor,
+                                     connector._numLanes,
+                                     connector._roundAbout,
+                                     connector._level, 
+                                     connector._label, connector.getId())
+
+            self.removeLink(connector)
+            self.addLink(newConnector)
+            #TODO: do the movements
+            return newConnector 
+        else:
+            virtualNode = connector.getStartNode() 
+
+            newConnector = Connector(connector.getId(),
+                                     virtualNode,
+                                     nodeToAttachConnector,
+                                     None,
+                                     -1, # don't assign a length 
+                                     connector._freeflowSpeed,
+                                     connector._effectiveLengthFactor,
+                                     connector._responseTimeFactor,
+                                     connector._numLanes,
+                                     connector._roundAbout,
+                                     connector._level, 
+                                     connector._label, connector.getId())
+
+            self.removeLink(connector)
+            self.addLink(newConnector)
+            #TODO: do the movements 
+            return newConnector 
+
+
     def insertVirtualNodeBetweenCentroidsAndRoadNodes(self, startVirtualNodeId=None, startVirtualLinkId=None,
         distanceFromCentroid=0):
         """
@@ -475,12 +650,36 @@ class Network(object):
         """
         return self._nodes.itervalues()
 
-    def iterRoadNodes(self):
+    def iterCentroids(self):
         """
         Return an iterator to the road node collection
         """
         for node in self.iterNodes():
+            if node.isCentroid():
+                yield node
+
+    def iterRoadNodes(self):
+        """
+        Return an iterator to the :py:class:`RoadNode` instances in the network.
+        """
+        for node in self.iterNodes():
             if node.isRoadNode():
+                yield node
+
+    def iterVirtualNodes(self):
+        """
+        Return an iterator to the :py:class:`VirtualNode` instances in the network.
+        """
+        for node in self.iterNodes():
+            if isinstance(node, VirtualNode):
+                yield node
+
+    def iterCentroids(self):
+        """
+        Return an iterator to the :py:class:`Centroid` instances in the network.
+        """
+        for node in self.iterNodes():
+            if isinstance(node, Centroid):
                 yield node
 
     def iterLinks(self):
@@ -491,7 +690,8 @@ class Network(object):
 
     def iterRoadLinks(self):
         """
-        Return an iterator to all the RoadLinks in the network (that are not connectors)
+        Return an iterator for to the :py:class:`RoadLink` instances in the network that are
+        not instances of :py:class:`Connector`.
         """
         for link in self.iterLinks():
             if link.isRoadLink():
@@ -499,11 +699,19 @@ class Network(object):
 
     def iterConnectors(self):
         """
-        Return an iterator to all the connectors in the network
+        Return an iterator to the :py:class:`Connector` instances in the network.
         """
         for link in self.iterLinks():
             if link.isConnector():
-                yield link 
+                yield link
+
+    def iterVirtualLinks(self):
+        """
+        Return an iterator to the :py:class:`VirtualLink` instances in the network.
+        """
+        for link in self.iterLinks():
+            if isinstance(link, VirtualLink):
+                yield link
 
     def hasNodeForId(self, nodeId):
         """
@@ -1405,22 +1613,32 @@ class Network(object):
         w.field("IsConn", "C", 10) 
         w.field("IsVirtual", "C", 10)
         w.field("Label", "C", 60)
-
+        w.field("facType", "N", 10)
+        w.field("numLanes", "N", 10)
+        
         for link in self.iterLinks():
             if link.isVirtualLink():
+                
                 centerline = ((link._startNode.getX(), link._startNode.getY()),
                             (link._endNode.getX(), link._endNode.getY()))
                 w.line(parts=[centerline])
-            elif link.getNumShapePoints() == 0:                
-                w.line(parts=[link.getCenterLine()])
+                label       = ""
+                facType     = -1
+                numLanes    = -1
             else:
-                w.line(parts=[link._shapePoints])
-            if link.isVirtualLink():
-                label = ""
-            else:
-                label = link.getLabel()
+                centerline  = link.getCenterLine()
+                shapepoints = copy.deepcopy(link._shapePoints)
+                shapepoints.insert(0,centerline[0])
+                shapepoints.append(centerline[1])
+                    
+                w.line(parts=[shapepoints])
+                label       = link.getLabel()
+                facType     = link.getFacilityType()
+                numLanes    = link.getNumLanes()
+                
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label)
+                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
+                     facType, numLanes)
 
         w.save(name)
 
@@ -1556,7 +1774,7 @@ class Network(object):
         if link1.getEndNode().getCardinality() == (0,0):
             self.removeNode(link1.getEndNode()) 
             
-    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, skipField=None, skipValueList=None):
+    def readLinkShape(self, linkShapefile, startNodeIdField, endNodeIdField, skipEvalStr=None):
         """
         Uses the given *linkShapefile* to add shape points to the network, in order to more accurately
         represent the geometry of the roads.  For curvey or winding roads, this will help reduce errors in understanding
@@ -1565,9 +1783,10 @@ class Network(object):
         *startNodeIdField* and *endNodeIdField* are the column headers (so they're strings)
         of the start node and end node IDs within the *linkShapefile*.
         
-        If *skipField* is passed, then the field given by this name will be checked against the list of values given
-        by *skipValueList*.  This is useful for when there are some bad elements in your shapefile that you want to skip.
-        
+        Optional argument *skipEvalStr* will be eval()ed by python, and if the expression returns True,
+        the row will be skipped.  For example, to skip a specific couple of entries, the caller could pass
+        ``"OBJECTID in [5234,2798]"``.
+
         If a link with the same (node1,node2) pair is specified more than once in the shapefile, only the first one
         will be used.
         
@@ -1607,7 +1826,7 @@ class Network(object):
                 localsdict  = dict(zip(fields, recordValues))
                 
                 # check if we're instructed to skip this one
-                if skipField and (skipField in fields) and (localsdict[skipField] in skipValueList): continue
+                if skipEvalStr and eval(skipEvalStr, globals(), localsdict): continue
                 
                 if direction == "regular":
                     startNodeId = int(localsdict[startNodeIdField])

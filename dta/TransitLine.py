@@ -18,26 +18,74 @@ __license__     = """
 
 import re
 import dta
+import time
 from itertools import izip
 from dta.Algorithms import pairwise
 
 class TransitSegment(object):        
+    """
+    A piece of a :py:class:`TransitLine`, basically a link with a transit line on it.
+    """
+    #: If the transit lane is unspecified use this for the *lane* arg to :py:meth:`TransitSegment.__init__`
+    TRANSIT_LANE_UNSPECIFIED = 0
     
-    def __init__(self, _id, link,  label, lane, dwell, stopside):
+    #: What do these mean?
+    STOP_EXIT_LANE  = 0
+    #: What do these mean?    
+    STOP_OUTSIDE    = 1
+    #: What do these mean?    
+    STOP_INSIDE     = 2
+    
+    def __init__(self, id, link,  label, lane, dwell, stopside):
+        """
+        A link in a :py:class:`TransitLine`.  The arguments are:
         
-        self._id = _id
-        self.link = link
-        self.label = label
-        self.lane = lane
-        self.dwell = dwell
-        self.stopside = stopside
+        * *id* segment identifier
+        * *start* starting node ID
+        * *end* ending node ID
+        * *label* user-defined label for the segment or stop, a string
+        * *tlane* is the lane used by the transit line. Use :py:attr:`TransitSegment.TRANSIT_LANE_UNSPECIFIED`, 1 for the outside lane, 2 for the next in, etc
+        * *dwell* is the average dwell time in seconds, a float
+        * *stopside* is one of :py:attr:`TransitSegment.STOP_EXIT_LANE`, :py:attr:`TransitSegment.STOP_OUTSIDE`, or :py:attr:`TransitSegment.STOP_INSIDE`
 
-    def __repr__(self):
-        
-        return '\t'.join(['%d' % self._id, self.link.nodeAid, self.link.nodeBid, self.label, 
-                          str(self.lane), '%8.6f' % self.dwell, self.stopside]) + '\n'
+        """
+        self._id        = id
+        self.link       = link
+        self.label      = label
+        self.lane       = lane
+        self.dwell      = dwell
+        self.stopside   = stopside
+    
+    @classmethod
+    def getDynameqHeaderStr(self):
+        """
+        Returns the Dynameq-formatted header string (the start of the file preceding the actual transit line data
+        """
+        return 'SEGMENTS\n*%8s %9s %9s %15s %6s %9s %9s\n' % ("id", "start", "end", "label", "tlane", "dwell", "stopside")
+    
+    def getDynameqStr(self):
+        """
+        Returns the Dynameq-formatted string representation of the transit segments.
+        """
+        return ' %8d %9d %9d %15s %6d %9.4f %9d\n' % (self._id, self.link.getStartNode().getId(), self.link.getEndNode().getId(),
+                                                     '"' + self.label + '"', self.lane, self.dwell, self.stopside)
         
 class TransitLine(object):
+    """
+    Transit Line representation for a DTA Network.
+    A Transit Line consists of a set of attributes and a list of :py:class:`TransitSegment` instances.
+    """
+
+    #: If the transit line is a bus, pass this as the *litype* arg of :py:meth:`TransitLine.__init__`
+    LINE_TYPE_BUS   = 0
+    #: If the transit line is a tram or an LRT, pass this as the *litype* arg of :py:meth:`TransitLine.__init__`    
+    LINE_TYPE_TRAM  = 1
+    
+    #: If the transit line is active in the simulation, pass this as the *active* arg of :py:meth:`TransitLine.__init__
+    LINE_ACTIVE     = 1
+    #: If the transit line is not active in the simulation, pass this as the *active* arg of :py:meth:`TransitLine.__init__    
+    LINE_INACTIVE   = 0
+
 
     @classmethod
     def read(cls, net, fileName):
@@ -73,39 +121,73 @@ class TransitLine(object):
         inputStream.close()
         raise StopIteration
     
-    def __init__(self, net, id_, label, litype, vtype, stime, hway, dep):
+    def __init__(self, net, id, label, litype, vtype, stime, level, active, hway, dep):
+        """
+        Constructor.
         
-        self._net = net
-        self._id = id_
-        self.label = label
+        * *net* is a :py:class:`Network` instance
+        * *id* is an integer ID for the transit line
+        * *label* is a string label
+        * *litype* is a one of :py:attr:`TransitLine.LINE_TYPE_BUS` or :py:attr:`TransitLine.LINE_TYPE_TRAM` 
+        * *vtype* is a string representing vehicle type (more?)
+        * *stime* is an instance of :py:class:`dta.Time` representing the start time of the line
+        * *level* is an indicator for vertical alignment
+        * *active* is one of :py:attr:`TransitLine.LINE_ACTIVE` or :py:attr:`TransitLine.LINE_INACTIVE`
+        * *hway* is the line headway in minutes, a float
+        * *dep* is the number of departures, an integer (???)
+        
+        """
+        self._net   = net
+        self._id    = id
+        self.label  = label
         self.litype = litype
-        self.vtype = vtype
-        self.stime = stime
-        self.hway = hway
-        self.dep = dep
+        self.vtype  = vtype
+        self.stime  = stime
+        self.level  = level
+        self.active = active
+        
+        self.hway   = hway
+        self.dep    = dep
 
         self._segments = []
 
-    def __repr__(self):
-        
-        header = 'LINE\n*id\tlabel\tlitype\tvtype\t\tstime\n'
-        header += '%s\t%s\t%s\t%s\t\t%s\n' % \
-            (self._id, self.label, self.litype, self.vtype, self.stime)
+    @classmethod
+    def getDynameqFileHeaderStr(self):
+        """
+        Returns the Dynameq-formatted header string (the start of the file preceding the actual transit line data
+        """
+        return r"""<DYNAMEQ>
+<VERSION_1.6>
+<PUBLIC_TRANSIT_FILE>
+"""
+                                                                
+    def getDynameqStr(self):
+        """
+        Returns the Dynameq-formatted string representation of the transit line.
+        """
+        line_comment = "LINE\n*%8s %15s %8s %15s %8s %5s %6s\n" % ("id","label", "litype", "vtype", "stime", "level", "active")        
+        line_str = '%9d %15s %8d %15s %8s %5d %6d\n' % (self._id, '"' + self.label + '"', self.litype, self.vtype, self.stime.strftime("%H:%M:%S"), self.level, self.active)
 
-        header += '*hway\tdep\n%s\t%d\n' % (self.hway, self.dep)
-
-        body = 'SEGMENTS\n*id\tstart\tend\tlabel\tlane\tdwell\t\tstopside\n'
+        headway_comment = "*hway    dep\n"
+        headway_hours = self.hway // 60
+        headway_mins  = int(self.hway - headway_hours)
+        headway_secs  = float(self.hway - 60*headway_hours - headway_mins)/60.0
         
+        headway = '%02d:%02d:%02d %3d\n' % (headway_hours, headway_mins, headway_secs, self.dep)
+
+        seg_str = TransitSegment.getDynameqHeaderStr()
         for segment in self.iterSegments():
-            body += str(segment)
+            seg_str += segment.getDynameqStr()
+        
+        return line_comment + line_str + headway_comment + headway + seg_str
+    
 
-        return header + body
-
-    def addSegment(self, link, dwell, lane=1, stopside=0, position=-1):
+    def addSegment(self, link, dwell, lane=1, stopside=TransitSegment.STOP_EXIT_LANE, position=-1):
         
         transitSegment = TransitSegment(self.getNumSegments() + 1, 
                                         link, 'label%d' % (self.getNumSegments() + 1),
-                                        1, dwell, '0')
+                                        lane, # outside lane
+                                        dwell, TransitSegment.STOP_EXIT_LANE)
 
         if position == -1:
             self._segments.append(transitSegment)
@@ -202,7 +284,7 @@ class TransitLine(object):
             
             #if not upNode.hasOutgoingLinkForNodeId(downNode):
             if not movecheck :
-                errorMessage = "Route %20s cannot excecute movement from link %15s to link %15s " % \
+                errorMessage = "Route %-15s cannot excecute movement from link %15s to link %15s " % \
                 (self.label, str(upLink.getIid()), str(downLink.getIid()))
 
                 dta.DtaLogger.error(errorMessage)

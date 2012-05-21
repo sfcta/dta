@@ -62,9 +62,12 @@ same time period</p>
 <dl class="method">
 <dt id="dta.PlanCollectionInfo.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>A PlanCollectionInfo object represents the timeplans for a particular time period
-The inputs to the constructor are the start and end times as datetime.time objects
-and the name and description of the timeplans</p>
+<dd><p>A PlanCollectionInfo object has some general info for all the time plans that are
+active between startTime and endTime. The inputs to the constructor are:</p>
+<p>startTime: a :py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>Utils.Time&#8217; object representing the start time of the time plan collection
+endTime: a :py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>Utils.Time&#8217; object representing the end time of the time plan collection
+name: a python string containing the name of the plan collection
+description: a python string containing the description of the plan collection</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -75,18 +78,28 @@ and the name and description of the timeplans</p>
 </colgroup>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.PlanCollectionInfo.__init__" title="dta.PlanCollectionInfo.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(startTime,&nbsp;endTime,&nbsp;name,&nbsp;description)</td>
-<td>A PlanCollectionInfo object represents the timeplans for a particular time period</td>
+<td>A PlanCollectionInfo object has some general info for all the time plans that are</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.PlanCollectionInfo.getDynameqStr" title="dta.PlanCollectionInfo.getDynameqStr"><tt class="xref py py-obj docutils literal"><span class="pre">getDynameqStr</span></tt></a>()</td>
+<td>Return a Dynameq parsable string containing information about the time plan such as</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.PlanCollectionInfo.getTimePeriod" title="dta.PlanCollectionInfo.getTimePeriod"><tt class="xref py py-obj docutils literal"><span class="pre">getTimePeriod</span></tt></a>()</td>
-<td>Return a tuple representing the time period</td>
+<td>Return a tuple of two :py:class:<a href="#id5"><span class="problematic" id="id6">`</span></a>Utils.Time&#8217;objects corresponding to the</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
+<dt id="dta.PlanCollectionInfo.getDynameqStr">
+<tt class="descname">getDynameqStr</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo.getDynameqStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Dynameq parsable string containing information about the time plan such as
+the start time, the end time, its name, and description</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.PlanCollectionInfo.getTimePeriod">
 <tt class="descname">getTimePeriod</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.PlanCollectionInfo.getTimePeriod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a tuple representing the time period
-of the plan collection</p>
+<dd><p>Return a tuple of two :py:class:<a href="#id7"><span class="problematic" id="id8">`</span></a>Utils.Time&#8217;objects corresponding to the
+start and end time of the plan collection</p>
 </dd></dl>
 
 </dd></dl>

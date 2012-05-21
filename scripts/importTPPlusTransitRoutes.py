@@ -15,143 +15,31 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-import csv
-import logging
+import dta
 import os
 import sys
-from itertools import izip
-import pdb
-
-import dta
-from dta.TPPlusTransitRoute import TPPlusTransitRoute
-from dta.DynameqTransitLine import TransitLine
-from dta.Algorithms import ShortestPaths
-from dta.CubeNetwork import CubeNetwork
-#from dta.Network import Network
-
-#from pbCore.utils.itertools2 import pairwise
-#from pbCore.dynameq.transitLine import TransitLine
-#from pbModels.algorithms.shortestPaths import ShortestPaths
-#from pbCore.dynameq.error import TPPlus2DynameqError
-
-def convertHeadway2HHMM(headwayInMin):
-
-    hours = headwayInMin / 60
-    minutes = headwayInMin - hours * 60
-
-    if hours < 10:
-        hours = '0%d' % hours
-    else:
-        hours = '%d' % hours
-    if minutes < 10:
-        minutes = '0%d' % minutes
-    else:
-        minutes = '%d' % minutes
-
-    return "%s%s" % (hours, minutes)
-
-def convertStartTime2HHMMSS(startTimeInMin):
-
-    hours = startTimeInMin / 60
-    minutes = startTimeInMin - hours * 60
-
-    if hours < 10:
-        hours = '0%d' % hours
-    else:
-        hours = '%d' % hours
-    if minutes < 10:
-        minutes = '0%d' % minutes
-    else:
-        minutes = '%d' % minutes
-
-    return "%s:%s:00" % (hours, minutes)
 
 
+USAGE = r"""
 
-class TPPlus2Dynameq(object):
-    """Converts TPPlus Network elemements to the equivalent Dynameq ones"""
-    
-    @classmethod
-    def convertRoute(cls, dynameqNet, tpplusRoute, doShortestPath=True):
-        """Convert the input tpplusRoute to an equivalent Dynameq route"""
-        DWELL_TIME = 30
-
-        tRoute = tpplusRoute
-
-        for edge in dynameqNet.iterLinks():
-            edge.cost = edge.euclideanLength()
-            if edge.isConnector():
-                edge.cost = sys.maxint
-        
-        dNodeSequence = []
-        for tNode in tRoute.iterTransitNodes():
-            if not dynameqNet.hasNodeForId(tNode.nodeId):
-                errorMessage = ('Node id %d does not exist in the Dynameq network' % tNode.nodeId)
-                print 'Node ',tNode.nodeId,' does not exist.'
-                continue
-            dNode = dynameqNet.getNodeForId(tNode.nodeId)
-            dNodeSequence.append(dNode)
-
-        if len(dNodeSequence) == 0:
-            errorMessage = ('Tpplus route %s cannot be converted to Dynameq because '
-                            'none of its nodes is in the Dynameq network' % tRoute.name)
-            logging.error(errorMessage)
-
-            dta.DtaLogger.error(errorMessage)
-                                              
-        if len(dNodeSequence) == 1:
-            errorMessage = ('Tpplus route %s cannot be converted to Dyanmeq because only '
-                                      'one of its nodes is in the Dynameq network' % tRoute.name)
-            logging.error(errorMessage)            
-            dta.DtaLogger.error(errorMessage)
-
-        dRoute = dta.DynameqTransitLine.TransitLine(dynameqNet, tRoute.name, 'label1', '0', 'Generic', '15:30:00', '00:20:00', 10)
-        for dNodeA, dNodeB in izip(dNodeSequence, dNodeSequence[1:]):
-               
-            if dynameqNet.hasLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId()):
-                dLink = dynameqNet.getLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId())
-                dSegment = dRoute.addSegment(dLink, 0)
-                #print 'added link', dLink.iid
-
-                tNodeB = tRoute.getTransitNode(dNodeB.getId())
-                if tNodeB.isStop:
-                    dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
-                    #print 'Delay = ',dSegment.dwell
-            else:
-                if doShortestPath:
-                    print 'I am running the SP. Root node', dNodeA.getId()
-                    #ShortestPaths.labelSettingWithLabelsOnNodes(dynameqNet, dNodeA, dNodeB)
-                    ShortestPaths.labelCorrectingWithLabelsOnNodes(dynameqNet, dNodeA)
-                    if dNodeB.label == sys.maxint:
-                        continue
-
-                    pathNodes = ShortestPaths.getShortestPathBetweenNodes(dNodeA, dNodeB)
-                    numnewlinks = 0
-                    for pathNodeA, pathNodeB in izip(pathNodes, pathNodes[1:]):
-                        numnewlinks+=1
-                        dLink = dynameqNet.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
-                        dSegment = dRoute.addSegment(dLink, 0)
-                        if numnewlinks>2:
-                            print 'New Link Added = ',dLink.getId()
-
-                    if numnewlinks>2:
-                        print 'NodeStart = ',dNodeA.getId(),', NodeEnd =',dNodeB.getId(),', Number of new links added = ',numnewlinks
-                            
-                    tNodeB = tRoute.getTransitNode(dNodeB.getId())
-                    if tNodeB.isStop:
-                        dSegment.dwell = 60*tRoute.getTransitDelay(dNodeB.getId())
-                else:
-                    pass
-                        
-        
-        dRoute.isPathValid()
-        return dRoute
+ python importTPPlusTransitRoutes.py dynameq_net_dir dynameq_net_prefix [tpplus_transit1.lin tpplus_transit2.lin ...]
+ 
+ e.g.
+ 
+ python importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
+ 
+ This script reads the dynameq network in the given directory, as well as the given Cube TPPlus transit line file,
+ and converts the transit lines into DTA transit lines, outputting them in Dynameq format as 
+ [dynameq_net_dir]\[dynameq_net_prefix]_ptrn.dqt
+ 
+ """
+ 
 
 if __name__ == "__main__":
 
     INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
     INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
-    TRANSIT_LINES                 = sys.argv[3]
+    TRANSIT_LINES                 = sys.argv[3:]
 
     dta.VehicleType.LENGTH_UNITS= "feet"
     dta.Node.COORDINATE_UNITS   = "feet"
@@ -165,19 +53,41 @@ if __name__ == "__main__":
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
 
 
-    projectFolder2 = "C:/SFCTA2/dta/testdata/ReneeTransitTest/"
-    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
-    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
-
-
-    
-    for tpplusRoute in dta.TPPlusTransitRoute.read(net, TRANSIT_LINES):
-        #print 'Route = ',dta.TPPlusTransitRoute.getRouteName(tpplusRoute)
-        dynameqRoute = TPPlus2Dynameq.convertRoute(net, tpplusRoute)
+    MODE_TO_LITYPE = {'11':dta.TransitLine.LINE_TYPE_BUS,  # Muni Local
+                      '12':dta.TransitLine.LINE_TYPE_BUS,  # Muni Express
+                      '13':dta.TransitLine.LINE_TYPE_BUS,  # Muni BRT
+                      '14':dta.TransitLine.LINE_TYPE_TRAM, # Muni CableCar
+                      '15':dta.TransitLine.LINE_TYPE_TRAM, # Muni LRT
+                      }
+    # others are buses
+    for modenum in range(1,30):
+        key = "%d" % modenum
+        if key not in MODE_TO_LITYPE:
+            MODE_TO_LITYPE["%d" % modenum] = dta.TransitLine.LINE_TYPE_BUS
         
 
+    # write the output file
+    output_file = open(os.path.join(INPUT_DYNAMEQ_NET_DIR, "%s_ptrn.dqt" % INPUT_DYNAMEQ_NET_PREFIX),mode="w+")
+    output_file.write(dta.TransitLine.getDynameqFileHeaderStr())
     
+    dtaTransitLineId = 1
+    for transit_file in TRANSIT_LINES:
+        dta.DtaLogger.info("===== Processing %s ======" % transit_file)
+        
+        for tpplusRoute in dta.TPPlusTransitRoute.read(net, transit_file):
+            # ignore if there's no frequency for this time period
+            if tpplusRoute.getHeadway(3) == 0: continue
+            
+            dtaTransitLine = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, headwayIndex=3, 
+                                                       startTime=dta.Time(15,30), demandDurationInMin=3*60)
+            
+            # ignore if no segments for the DTA network
+            if dtaTransitLine.getNumSegments() == 0: continue
+            
+            output_file.write(dtaTransitLine.getDynameqStr())
+            dtaTransitLineId += 1
 
+    output_file.close()
 
     
 

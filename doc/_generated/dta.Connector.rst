@@ -21,6 +21,7 @@ dta.Connector
       ~Connector.coordinatesAlongLink
       ~Connector.endIsRoadNode
       ~Connector.euclideanLength
+      ~Connector.euclideanLengthInLengthUnits
       ~Connector.getAngle
       ~Connector.getCenterLine
       ~Connector.getCentroid
@@ -29,10 +30,12 @@ dta.Connector
       ~Connector.getEndNodeId
       ~Connector.getFacilityType
       ~Connector.getFreeFlowSpeedInMPH
+      ~Connector.getFreeFlowTTInMin
       ~Connector.getGroup
       ~Connector.getId
       ~Connector.getIid
       ~Connector.getLabel
+      ~Connector.getLeftTurn
       ~Connector.getLength
       ~Connector.getLengthInCoordinateUnits
       ~Connector.getMidPoint
@@ -48,23 +51,29 @@ dta.Connector
       ~Connector.getOutline
       ~Connector.getReferenceAngle
       ~Connector.getReferenceAngleInDegrees
+      ~Connector.getRightTurn
       ~Connector.getRoadNode
       ~Connector.getShifts
-      ~Connector.getSimFlow
+      ~Connector.getSimInFlow
+      ~Connector.getSimInVolume
+      ~Connector.getSimOutFlow
+      ~Connector.getSimOutVolume
       ~Connector.getSimSpeedInMPH
       ~Connector.getSimTTInMin
-      ~Connector.getSimVolume
       ~Connector.getStartNode
       ~Connector.getStartNodeId
       ~Connector.getThruTurn
       ~Connector.getVirtualNode
+      ~Connector.hasLeftTurn
       ~Connector.hasOutgoingMovement
+      ~Connector.hasRightTurn
       ~Connector.hasSameAttributes
       ~Connector.hasThruTurn
       ~Connector.isConnector
       ~Connector.isOverlapping
       ~Connector.isRoadLink
       ~Connector.isVirtualLink
+      ~Connector.iterIncidentMovements
       ~Connector.iterIncomingMovements
       ~Connector.iterOutgoingMovements
       ~Connector.prohibitOutgoingMovement
@@ -73,8 +82,8 @@ dta.Connector
       ~Connector.setLabel
       ~Connector.setLength
       ~Connector.setNumLanes
+      ~Connector.setSimOutVolume
       ~Connector.setSimTTInMin
-      ~Connector.setSimVolume
       ~Connector.setStartNode
       ~Connector.startIsRoadNode
    
