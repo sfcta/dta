@@ -86,7 +86,7 @@ def getNet(netFile):
     
     # add virtual nodes and links between Centroids and RoadNodes
     sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes()
-    sanfranciscoDynameqNet.removeCentroidConnectorsFromIntersections()
+    sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks()
     
     return sanfranciscoDynameqNet
 

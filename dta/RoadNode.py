@@ -19,6 +19,7 @@ import pdb
 
 import math
 from .DtaError import DtaError
+from .Logger import DtaLogger
 from .Node import Node
 
 from .Utils import lineSegmentsCross, getMidPoint
@@ -159,21 +160,24 @@ class RoadNode(Node):
         result = []
         
         for candidateLink in self.iterAdjacentRoadLinks():
-
+            
             #if connector.getCentroid().isConnectedToRoadNode(candidateLink.getOtherEnd(self)):
             #    continue
             if candidateLink.getLength() < MIN_LENGTH_IN_MILES:
                 continue
 
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
-            middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd) 
+            middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd)
+            otherCross = False
             for everyOtherRoadLink in self.iterAdjacentRoadLinks():
                 if candidateLink == everyOtherRoadLink:
                     continue 
                 otherLinkStart, otherLinkEnd = everyOtherRoadLink.getCenterLine() 
                 if lineSegmentsCross(vNode, middlePointAtCandidateLink, otherLinkStart, otherLinkEnd):
+                    otherCross = True
                     break
-            else:
+            
+            if not otherCross:
                 result.append(candidateLink)         
         #finally sort the candidate links based on their length 
         return  sorted(result, key = lambda l:l.getLength(), reverse=True) 

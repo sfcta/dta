@@ -375,28 +375,25 @@ class Node(object):
         """
         if self.getNumOutgoingLinks() == 1 or self.getNumIncomingLinks() == 1:
             return True
-        if self.isShapePoint(countRoadNodesOnly=countRoadNodesOnly):
+        if self.isMidblockNode(countRoadNodesOnly=countRoadNodesOnly):
             return True 
 
         return False 
 
-    def isShapePoint(self, countRoadNodesOnly=False):
+    def isMidblockNode(self, countRoadNodesOnly=False):
         """
         Return True if the node is a shape point (e.g. Node 51245 in the 
-        following graph). 
+        following graph).  Specifically, a node is a shape point iff:
         
-        If *countRoadNodesOnly* is True the method will count only RoadLinks 
-        attached to this Node and will disregard any connectors. 
+        * it has exactly two adjacent nodes *and*
+        * it has either two (in the case one a one-way street) or four (in the case of a two way street) adjacent links 
+        
+        If *countRoadNodesOnly* is True the method will count only adjacent :py:class:`RoadNode` instances and
+        adjacent :py:class:`RoadLink` instances (so it will disregard any connectors). 
         
         .. image:: /images/shapePoint.png
            :height: 300px
-        
-        .. todo:: I think this documentation is insufficient; it's just an example, it doesn't define a "shape point."
-                  Further, there are "shapepoints" that are not this, such as in those added via
-                  :py:meth:`RoadLink.addShapePoint`, so the terminology should be more accurate --
-                  what we're really checking is if this could be a shape point?
-                  And we're not even doing that -- this implementation would call a node a shapepoint 
-                  if there is a one-way loop (consisting of two links) intersecting with a one way street. 
+
         """
         
         if not countRoadNodesOnly:
