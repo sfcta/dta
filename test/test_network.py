@@ -481,20 +481,20 @@ class TestNetwork(object):
         assert n1.getNumAdjacentLinks() == 2
         assert n1.getNumAdjacentNodes() == 1
 
-    def test_13IsShapePoint(self):
+    def test_13isMidblockNode(self):
 
         net = getSimpleNet() 
 
         n5 = net.getNodeForId(5) 
         n1 = net.getNodeForId(1) 
-        assert not n5.isShapePoint() 
-        assert not n1.isShapePoint()
+        assert not n5.isMidblockNode() 
+        assert not n1.isMidblockNode()
 
         link15 = net.getLinkForNodeIdPair(1, 5) 
 
         midNode = net.splitLink(link15, splitReverseLink=True) 
 
-        assert midNode.isShapePoint()
+        assert midNode.isMidblockNode()
 
         net = getGearySubNet() 
 
@@ -596,7 +596,7 @@ class TestNetwork(object):
 
         assert n5.hasConnector()         #there is still one connector at intersection 5 
         newConnector.getRoadNode().getX(), newConnector.getRoadNode().getY()
-        assert newConnector.getRoadNode().isShapePoint(countRoadNodesOnly=True) 
+        assert newConnector.getRoadNode().isMidblockNode(countRoadNodesOnly=True) 
 
         newConnector2 = net.removeCentroidConnectorFromIntersection(n5, con2, splitReverseLink=True)
         #the old connector is no longer there
@@ -646,7 +646,7 @@ class TestNetwork(object):
         assert net.getNumNodes() == 10
         assert net.getNumLinks() == 18
 
-        net.removeCentroidConnectorsFromIntersections(splitReverseLinks=True)
+        net.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True)
         #net.removeCentroidConnectorFromIntersection(n5, con, splitReverseLink=True)
 
         assert net.getNumNodes() == 11
@@ -678,7 +678,7 @@ class TestNetwork(object):
         net.addLink(con)
         net.addLink(con2)
     
-        #net.removeCentroidConnectorsFromIntersections() 
+        #net.moveCentroidConnectorsFromIntersectionsToMidblocks() 
         
         numLinksBefore = net.getNumLinks() 
         net.insertVirtualNodeBetweenCentroidsAndRoadNodes()
@@ -815,7 +815,7 @@ class TestNetwork(object):
 
         net.write("test", "crossHair")
 
-        net.removeCentroidConnectorsFromIntersections() 
+        net.moveCentroidConnectorsFromIntersectionsToMidblocks() 
 
         net.write("test", "crossHair3") 
         
@@ -891,13 +891,13 @@ class TestNetwork(object):
         net.mergeLinks(net.getLinkForId(901892), net.getLinkForId(901889))
         assert (net.getNumNodes(), net.getNumLinks()) ==  answer
 
-        numShapePoints = sum([1 for node in net.iterNodes() if node.isShapePoint() and node.isRoadNode()])
+        numShapePoints = sum([1 for node in net.iterNodes() if node.isMidblockNode() and node.isRoadNode()])
 
         assert numShapePoints == 152
         
         net.removeShapePoints() 
 
-        numShapePoints = sum([1 for node in net.iterNodes() if node.isShapePoint() and node.isRoadNode()])        
+        numShapePoints = sum([1 for node in net.iterNodes() if node.isMidblockNode() and node.isRoadNode()])        
         assert numShapePoints == 40
 
     def test_1renameLink(self):

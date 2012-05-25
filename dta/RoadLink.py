@@ -352,8 +352,8 @@ class RoadLink(Link):
         # Dynameq requires the RoadLink to have at least 2 shapepoints in order to use the shifts
         # Add them, if necessary
         if len(self._shapePoints) < 2:
-            self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.33))
-            self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.66))
+            self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.33, goPastEnd=False))
+            self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.66, goPastEnd=False))
 
     def getNumOutgoingMovements(self):
         """
@@ -382,12 +382,12 @@ class RoadLink(Link):
         """
         return len(self._shapePoints)
 
-    def coordinatesAlongLink(self, fromStart, distance):
+    def coordinatesAlongLink(self, fromStart, distance, goPastEnd=False):
         """
         Returns the coordinates (a 2-tuple) along this link given by *distance*, which is 
         in :py:attr:`Node.COORDINATE_UNITS`.  If *fromStart*, starts at start, otherwise at end.
         Takes shape points into account.  
-        If *distance* is longer than the euclidean distance of the link, raises an exception.
+        If *distance* is longer than the euclidean distance of the link, and not *goPastEnd* raises an exception.
         """
         points = [[self._startNode.getX(),self._startNode.getY()]]
         points.extend(self._shapePoints)
@@ -407,14 +407,15 @@ class RoadLink(Link):
             shape_dist = math.sqrt( (points[idx][0]-points[idx+1][0]) ** 2 +
                                     (points[idx][1]-points[idx+1][1]) ** 2)
             total_distance += shape_dist
-            # this is the right sublink
-            if distance_left <= shape_dist:
+            # this is the right sublink, or goPastEnd and it's the last one
+            if (distance_left <= shape_dist) or (goPastEnd and (idx+1)==(len(points)-1)):
                 return (points[idx][0] + (distance_left/shape_dist)*(points[idx+1][0]-points[idx][0]),
                         points[idx][1] + (distance_left/shape_dist)*(points[idx+1][1]-points[idx][1]))
             
             # next sublink
             distance_left -= shape_dist
             idx += 1
+            
         # didn't find anything
         raise DtaError("coordinatesAlongLink: distance %.2f too long for link %d (%d-%d) with total distance %.2f" % 
                        (distance, self._id, self._startNode.getId(), self._endNode.getId(), total_distance))

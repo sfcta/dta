@@ -352,13 +352,17 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
-    def removeCentroidConnectorsFromIntersections(self, splitReverseLinks=False):
+    def moveCentroidConnectorsFromIntersectionsToMidblocks(self, splitReverseLinks=False, moveVirtualNodeDist=None):
         """
         Remove centroid connectors from intersections and attach them to midblock locations.
         If there is not a node defining a midblock location the algorithm will split the 
         relevant links (in both directions) and attach the connector to the newly 
         created node.
         
+        If *moveVirtualNodeDist* is not None, if no candidate links are found, the method will 
+        try moving the :py:class:`VirtualNode` instance around to find a candidate link. 
+        *moveVirtualNodeDist* is in :py:attr:`Node.COORDINATE_UNITS`
+                
         Before:
         
         .. image:: /images/removeCentroidConnectors1.png
@@ -384,10 +388,11 @@ class Network(object):
                         
             for con in connectors:
                 try:
-                    self.removeCentroidConnectorFromIntersection(node, con, splitReverseLink=splitReverseLinks) 
+                    self.moveCentroidConnectorFromIntersectionToMidblock(node, con, splitReverseLink=splitReverseLinks, 
+                                                                         moveVirtualNodeDist=moveVirtualNodeDist) 
                     #DtaLogger.info("Removed centroid connectors from intersection %d" % node.getId())
                 except DtaError, e:
-                    DtaLogger.error("removeCentroidConnectorsFromIntersections(node=%d, con=%d) errored: %s" % 
+                    DtaLogger.error("moveCentroidConnectorFromIntersectionToMidblock(node=%d, con=%d) errored: %s" % 
                                     (node.getId(), con.getId(), str(e)))
 
 
@@ -438,15 +443,19 @@ class Network(object):
                             
 
                     
-    def removeCentroidConnectorFromIntersection(self, roadNode, connector, splitReverseLink=False):
+    def moveCentroidConnectorFromIntersectionToMidblock(self, roadNode, connector, splitReverseLink=False, moveVirtualNodeDist=None):
         """
         Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
         to the connector is split in half and the connector is attached to the new 
-        midblock location
+        midblock location.
+        
+        If *moveVirtualNodeDist* is not None, if no candidate links are found, the method will 
+        try moving the :py:class:`VirtualNode` instance around to find a candidate link. 
+        *moveVirtualNodeDist* is in :py:attr:`Node.COORDINATE_UNITS`
         
         .. todo:: I would like more detail about this.  How are movements handled for VehicleClassGroups?
-                  Also, rename to "moveConnectorsFromIntersectionsToMidblocks"; this sounds like a delete operation.
+
         """
         if not isinstance(roadNode, RoadNode):
             raise DtaError("Input Node %d is not a RoadNode" % roadNode.getId())
@@ -457,74 +466,85 @@ class Network(object):
             raise DtaError("RoadNode %d does not have a connector attached to it"
                            % roadNode.getId())
 
-        centroid = connector.getCentroid()
-        candidateLinks = roadNode.getCandidateLinksForSplitting(connector)
-
-        nodeToAttachConnector = None
-
-        if len(candidateLinks) >= 2: 
-
-            cNode1 = candidateLinks[0].getOtherEnd(roadNode)
-            cNode2 = candidateLinks[1].getOtherEnd(roadNode)
+        virtualNode     = connector.getVirtualNode()
+        original_loc    = (virtualNode.getX(), virtualNode.getY())
+        try_locs        = [original_loc]
+        
+        if moveVirtualNodeDist:
+            try_locs.extend([(original_loc[0],                     original_loc[1]+moveVirtualNodeDist),
+                             (original_loc[0]+moveVirtualNodeDist, original_loc[1]),
+                             (original_loc[0],                     original_loc[1]-moveVirtualNodeDist),
+                             (original_loc[0]-moveVirtualNodeDist, original_loc[1]),
+                             (original_loc[0]+moveVirtualNodeDist, original_loc[1]-moveVirtualNodeDist),
+                             (original_loc[0]+moveVirtualNodeDist, original_loc[1]+moveVirtualNodeDist),
+                             (original_loc[0]-moveVirtualNodeDist, original_loc[1]+moveVirtualNodeDist),
+                             (original_loc[0]-moveVirtualNodeDist, original_loc[1]-moveVirtualNodeDist)])
+        
+        for try_loc in try_locs:
+            virtualNode._x = try_loc[0]
+            virtualNode._y = try_loc[1]
             
-            #if cNode1.isShapePoint(countRoadNodesOnly=True) and not centroid.isConnectedToRoadNode(cNode1):
-            if cNode1.isShapePoint(countRoadNodesOnly=True):
-                nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode)
-            elif cNode2.isShapePoint(countRoadNodesOnly=True):#  and not centroid.isConnectedToRoadNode(cNode2):            
-                nodeToAttachConnector = candidateLinks[1].getOtherEnd(roadNode)
-            else:                    
+            candidateLinks = roadNode.getCandidateLinksForSplitting(connector)
+            
+            # no candidate links found -- try moving the virtual node
+            if len(candidateLinks) == 0:
+                continue
+            
+            nodeToAttachConnector = None
+
+            # see if any of the candidate links already terminate in a midblock node
+            for candidateLink in candidateLinks:
+                
+                otherNode = candidateLink.getOtherEnd(roadNode)
+                if otherNode.isMidblockNode(countRoadNodesOnly=True):
+                    nodeToAttachConnector = otherNode
+                    break
+            
+            # if not, split the first candidate link
+            if nodeToAttachConnector == None:
                 nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink)
-
-        elif len(candidateLinks) == 1:
-            
-            cNode = candidateLinks[0].getOtherEnd(roadNode)            
-            if cNode.isShapePoint(countRoadNodesOnly=True):# and not centroid.isConnectedToRoadNode(cNode):
-                nodeToAttachConnector = candidateLinks[0].getOtherEnd(roadNode) 
+    
+            if connector.startIsRoadNode():
+    
+                newConnector = Connector(connector.getId(),
+                                         nodeToAttachConnector,
+                                         virtualNode,
+                                         None,
+                                         -1,  # don't assign a length
+                                         connector._freeflowSpeed,
+                                         connector._effectiveLengthFactor,
+                                         connector._responseTimeFactor,
+                                         connector._numLanes,
+                                         connector._roundAbout,
+                                         connector._level, 
+                                         connector._label, connector.getId())
             else:
-                nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink) 
-        else:
-            raise DtaError("Centroid connector(s) were not removed from intersection %d" % roadNode.getId())
-                    
-        if connector.startIsRoadNode():
-            virtualNode = connector.getEndNode() 
-
-            newConnector = Connector(connector.getId(),
-                                     nodeToAttachConnector,
-                                     virtualNode,
-                                     None,
-                                     -1,  # don't assign a length
-                                     connector._freeflowSpeed,
-                                     connector._effectiveLengthFactor,
-                                     connector._responseTimeFactor,
-                                     connector._numLanes,
-                                     connector._roundAbout,
-                                     connector._level, 
-                                     connector._label, connector.getId())
-
-            self.removeLink(connector)
-            self.addLink(newConnector)
-            #TODO: do the movements
-            return newConnector 
-        else:
-            virtualNode = connector.getStartNode() 
-
-            newConnector = Connector(connector.getId(),
-                                     virtualNode,
-                                     nodeToAttachConnector,
-                                     None,
-                                     -1, # don't assign a length 
-                                     connector._freeflowSpeed,
-                                     connector._effectiveLengthFactor,
-                                     connector._responseTimeFactor,
-                                     connector._numLanes,
-                                     connector._roundAbout,
-                                     connector._level, 
-                                     connector._label, connector.getId())
-
+    
+                newConnector = Connector(connector.getId(),
+                                         virtualNode,
+                                         nodeToAttachConnector,
+                                         None,
+                                         -1, # don't assign a length 
+                                         connector._freeflowSpeed,
+                                         connector._effectiveLengthFactor,
+                                         connector._responseTimeFactor,
+                                         connector._numLanes,
+                                         connector._roundAbout,
+                                         connector._level, 
+                                         connector._label, connector.getId())
+    
             self.removeLink(connector)
             self.addLink(newConnector)
             #TODO: do the movements 
-            return newConnector 
+            return newConnector
+    
+        # if we got here, we failed to find any candidate links
+        if moveVirtualNodeDist:
+            # put it back
+            virtualNode._x = original_loc[0]
+            virtualNode._y = original_loc[1]
+            
+        raise DtaError("No candidate links found for roadNode %d" % roadNode.getId())
 
 
     def insertVirtualNodeBetweenCentroidsAndRoadNodes(self, startVirtualNodeId=None, startVirtualLinkId=None,
@@ -575,15 +595,15 @@ class Network(object):
                 #DtaLogger.debug("Inserting virtualNode in Centroid(%6d) => RoadNode(%6d)" % (startNode.getId(), endNode.getId()))
 
                 try:
-                    (newX,newY) = connector.coordinatesAlongLink(fromStart=True, distance=distanceFromCentroid)
+                    (newX,newY) = connector.coordinatesAlongLink(fromStart=True, distance=distanceFromCentroid, goPastEnd=True)
                 except DtaError, e:
                     (newX,newY) = (startNode.getX(), startNode.getY())
                     
                 newNode = VirtualNode(id=self._maxNodeId + 1, x=newX, y=newY)
                 self.addNode(newNode)
 
-                DtaLogger.debug("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() added virtual node %d between Centroid %d and RoadNode %d" %
-                                (newNode.getId(), startNode.getId(), endNode.getId()))
+                DtaLogger.debug("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() added virtual node %d between Centroid %d and RoadNode %d (conn len=%f)" %
+                                (newNode.getId(), startNode.getId(), endNode.getId(), connector.euclideanLength()))
 
                 
                 # switch the node out
@@ -613,15 +633,15 @@ class Network(object):
                 #DtaLogger.debug("Inserting virtualNode in RoadNode(%6d) => Centroid(%6d)" % (startNode.getId(), endNode.getId()))
 
                 try:
-                    (newX,newY) = connector.coordinatesAlongLink(fromStart=False, distance=distanceFromCentroid)
+                    (newX,newY) = connector.coordinatesAlongLink(fromStart=False, distance=distanceFromCentroid, goPastEnd=True)
                 except DtaError, e:
                     (newX,newY) = (startNode.getX(), startNode.getY())                            
                 
                 newNode = VirtualNode(id=self._maxNodeId+1, x=newX, y=newY)
                 self.addNode(newNode)
 
-                DtaLogger.debug("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() added virtual node %d between RoadNode %d and Centroid %d" %
-                                (newNode.getId(), startNode.getId(), endNode.getId()))
+                DtaLogger.debug("Network.insertVirtualNodeBetweenCentroidsAndRoadNodes() added virtual node %d between RoadNode %d and Centroid %d (conn len=%f)" %
+                                (newNode.getId(), startNode.getId(), endNode.getId(), connector.euclideanLength()))
                 
                 # switch the node out
                 self._switchConnectorNode(connector, switchStart=False, newNode=newNode)
@@ -1598,7 +1618,8 @@ class Network(object):
             w.point(node.getX(), node.getY())
             w.record(node.getId(), str(node.isRoadNode()), str(node.isCentroid()), str(node.isVirtualNode()))
 
-        w.save(name) 
+        w.save(name)
+        DtaLogger.info("Wrote nodes to shapefile %s" % name)
 
     def writeLinksToShp(self, name):
         """
@@ -1641,6 +1662,7 @@ class Network(object):
                      facType, numLanes)
 
         w.save(name)
+        DtaLogger.info("Wrote links to shapefile %s" % name)        
 
     def writeMovementsToShp(self, name, planInfo=None):
         """
@@ -1678,7 +1700,7 @@ class Network(object):
         if not link1.isRoadLink() or not link2.isRoadLink():
             raise DtaError("Links %d and %d should both be road links" % (link1.getId(), link2.getId()))
         
-        if not link1.getEndNode().isShapePoint():
+        if not link1.getEndNode().isMidblockNode():
             raise DtaError("Links %d and %d cannot be merged because node %d is not "
                            "a shape point" % (link1.getId(), link2.getId(), link1.getEndNode().getId()))
 
@@ -1867,7 +1889,7 @@ class Network(object):
                   the other kind? 
         """
         for node in [node for node in self.iterRoadNodes()]:
-            if node.isShapePoint():
+            if node.isMidblockNode():
                 if node.getCardinality() == (2,2):
 
                     pair1 = None
