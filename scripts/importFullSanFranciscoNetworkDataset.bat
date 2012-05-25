@@ -7,7 +7,7 @@ set DTA_CODE_DIR=Y:\lmz\dta
 set PYTHONPATH=%DTA_CODE_DIR%
 
 ::
-:: first, create the network from the Cube network
+:: 1) create the network from the Cube network
 ::
 python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
 :: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt
@@ -15,10 +15,20 @@ python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp 
 :: debug   output: sf_{links,nodes}.shp
 IF ERRORLEVEL 1 goto done
 
-:: next, attach the signal data to the DTA network
+::
+:: 2) attach the signal data to the DTA network
+::
 python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\excelSignalCards 15:30 18:30
 :: primary output: Dynameq files sf_signals_{scen,base,advn,ctrl}.dqt
 :: log     output: importExcelSignals.{DEBUG,INFO}.log
+IF ERRORLEVEL 1 goto done
+
+::
+:: 3) attach the transit lines to the DTA network
+:: 
+python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
+:: primary output: Dynameq files sf_ptrn.dqt
+:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
 
 :done
