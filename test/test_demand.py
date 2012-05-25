@@ -35,7 +35,6 @@ dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
 dta.RoadLink.LENGTH_UNITS   = "miles"
 
-
 def getTestNet():
 
     projectFolder = os.path.join(os.path.dirname(__file__), '..', 'testdata', 'dynameqNetwork_gearySubset')
@@ -146,4 +145,38 @@ class TestDemand:
 
         assert d2.getValue(730, 2, 6) == 500
         assert d2.getValue(800, 2, 6) == 500
+
+    def NOtest_rounding(self):
+        """
+        This method writes histograms of the input demand and can be
+        used to check the differences of the row and column sums
+        for two matrices
+        """
+        projectFolder = "/Users/michalis/Documents/sfcta/testNetworks"
+        projectFolder = "/Users/michalis/Documents/sfcta/05252012/" 
+        prefix = "sfCounty_lisa"
+        prefix = "SF_Test_wSig_5_100pct_NetworkReview"
+        scenario = DynameqScenario(Time(0,0), Time(12,0))
+        scenario.read(projectFolder, prefix)
+        
+        net = DynameqNetwork(scenario)
+        net.read(projectFolder, prefix) 
+
+        file1 = "/Users/michalis/Documents/sfcta/05252012/car_notoll_matx.dqt"
+        demand1 = Demand.readDynameqTable(net, file1)
+        _npyArray1 = demand1._demandTable.getNumpyArray() * 3 
+        file2 = "/Users/michalis/Documents/sfcta/05252012/vehcountorig_Car_NoToll_matx.dqt"
+        demand2 = Demand.readDynameqTable(net, file2)
+        _npyArray1 = _npyArray1.sum(0)
+        _npyArray2 = demand2._demandTable.getNumpyArray().sum(0)
+        
+        plotTripHistogram(_npyArray1, "carNoTollHistogram1")
+        plotTripHistogram(_npyArray2, "carNoTollHistogram2")        
+
+
+
+        
+
+        
+        
 

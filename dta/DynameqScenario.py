@@ -30,9 +30,7 @@ class DynameqScenario(Scenario):
     """
     A Dynameq Scenario.
     """
-    
     SCENARIO_FILE   = '%s_scen.dqt'
-
     ADVANCED_HEADER     = """<DYNAMEQ>
 <VERSION_1.7>
 <SCENARIO_FILE>
