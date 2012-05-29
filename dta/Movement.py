@@ -110,6 +110,7 @@ class Movement(object):
         self._simOutVolume = defaultdict(int)      # indexed by timeperiod
         self._simInVolume = defaultdict(int)      # indexed by timeperiod
         self._simMeanTT = defaultdict(float)    # indexed by timeperiod
+        # TODO: what is this used for?!      
         self._penalty   = 0
         self._timeVaryingCosts = []
         self._timeStep  = None
