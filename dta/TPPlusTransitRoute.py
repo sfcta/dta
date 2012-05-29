@@ -21,6 +21,7 @@ import dta
 import itertools
 import random
 import re
+import sys
 from collections import defaultdict
 from pyparsing import *
 
@@ -443,14 +444,15 @@ class TPPlusTransitRoute(object):
                 
                 # dta.DtaLogger.debug('Running the SP from node %d to %d' % (dNodeA.getId(), dNodeB.getId()))
                 try:
-                    ShortestPaths.labelSettingWithLabelsOnNodes(dtaNetwork, dNodeA, dNodeB)
+                    dta.ShortestPaths.labelSettingWithLabelsOnNodes(dtaNetwork, dNodeA, dNodeB)
                     assert(dNodeB.label < sys.maxint)
                 except:
+                    dta.DtaLogger.error("Error: %s" % str(sys.exc_info()))
                     dta.DtaLogger.error("Tpplus route %-15s No shortest path found from %d to %d" %
                                         (self.name, dNodeA.getId(), dNodeB.getId()))
                     continue
 
-                pathNodes = ShortestPaths.getShortestPathBetweenNodes(dNodeA, dNodeB)
+                pathNodes = dta.ShortestPaths.getShortestPathBetweenNodes(dNodeA, dNodeB)
                 nodeNumList = [ dNodeA.getId() ]
                 for pathNodeA, pathNodeB in itertools.izip(pathNodes, pathNodes[1:]):
                     nodeNumList.append(pathNodeB.getId())
