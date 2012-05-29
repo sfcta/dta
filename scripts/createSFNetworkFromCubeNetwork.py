@@ -73,7 +73,7 @@ def removeHOVStubs(sanfranciscoDynameqNet):
             if not link.isRoadLink(): 
                 removalCandidate = False
                 break
-            if link.getFacilityType() != 6:
+            if link.getFacilityType() != 9:
                 removalCandidate = False
                 break
         

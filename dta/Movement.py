@@ -110,6 +110,7 @@ class Movement(object):
         self._simOutVolume = defaultdict(int)      # indexed by timeperiod
         self._simInVolume = defaultdict(int)      # indexed by timeperiod
         self._simMeanTT = defaultdict(float)    # indexed by timeperiod
+        # TODO: what is this used for?!      
         self._penalty   = 0
         self._timeVaryingCosts = []
         self._timeStep  = None
@@ -298,7 +299,9 @@ class Movement(object):
         line2 = other.getCenterLine()
 
         if self.getIncomingLink() == other.getIncomingLink():
-            return False 
+            return False
+        if self.getOutoingLink() == other.getOutgoingLink():
+            return False
         
         for p1, p2 in izip(line1, line1[1:]):
             for p3, p4 in izip(line2, line2[1:]):

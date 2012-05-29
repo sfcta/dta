@@ -429,6 +429,8 @@ ENDRUN
             startNodeId = int(fields[0])
             nodeId      = int(fields[1])
             endNodeId   = int(fields[2])
+            setNum      = int(fields[3])
+            turnPen     = int(fields[4])
             lines_read += 1
             
             try:
@@ -439,10 +441,16 @@ ENDRUN
                                 (startNodeId, nodeId, endNodeId, str(e)))                
                 continue
             
-            # DtaLogger.info("Removing movement %d-%d-%d found in turn prohibition file" % (startNodeId, nodeId, endNodeId))
-            mov.prohibitAllVehicleClassGroups()
-            #link.removeOutgoingMovement(mov)
-            movements_removed += 1
+            # a negative one means prohibited
+            if turnPen == -1:
+                # DtaLogger.info("Removing movement %d-%d-%d found in turn prohibition file" % (startNodeId, nodeId, endNodeId))
+                mov.prohibitAllVehicleClassGroups()
+                movements_removed += 1
+            
+            elif turnPen > 0:
+                # apply a time penalty to the movement?
+                # punting on this for now, not sure if it's possible with Dynameq
+                pass
         
         DtaLogger.info("Removed %d movements out of %d found in %s" % (movements_removed, lines_read, fileName))
         
