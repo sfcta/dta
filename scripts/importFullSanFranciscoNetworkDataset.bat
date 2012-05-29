@@ -1,7 +1,11 @@
 :: This file should run in an empty directory, all the way through.
 
-:: DTA Anyway code location
-set DTA_CODE_DIR=Y:\lmz\dta
+:: DTA Anyway code location is required
+IF NOT DEFINED DTA_CODE_DIR (
+  echo Please set the DTA_CODE_DIR environment variable to the directory where DTA Anyway is installed.
+  echo e.g. set DTA_CODE_DIR=Y:\Users\neema\dta
+  goto done
+)
 
 :: let PYTHON know where to find it
 set PYTHONPATH=%DTA_CODE_DIR%
