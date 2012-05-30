@@ -300,7 +300,7 @@ class Movement(object):
 
         if self.getIncomingLink() == other.getIncomingLink():
             return False
-        if self.getOutoingLink() == other.getOutgoingLink():
+        if self.getOutgoingLink() == other.getOutgoingLink():
             return False
         
         for p1, p2 in izip(line1, line1[1:]):

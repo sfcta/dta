@@ -1045,6 +1045,8 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
                 break
             elif streetNames == ['25TH', 'POTRERO'] and node.getId()!= 23952:
                 break
+            elif streetNames == ['DONAHUE', 'INNES'] and node.getId()!= 51690:
+                break
             else:
                 excelCard.mappedStreet[streetNames[idx]] = baseStreetNames[idx]
        
@@ -1091,7 +1093,7 @@ def mapMovements(mec, baseNetwork):
         result = []
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
-                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL":
+                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL" and gMovName != "NORTH POINT":
                    result.append(dir)
                    break
        
@@ -1109,8 +1111,8 @@ def mapMovements(mec, baseNetwork):
         result = []
 
         #todo ends with LT
-        leftTurnIndicators = ["-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
-#        rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
+        leftTurnIndicators = ["LT'S","-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
+        rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
         indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
@@ -1134,7 +1136,7 @@ def mapMovements(mec, baseNetwork):
             if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
                "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
                "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-               "(FAR)" in gMovName:
+               "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName :
                 continue
 
 
@@ -1148,9 +1150,13 @@ def mapMovements(mec, baseNetwork):
             gDirections = getDirections(gMovName)
             if "BUSH" in gMovName and "WB" in gDirections:
                 continue
-            if "FELL" in gMovName and "EB" in gDirections:
+            if "FELL" in gMovName and "EB" in gDirections and "WB" not in gDirections and "FRANKLIN" not in streetNames:
                 continue
             if "PINE" in gMovName and "EB" in gDirections:
+                continue
+            if "PIERCE" in gMovName and "FELL" in streetNames and "NB" in gDirections:
+                continue
+            if "LEE" in gMovName and "OCEAN" in streetNames and "SB" in gDirections:
                 continue
 
             f = open("temp_directons.txt", "a")
@@ -1274,11 +1280,12 @@ def mapMovements(mec, baseNetwork):
 #                               "only one movement" % mec.fileName)
 
     groupMovements = mec.phasingData.getElementsOfDimention(0)
+    streetNames = list(mec.streetNames)
     for gMovName in groupMovements:
         if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
            "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
            "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-           "(FAR)" in gMovName:
+           "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
@@ -1289,7 +1296,7 @@ def mapMovements(mec, baseNetwork):
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
-        if "FELL" in gMovName and "EB" in gDirections:
+        if "FELL" in gMovName and "EB" in gDirections and "WB" not in gDirections and "FRANKLIN" not in streetNames:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
@@ -1297,8 +1304,14 @@ def mapMovements(mec, baseNetwork):
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
-        
-    
+        if "PIERCE" in gMovName and "FELL" in streetNames and "NB" in gDirections:
+            MovementNames = list(groupMovements)
+            MovementNames.remove(gMovName)
+            groupMovements = tuple(MovementNames)
+        if "LEE" in gMovName and "OCEAN" in streetNames and "SB" in gDirections:
+            MovementNames = list(groupMovements)
+            MovementNames.remove(gMovName)
+            groupMovements = tuple(MovementNames)  
         
     if len(mec.mappedMovements) != len(groupMovements):
         dta.DtaLogger.error("Signal %s. Not all movements have been mapped" % mec.fileName)
@@ -1607,17 +1620,17 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         dPlan.validate()
                         
     except ExcelCardError, e:
-        dta.DtaLogger.error(e)
+        dta.DtaLogger.error("Error 1: %s" % e)
         #print e
         return False
     except dta.DtaError, e:
-        dta.DtaLogger.error(e)
+        dta.DtaLogger.error("Error 2: %s" % e)
         #print str(e)
         return False
     try:
         node.addTimePlan(dPlan)
     except dta.DtaError, e:
-        dta.DtaLogger.error(e)
+        dta.DtaLogger.error("Error 3: %s" % e)
         #print str(e)
         return False
         
@@ -1675,6 +1688,10 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+    
+##    projectFolder2 = "C:/SFCTA2/dta/testdata/Roads2010_example"
+##    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
+##    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
     for node in net.iterRoadNodes():
         node._control = 0

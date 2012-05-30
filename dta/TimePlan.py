@@ -251,10 +251,10 @@ class TimePlan(object):
         if self.getNumPhases() < 2:
             raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.getId())
 
-        for phase in self.iterPhases():
-            if phase.getNumMovements() < 1:
-                raise DtaError("Node %s The number of movements in a phase "
-                                    "cannot be less than one" % self._node.getId())
+##        for phase in self.iterPhases():
+##            if phase.getNumMovements() < 1:
+##                raise DtaError("Node %s The number of movements in a phase "
+##                                    "cannot be less than one" % self._node.getId())
 
         phaseMovements = set([mov.getId() for phase in self.iterPhases() 
                                 for mov in phase.iterMovements()]) 
