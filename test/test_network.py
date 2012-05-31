@@ -1060,18 +1060,18 @@ class TestNetwork(object):
         #thru mov with left turn 
         assert not mov154.isInConflict(mov251)
         #thru mov with left turn of same dest 
-        assert mov154.isInConflict(mov254)
+        assert not mov154.isInConflict(mov254)
         #thru mov with left turn of same dest         
-        assert mov254.isInConflict(mov154)
+        assert not mov254.isInConflict(mov154)
         #left turn with opposing thru 
         assert mov152.isInConflict(mov451)
         #thru with opposing thru 
         assert not mov154.isInConflict(mov451)
 
         #right turn with left turn with same dest 
-        assert mov354.isInConflict(mov154)
+        assert not mov354.isInConflict(mov154)
         #right turn with left turn with same dest 
-        assert mov354.isInConflict(mov254)
+        assert not mov354.isInConflict(mov254)
         #left turn with thru from same link 
         assert not mov351.isInConflict(mov352)
         #left turn with right from same link 
