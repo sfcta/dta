@@ -37,28 +37,43 @@ dta.RoadLink.LENGTH_UNITS   = "miles"
 
 
 mainFolder = os.path.join(os.path.dirname(__file__), "..", "testdata") 
+projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
 
 def getTestScenario(): 
+
+    
+    prefix = 'smallTestNet' 
+
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
+    scenario.read(projectFolder, prefix) 
+
+    return scenario
+
+def getGearySubNet():
 
     projectFolder = os.path.join(mainFolder, 'dynameqNetwork_gearySubset')
     prefix = 'smallTestNet' 
 
     scenario = DynameqScenario(Time(0,0), Time(12,0))
     scenario.read(projectFolder, prefix) 
+    net = DynameqNetwork(scenario) 
+    net.read(projectFolder, prefix) 
+    return net 
 
-    return scenario 
 
 class TestControl:
 
     def test_one(self):
 
-        net = getTestScenario()
+        #net = getTestScenario()
+        net = getGearySubNet() 
+
 
         #pdb.set_trace() 
 
         # TODO: write the test output file to a tempfile.mkdtemp()
 
-        net.write(dir=".", file_prefix="Test")
+        net.write(dir=projectFolder, file_prefix="Test")
 
         #The following code finds the differences between the two control files the original and
         #the one created by the code 
