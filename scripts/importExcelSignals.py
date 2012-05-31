@@ -287,12 +287,14 @@ class SignalData(object):
         input hours. Otherwise it returns none
         """
         for cso, signalTiming in self.signalTiming.iteritems(): 
-
             if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime:
                 return cso
 
         for cso, signalTiming in self.signalTiming.iteritems(): 
             if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(23,59):
+                return cso
+        for cso, signalTiming in self.signalTiming.iteritems(): 
+            if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(0,0):
                 return cso
         return None
 
@@ -495,10 +497,6 @@ def getOperationTimes(sheet, signalData):
         for curColumn in range(signalData.topLeftCell[1], signalData.colPhaseData):
             cellValue = sheet.cell_value(row, curColumn)
             if str(cellValue).strip():
-                if cellValue == "ALL OTHER TIMES" or cellValue == "AT ALL TIMES":
-                    hasAllOtherTimes = True
-                    signalData.signalTiming[strCso].startTime = dta.Time(0,0)
-                    signalData.signalTiming[strCso].endTime = dta.Time(0,0)
                 if isinstance(cellValue, float):
                     if cellValue == 1.0:
                         time = (0, 0, 0, 0, 0, 0)
@@ -509,6 +507,83 @@ def getOperationTimes(sheet, signalData):
                         gotStartTime = True
                     else:
                         signalData.signalTiming[strCso].endTime = dta.Time(time[3], time[4])
+                elif "event" in cellValue or "Event" in cellValue or "Game" in cellValue:
+                    signalData.signalTiming[strCso].startTime = dta.Time(23,59)
+                    signalData.signalTiming[strCso].endTime = dta.Time(23,59)
+                elif "TIMES" in cellValue or "Times" in cellValue:
+                    hasAllOtherTimes = True
+                    signalData.signalTiming[strCso].startTime = dta.Time(0,0)
+                    signalData.signalTiming[strCso].endTime = dta.Time(0,0)
+                    gotStartTime = True
+                    
+                elif gotStartTime == False:
+                    if "-" in cellValue and not ":" in cellValue and not " - " in cellValue:
+                        cellValue = cellValue.strip()
+                        startTime1 = int(cellValue[:2])
+                        startTime2 = int(cellValue[2:4])
+                        endTime1 = int(cellValue[5:7])
+                        endTime2 = int(cellValue[7:])
+                        signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
+                        signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
+                        gotStartTime = True
+                    if " - " in cellValue and not ":" in cellValue:
+                        cellValue = cellValue.strip()
+                        startTime1 = int(cellValue[:2])
+                        startTime2 = int(cellValue[2:4])
+                        endTime1 = int(cellValue[7:9])
+                        endTime2 = int(cellValue[9:])
+                        if endTime1 == 24:
+                            endTime1 = 23
+                            endTime2 = 59
+                        signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
+                        signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
+                        gotStartTime = True
+                    if "-" in cellValue and ":" in cellValue:
+                        stopval = cellValue.find("-")
+                        startTimeAll = cellValue[:stopval]
+                        colonval = startTimeAll.find(":")
+                        startTime1 = int(startTimeAll[:colonval])
+                        startTime2 = int(startTimeAll[colonval+1:])
+                        signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
+                        endTimeAll = cellValue[stopval+1:]
+                        colonval = endTimeAll.find(":")
+                        endTime1 = int(endTimeAll[:colonval])
+                        endTime2 = int(endTimeAll[colonval+1:])
+                        signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
+                    elif ":" in cellValue and len(cellValue)==5:
+                        if gotStartTime == False:
+                            startTime1 = int(cellValue[:2])
+                            startTime2 = int(cellValue[3:])
+                            signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
+                            gotStartTime = True
+                        else:
+                            endTime1 = int(cellValue[:2])
+                            endTime2 = int(cellValue[3:])
+                            signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
+                    elif ":" in cellValue and "TO" in cellValue:
+                        stopval = cellValue.find("TO")
+                        startTimeAll = cellValue[:stopval-1]
+                        colonval = startTimeAll.find(":")
+                        startTime1 = int(startTimeAll[:colonval])
+                        startTime2 = int(startTimeAll[colonval+1:])
+                        signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
+                        endTimeAll = cellValue[stopval+3:]
+                        colonval = endTimeAll.find(":")
+                        endTime1 = int(endTimeAll[:colonval])
+                        endTime2 = int(endTimeAll[colonval+1:])
+                        signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
+                    elif ":" in cellValue and "to" in cellValue:
+                        stopval = cellValue.find("to")
+                        startTimeAll = cellValue[:stopval-1]
+                        colonval = startTimeAll.find(":")
+                        startTime1 = int(startTimeAll[:colonval])
+                        startTime2 = int(startTimeAll[colonval+1:])
+                        signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
+                        endTimeAll = cellValue[stopval+3:]
+                        colonval = endTimeAll.find(":")
+                        endTime1 = int(endTimeAll[:colonval])
+                        endTime2 = int(endTimeAll[colonval+1:])
+                        signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
 
         #dta.DtaLogger.info("Operating times are from %s to %s" % (signalData.signalTiming[strCso].startTime, signalData.signalTiming[strCso].endTime))
         
@@ -1045,6 +1120,8 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
                 break
             elif streetNames == ['25TH', 'POTRERO'] and node.getId()!= 23952:
                 break
+            elif streetNames == ['DONAHUE', 'INNES'] and node.getId()!= 51690:
+                break
             else:
                 excelCard.mappedStreet[streetNames[idx]] = baseStreetNames[idx]
        
@@ -1091,7 +1168,7 @@ def mapMovements(mec, baseNetwork):
         result = []
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
-                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL":
+                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL" and gMovName != "NORTH POINT":
                    result.append(dir)
                    break
        
@@ -1109,8 +1186,8 @@ def mapMovements(mec, baseNetwork):
         result = []
 
         #todo ends with LT
-        leftTurnIndicators = ["-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
-#        rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
+        leftTurnIndicators = ["LT'S","-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
+        rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
         indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
@@ -1134,7 +1211,7 @@ def mapMovements(mec, baseNetwork):
             if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
                "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
                "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-               "(FAR)" in gMovName:
+               "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName :
                 continue
 
 
@@ -1148,9 +1225,13 @@ def mapMovements(mec, baseNetwork):
             gDirections = getDirections(gMovName)
             if "BUSH" in gMovName and "WB" in gDirections:
                 continue
-            if "FELL" in gMovName and "EB" in gDirections:
+            if "FELL" in gMovName and "EB" in gDirections and "WB" not in gDirections and "FRANKLIN" not in streetNames:
                 continue
             if "PINE" in gMovName and "EB" in gDirections:
+                continue
+            if "PIERCE" in gMovName and "FELL" in streetNames and "NB" in gDirections:
+                continue
+            if "LEE" in gMovName and "OCEAN" in streetNames and "SB" in gDirections:
                 continue
 
             f = open("temp_directons.txt", "a")
@@ -1274,11 +1355,12 @@ def mapMovements(mec, baseNetwork):
 #                               "only one movement" % mec.fileName)
 
     groupMovements = mec.phasingData.getElementsOfDimention(0)
+    streetNames = list(mec.streetNames)
     for gMovName in groupMovements:
         if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
            "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
            "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-           "(FAR)" in gMovName:
+           "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
@@ -1289,7 +1371,7 @@ def mapMovements(mec, baseNetwork):
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
-        if "FELL" in gMovName and "EB" in gDirections:
+        if "FELL" in gMovName and "EB" in gDirections and "WB" not in gDirections and "FRANKLIN" not in streetNames:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
@@ -1297,8 +1379,14 @@ def mapMovements(mec, baseNetwork):
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
-        
-    
+        if "PIERCE" in gMovName and "FELL" in streetNames and "NB" in gDirections:
+            MovementNames = list(groupMovements)
+            MovementNames.remove(gMovName)
+            groupMovements = tuple(MovementNames)
+        if "LEE" in gMovName and "OCEAN" in streetNames and "SB" in gDirections:
+            MovementNames = list(groupMovements)
+            MovementNames.remove(gMovName)
+            groupMovements = tuple(MovementNames)  
         
     if len(mec.mappedMovements) != len(groupMovements):
         dta.DtaLogger.error("Signal %s. Not all movements have been mapped" % mec.fileName)
@@ -1317,16 +1405,30 @@ def mapMovements(mec, baseNetwork):
 
     return excelCardsWithMovements
 
+def checkNumberofTimes(excelCard, startTime, endTime):
+#   checks to see if a card has more than one CSO that matches the start and end time 
+    nummatches = 0
+    for signalTiming in excelCard.iterSignalTiming():
+        if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime and signalTiming.endTime>signalTiming.startTime:
+            nummatches += 1
+    if nummatches >1:
+        for signalTiming in excelCard.iterSignalTiming():
+            dta.DtaLogger.error("Timing is start time %s, end time %s" % (signalTiming.startTime, signalTiming.endTime)) 
+    return nummatches
 def selectCSO(excelCard, startTime, endTime):
     """
     returns the ExcelSignalTiming if there is one that is in operation during the 
     input hours. Otherwise it returns none
     """
+##    for signalTiming in excelCard.iterSignalTiming():
+##        dta.DtaLogger.error("start time is %s, end time is %s" % (signalTiming.startTime,signalTiming.endTime))
+    
     for signalTiming in excelCard.iterSignalTiming():
-        
-        if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime:
+        if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime and signalTiming.endTime>signalTiming.startTime:
             return signalTiming
-
+    for signalTiming in excelCard.iterSignalTiming():
+        if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(0,0):
+            return signalTiming
     for signalTiming in excelCard.iterSignalTiming():
         if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(23,59):
             return signalTiming
@@ -1494,15 +1596,24 @@ def convertSignalToDynameq(node, card, planInfo):
     object determines the time period of operation
     """
     startTime, endTime = planInfo.getTimePeriod()
-    cso = card.selectCSO(startTime, endTime)
+    signalTiming = selectCSO(card,startTime, endTime)
+    if signalTiming:
+        cso = signalTiming.cso
+    if not signalTiming:
+        cso = None
+
     if not cso:
         startTime = dta.Time(0,0)
         endTime = dta.Time(0,0)
-        cso = card.selectCSO(startTime, endTime)
+        signalTiming = selectCSO(card,startTime, endTime)
+        if signalTiming:
+            cso = signalTiming.cso
+        if not signalTiming:
+            cso = None
         if not cso:
             dta.DtaLogger.error("Unable to find CSO for signal %s" % card.fileName) 
             raise dta.DtaError("Unable to find CSO for signal %s" % card.fileName)
-    
+    #dta.DtaLogger.info("Signal %s selected CSO %s with start time %s and end time %s." % (card.fileName, cso, signalTiming.startTime, signalTiming.endTime))
     offset = card.signalTiming[cso].offset
     dPlan = TimePlan(node, offset, planInfo)
 
@@ -1607,17 +1718,17 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         dPlan.validate()
                         
     except ExcelCardError, e:
-        dta.DtaLogger.error(e)
+        dta.DtaLogger.error("Error 1: %s" % e)
         #print e
         return False
     except dta.DtaError, e:
-        dta.DtaLogger.error(e)
+        dta.DtaLogger.error("Error 2: %s" % e)
         #print str(e)
         return False
     try:
         node.addTimePlan(dPlan)
     except dta.DtaError, e:
-        dta.DtaLogger.error(e)
+        dta.DtaLogger.error("Error 3: %s" % e)
         #print str(e)
         return False
         
@@ -1675,6 +1786,10 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+    
+##    projectFolder2 = "C:/SFCTA2/dta/testdata/Roads2010_example"
+##    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
+##    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
     for node in net.iterRoadNodes():
         node._control = 0
@@ -1692,6 +1807,8 @@ if __name__ == "__main__":
     mappedNodes = {}
     cardsWithMove = []
     allPlansSet=[]
+    allMoreMatchesSet=[]
+    nummatches = 0
     planInfo = net.addPlanCollectionInfo(dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME), "excelSignalsToDynameq", "excel_signal_cards_imported_automatically")
 
     for fileName in os.listdir(EXCEL_DIR):
@@ -1712,14 +1829,21 @@ if __name__ == "__main__":
         else:
             cardsWithMove.append(cardsWithMovements)
         allPlans = createDynameqSignals(net, cardsWithMovements, planInfo, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
+
         if allPlans == False:
             continue
         else:
             allPlansSet.append(allPlans)
+##        nummatches = checkNumberofTimes(cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
+##        if nummatches>1:
+##            allMoreMatchesSet.append(fileName)
+##            dta.DtaLogger.error("Signal %s has %d phases matching the start and end time" % (fileName, nummatches))
 
     dta.DtaLogger.info("Number of excel cards successfully parsed = %d" % len(cardsDone))
     dta.DtaLogger.info("Number of cards are %d; Number of mapped nodes are %d" % (len(cardsDone), len(mappedNodes)))
     dta.DtaLogger.info("Number of cards are %d; Number of cards with movements are %d" % (len(cardsDone),len(cardsWithMove)))
     dta.DtaLogger.info("Number of time plans = %d" % len(allPlansSet))
+    #dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
+    
     net.write(".", "sf_signals")
 
