@@ -167,8 +167,11 @@ class TestDemand:
         _npyArray1 = demand1._demandTable.getNumpyArray() * 3 
         file2 = "/Users/michalis/Documents/sfcta/05252012/vehcountorig_Car_NoToll_matx.dqt"
         demand2 = Demand.readDynameqTable(net, file2)
+        pdb.set_trace()
         _npyArray1 = _npyArray1.sum(0)
         _npyArray2 = demand2._demandTable.getNumpyArray().sum(0)
+
+        pdb.set_trace()
         
         plotTripHistogram(_npyArray1, "carNoTollHistogram1")
         plotTripHistogram(_npyArray2, "carNoTollHistogram2")        

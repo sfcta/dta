@@ -170,10 +170,10 @@ See <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtu
 <tr><td><a class="reference internal" href="#dta.VirtualNode.isJunction" title="dta.VirtualNode.isJunction"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isJunction</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isRoadNode" title="dta.VirtualNode.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isRoadNode</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.VirtualNode.isMidblockNode" title="dta.VirtualNode.isMidblockNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isMidblockNode</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isShapePoint" title="dta.VirtualNode.isShapePoint"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isShapePoint</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.VirtualNode.isRoadNode" title="dta.VirtualNode.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isRoadNode</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.VirtualNode.isVirtualNode" title="dta.VirtualNode.isVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isVirtualNode</span></tt></a></td>
@@ -387,7 +387,7 @@ to the node with <em>endNodeId</em>, and if that movement is <strong>not prohibi
 
 <dl class="method">
 <dt id="dta.VirtualNode.isJunction">
-<tt class="descname">isJunction</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isJunction" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">isJunction</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isJunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is a junction.</p>
 <div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
@@ -396,28 +396,23 @@ to the node with <em>endNodeId</em>, and if that movement is <strong>not prohibi
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.VirtualNode.isRoadNode">
-<tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isRoadNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if this Node is a RoadNode.</p>
+<dt id="dta.VirtualNode.isMidblockNode">
+<tt class="descname">isMidblockNode</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isMidblockNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
+following graph).  Specifically, a node is a shape point iff:</p>
+<ul class="simple">
+<li>it has exactly two adjacent nodes <em>and</em></li>
+<li>it has either two (in the case one a one-way street) or four (in the case of a two way street) adjacent links</li>
+</ul>
+<p>If <em>countRoadNodesOnly</em> is True the method will count only adjacent <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances and
+adjacent <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (so it will disregard any connectors).</p>
+<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.VirtualNode.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
-following graph).</p>
-<p>If <em>countRoadNodesOnly</em> is True the method will count only RoadLinks 
-attached to this Node and will disregard any connectors.</p>
-<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
-<div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">I think this documentation is insufficient; it&#8217;s just an example, it doesn&#8217;t define a &#8220;shape point.&#8221;
-Further, there are &#8220;shapepoints&#8221; that are not this, such as in those added via
-<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.addShapePoint" title="dta.RoadLink.addShapePoint"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.addShapePoint()</span></tt></a>, so the terminology should be more accurate &#8211;
-what we&#8217;re really checking is if this could be a shape point?
-And we&#8217;re not even doing that &#8211; this implementation would call a node a shapepoint 
-if there is a one-way loop (consisting of two links) intersecting with a one way street.</p>
-</div>
+<dt id="dta.VirtualNode.isRoadNode">
+<tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a RoadNode.</p>
 </dd></dl>
 
 <dl class="method">

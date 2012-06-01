@@ -50,16 +50,21 @@ dta.Network
       ~Network.hasNodeForId
       ~Network.hasPlanCollectionInfo
       ~Network.insertVirtualNodeBetweenCentroidsAndRoadNodes
+      ~Network.iterCentroids
       ~Network.iterConnectors
       ~Network.iterLinks
       ~Network.iterNodes
       ~Network.iterPlanCollectionInfo
       ~Network.iterRoadLinks
       ~Network.iterRoadNodes
+      ~Network.iterVirtualLinks
+      ~Network.iterVirtualNodes
       ~Network.mergeLinks
       ~Network.mergeSecondaryNetwork
       ~Network.mergeSecondaryNetworkBasedOnLinkIds
       ~Network.mergeSecondaryNetworkBasedOnLinkIds2
+      ~Network.moveCentroidConnectorFromIntersectionToMidblock
+      ~Network.moveCentroidConnectorsFromIntersectionsToMidblocks
       ~Network.moveVirtualNodesToAvoidShortConnectors
       ~Network.readLinkShape
       ~Network.removeLink
@@ -68,6 +73,7 @@ dta.Network
       ~Network.removeUnconnectedNodes
       ~Network.renameLink
       ~Network.renameNode
+      ~Network.setMovementTurnTypeOverrides
       ~Network.splitLink
       ~Network.writeLinksToShp
       ~Network.writeMovementsToShp

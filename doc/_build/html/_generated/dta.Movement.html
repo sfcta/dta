@@ -192,6 +192,9 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.prohibitAllVehicleClassGroups" title="dta.Movement.prohibitAllVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.prohibitAllVehicleClassGroups</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setOverrideTurnType" title="dta.Movement.setOverrideTurnType"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setOverrideTurnType</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Movement.setPenaltyInMin" title="dta.Movement.setPenaltyInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setPenaltyInMin</span></tt></a></td>
 <td></td>
 </tr>
@@ -215,6 +218,42 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.Movement.DIR_LT">
+<tt class="descname">DIR_LT</tt><a class="headerlink" href="#dta.Movement.DIR_LT" title="Permalink to this definition">¶</a></dt>
+<dd><p>left turn movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.DIR_LT2">
+<tt class="descname">DIR_LT2</tt><a class="headerlink" href="#dta.Movement.DIR_LT2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left turn 2 (diff from LT?) movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.DIR_RT">
+<tt class="descname">DIR_RT</tt><a class="headerlink" href="#dta.Movement.DIR_RT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right turn movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.DIR_RT2">
+<tt class="descname">DIR_RT2</tt><a class="headerlink" href="#dta.Movement.DIR_RT2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right turn 2 (diff from RT?) movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.DIR_TH">
+<tt class="descname">DIR_TH</tt><a class="headerlink" href="#dta.Movement.DIR_TH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Throughmovement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.DIR_UTURN">
+<tt class="descname">DIR_UTURN</tt><a class="headerlink" href="#dta.Movement.DIR_UTURN" title="Permalink to this definition">¶</a></dt>
+<dd><p>U-turn movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.Movement.getAtNode">
 <tt class="descname">getAtNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getAtNode" title="Permalink to this definition">¶</a></dt>
@@ -371,8 +410,11 @@ input time</p>
 <dl class="method">
 <dt id="dta.Movement.getTurnType">
 <tt class="descname">getTurnType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getTurnType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the type of the turn the movement makes as one of the following strings
-UTURN, RT, RT2, LT2, LT, TH</p>
+<dd><p>Returns the type of the movement, one of <a class="reference internal" href="#dta.Movement.DIR_UTURN" title="dta.Movement.DIR_UTURN"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_UTURN</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_RT" title="dta.Movement.DIR_RT"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_RT</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_RT2" title="dta.Movement.DIR_RT2"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_RT2</span></tt></a>,
+<a class="reference internal" href="#dta.Movement.DIR_LT2" title="dta.Movement.DIR_LT2"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_LT2</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_LT" title="dta.Movement.DIR_LT"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_LT</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_TH" title="dta.Movement.DIR_TH"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_TH</span></tt></a>.</p>
+<p>The movement type is determined by the angles of the incoming links (based on the start nodes and end nodes only);
+however, if a Movement type override is set using <a class="reference internal" href="#dta.Movement.setOverrideTurnType" title="dta.Movement.setOverrideTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.setOverrideTurnType()</span></tt></a> then that will supercede
+the angle-based analysis.</p>
 </dd></dl>
 
 <dl class="method">
@@ -421,6 +463,14 @@ UTURN, RT, RT2, LT2, LT, TH</p>
 <dt id="dta.Movement.prohibitAllVehicleClassGroups">
 <tt class="descname">prohibitAllVehicleClassGroups</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.prohibitAllVehicleClassGroups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the movement to prohibited to all vehicles</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.setOverrideTurnType">
+<tt class="descname">setOverrideTurnType</tt><big>(</big><em>turntype</em><big>)</big><a class="headerlink" href="#dta.Movement.setOverrideTurnType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets this movement to use the given turntype rather than figuring it out from the angle between the
+incoming and outgoing link.</p>
+<p>Throws an exception if the turntype is invalid.</p>
 </dd></dl>
 
 <dl class="method">

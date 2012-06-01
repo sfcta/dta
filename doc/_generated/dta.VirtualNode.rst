@@ -41,8 +41,8 @@ dta.VirtualNode
       ~VirtualNode.isCentroid
       ~VirtualNode.isIntersection
       ~VirtualNode.isJunction
+      ~VirtualNode.isMidblockNode
       ~VirtualNode.isRoadNode
-      ~VirtualNode.isShapePoint
       ~VirtualNode.isVirtualNode
       ~VirtualNode.iterAdjacentLinks
       ~VirtualNode.iterAdjacentNodes

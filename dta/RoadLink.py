@@ -839,6 +839,32 @@ class RoadLink(Link):
             return RoadLink.DIR_SB
         else:
             return RoadLink.DIR_WB
+    
+    def hasDirection(self, dir, atEnd=True):
+        """
+        Returns True if the link is going in that direction at all.  That is, if a link is oriented to the
+        southwest, this will return True for *dir* :py:attr:`RoadLink.DIR_SB` and *dir* :py:attr:`RoadLink.DIR_WB` but
+        False otherwise.  *atEnd* is interpreted by the :py:meth:`getOrientation` method.
+        """
+        orientation = self.getOrientation(atEnd)
+        if dir==RoadLink.DIR_NB:
+            if orientation > 270 or orientation < 90: return True
+            return False
+        
+        if dir==RoadLink.DIR_SB:
+            if orientation > 90 and orientation < 270: return True
+            return False
+        
+        if dir==RoadLink.DIR_EB:
+            if orientation < 180: return True
+            return False
+        
+        if dir==RoadLink.DIR_WB:
+            if orientation > 180: return True
+            return False
+        
+        raise DtaError("RoadLink.hasDirection called with invalid dir: %s" % str(dir))
+
 
     def hasRightTurn(self):
         """

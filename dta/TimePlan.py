@@ -150,7 +150,7 @@ class TimePlan(object):
         """
         nodeInfo = "NODE\n%s\n" % self.getNode().getId()
         planInfo = "PLAN\n%d %d %d %d\n" % (self._type, self._offset, self._syncPhase, self._turnOnRed)
-        phases = "\n".join([repr(phase) for phase in self.iterPhases()])
+        phases = "\n".join([phase.getDynameqStr() for phase in self.iterPhases()])
         return "%s%s%s\n" % (nodeInfo, planInfo, phases)
 
     def addPhase(self, phase):
@@ -251,10 +251,10 @@ class TimePlan(object):
         if self.getNumPhases() < 2:
             raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.getId())
 
-        for phase in self.iterPhases():
-            if phase.getNumMovements() < 1:
-                raise DtaError("Node %s The number of movements in a phase "
-                                    "cannot be less than one" % self._node.getId())
+##        for phase in self.iterPhases():
+##            if phase.getNumMovements() < 1:
+##                raise DtaError("Node %s The number of movements in a phase "
+##                                    "cannot be less than one" % self._node.getId())
 
         phaseMovements = set([mov.getId() for phase in self.iterPhases() 
                                 for mov in phase.iterMovements()]) 
@@ -288,13 +288,13 @@ class TimePlan(object):
                    if mov1.isProtected() and mov2.isProtected():
                        if mov1.isRightTurn() or mov2.isRightTurn():
                            continue
-                       raise DtaError("Movements %s, %s and %s, %s are in coflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))  
+                       raise DtaError("Movements %s, %s and %s, %s are in conflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))  
                                                                       
     def setPermittedMovements(self):
         """
         Examines all the movements in the timeplan pairwise and if two movements
         conflict with each other it sets the lower priority movement as
-        permitted. For examle, if a protected left turn conflicts with a
+        permitted. For example, if a protected left turn conflicts with a
         protected through movement it sets the left turn as permitted.
         If two through movements conflict with each other and are both
         protected an error is being raised.
@@ -302,21 +302,24 @@ class TimePlan(object):
         for phase in self.iterPhases():
             for mov1 in phase.iterMovements():
                 for mov2 in phase.iterMovements():
-                   if mov1.getId() == mov2.getId():
-                       continue
-                   if not mov1.isInConflict(mov2):
-                       continue
-                   if mov1.isThruTurn() and mov2.isThruTurn():                       
-                       message =  ("Movements %s and %s are in coflict and are both protected "
-                                   " and thru movements" %
-                                   (mov1.getId(), mov2.getId()))
-                       print message
-                   else:
-                       if mov1.isLeftTurn():
-                           if mov2.isThruTurn():
-                               mov1.setPermitted()
-                           elif mov2.isRightTurn():
-                               mov1.setPermitted()
-                           elif mov2.isLeftTurn():
-                               mov2.setPermitted()
+                    
+                    # same movement
+                    if mov1.getId() == mov2.getId(): continue
+                    
+                    # no conflict
+                    if not mov1.isInConflict(mov2):  continue
+                   
+                    # two thru movements in conflict
+                    if mov1.isThruTurn() and mov2.isThruTurn():
+                        raise DtaError("Movements %s and %s are in conflict and are both protected and thru movements" %
+                                       (mov1.getId(), mov2.getId()))
+                    
+                    
+                    if mov1.isLeftTurn() and (mov2.isThruTurn() or mov2.isRightTurn()):
+                        # left is lower priority than through or right
+                        mov1.setPermitted()
+                        
+                    if mov1.isLeftTurn() and mov2.isLeftTurn():
+                        # two left turns - first takes priority (?)
+                        mov2.setPermitted()
 

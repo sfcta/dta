@@ -189,13 +189,13 @@
 <tr><td><a class="reference internal" href="#dta.RoadNode.isJunction" title="dta.RoadNode.isJunction"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isJunction</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.isMidblockNode" title="dta.RoadNode.isMidblockNode"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isMidblockNode</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.RoadNode.isOverlapping" title="dta.RoadNode.isOverlapping"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isOverlapping</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadNode.isRoadNode" title="dta.RoadNode.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isRoadNode</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.RoadNode.isShapePoint" title="dta.RoadNode.isShapePoint"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isShapePoint</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadNode.isVirtualNode" title="dta.RoadNode.isVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.isVirtualNode</span></tt></a></td>
@@ -510,12 +510,26 @@ to the node with <em>endNodeId</em>, and if that movement is <strong>not prohibi
 
 <dl class="method">
 <dt id="dta.RoadNode.isJunction">
-<tt class="descname">isJunction</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isJunction" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">isJunction</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isJunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is a junction.</p>
 <div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
 <p class="last">And a junction is what?  Technical definition please.</p>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.isMidblockNode">
+<tt class="descname">isMidblockNode</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isMidblockNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
+following graph).  Specifically, a node is a shape point iff:</p>
+<ul class="simple">
+<li>it has exactly two adjacent nodes <em>and</em></li>
+<li>it has either two (in the case one a one-way street) or four (in the case of a two way street) adjacent links</li>
+</ul>
+<p>If <em>countRoadNodesOnly</em> is True the method will count only adjacent <a class="reference internal" href="#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances and
+adjacent <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (so it will disregard any connectors).</p>
+<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
 </dd></dl>
 
 <dl class="method">
@@ -532,25 +546,6 @@ outgoing to this node, raises a <a class="reference internal" href="dta.DtaError
 <dt id="dta.RoadNode.isRoadNode">
 <tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.isRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this Node is a RoadNode.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dta.RoadNode.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
-following graph).</p>
-<p>If <em>countRoadNodesOnly</em> is True the method will count only RoadLinks 
-attached to this Node and will disregard any connectors.</p>
-<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
-<div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">I think this documentation is insufficient; it&#8217;s just an example, it doesn&#8217;t define a &#8220;shape point.&#8221;
-Further, there are &#8220;shapepoints&#8221; that are not this, such as in those added via
-<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.addShapePoint" title="dta.RoadLink.addShapePoint"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.addShapePoint()</span></tt></a>, so the terminology should be more accurate &#8211;
-what we&#8217;re really checking is if this could be a shape point?
-And we&#8217;re not even doing that &#8211; this implementation would call a node a shapepoint 
-if there is a one-way loop (consisting of two links) intersecting with a one way street.</p>
-</div>
 </dd></dl>
 
 <dl class="method">

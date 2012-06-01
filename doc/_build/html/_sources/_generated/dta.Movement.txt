@@ -47,6 +47,7 @@ dta.Movement
       ~Movement.isThruTurn
       ~Movement.isUTurn
       ~Movement.prohibitAllVehicleClassGroups
+      ~Movement.setOverrideTurnType
       ~Movement.setPenaltyInMin
       ~Movement.setSimInVolume
       ~Movement.setSimOutVolume
