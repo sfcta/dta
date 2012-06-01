@@ -1769,7 +1769,7 @@ def verifySingleSignal(net, fileName, mappedNodes):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) <= 6:
+    if len(sys.argv) < 6:
         print USAGE
         sys.exit(2)
 
