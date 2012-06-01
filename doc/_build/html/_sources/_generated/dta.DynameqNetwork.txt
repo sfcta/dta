@@ -63,18 +63,19 @@ dta.DynameqNetwork
       ~DynameqNetwork.mergeSecondaryNetwork
       ~DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds
       ~DynameqNetwork.mergeSecondaryNetworkBasedOnLinkIds2
+      ~DynameqNetwork.moveCentroidConnectorFromIntersectionToMidblock
+      ~DynameqNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks
       ~DynameqNetwork.moveVirtualNodesToAvoidShortConnectors
       ~DynameqNetwork.read
       ~DynameqNetwork.readLinkShape
       ~DynameqNetwork.readSimResults
-      ~DynameqNetwork.removeCentroidConnectorFromIntersection
-      ~DynameqNetwork.removeCentroidConnectorsFromIntersections
       ~DynameqNetwork.removeLink
       ~DynameqNetwork.removeNode
       ~DynameqNetwork.removeShapePoints
       ~DynameqNetwork.removeUnconnectedNodes
       ~DynameqNetwork.renameLink
       ~DynameqNetwork.renameNode
+      ~DynameqNetwork.setMovementTurnTypeOverrides
       ~DynameqNetwork.splitLink
       ~DynameqNetwork.write
       ~DynameqNetwork.writeCountListToFile

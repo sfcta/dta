@@ -182,10 +182,10 @@ to the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title
 <tr><td><a class="reference internal" href="#dta.Centroid.isJunction" title="dta.Centroid.isJunction"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isJunction</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Centroid.isRoadNode" title="dta.Centroid.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isRoadNode</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Centroid.isMidblockNode" title="dta.Centroid.isMidblockNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isMidblockNode</span></tt></a></td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Centroid.isShapePoint" title="dta.Centroid.isShapePoint"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isShapePoint</span></tt></a></td>
+<tr><td><a class="reference internal" href="#dta.Centroid.isRoadNode" title="dta.Centroid.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isRoadNode</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Centroid.isVirtualNode" title="dta.Centroid.isVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">Centroid.isVirtualNode</span></tt></a></td>
@@ -430,7 +430,7 @@ however.)</p>
 
 <dl class="method">
 <dt id="dta.Centroid.isJunction">
-<tt class="descname">isJunction</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isJunction" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">isJunction</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isJunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is a junction.</p>
 <div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
@@ -439,28 +439,23 @@ however.)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Centroid.isRoadNode">
-<tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isRoadNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if this Node is a RoadNode.</p>
+<dt id="dta.Centroid.isMidblockNode">
+<tt class="descname">isMidblockNode</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isMidblockNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
+following graph).  Specifically, a node is a shape point iff:</p>
+<ul class="simple">
+<li>it has exactly two adjacent nodes <em>and</em></li>
+<li>it has either two (in the case one a one-way street) or four (in the case of a two way street) adjacent links</li>
+</ul>
+<p>If <em>countRoadNodesOnly</em> is True the method will count only adjacent <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances and
+adjacent <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (so it will disregard any connectors).</p>
+<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
 </dd></dl>
 
 <dl class="method">
-<dt id="dta.Centroid.isShapePoint">
-<tt class="descname">isShapePoint</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.Centroid.isShapePoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the node is a shape point (e.g. Node 51245 in the 
-following graph).</p>
-<p>If <em>countRoadNodesOnly</em> is True the method will count only RoadLinks 
-attached to this Node and will disregard any connectors.</p>
-<img alt="../_images/shapePoint.png" src="../_images/shapePoint.png" style="height: 300px;" />
-<div class="admonition-todo admonition " id="index-5">
-<p class="first admonition-title">Todo</p>
-<p class="last">I think this documentation is insufficient; it&#8217;s just an example, it doesn&#8217;t define a &#8220;shape point.&#8221;
-Further, there are &#8220;shapepoints&#8221; that are not this, such as in those added via
-<a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.addShapePoint" title="dta.RoadLink.addShapePoint"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.addShapePoint()</span></tt></a>, so the terminology should be more accurate &#8211;
-what we&#8217;re really checking is if this could be a shape point?
-And we&#8217;re not even doing that &#8211; this implementation would call a node a shapepoint 
-if there is a one-way loop (consisting of two links) intersecting with a one way street.</p>
-</div>
+<dt id="dta.Centroid.isRoadNode">
+<tt class="descname">isRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.isRoadNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this Node is a RoadNode.</p>
 </dd></dl>
 
 <dl class="method">
@@ -474,7 +469,7 @@ if there is a one-way loop (consisting of two links) intersecting with a one way
 <tt class="descname">iterAdjacentConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Centroid.iterAdjacentConnectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an iterator to each adjacent link of each adjacent link (e.g. each link separated from this node
 by an intermediate link, presumably a virtual link) that are not <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances.</p>
-<div class="admonition-todo admonition " id="index-6">
+<div class="admonition-todo admonition " id="index-5">
 <p class="first admonition-title">Todo</p>
 <p class="last">The function definition is misleading because the results aren&#8217;t verified as <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances.</p>
 </div>

@@ -15,6 +15,7 @@ dta.Phase
    
       ~Phase.__init__
       ~Phase.addMovement
+      ~Phase.getDynameqStr
       ~Phase.getGreen
       ~Phase.getMovement
       ~Phase.getNumMovements

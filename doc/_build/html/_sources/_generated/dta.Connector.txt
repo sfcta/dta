@@ -64,6 +64,7 @@ dta.Connector
       ~Connector.getStartNodeId
       ~Connector.getThruTurn
       ~Connector.getVirtualNode
+      ~Connector.hasDirection
       ~Connector.hasLeftTurn
       ~Connector.hasOutgoingMovement
       ~Connector.hasRightTurn

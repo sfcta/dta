@@ -207,10 +207,16 @@
   </dl></dd>
     <dt><a href="_generated/dta.Demand.html#dta.Demand">Demand (class in dta)</a></dt>
     <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.DIR_EB">DIR_EB (dta.RoadLink attribute)</a></dt>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.DIR_LT">DIR_LT (dta.Movement attribute)</a></dt>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.DIR_LT2">DIR_LT2 (dta.Movement attribute)</a></dt>
     <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.DIR_NB">DIR_NB (dta.RoadLink attribute)</a></dt>
-    <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.DIR_SB">DIR_SB (dta.RoadLink attribute)</a></dt>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.DIR_RT">DIR_RT (dta.Movement attribute)</a></dt>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.DIR_RT2">DIR_RT2 (dta.Movement attribute)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.DIR_SB">DIR_SB (dta.RoadLink attribute)</a></dt>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.DIR_TH">DIR_TH (dta.Movement attribute)</a></dt>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.DIR_UTURN">DIR_UTURN (dta.Movement attribute)</a></dt>
     <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.DIR_WB">DIR_WB (dta.RoadLink attribute)</a></dt>
     <dt><a href="_generated/dta.Utils.html#dta.direction">direction() (in module dta)</a></dt>
     <dt><a href="_generated/dta.Time.html#dta.Time.dst">dst (dta.Time attribute)</a></dt>
@@ -307,8 +313,9 @@
   </dl></dd>
     <dt><a href="_generated/dta.TransitLine.html#dta.TransitLine.getDynameqFileHeaderStr">getDynameqFileHeaderStr() (dta.TransitLine class method)</a></dt>
     <dt><a href="_generated/dta.TransitSegment.html#dta.TransitSegment.getDynameqHeaderStr">getDynameqHeaderStr() (dta.TransitSegment class method)</a></dt>
-    <dt><a href="_generated/dta.PlanCollectionInfo.html#dta.PlanCollectionInfo.getDynameqStr">getDynameqStr() (dta.PlanCollectionInfo method)</a></dt>
+    <dt><a href="_generated/dta.Phase.html#dta.Phase.getDynameqStr">getDynameqStr() (dta.Phase method)</a></dt>
     <dd><dl>
+      <dt><a href="_generated/dta.PlanCollectionInfo.html#dta.PlanCollectionInfo.getDynameqStr">(dta.PlanCollectionInfo method)</a></dt>
       <dt><a href="_generated/dta.TimePlan.html#dta.TimePlan.getDynameqStr">(dta.TimePlan method)</a></dt>
       <dt><a href="_generated/dta.TransitLine.html#dta.TransitLine.getDynameqStr">(dta.TransitLine method)</a></dt>
       <dt><a href="_generated/dta.TransitSegment.html#dta.TransitSegment.getDynameqStr">(dta.TransitSegment method)</a></dt>
@@ -780,6 +787,10 @@
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.hasConnector">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.hasConnector">(dta.VirtualNode method)</a></dt>
   </dl></dd>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.hasDirection">hasDirection() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.hasDirection">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.hasIncomingLinkForId">hasIncomingLinkForId() (dta.Centroid method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.Node.html#dta.Node.hasIncomingLinkForId">(dta.Node method)</a></dt>
@@ -819,14 +830,14 @@
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.hasNodeForId">(dta.DynameqNetwork method)</a></dt>
       <dt><a href="_generated/dta.Network.html#dta.Network.hasNodeForId">(dta.Network method)</a></dt>
   </dl></dd>
+</dl></td>
+  <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.hasOutgoingLinkForId">hasOutgoingLinkForId() (dta.Centroid method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.Node.html#dta.Node.hasOutgoingLinkForId">(dta.Node method)</a></dt>
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.hasOutgoingLinkForId">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.hasOutgoingLinkForId">(dta.VirtualNode method)</a></dt>
   </dl></dd>
-</dl></td>
-  <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.hasOutgoingLinkForNodeId">hasOutgoingLinkForNodeId() (dta.Centroid method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.Node.html#dta.Node.hasOutgoingLinkForNodeId">(dta.Node method)</a></dt>
@@ -906,6 +917,12 @@
   </dl></dd>
     <dt><a href="_generated/dta.TPPlusTransitRoute.html#dta.TPPlusTransitRoute.isLastNode">isLastNode() (dta.TPPlusTransitRoute method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.isLeftTurn">isLeftTurn() (dta.Movement method)</a></dt>
+    <dt><a href="_generated/dta.Centroid.html#dta.Centroid.isMidblockNode">isMidblockNode() (dta.Centroid method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.Node.html#dta.Node.isMidblockNode">(dta.Node method)</a></dt>
+      <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.isMidblockNode">(dta.RoadNode method)</a></dt>
+      <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.isMidblockNode">(dta.VirtualNode method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Time.html#dta.Time.isoformat">isoformat (dta.Time attribute)</a></dt>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.isOverlapping">isOverlapping() (dta.Connector method)</a></dt>
     <dd><dl>
@@ -924,12 +941,6 @@
     <dd><dl>
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.isRoadNode">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.isRoadNode">(dta.VirtualNode method)</a></dt>
-  </dl></dd>
-    <dt><a href="_generated/dta.Centroid.html#dta.Centroid.isShapePoint">isShapePoint() (dta.Centroid method)</a></dt>
-    <dd><dl>
-      <dt><a href="_generated/dta.Node.html#dta.Node.isShapePoint">(dta.Node method)</a></dt>
-      <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.isShapePoint">(dta.RoadNode method)</a></dt>
-      <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.isShapePoint">(dta.VirtualNode method)</a></dt>
   </dl></dd>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.isThruTurn">isThruTurn() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.isUTurn">isUTurn() (dta.Movement method)</a></dt>
@@ -971,7 +982,11 @@
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.iterAdjacentRoadNodes">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.iterAdjacentRoadNodes">(dta.VirtualNode method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterCentroids">iterCentroids() (dta.DynameqNetwork method)</a></dt>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.iterCentroids">iterCentroids() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterCentroids">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.iterCentroids">(dta.Network method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.iterConnectors">iterConnectors() (dta.CubeNetwork method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterConnectors">(dta.DynameqNetwork method)</a></dt>
@@ -1069,8 +1084,16 @@
     <dd><dl>
       <dt><a href="_generated/dta.Scenario.html#dta.Scenario.iterVehicleClassNames">(dta.Scenario method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterVirtualLinks">iterVirtualLinks() (dta.DynameqNetwork method)</a></dt>
-    <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterVirtualNodes">iterVirtualNodes() (dta.DynameqNetwork method)</a></dt>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.iterVirtualLinks">iterVirtualLinks() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterVirtualLinks">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.iterVirtualLinks">(dta.Network method)</a></dt>
+  </dl></dd>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.iterVirtualNodes">iterVirtualNodes() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.iterVirtualNodes">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.iterVirtualNodes">(dta.Network method)</a></dt>
+  </dl></dd>
 </dl></td>
 </tr></table>
 
@@ -1123,10 +1146,20 @@
       <dt><a href="_generated/dta.Network.html#dta.Network.mergeSecondaryNetworkBasedOnLinkIds2">(dta.Network method)</a></dt>
   </dl></dd>
     <dt><a href="_generated/dta.DtaError.html#dta.DtaError.message">message (dta.DtaError attribute)</a></dt>
+    <dt><a href="_generated/dta.Time.html#dta.Time.microsecond">microsecond (dta.Time attribute)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
-    <dt><a href="_generated/dta.Time.html#dta.Time.microsecond">microsecond (dta.Time attribute)</a></dt>
     <dt><a href="_generated/dta.Time.html#dta.Time.minute">minute (dta.Time attribute)</a></dt>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.moveCentroidConnectorFromIntersectionToMidblock">moveCentroidConnectorFromIntersectionToMidblock() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.moveCentroidConnectorFromIntersectionToMidblock">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.moveCentroidConnectorFromIntersectionToMidblock">(dta.Network method)</a></dt>
+  </dl></dd>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks">moveCentroidConnectorsFromIntersectionsToMidblocks() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks">(dta.Network method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Movement.html#dta.Movement">Movement (class in dta)</a></dt>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.moveVirtualNodesToAvoidShortConnectors">moveVirtualNodesToAvoidShortConnectors() (dta.CubeNetwork method)</a></dt>
     <dd><dl>
@@ -1204,10 +1237,8 @@
   </dl></dd>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.readNetfile">readNetfile() (dta.CubeNetwork method)</a></dt>
     <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.readSimResults">readSimResults() (dta.DynameqNetwork method)</a></dt>
-    <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.removeCentroidConnectorFromIntersection">removeCentroidConnectorFromIntersection() (dta.DynameqNetwork method)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
-    <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.removeCentroidConnectorsFromIntersections">removeCentroidConnectorsFromIntersections() (dta.DynameqNetwork method)</a></dt>
     <dt><a href="_generated/dta.Demand.html#dta.Demand.removeInvalidODPairs">removeInvalidODPairs() (dta.Demand method)</a></dt>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.removeLink">removeLink() (dta.CubeNetwork method)</a></dt>
     <dd><dl>
@@ -1265,10 +1296,16 @@
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.setLength">(dta.RoadLink method)</a></dt>
   </dl></dd>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.setMovementTurnTypeOverrides">setMovementTurnTypeOverrides() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.setMovementTurnTypeOverrides">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.setMovementTurnTypeOverrides">(dta.Network method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.setNumLanes">setNumLanes() (dta.Connector method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.setNumLanes">(dta.RoadLink method)</a></dt>
   </dl></dd>
+    <dt><a href="_generated/dta.Movement.html#dta.Movement.setOverrideTurnType">setOverrideTurnType() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setPenaltyInMin">setPenaltyInMin() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.TimePlan.html#dta.TimePlan.setPermittedMovements">setPermittedMovements() (dta.TimePlan method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setSimInVolume">setSimInVolume() (dta.Movement method)</a></dt>
@@ -1282,9 +1319,9 @@
       <dt><a href="_generated/dta.Movement.html#dta.Movement.setSimTTInMin">(dta.Movement method)</a></dt>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.setSimTTInMin">(dta.RoadLink method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.Connector.html#dta.Connector.setStartNode">setStartNode() (dta.Connector method)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.setStartNode">setStartNode() (dta.Connector method)</a></dt>
     <dt><a href="_generated/dta.TimePlan.html#dta.TimePlan.setSyncPhase">setSyncPhase() (dta.TimePlan method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setTimeVaryingCosts">setTimeVaryingCosts() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.Demand.html#dta.Demand.setValue">setValue() (dta.Demand method)</a></dt>

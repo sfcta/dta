@@ -44,9 +44,9 @@ dta.RoadNode
       ~RoadNode.isCentroid
       ~RoadNode.isIntersection
       ~RoadNode.isJunction
+      ~RoadNode.isMidblockNode
       ~RoadNode.isOverlapping
       ~RoadNode.isRoadNode
-      ~RoadNode.isShapePoint
       ~RoadNode.isVirtualNode
       ~RoadNode.iterAdjacentLinks
       ~RoadNode.iterAdjacentNodes

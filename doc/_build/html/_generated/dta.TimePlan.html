@@ -133,7 +133,7 @@ offset: a positive integer representing the offset of the
 <dl class="method">
 <dt id="dta.TimePlan.getCycleLength">
 <tt class="descname">getCycleLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TimePlan.getCycleLength" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the cycle length in seconds</p>
+<dd><p>Return the cycle length in seconds as an integer or float</p>
 </dd></dl>
 
 <dl class="method">
@@ -163,7 +163,7 @@ offset: a positive integer representing the offset of the
 <dl class="method">
 <dt id="dta.TimePlan.getOffset">
 <tt class="descname">getOffset</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TimePlan.getOffset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the offset</p>
+<dd><p>Return the offset as an integer or float</p>
 </dd></dl>
 
 <dl class="method">
@@ -203,7 +203,7 @@ ascii filename and adds them to the provided dynameq network object.
 <tt class="descname">setPermittedMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.TimePlan.setPermittedMovements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Examines all the movements in the timeplan pairwise and if two movements
 conflict with each other it sets the lower priority movement as
-permitted. For examle, if a protected left turn conflicts with a
+permitted. For example, if a protected left turn conflicts with a
 protected through movement it sets the left turn as permitted.
 If two through movements conflict with each other and are both
 protected an error is being raised.</p>
@@ -212,7 +212,7 @@ protected an error is being raised.</p>
 <dl class="method">
 <dt id="dta.TimePlan.setSyncPhase">
 <tt class="descname">setSyncPhase</tt><big>(</big><em>phaseId</em><big>)</big><a class="headerlink" href="#dta.TimePlan.setSyncPhase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the phase with input id the as the sync phase.</p>
+<dd><p>Set the phase with input id (an integer) the as the sync phase.</p>
 </dd></dl>
 
 <dl class="method">

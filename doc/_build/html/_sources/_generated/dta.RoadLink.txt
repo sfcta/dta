@@ -60,6 +60,7 @@ dta.RoadLink
       ~RoadLink.getStartNode
       ~RoadLink.getStartNodeId
       ~RoadLink.getThruTurn
+      ~RoadLink.hasDirection
       ~RoadLink.hasLeftTurn
       ~RoadLink.hasOutgoingMovement
       ~RoadLink.hasRightTurn

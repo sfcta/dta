@@ -237,6 +237,9 @@ used.</li>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getThruTurn" title="dta.RoadLink.getThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getThruTurn</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.hasDirection" title="dta.RoadLink.hasDirection"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.hasDirection</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.hasLeftTurn" title="dta.RoadLink.hasLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.hasLeftTurn</span></tt></a></td>
 <td></td>
 </tr>
@@ -377,11 +380,11 @@ Thus, this method will also add the required shape points, if they&#8217;re lack
 
 <dl class="method">
 <dt id="dta.RoadLink.coordinatesAlongLink">
-<tt class="descname">coordinatesAlongLink</tt><big>(</big><em>fromStart</em>, <em>distance</em><big>)</big><a class="headerlink" href="#dta.RoadLink.coordinatesAlongLink" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">coordinatesAlongLink</tt><big>(</big><em>fromStart</em>, <em>distance</em>, <em>goPastEnd=False</em><big>)</big><a class="headerlink" href="#dta.RoadLink.coordinatesAlongLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates (a 2-tuple) along this link given by <em>distance</em>, which is 
 in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.  If <em>fromStart</em>, starts at start, otherwise at end.
 Takes shape points into account.  
-If <em>distance</em> is longer than the euclidean distance of the link, raises an exception.</p>
+If <em>distance</em> is longer than the euclidean distance of the link, and not <em>goPastEnd</em> raises an exception.</p>
 </dd></dl>
 
 <dl class="method">
@@ -651,6 +654,14 @@ See addShifts() for details.</p>
 <dt id="dta.RoadLink.getThruTurn">
 <tt class="descname">getThruTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getThruTurn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the thru movement of the link or raise an error if it does not exist</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.hasDirection">
+<tt class="descname">hasDirection</tt><big>(</big><em>dir</em>, <em>atEnd=True</em><big>)</big><a class="headerlink" href="#dta.RoadLink.hasDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the link is going in that direction at all.  That is, if a link is oriented to the
+southwest, this will return True for <em>dir</em> <a class="reference internal" href="#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a> and <em>dir</em> <a class="reference internal" href="#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> but
+False otherwise.  <em>atEnd</em> is interpreted by the <a class="reference internal" href="#dta.RoadLink.getOrientation" title="dta.RoadLink.getOrientation"><tt class="xref py py-meth docutils literal"><span class="pre">getOrientation()</span></tt></a> method.</p>
 </dd></dl>
 
 <dl class="method">
