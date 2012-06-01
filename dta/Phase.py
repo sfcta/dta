@@ -111,7 +111,7 @@ class Phase(object):
             red = str(self._red)
                     
         header = "PHASE\n%s %s %s %d" % (green, yellow, red, self._phaseType)
-        body = "\n".join([repr(mov) for mov in self.iterMovements()]) 
+        body = "\n".join([mov.getDynameqStr() for mov in self.iterMovements()])
         return "%s\n%s" % (header, body)
 
     def addMovement(self, movement):

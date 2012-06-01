@@ -725,11 +725,11 @@ class DynameqNetwork(Network):
         Output the control plans to disk
         """
         for planInfo in self.iterPlanCollectionInfo():
-            ctrl_object.write(str(planInfo))            
+            ctrl_object.write(planInfo.getDynameqStr())
             for node in sorted(self.iterRoadNodes(), key=lambda node: node.getId()):
                 if node.hasTimePlan(planInfo):
                     tp = node.getTimePlan(planInfo)                    
-                    ctrl_object.write(str(tp))
+                    ctrl_object.write(tp.getDynameqStr())
 
 
     def _readMovementOutFlowsAndTTs(self):
