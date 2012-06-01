@@ -71,12 +71,18 @@ TURN_RIGHT = ("RT", "RT2")
 
 USAGE = r"""
 
- python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix
+ python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes.csv]
  
  e.g.
  
- python importExcelSignals.py . "sf" r"X:\mx\dta\dev\testdata\cubeSubarea_sfCounty\excelSignalCards2" 15:30 18:30
- This script reads all the excel signal cards in the excel_signal_cards dir and converts them to the dynameq network specified with the first two arguments. Only signals that are active in the given time period are converted. The script writes a new dynameq network that includes the signals to output_dynameq_dir using the prefix output_dynameq_net_prefix
+ python importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\excelSignalCards 15:30 18:30 Y:\dta\SanFrancisco\2010\network\movement_override.csv
+ 
+ This script reads all the excel signal cards in the excel_signal_cards dir and converts them to the dynameq network
+ specified with the first two arguments.
+ 
+ Only signals that are active in the given time period are converted.
+ 
+ The script writes a new dynameq network that includes the signals to output_dynameq_dir using the prefix output_dynameq_net_prefix
  """
 
 class SignalData(object):
@@ -1763,7 +1769,7 @@ def verifySingleSignal(net, fileName, mappedNodes):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 6:
+    if len(sys.argv) <= 6:
         print USAGE
         sys.exit(2)
 
@@ -1772,6 +1778,10 @@ if __name__ == "__main__":
     EXCEL_DIR                     = sys.argv[3]
     START_TIME                    = sys.argv[4]
     END_TIME                      = sys.argv[5]
+    if len(sys.argv) >= 7:
+        MOVEMENT_TURN_OVERRIDES   = sys.argv[6]
+    else:
+        MOVEMENT_TURN_OVERRIDES   = None
     #OUTPUT_DYNAMEQ_NET_DIR        = sys.argv[6]
     #OUTPUT_DYNAMEQ_NET_PREFIX     = sys.argv[7]
 
@@ -1787,6 +1797,17 @@ if __name__ == "__main__":
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
     
+    if MOVEMENT_TURN_OVERRIDES:
+        overrides = []        
+        inputstream = open(MOVEMENT_TURN_OVERRIDES, "r")
+        for line in inputstream:
+            line = line.strip("\n")
+            override = line.split(",")
+            if override[0] == "From Dir": continue # header line
+            if override[5] == 'Thru': override[5] = dta.Movement.DIR_TH
+            overrides.append(override)
+        net.setMovementTurnTypeOverrides(overrides)
+        
 ##    projectFolder2 = "C:/SFCTA2/dta/testdata/Roads2010_example"
 ##    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
 ##    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))

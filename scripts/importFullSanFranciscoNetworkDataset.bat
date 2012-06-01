@@ -22,7 +22,7 @@ IF ERRORLEVEL 1 goto done
 ::
 :: 2) attach the signal data to the DTA network
 ::
-python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\excelSignalCards 15:30 18:30
+python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\excelSignalCards 15:30 18:30 Y:\dta\SanFrancisco\2010\network\movement_override.csv
 :: primary output: Dynameq files sf_signals_{scen,base,advn,ctrl}.dqt
 :: log     output: importExcelSignals.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
