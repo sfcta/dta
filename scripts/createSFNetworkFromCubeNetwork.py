@@ -234,7 +234,8 @@ if __name__ == '__main__':
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
        linkEffectiveLengthFactorEvalStr = "1",
-       linkResponseTimeFactorEvalStr    = "1.0 if FT=='6' else float(responseTimeLookup['FT'+FT+' AT'+AT])",
+     # Fixed the response time factor to 1 for the time being, we might want to figure out why it is set to 1.05 for non-centroid-connectors in Geary network. 
+       linkResponseTimeFactorEvalStr    = "1.0",
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
