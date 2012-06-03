@@ -572,3 +572,9 @@ class Movement(object):
         """
         self._permission = VehicleClassGroup.getProhibited()
 
+    def prohibitAllVehiclesButTransit(self):
+        """
+        Set the movement to prohibited to all vehicles but transit 
+        """
+        self._permission = VehicleClassGroup.prohibitAllMovementsButTransit()
+

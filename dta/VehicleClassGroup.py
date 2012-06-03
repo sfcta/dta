@@ -33,6 +33,16 @@ class VehicleClassGroup:
                           VehicleClassGroup.CLASSDEFINITION_PROHIBITED, "#ffff00")
         return prohibited
 
+    @classmethod
+    def prohibitAllMovementsButTransit(cls):
+        """
+        Return a vehicle class group object that prohibits all movements
+        but the transit ones. 
+        """
+        prohibited = VehicleClassGroup("Transit",
+                          VehicleClassGroup.TRANSIT, "#55ff00")
+        return prohibited
+    
     def __init__(self, name, classDefinitionString, colorCode):
         """
         Constructor.
