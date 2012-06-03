@@ -268,7 +268,59 @@ class Network(object):
                     movements_added += 1
         
         DtaLogger.info("addAllMovements() added %d movements" % movements_added)
+    
+    def setMovementTurnTypeOverrides(self, overrides):
+        """
+        Sets movement turn type overrides.  *overrides* is specified as a list of overrides, where each override
+        is a tuple containing ( *from_dir*, *from_street*, *cross_street*, *to_dir*, *to_street*, *turn_type* ).
         
+        *from_dir* and *to_dir* should be one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_WB`, :py:attr:`RoadLink.DIR_NB`, 
+        and :py:attr:`RoadLink.DIR_SB`.
+        
+        *from_street*, *cross_street* and *to_street* should be labels (corresponding to :py:meth:`Link.getLabel`)
+        
+        *turn_type* should be one of :py:attr:`Movement.DIR_UTURN`, :py:attr:`Movement.DIR_RT`, :py:attr:`Movement.DIR_RT2`,
+        :py:attr:`Movement.DIR_LT2`, :py:attr:`Movement.DIR_LT`, :py:attr:`Movement.DIR_TH`.
+        """
+        overrides_applied = 0
+        for override in overrides:
+            if len(override) < 6:
+                DtaLogger.warn("Override incomplete: %s " % str(override))
+                continue
+
+            if override[0] not in [RoadLink.DIR_EB, RoadLink.DIR_WB, RoadLink.DIR_SB, RoadLink.DIR_NB]:
+                DtaLogger.warn("Invalid override from_dir: %s -- skipping" % str(override[0]))
+                continue
+
+            if override[3] not in [RoadLink.DIR_EB, RoadLink.DIR_WB, RoadLink.DIR_SB, RoadLink.DIR_NB]:
+                DtaLogger.warn("Invalid override to_dir: %s -- skipping" % str(override[3]))
+                continue
+
+            try:
+                movement = self.findMovementForRoadLabels(incoming_street_label=override[1].upper(),
+                                                          incoming_direction=override[0],
+                                                          outgoing_street_label=override[4].upper(), 
+                                                          outgoing_direction=override[3],
+                                                          intersection_street_label=override[2].upper(),
+                                                          roadnode_id=None,
+                                                          remove_label_spaces=False,
+                                                          use_dir_for_movement=False,
+                                                          dir_need_not_be_primary=True)
+                movement.setOverrideTurnType(override[5])
+                overrides_applied += 1
+                DtaLogger.debug("Set override turntype: %s for %s-%s (@%d) %s-%s" % (str(override),
+                                                                                  movement.getIncomingLink().getLabel(),
+                                                                                  movement.getIncomingLink().getDirection(),
+                                                                                  movement.getAtNode().getId(), 
+                                                                                  movement.getOutgoingLink().getLabel(),
+                                                                                  movement.getOutgoingLink().getDirection()))
+
+            except dta.DtaError, e:
+                DtaLogger.warn("Failed to set movement override %s: %s -- skipping" % (str(override), str(e)))
+                continue
+        
+        DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d out of %d overrides" % (overrides_applied, len(overrides)))
+
     def addLink(self, newLink):
         """
         Verifies that:
@@ -876,7 +928,8 @@ class Network(object):
                                             intersection_street_label=None,
                                             roadnode_id=None,
                                             remove_label_spaces=False,
-                                            use_dir_for_movement=True):
+                                            use_dir_for_movement=True,
+                                            dir_need_not_be_primary=False):
         """
         Attempts to find the movement from the given *incoming_street_label* and *incoming_direction*
         to the given *outgoing_street_label* and *outgoing_direction*.  If this is a through movement or a U-Turn
@@ -895,6 +948,10 @@ class Network(object):
         
         Pass *use_dir_for_movement* as True if the *incoming_street_label* and *outgoing_street_label* are useful
         for identifying the intersection but not necessary for the movement (e.g. only the direction needs to match)
+        
+        Pass *dir_need_not_be_primary* as True if the direction matching should be loose; e.g. 
+        if :py:attr:`RoadLink.DIR_EB` means the link must be going eastbound *somewhat* even if it's really heading
+        south east and so :py:meth:`RoadLink.getDirection` returns :py:attr:RoadLink.DIR_SB`.
         
         Raises a :py:class:`DtaError` on failure, returns a :py:class:`Movement` instance on success.
         """
@@ -936,7 +993,8 @@ class Network(object):
                 streetnames = roadnode_candidate.getStreetNames(incoming=True, outgoing=True)
                 if remove_label_spaces: streetnames = [s.replace(" ","") for s in streetnames]
                 
-                if incoming_street_label in streetnames and outgoing_street_label in streetnames:
+                if ((incoming_street_label in streetnames) and (outgoing_street_label in streetnames) and \
+                    ((intersection_street_label == None) or (intersection_street_label in streetnames))):
                     roadnode = roadnode_candidate
                     break
             
@@ -960,6 +1018,7 @@ class Network(object):
             if remove_label_spaces: label = label.replace(" ","")
             candidate_links[dir][label] = ilink
         
+        incoming_link = None
         # the direction is enough
         if use_dir_for_movement and incoming_direction in candidate_links and len(candidate_links[incoming_direction])==1:
             incoming_link = candidate_links[incoming_direction].values()[0]
@@ -968,10 +1027,24 @@ class Network(object):
         elif incoming_direction in candidate_links and incoming_street_label in candidate_links[incoming_direction]:
             incoming_link = candidate_links[incoming_direction][incoming_street_label]
         
+        # dir need not be parimary -- use hasDirection
+        elif dir_need_not_be_primary:
+            for dir in candidate_links:
+                for label in candidate_links[dir]:
+                    if use_dir_for_movement and candidate_links[dir][label].hasDirection(incoming_direction):
+                        incoming_link = candidate_links[dir][label]
+                        break
+                    
+                    if incoming_street_label == label and candidate_links[dir][label].hasDirection(incoming_direction):
+                        incoming_link = candidate_links[dir][label]
+                        break
+        
         # failed
-        else:
+        if not incoming_link:
+            candidate_str = ""
+            for dir in candidate_links: candidate_str += dir + ":" + ",".join(candidate_links[dir].keys()) + "  "
             raise DtaError("findMovementForRoadLabels: Couldn't find incoming link %s %s: %s" %
-                            (incoming_street_label, incoming_direction, str(candidate_links)))
+                            (incoming_street_label, incoming_direction, candidate_str))
        
         # Found the intersection; now find the exact outgoing link      
         candidate_links = {} # dir -> { name -> link }
@@ -985,6 +1058,7 @@ class Network(object):
             if remove_label_spaces: label = label.replace(" ","")
             candidate_links[dir][label] = olink
         
+        outgoing_link = None
         # the direction is enough
         if use_dir_for_movement and outgoing_direction in candidate_links and len(candidate_links[outgoing_direction])==1:
             outgoing_link = candidate_links[outgoing_direction].values()[0]
@@ -992,11 +1066,24 @@ class Network(object):
         # direction is ambiguous but both match
         elif outgoing_direction in candidate_links and outgoing_street_label in candidate_links[outgoing_direction]:
             outgoing_link = candidate_links[outgoing_direction][outgoing_street_label]
-        
+            
+        # dir need not be parimary -- use hasDirection
+        elif dir_need_not_be_primary:
+            for dir in candidate_links:
+                for label in candidate_links[dir]:
+                    if use_dir_for_movement and candidate_links[dir][label].hasDirection(outgoing_direction):
+                        outgoing_link = candidate_links[dir][label]
+                        break
+                    
+                    if outgoing_street_label == label and candidate_links[dir][label].hasDirection(outgoing_direction):
+                        outgoing_link = candidate_links[dir][label]
+                        break        
         # failed
-        else:
+        if not outgoing_link:
+            candidate_str = ""
+            for dir in candidate_links: candidate_str += dir + ":" + ",".join(candidate_links[dir].keys()) + "  "
             raise DtaError("findMovementForRoadLabels: Couldn't find outgoing link %s %s: %s" %
-                            (outgoing_street_label, outgoing_direction, str(candidate_links)))            
+                            (outgoing_street_label, outgoing_direction, candidate_str))            
 
 
         return incoming_link.getOutgoingMovement(outgoing_link.getEndNode().getId())

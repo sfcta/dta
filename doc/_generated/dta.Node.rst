@@ -38,7 +38,7 @@ dta.Node
       ~Node.hasOutgoingLinkForNodeId
       ~Node.isIntersection
       ~Node.isJunction
-      ~Node.isShapePoint
+      ~Node.isMidblockNode
       ~Node.iterAdjacentLinks
       ~Node.iterAdjacentNodes
       ~Node.iterAdjacentRoadLinks

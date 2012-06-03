@@ -44,8 +44,8 @@ dta.Centroid
       ~Centroid.isConnectedToRoadNode
       ~Centroid.isIntersection
       ~Centroid.isJunction
+      ~Centroid.isMidblockNode
       ~Centroid.isRoadNode
-      ~Centroid.isShapePoint
       ~Centroid.isVirtualNode
       ~Centroid.iterAdjacentConnectors
       ~Centroid.iterAdjacentLinks

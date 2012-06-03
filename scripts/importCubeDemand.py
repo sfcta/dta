@@ -30,9 +30,11 @@ USAGE = r"""
  
  python importCubeDemand.py ../testdata/dynameqNetwork_gearySubset/ smallTestNet ../testdata/dynameqNetwork_gearySubset/cubeTestDemand.txt "TRUCK" 15:30 18:30 00:15 ../testdata/dynameqNetwork_gearySubset/sfTestDemand 
 
- The command line above will import the TRUCK trips in the cubeTestDemand.txt table to the dynameq network located in ../testdata/dynameqNetwork_gearySubset/ and having the prefix smallTestNet.
- The time period associated with the cubeTestDemand.txt table is from 15:30 to 18:30. The output table will have one time period, the same as the one applied to Cube, and will be saved at  
- ../testdata/dynameqNetwork_gearySubset/sfTestDemand in the dynameq specific format (cell values are hourly trip rates). Currently the timeStep variable (00:15) in our example is not used. 
+ The command line above will import the TRUCK trips in the cubeTestDemand.txt table to the dynameq network located in 
+ ../testdata/dynameqNetwork_gearySubset/ and having the prefix smallTestNet.
+ The time period associated with the cubeTestDemand.txt table is from 15:30 to 18:30. The output table will have one time period,
+ the same as the one applied to Cube, and will be saved at ../testdata/dynameqNetwork_gearySubset/sfTestDemand in the dynameq
+ specific format (cell values are hourly trip rates). Currently the timeStep variable (00:15) in our example is not used. 
  
  """
 

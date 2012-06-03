@@ -64,7 +64,7 @@
 <tt class="descname">__init__</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType=0</em><big>)</big><a class="headerlink" href="#dta.Phase.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. 
 :py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>TimePlan&#8217; is the timeplan instance the phase
-green, red, and yellow is the green, yellow, and red times respectively</p>
+green, red, and yellow are the green, yellow, and red times respectively (int or float)</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -78,6 +78,9 @@ green, red, and yellow is the green, yellow, and red times respectively</p>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Phase.addMovement" title="dta.Phase.addMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.addMovement</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Phase.getDynameqStr" title="dta.Phase.getDynameqStr"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.getDynameqStr</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Phase.getGreen" title="dta.Phase.getGreen"><tt class="xref py py-obj docutils literal"><span class="pre">Phase.getGreen</span></tt></a></td>
@@ -123,9 +126,15 @@ allready exists and exception will be thrown</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Phase.getDynameqStr">
+<tt class="descname">getDynameqStr</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Phase.getDynameqStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dynameq representation of the phase as a string</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Phase.getGreen">
 <tt class="descname">getGreen</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Phase.getGreen" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the green time</p>
+<dd><p>Return the green time as an integer or float</p>
 </dd></dl>
 
 <dl class="method">
@@ -143,7 +152,7 @@ allready exists and exception will be thrown</p>
 <dl class="method">
 <dt id="dta.Phase.getRed">
 <tt class="descname">getRed</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Phase.getRed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the red time</p>
+<dd><p>Return the red time as an integer or float</p>
 </dd></dl>
 
 <dl class="method">
@@ -155,7 +164,7 @@ allready exists and exception will be thrown</p>
 <dl class="method">
 <dt id="dta.Phase.getYellow">
 <tt class="descname">getYellow</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Phase.getYellow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the yellow time</p>
+<dd><p>Return the yellow time as an integer or float</p>
 </dd></dl>
 
 <dl class="method">

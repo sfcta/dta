@@ -51,16 +51,21 @@ dta.CubeNetwork
       ~CubeNetwork.hasNodeForId
       ~CubeNetwork.hasPlanCollectionInfo
       ~CubeNetwork.insertVirtualNodeBetweenCentroidsAndRoadNodes
+      ~CubeNetwork.iterCentroids
       ~CubeNetwork.iterConnectors
       ~CubeNetwork.iterLinks
       ~CubeNetwork.iterNodes
       ~CubeNetwork.iterPlanCollectionInfo
       ~CubeNetwork.iterRoadLinks
       ~CubeNetwork.iterRoadNodes
+      ~CubeNetwork.iterVirtualLinks
+      ~CubeNetwork.iterVirtualNodes
       ~CubeNetwork.mergeLinks
       ~CubeNetwork.mergeSecondaryNetwork
       ~CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds
       ~CubeNetwork.mergeSecondaryNetworkBasedOnLinkIds2
+      ~CubeNetwork.moveCentroidConnectorFromIntersectionToMidblock
+      ~CubeNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks
       ~CubeNetwork.moveVirtualNodesToAvoidShortConnectors
       ~CubeNetwork.readCSVs
       ~CubeNetwork.readFromShapefiles
@@ -72,6 +77,7 @@ dta.CubeNetwork
       ~CubeNetwork.removeUnconnectedNodes
       ~CubeNetwork.renameLink
       ~CubeNetwork.renameNode
+      ~CubeNetwork.setMovementTurnTypeOverrides
       ~CubeNetwork.splitLink
       ~CubeNetwork.writeLinksToShp
       ~CubeNetwork.writeMovementsToShp

@@ -23,7 +23,7 @@ USAGE = r"""
  
  e.g.
  
- python attachCountsFromCountDracula . sf
+ python attachCountsFromCountDracula.py . sf
  
 
  Checks the CountDracula counts database for movement and turn counts for a few different

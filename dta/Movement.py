@@ -34,13 +34,19 @@ class Movement(object):
     """
     Base class that represents a movement.
     """
-
+    #: U-turn movement (returned by :py:meth:`Movement.getTurnType`)
     DIR_UTURN   = "UTURN"
+    #: Right turn movement (returned by :py:meth:`Movement.getTurnType`)
     DIR_RT      = 'RT'
+    #: Right turn 2 (diff from RT?) movement (returned by :py:meth:`Movement.getTurnType`)
     DIR_RT2     = 'RT2'
+    #: Left turn 2 (diff from LT?) movement (returned by :py:meth:`Movement.getTurnType`)
     DIR_LT2     = 'LT2'
+    #: left turn movement (returned by :py:meth:`Movement.getTurnType`)
     DIR_LT      = 'LT'
+    #: Throughmovement (returned by :py:meth:`Movement.getTurnType`)
     DIR_TH      = 'TH'
+    
     PROTECTED_CAPACITY_PER_HOUR_PER_LANE = 1900
 
     PERMITTED_ALL = "all"
@@ -104,12 +110,13 @@ class Movement(object):
         self._incomingLane  = incomingLane
         self._outgoingLane  = outgoingLane
         self._followupTime  = followupTime
+        self._overrideTurnType = None
         
-        self._centerline = self.getCenterLine()
+        self._centerline    = self.getCenterLine()
         
-        self._simOutVolume = defaultdict(int)      # indexed by timeperiod
-        self._simInVolume = defaultdict(int)      # indexed by timeperiod
-        self._simMeanTT = defaultdict(float)    # indexed by timeperiod
+        self._simOutVolume  = defaultdict(int)      # indexed by timeperiod
+        self._simInVolume   = defaultdict(int)      # indexed by timeperiod
+        self._simMeanTT     = defaultdict(float)    # indexed by timeperiod
         # TODO: what is this used for?!      
         self._penalty   = 0
         self._timeVaryingCosts = []
@@ -209,11 +216,31 @@ class Movement(object):
             return True
         return False
 
+    def setOverrideTurnType(self, turntype):
+        """
+        Sets this movement to use the given turntype rather than figuring it out from the angle between the
+        incoming and outgoing link.
+        
+        Throws an exception if the turntype is invalid.
+        """
+        if turntype not in [Movement.DIR_UTURN, Movement.DIR_RT, Movement.DIR_RT2, 
+                            Movement.DIR_LT2, Movement.DIR_LT, Movement.DIR_TH]:
+            raise DtaError("Invalid override turn_type: %s -- skipping" % str(turntype))
+            
+        self._overrideTurnType = turntype
+        
     def getTurnType(self):
         """
-        Return the type of the turn the movement makes as one of the following strings
-        UTURN, RT, RT2, LT2, LT, TH
+        Returns the type of the movement, one of :py:attr:`Movement.DIR_UTURN`, :py:attr:`Movement.DIR_RT`, :py:attr:`Movement.DIR_RT2`,
+        :py:attr:`Movement.DIR_LT2`, :py:attr:`Movement.DIR_LT`, :py:attr:`Movement.DIR_TH`.
+
+        The movement type is determined by the angles of the incoming links (based on the start nodes and end nodes only);
+        however, if a Movement type override is set using :py:meth:`Movement.setOverrideTurnType` then that will supercede
+        the angle-based analysis.
         """
+        if self._overrideTurnType != None:
+            return self._overrideTurnType
+        
         dx1 = self._incomingLink.getEndNode().getX() - self._incomingLink.getStartNode().getX()
         dy1 = self._incomingLink.getEndNode().getY() - self._incomingLink.getStartNode().getY()
 
