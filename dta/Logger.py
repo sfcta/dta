@@ -51,7 +51,7 @@ def setupLogging(infoLogFilename, debugLogFilename, logToConsole=True):
     
     if logToConsole:
         consolehandler = logging.StreamHandler()
-        consolehandler.setLevel(logging.DEBUG)
+        consolehandler.setLevel(logging.INFO)
         consolehandler.setFormatter(logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s'))
         DtaLogger.addHandler(consolehandler)
         
