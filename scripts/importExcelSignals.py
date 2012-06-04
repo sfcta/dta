@@ -1196,14 +1196,15 @@ def mapMovements(mec, baseNetwork):
         rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
-        indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
+        indicators = {TURN_RIGHT:rightTurnIndicators, TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
         result = []
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
                 if indicator in gMovName:
                    result.extend(dir)
-                   break
-
+        if not "RT" in result:
+            if "TH" in result:
+                result.extend(TURN_RIGHT)
         return result
 
     def mapGroupMovements(mec, groupMovementNames, bNode):
@@ -1217,7 +1218,7 @@ def mapMovements(mec, baseNetwork):
             if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
                "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
                "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-               "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName :
+               "(FAR" in gMovName or "SHRADER PATH" in gMovName: #or " WBRT" in gMovName or " RT. TURN" in gMovName :
                 continue
 
 
@@ -1277,9 +1278,9 @@ def mapMovements(mec, baseNetwork):
             gMovements = []
             if gTurnTypes:
                 availableMovs = list(chain(*[link.iterOutgoingMovements() for link in gLinks]))
-                for mov in availableMovs: 
-                   if mov.getTurnType() in gTurnTypes:
-                       gMovements.append(mov)
+                for mov in availableMovs:
+                    if mov.getTurnType() in gTurnTypes:
+                        gMovements.append(mov)
 
                 if len(gMovements) == 0:
                     dta.DtaLogger.error("%s # %d # cannot identify the movements for the group "
@@ -1366,7 +1367,7 @@ def mapMovements(mec, baseNetwork):
         if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
            "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
            "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-           "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName:
+           "(FAR" in gMovName or "SHRADER PATH" in gMovName: #or " WBRT" in gMovName or " RT. TURN" in gMovName:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
@@ -1619,7 +1620,7 @@ def convertSignalToDynameq(node, card, planInfo):
         if not cso:
             dta.DtaLogger.error("Unable to find CSO for signal %s" % card.fileName) 
             raise dta.DtaError("Unable to find CSO for signal %s" % card.fileName)
-    #dta.DtaLogger.info("Signal %s selected CSO %s with start time %s and end time %s." % (card.fileName, cso, signalTiming.startTime, signalTiming.endTime))
+    dta.DtaLogger.info("Signal %s selected CSO %s with start time %s and end time %s." % (card.fileName, cso, signalTiming.startTime, signalTiming.endTime))
     offset = card.signalTiming[cso].offset
     dPlan = TimePlan(node, offset, planInfo)
 
@@ -1848,7 +1849,7 @@ if __name__ == "__main__":
         if cardsWithMovements == False:
             continue
         else:
-            cardsWithMove.append(cardsWithMovements)
+            cardsWithMove.append(cardsWithMovements)           
         allPlans = createDynameqSignals(net, cardsWithMovements, planInfo, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
 
         if allPlans == False:
