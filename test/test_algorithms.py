@@ -18,6 +18,7 @@ __license__     = """
 
 import os
 import nose 
+from itertools import izip
 
 import dta
 from dta.Scenario import Scenario
@@ -29,7 +30,7 @@ from dta.DynameqNetwork import DynameqNetwork
 from dta.Utils import *
 
 from dta.Algorithms import dfs, hasPath, getConvexHull, \
-    getConvexHull2, getTightHull, getConvexHull3, pairwise, isPointInPolygon
+    getConvexHull2, getTightHull, getConvexHull3, pairwise, isPointInPolygon, getConvexHullGrahamScan, getContainingPolygon
 
 dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
@@ -188,3 +189,29 @@ class TestAlgorithms:
         point = [0.5, 0.5]
 
         #assert isPointInPolygon(point, polygon)
+
+    def test_getPolygon(self):
+
+        net = getTestNet()
+
+        net.writeNodesToShp("TestNodes")
+        net.writeLinksToShp("TestLinks")
+
+        points = [(n.getX(), n.getY()) for n in net.iterRoadNodes()]
+
+        nodes = dict(izip(points, net.iterNodes()))
+        
+        chull = getConvexHullGrahamScan(points)
+
+        node = net.getNodeForId(26628)
+
+        print 
+        for n in node.iterAdjacentNodes():
+            print n.getId(), node.getOrientation((n.getX(), n.getY()))
+            
+        #pdb.set_trace()
+        #writePolygon(chull, "chull2")
+        #getContainingPolygon(net)
+        
+
+        

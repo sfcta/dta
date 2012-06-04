@@ -404,7 +404,7 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
-    def moveCentroidConnectorsFromIntersectionsToMidblocks(self, splitReverseLinks=False, moveVirtualNodeDist=None):
+    def moveCentroidConnectorsFromIntersectionsToMidblocks(self, splitReverseLinks=False, moveVirtualNodeDist=None, externalNodeIds=[]):
         """
         Remove centroid connectors from intersections and attach them to midblock locations.
         If there is not a node defining a midblock location the algorithm will split the 
@@ -434,6 +434,9 @@ class Network(object):
                 continue 
             
             if node.isJunction(countRoadNodesOnly=True):
+                continue
+
+            if node.getId() in externalNodeIds:
                 continue
             
             connectors = [link for link in node.iterAdjacentLinks() if isinstance(link, Connector)]

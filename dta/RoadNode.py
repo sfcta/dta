@@ -182,7 +182,6 @@ class RoadNode(Node):
         #finally sort the candidate links based on their length 
         return  sorted(result, key = lambda l:l.getLength(), reverse=True) 
                                 
-
     def getOrientation(self, point):
         """
         Return the clockwise angle from the North measured in degrees of the line 
@@ -205,7 +204,6 @@ class RoadNode(Node):
             orientation = 0.0
 
         return orientation * 180.0 / math.pi
-
 
     def _getMinAngle(self, node1, edge1, node2, edge2):
         """
