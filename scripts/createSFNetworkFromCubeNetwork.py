@@ -280,7 +280,7 @@ if __name__ == '__main__':
     # Move the centroid connectors from intersection nodes to midblock locations
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
         
-    sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50)
+    sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=[])
     
     # TODO: I think this isn't necessary; but discuss if the soln below is ok
     # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),
