@@ -1116,7 +1116,8 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
             continue     
 
         for idx in range(len(baseStreetNames_cleaned)):
-            if not difflib.get_close_matches(baseStreetNames_cleaned[idx], [streetNames[idx]], 1, CUTOFF): break
+            if not difflib.get_close_matches(baseStreetNames_cleaned[idx], [streetNames[idx]], 1, CUTOFF):
+                break
 
             ## The node selection for this intersection has to be hard-coded since there are two intersections between the same streets and one does
             ## not have the turns that are included in the signal phases
@@ -1129,7 +1130,7 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
             elif streetNames == ['DONAHUE', 'INNES'] and node.getId()!= 51690:
                 break
             else:
-                excelCard.mappedStreet[streetNames[idx]] = baseStreetNames[idx]
+                excelCard.mappedStreet[streetNames[idx]] = baseStreetNames_cleaned[idx]
        
         else:
             mappedNodes[excelCard.iiName] = node.getId()
@@ -1174,7 +1175,7 @@ def mapMovements(mec, baseNetwork):
         result = []
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
-                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL" and gMovName != "NORTH POINT":
+                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL" and gMovName != "NORTH POINT" and gMovName != "I-80 E OFF-RAMP":
                    result.append(dir)
                    break
        
@@ -1196,15 +1197,16 @@ def mapMovements(mec, baseNetwork):
         rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
-        indicators = {TURN_RIGHT:rightTurnIndicators, TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
+        indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
         result = []
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
                 if indicator in gMovName:
-                   result.extend(dir)
+                    result.extend(dir)
         if not "RT" in result:
             if "TH" in result:
                 result.extend(TURN_RIGHT)
+
         return result
 
     def mapGroupMovements(mec, groupMovementNames, bNode):
@@ -1213,12 +1215,13 @@ def mapMovements(mec, baseNetwork):
         The keys of the dictonary are the movement names and its values are
         all the iids of the corresponding movemens
         """
+
         streetNames = list(mec.streetNames)
         for gMovName in groupMovementNames:
             if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
                "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
                "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-               "(FAR" in gMovName or "SHRADER PATH" in gMovName: #or " WBRT" in gMovName or " RT. TURN" in gMovName :
+               "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName :
                 continue
 
 
@@ -1227,7 +1230,6 @@ def mapMovements(mec, baseNetwork):
                 stName = getStreetName(gMovName, streetNames)
             except StreetNameMappingError, e:
                 raise StreetNameMappingError("%s#%d#%s" % (mec.fileName, mec.mappedNodeId, str(e)))
-                
             gTurnTypes = getTurnType(gMovName)
             gDirections = getDirections(gMovName)
             if "BUSH" in gMovName and "WB" in gDirections:
@@ -1258,7 +1260,7 @@ def mapMovements(mec, baseNetwork):
             #collect all the links of the approach that have the same direction
 
             gLinks = []
-            candLinks = [link for link in bNode.iterIncomingLinks() if link.getLabel() == bStName]
+            candLinks = [link for link in bNode.iterIncomingLinks() if bStName in link.getLabel()]
             for candLink in candLinks:
                 if gDirections:
                     if set(getPossibleLinkDirections(candLink)) & set(gDirections):
@@ -1367,7 +1369,7 @@ def mapMovements(mec, baseNetwork):
         if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
            "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
            "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-           "(FAR" in gMovName or "SHRADER PATH" in gMovName: #or " WBRT" in gMovName or " RT. TURN" in gMovName:
+           "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
