@@ -251,6 +251,8 @@ class TimePlan(object):
         if self.getNumPhases() < 2:
             raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.getId())
 
+        # This section checked for all-red phases, but it is commented out because we think that Dynameq can handle red phases
+
 ##        for phase in self.iterPhases():
 ##            if phase.getNumMovements() < 1:
 ##                raise DtaError("Node %s The number of movements in a phase "
