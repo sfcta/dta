@@ -321,5 +321,7 @@ class TimePlan(object):
                         
                     if mov1.isLeftTurn() and mov2.isLeftTurn():
                         # two left turns - first takes priority (?)
-                        mov2.setPermitted()
+                        if not mov1.isPermitted():
+                            mov2.setPermitted()
+
 
