@@ -182,10 +182,13 @@ class TransitLine(object):
         return line_comment + line_str + headway_comment + headway + seg_str
     
 
-    def addSegment(self, link, dwell, lane=1, stopside=TransitSegment.STOP_EXIT_LANE, position=-1):
-        
+    def addSegment(self, link, dwell, label=None, lane=1, stopside=TransitSegment.STOP_EXIT_LANE, position=-1):
+        """
+        Create a :py:class:`TransitSegment` instance with the given information and add it to this
+        line.
+        """
         transitSegment = TransitSegment(self.getNumSegments() + 1, 
-                                        link, 'label%d' % (self.getNumSegments() + 1),
+                                        link, label if label else 'label%d' % (self.getNumSegments() + 1),
                                         lane, # outside lane
                                         dwell, TransitSegment.STOP_EXIT_LANE)
 

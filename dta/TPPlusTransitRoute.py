@@ -370,7 +370,7 @@ class TPPlusTransitRoute(object):
         return sum([tr.isStop for tr in self.iterTransitNodes()])
 
 
-    def toTransitLine(self, dtaNetwork, dtaRouteId, MODE_TO_LITYPE, headwayIndex,
+    def toTransitLine(self, dtaNetwork, dtaRouteId, MODE_TO_LITYPE, MODE_TO_VTYPE, headwayIndex,
                         startTime, demandDurationInMin, doShortestPath=True):
         """
         Convert this instance to an equivalent DTA transit line.  Returns an instance of a :py:class:`TransitLine`.
@@ -386,6 +386,8 @@ class TPPlusTransitRoute(object):
         * *dtaRouteId* is the id number for the new :py:class:`TransitLine` instance.
         * *MODE_TO_LITYPE* maps the :py:attr:`TPPlusTransitRoute.mode` attribute (strings) to a line type
           (either :py:attr:`TransitLine.LINE_TYPE_BUS` or :py:attr:`TransitLine.LINE_TYPE_TRAM`)
+        * *MODE_TO_VTYPE* maps the :py:attr:`TPPlusTransitRoute.mode` attribute (strings) to a 
+          :py:class:`VehicleType` name
         * *headwayIndex* is the index into the frequencies to use for the headway (for use with
           :py:meth:`TPPlusTransitRoute.getHeadway`)
         * *startTime* is the start time for the bus line (and instance of :py:class:`Time`),
@@ -423,7 +425,7 @@ class TPPlusTransitRoute(object):
                                  id=dtaRouteId,
                                  label=self.name, 
                                  litype=MODE_TO_LITYPE[self.mode],
-                                 vtype='Generic',
+                                 vtype=MODE_TO_VTYPE[self.mode],
                                  stime=dta.Time(random_start.hour, random_start.minute, random_start.second),
                                  level=0,
                                  active=dta.TransitLine.LINE_ACTIVE,
@@ -434,7 +436,7 @@ class TPPlusTransitRoute(object):
                
             if dtaNetwork.hasLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId()):
                 dLink = dtaNetwork.getLinkForNodeIdPair(dNodeA.getId(), dNodeB.getId())
-                dSegment = dRoute.addSegment(dLink, 0)
+                dSegment = dRoute.addSegment(dLink, 0, label='%d_%d' % (dNodeA.getId(), dNodeB.getId()))
 
                 tNodeB = self.getTransitNode(dNodeB.getId())
                 dSegment.dwell = 60*self.getTransitDelay(dNodeB.getId())
@@ -457,7 +459,7 @@ class TPPlusTransitRoute(object):
                 for pathNodeA, pathNodeB in itertools.izip(pathNodes, pathNodes[1:]):
                     nodeNumList.append(pathNodeB.getId())
                     dLink = dtaNetwork.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
-                    dSegment = dRoute.addSegment(dLink, 0)
+                    dSegment = dRoute.addSegment(dLink, 0, label='%d_%d' % (dNodeA.getId(), dNodeB.getId()))
 
                 # Warn on this because it's a little odd
                 if len(nodeNumList)>4:

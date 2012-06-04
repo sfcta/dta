@@ -22,7 +22,7 @@ class VehicleClassGroup:
     """
     CLASSDEFINITION_PROHIBITED = "Prohibited"
     CLASSDEFINITION_ALL        = "All"
-    TRANSIT                    = "Transit"           
+    CLASSDEFINITION_TRANSIT    = "Transit"
 
     @classmethod
     def getProhibited(cls):
@@ -30,7 +30,7 @@ class VehicleClassGroup:
         Return a vehicle class group object that prohibits all movements
         """
         prohibited = VehicleClassGroup("Prohibited",
-                          VehicleClassGroup.CLASSDEFINITION_PROHIBITED, "#ffff00")
+                                       VehicleClassGroup.CLASSDEFINITION_PROHIBITED, "#ffff00")
         return prohibited
 
     @classmethod
@@ -40,7 +40,7 @@ class VehicleClassGroup:
         but the transit ones. 
         """
         prohibited = VehicleClassGroup("Transit",
-                          VehicleClassGroup.TRANSIT, "#55ff00")
+                                       VehicleClassGroup.CLASSDEFINITION_TRANSIT, "#55ff00")
         return prohibited
     
     def __init__(self, name, classDefinitionString, colorCode):

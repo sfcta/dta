@@ -59,15 +59,24 @@ if __name__ == "__main__":
                       '14':dta.TransitLine.LINE_TYPE_TRAM, # Muni CableCar
                       '15':dta.TransitLine.LINE_TYPE_TRAM, # Muni LRT
                       }
+    
+    # For now, assume motor standard and LRV1
+    MODE_TO_VTYPE = {'11':"Motor_Std",
+                     '12':"Motor_Std",
+                     '13':"Motor_Std",
+                     '14':"CableCar",
+                     '15':"LRT1"
+                     }
     # others are buses
     for modenum in range(1,30):
         key = "%d" % modenum
         if key not in MODE_TO_LITYPE:
             MODE_TO_LITYPE["%d" % modenum] = dta.TransitLine.LINE_TYPE_BUS
-        
+            MODE_TO_VTYPE["%d" % modenum]  = "Motor_Std"
 
     # write the output file
-    output_file = open(os.path.join(INPUT_DYNAMEQ_NET_DIR, "%s_ptrn.dqt" % INPUT_DYNAMEQ_NET_PREFIX),mode="w+")
+    output_filename = os.path.join(INPUT_DYNAMEQ_NET_DIR, "%s_ptrn.dqt" % INPUT_DYNAMEQ_NET_PREFIX)
+    output_file = open(output_filename,mode="w+")
     output_file.write(dta.TransitLine.getDynameqFileHeaderStr())
     
     dtaTransitLineId = 1
@@ -78,8 +87,8 @@ if __name__ == "__main__":
             # ignore if there's no frequency for this time period
             if tpplusRoute.getHeadway(3) == 0: continue
             
-            dtaTransitLine = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, headwayIndex=3, 
-                                                       startTime=dta.Time(15,30), demandDurationInMin=3*60)
+            dtaTransitLine = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, MODE_TO_VTYPE,
+                                                       headwayIndex=3, startTime=dta.Time(15,30), demandDurationInMin=3*60)
             
             # ignore if no segments for the DTA network
             if dtaTransitLine.getNumSegments() == 0: continue
@@ -89,7 +98,7 @@ if __name__ == "__main__":
 
     output_file.close()
 
-    
+    dta.DtaLogger.info("Output %d transit lines into %s" % (dtaTransitLineId-1, output_filename))
 
     
     
