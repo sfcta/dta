@@ -131,6 +131,7 @@ ENDRUN
                  additionalLocals={}):
         """
         Reads the network from the given csv files.
+        
         * *nodesCsvFilename* is the csv with the node data; *nodeVariableNames* are the column names.
         * *linksCsvFilename* is the csv with the link data; *linkVariableNames* are the column names.
         * *centroidIds* is a list of the node Ids that should be interpreted as centroids
