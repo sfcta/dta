@@ -75,7 +75,7 @@ if __name__ == "__main__":
             MODE_TO_VTYPE["%d" % modenum]  = "Motor_Std"
 
     # write the output file
-    output_filename = os.path.join(INPUT_DYNAMEQ_NET_DIR, "%s_ptrn.dqt" % INPUT_DYNAMEQ_NET_PREFIX)
+    output_filename = os.path.join(INPUT_DYNAMEQ_NET_DIR, "sf_trn_ptrn.dqt")
     output_file = open(output_filename,mode="w+")
     output_file.write(dta.TransitLine.getDynameqFileHeaderStr())
     
@@ -93,10 +93,15 @@ if __name__ == "__main__":
             # ignore if no segments for the DTA network
             if dtaTransitLine.getNumSegments() == 0: continue
             
+            # check if the movements are allowed
+            dtaTransitLine.checkMovementsAreAllowed(enableMovement=True)
+            
             output_file.write(dtaTransitLine.getDynameqStr())
             dtaTransitLineId += 1
 
     output_file.close()
+
+    net.write(".", "sf_trn")
 
     dta.DtaLogger.info("Output %d transit lines into %s" % (dtaTransitLineId-1, output_filename))
 

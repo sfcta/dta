@@ -66,6 +66,13 @@ class VehicleClassGroup:
         """
         return self.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_ALL
 
+    def allowsTransit(self):
+        """
+        Returns True if the vehicle class group allows transit
+        """
+        return (self.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_ALL or
+                self.classDefinitionString == VehicleClassGroup.CLASSDEFINITION_TRANSIT)
+        
     def allowsNone(self):
         """
         Return True if the vehicle class group allows all vehicle classes

@@ -41,8 +41,7 @@ class TransitSegment(object):
         A link in a :py:class:`TransitLine`.  The arguments are:
         
         * *id* segment identifier
-        * *start* starting node ID
-        * *end* ending node ID
+        * *link* is the :py:class:`RoadLink` instance on which the transit segment runs
         * *label* user-defined label for the segment or stop, a string
         * *tlane* is the lane used by the transit line. Use :py:attr:`TransitSegment.TRANSIT_LANE_UNSPECIFIED`, 1 for the outside lane, 2 for the next in, etc
         * *dwell* is the average dwell time in seconds, a float
@@ -186,17 +185,70 @@ class TransitLine(object):
         """
         Create a :py:class:`TransitSegment` instance with the given information and add it to this
         line.
+        
+        See :py:meth:`TransitSegment.__init__ for how most of the arguments are interpreted.
+        Pass -1 for *position* to append it to the end of this line's transit segments, otherwise
+        the *position* will be used for insertion.
+        
         """
         transitSegment = TransitSegment(self.getNumSegments() + 1, 
                                         link, label if label else 'label%d' % (self.getNumSegments() + 1),
                                         lane, # outside lane
-                                        dwell, TransitSegment.STOP_EXIT_LANE)
+                                        dwell, stopside)
 
         if position == -1:
             self._segments.append(transitSegment)
         else:
             self._segments.insert(position, transitSegment)
         return transitSegment
+
+    def checkMovementsAreAllowed(self, enableMovement):
+        """
+        Iterates through the :py:class:`TransitSegment` instances for this line, and warns about any
+        two that are adjacent and share a node, but which do not have a :py:class:`Movement` between
+        them allowing transit.
+        
+        If *makeUturnsRoundabouts* is passed, then U-Turns will be made into roundabouts.
+        """
+        prev_segment = None
+        for segment in self._segments:
+            
+            # first segment, move on
+            if prev_segment == None:
+                prev_segment = segment
+                continue
+            
+            # if this segment and the previous don't share a node, then there must have been something
+            # like a tunnel or off-street link between, so don't worry about it
+            if prev_segment.link.getEndNode() != segment.link.getStartNode():
+                prev_segment = segment
+                continue
+            
+            # ok, they share a node -- let's see if the movement is allowed for transit
+            movement = None
+            try:
+                movement = prev_segment.link.getOutgoingMovement(segment.link.getEndNode().getId())
+            except dta.DtaError, e:
+                dta.DtaLogger.error("Transit line %s: No movement found for node sequence %d %d %d" %
+                                    (self.label, 
+                                     prev_segment.link.getStartNode().getId(),
+                                     prev_segment.link.getEndNode().getId(),
+                                     segment.link.getEndNode().getId()))
+            
+            if movement and not movement.getVehicleClassGroup().allowsTransit():
+                dta.DtaLogger.error("Transit line %s: Transit movement not allowed for node sequence %d %d %d; VehicleClassGroup=%s" %
+                                    (self.label,
+                                     prev_segment.link.getStartNode().getId(),
+                                     prev_segment.link.getEndNode().getId(),
+                                     segment.link.getEndNode().getId(),
+                                     movement.getVehicleClassGroup().classDefinitionString))
+                
+                if enableMovement:
+                    # TODO: this is assuming it's prohibited
+                    movement.prohibitAllVehiclesButTransit()
+                    dta.DtaLogger.error("=> enabling transit")
+                        
+            prev_segment = segment    
 
     def getNumSegments(self):
         """Return the number of segments(=links) the transit line has"""

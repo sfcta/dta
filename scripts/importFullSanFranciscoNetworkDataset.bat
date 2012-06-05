@@ -34,7 +34,7 @@ IF ERRORLEVEL 1 goto done
 :: 
 :importTransit
 python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
-:: primary output: Dynameq files sf_ptrn.dqt
+:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt
 :: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
 
