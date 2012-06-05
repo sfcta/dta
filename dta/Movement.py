@@ -188,9 +188,32 @@ class Movement(object):
 
     def isUTurn(self):
         """
-        Return True if the movement is a U-Turn
+        Return True if the movement is a U-Turn.
+        
+        This is True if either the incoming start node is the same as the outgoing end node, or if
+        the incoming link and outgoing link have the same name and have an orientation difference
+        of between 160 and 180 degrees according to :py:meth:`RoadLink.getOrientation`
+        
         """
-        return True if self._incomingLink.getStartNode() == self._outgoingLink.getEndNode() else False
+        if self._incomingLink.getStartNode() == self._outgoingLink.getEndNode():
+            return True
+        
+        # if the link is a split link, it still might be a UTurn
+        if self._incomingLink.getLabel() == self._outgoingLink.getLabel():
+            
+            angle_between = self._incomingLink.getOrientation(atEnd=True) - self._outgoingLink.getOrientation(atEnd=False)
+            if angle_between > 360:
+                angle_between -= 360
+            if angle_between < 0:
+                angle_between += 360
+            
+            if angle_between > 160 and angle_between <= 180:
+                DtaLogger.debug("Assuming movement @ %d (link %d link %d) is a U-Turn based on angle %f and labels %s" %
+                                (self.getAtNode().getId(),
+                                 self._incomingLink.getId(), self._outgoingLink.getId(),
+                                 angle_between, self._incomingLink.getLabel()))
+                return True
+        return False
 
     def isThruTurn(self):
         """
