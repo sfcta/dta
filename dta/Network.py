@@ -272,7 +272,7 @@ class Network(object):
     def setMovementTurnTypeOverrides(self, overrides):
         """
         Sets movement turn type overrides.  *overrides* is specified as a list of overrides, where each override
-        is a tuple containing ( *from_dir*, *from_street*, *cross_street*, *to_dir*, *to_street*, *turn_type* ).
+        is a tuple containing ( *from_dir*, *from_street*, *cross_street*, *to_dir*, *to_street*, *turn_type*, [*perm_type*] ).
         
         *from_dir* and *to_dir* should be one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_WB`, :py:attr:`RoadLink.DIR_NB`, 
         and :py:attr:`RoadLink.DIR_SB`.
@@ -283,6 +283,8 @@ class Network(object):
         :py:attr:`Movement.DIR_LT2`, :py:attr:`Movement.DIR_LT`, :py:attr:`Movement.DIR_TH`.
         """
         overrides_applied = 0
+        permissions_applied = 0
+        
         for override in overrides:
             if len(override) < 6:
                 DtaLogger.warn("Override incomplete: %s " % str(override))
@@ -296,6 +298,7 @@ class Network(object):
                 DtaLogger.warn("Invalid override to_dir: %s -- skipping" % str(override[3]))
                 continue
 
+            movement = None
             try:
                 movement = self.findMovementForRoadLabels(incoming_street_label=override[1].upper(),
                                                           incoming_direction=override[0],
@@ -308,6 +311,7 @@ class Network(object):
                                                           dir_need_not_be_primary=True)
                 movement.setOverrideTurnType(override[5])
                 overrides_applied += 1
+                
                 DtaLogger.debug("Set override turntype: %s for %s-%s (@%d) %s-%s" % (str(override),
                                                                                   movement.getIncomingLink().getLabel(),
                                                                                   movement.getIncomingLink().getDirection(),
@@ -318,8 +322,20 @@ class Network(object):
             except dta.DtaError, e:
                 DtaLogger.warn("Failed to set movement override %s: %s -- skipping" % (str(override), str(e)))
                 continue
+            
+            # handle permission
+            if movement and len(override) >= 7:
+                movement.setVehicleClassGroup(self._scenario.getVehicleClassGroup(override[6]))
+                DtaLogger.debug("Set override permission: %s for %s-%s (@%d) %s-%s"  % (str(override),
+                                                                                  movement.getIncomingLink().getLabel(),
+                                                                                  movement.getIncomingLink().getDirection(),
+                                                                                  movement.getAtNode().getId(), 
+                                                                                  movement.getOutgoingLink().getLabel(),
+                                                                                  movement.getOutgoingLink().getDirection()))
+                permissions_applied += 1
         
-        DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d out of %d overrides" % (overrides_applied, len(overrides)))
+        DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d out of %d turn type overrides" % (overrides_applied, len(overrides)))
+        DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d vehicle class group permissions" % permissions_applied)
 
     def addLink(self, newLink):
         """

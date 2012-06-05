@@ -71,7 +71,7 @@ TURN_RIGHT = ("RT", "RT2")
 
 USAGE = r"""
 
- python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes.csv]
+ python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes1.csv overrideturntypes2.csv ...]
  
  e.g.
  
@@ -1782,7 +1782,7 @@ if __name__ == "__main__":
     START_TIME                    = sys.argv[4]
     END_TIME                      = sys.argv[5]
     if len(sys.argv) >= 7:
-        MOVEMENT_TURN_OVERRIDES   = sys.argv[6]
+        MOVEMENT_TURN_OVERRIDES   = sys.argv[6:]
     else:
         MOVEMENT_TURN_OVERRIDES   = None
     #OUTPUT_DYNAMEQ_NET_DIR        = sys.argv[6]
@@ -1801,14 +1801,15 @@ if __name__ == "__main__":
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
     
     if MOVEMENT_TURN_OVERRIDES:
-        overrides = []        
-        inputstream = open(MOVEMENT_TURN_OVERRIDES, "r")
-        for line in inputstream:
-            line = line.strip("\n")
-            override = line.split(",")
-            if override[0] == "From Dir": continue # header line
-            if override[5] == 'Thru': override[5] = dta.Movement.DIR_TH
-            overrides.append(override)
+        overrides = []
+        for override_file in MOVEMENT_TURN_OVERRIDES:
+            inputstream = open(override_file, "r")
+            for line in inputstream:
+                line = line.strip("\n")
+                override = line.split(",")
+                if override[0] == "From Dir": continue # header line
+                if override[5] == 'Thru': override[5] = dta.Movement.DIR_TH
+                overrides.append(override)
         net.setMovementTurnTypeOverrides(overrides)
         
 ##    projectFolder2 = "C:/SFCTA2/dta/testdata/Roads2010_example"
