@@ -87,17 +87,18 @@ if __name__ == "__main__":
             # ignore if there's no frequency for this time period
             if tpplusRoute.getHeadway(3) == 0: continue
             
-            dtaTransitLine = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, MODE_TO_VTYPE,
-                                                       headwayIndex=3, startTime=dta.Time(15,30), demandDurationInMin=3*60)
+            dtaTransitLines = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, MODE_TO_VTYPE,
+                                                        headwayIndex=3, startTime=dta.Time(15,30), demandDurationInMin=3*60)
+
+            for dtaTransitLine in dtaTransitLines:
+                # ignore if no segments for the DTA network
+                if dtaTransitLine.getNumSegments() == 0: continue
             
-            # ignore if no segments for the DTA network
-            if dtaTransitLine.getNumSegments() == 0: continue
+                # check if the movements are allowed
+                dtaTransitLine.checkMovementsAreAllowed(enableMovement=True)
             
-            # check if the movements are allowed
-            dtaTransitLine.checkMovementsAreAllowed(enableMovement=True)
-            
-            output_file.write(dtaTransitLine.getDynameqStr())
-            dtaTransitLineId += 1
+                output_file.write(dtaTransitLine.getDynameqStr())
+                dtaTransitLineId += 1
 
     output_file.close()
 

@@ -371,15 +371,17 @@ class TPPlusTransitRoute(object):
 
 
     def toTransitLine(self, dtaNetwork, dtaRouteId, MODE_TO_LITYPE, MODE_TO_VTYPE, headwayIndex,
-                        startTime, demandDurationInMin, doShortestPath=True):
+                        startTime, demandDurationInMin, doShortestPath=True, maxShortestPathLen=4):
         """
-        Convert this instance to an equivalent DTA transit line.  Returns an instance of a :py:class:`TransitLine`.
+        Convert this instance to an equivalent DTA transit line(s).  Returns list of instances of 
+        :py:class:`TransitLine`.
         
         Links on the route are checked against the given *dtaNetwork* (an instance of :py:class:`Network`).
         If *doShortestPath* is True, then a shortest path is searched for on the *dtaNetwork* and that
         is included (so this is assuming that the calling instance is missing some nodes; this can happen, for example, 
         if the DTA network has split links for centroid connectors, etc.).
-        If *doShortestPath* is False, these links are dropped (?).
+        If *doShortestPath* is True then any shortest path segments longer than *maxShortestPathLen*
+        are dropped (e.g. if they're Light rail segments underground) and a second 
 
         Other arguments:
         
@@ -398,6 +400,8 @@ class TPPlusTransitRoute(object):
         [*startTime*, *startTime* + the headway).        
         """
 
+        transitLines = []
+        
         dNodeSequence = []
         for tNode in self.iterTransitNodes():
             if not dtaNetwork.hasNodeForId(tNode.nodeId):
@@ -431,6 +435,7 @@ class TPPlusTransitRoute(object):
                                  active=dta.TransitLine.LINE_ACTIVE,
                                  hway=self.getHeadway(headwayIndex),
                                  dep=int(float(demandDurationInMin)/self.getHeadway(headwayIndex)))
+        transitLines.append(dRoute)
         
         for dNodeA, dNodeB in itertools.izip(dNodeSequence, dNodeSequence[1:]):
                
@@ -455,16 +460,32 @@ class TPPlusTransitRoute(object):
                     continue
 
                 pathNodes = dta.ShortestPaths.getShortestPathBetweenNodes(dNodeA, dNodeB)
+                
+                # Warn on this because it's a little odd
+                if len(pathNodes)-1 > maxShortestPathLen:
+                    pathnodes_str = ""
+                    for pathNode in pathNodes: pathnodes_str += "%d " % pathNode.getId()
+                    dta.DtaLogger.warn('Tpplus route %-15s shortest path from %d to %d is long: %s; dropping' %
+                                        (self.name, dNodeA.getId(), dNodeB.getId(), pathnodes_str))
+                    # make a new TransitLine for the next portion
+                    dRoute = dta.TransitLine(net=dtaNetwork, 
+                                             id=dtaRouteId+1,
+                                             label="%s_%d" % (self.name, len(transitLines)),
+                                             litype=MODE_TO_LITYPE[self.mode],
+                                             vtype=MODE_TO_VTYPE[self.mode],
+                                             stime=dta.Time(random_start.hour, random_start.minute, random_start.second),
+                                             level=0,
+                                             active=dta.TransitLine.LINE_ACTIVE,
+                                             hway=self.getHeadway(headwayIndex),
+                                             dep=int(float(demandDurationInMin)/self.getHeadway(headwayIndex)))
+                    transitLines.append(dRoute)
+                    continue
+                        
                 nodeNumList = [ dNodeA.getId() ]
                 for pathNodeA, pathNodeB in itertools.izip(pathNodes, pathNodes[1:]):
                     nodeNumList.append(pathNodeB.getId())
                     dLink = dtaNetwork.getLinkForNodeIdPair(pathNodeA.getId(), pathNodeB.getId())
                     dSegment = dRoute.addSegment(dLink, 0, label='%d_%d' % (dNodeA.getId(), dNodeB.getId()))
-
-                # Warn on this because it's a little odd
-                if len(nodeNumList)>4:
-                    dta.DtaLogger.warn('Tpplus route %-15s shortest path from %d to %d is long: %s' %
-                                        (self.name, dNodeA.getId(), dNodeB.getId(), str(nodeNumList)))
 
             # add delay
             tNodeB = self.getTransitNode(dNodeB.getId())
@@ -472,7 +493,7 @@ class TPPlusTransitRoute(object):
         
         
         dRoute.isPathValid()
-        return dRoute
+        return transitLines
 
     
 
