@@ -14,7 +14,7 @@ set PYTHONPATH=%DTA_CODE_DIR%
 :: 1) create the network from the Cube network
 ::
 :convertStaticNetwork
-python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
 :: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt
 :: log     output: createSFNetworkFromCubeNetwork.{DEBUG,INFO}.log
 :: debug   output: sf_{links,nodes}.shp
@@ -24,7 +24,7 @@ IF ERRORLEVEL 1 goto done
 :: 2) attach the signal data to the DTA network
 ::
 :importSignals
-python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\excelSignalCards 15:30 18:30 Y:\dta\SanFrancisco\2010\network\movement_override.csv Y:\dta\SanFrancisco\2010\network\uturnPros.csv
+python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\network\excelSignalCards 15:30 18:30 Y:\dta\SanFrancisco\2010\network\movement_override.csv Y:\dta\SanFrancisco\2010\network\uturnPros.csv
 :: primary output: Dynameq files sf_signals_{scen,base,advn,ctrl}.dqt
 :: log     output: importExcelSignals.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
