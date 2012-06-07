@@ -71,7 +71,7 @@ TURN_RIGHT = ("RT", "RT2")
 
 USAGE = r"""
 
- python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes1.csv overrideturntypes2.csv ...]
+ python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes.csv]
  
  e.g.
  
@@ -268,8 +268,9 @@ class SignalData(object):
                 #phases[-1]['yellow'] += dur1
                 if phases:
                     phases[-1]['allRed'] += dur1
-                #else:
-                #    raise dta.DtaError("Signal starts with all red")
+                # This all-red phase shouldn't be a problem in Dynameq.  If it turns out to be a problem, un-comment this section.
+##                else:
+##                    raise dta.DtaError("Signal starts with all red")
                 
             elif any2(statePairs, lambda pair: pair == ("G", "G")):
                 if not pPhase:
@@ -658,6 +659,8 @@ def getSignalIntervalData(sheet, signalData):
     if not signalData.sigInterCell or not signalData.colPhaseData:
         return
     #begin with the signal interval data
+    # Commented-out lines are from a previous version of the code.  The current version searches a set number of rows, whereas the other one would break once an empty line was hit.
+    # This meant that not all CSOs were read in, while having it read down 11 rows gets all of the CSOs for all signals.
     startX, startY = signalData.sigInterCell
     #find the first enry
     #i = startX
@@ -756,7 +759,6 @@ def getSignalIntervalData(sheet, signalData):
                     signalTiming.setPhaseTimes(timings)
                     break
                 j += 1
-            #print signalData.iName, row
         else:
             continue
 def fillPhaseInfo(phaseInfo):
@@ -815,7 +817,6 @@ def getPhasingData(sheet, signalData):
             allIntervalStatesValid = True
             for j in range(signalData.colPhaseData, signalData.lastColPhaseData + 1):
                 intervalState = str(sheet.cell_value(rowx=i, colx=j)).upper().strip()
-                #print i, j, intervalState
                 if intervalState == "":
                     singleMovementData.append("")
                 elif intervalState in intervalStateGreen:
@@ -836,10 +837,8 @@ def getPhasingData(sheet, signalData):
         movementIndex += 1
         movementNames.append(groupMovement)
 
-        #print signalData.iName, groupMovement, signalData.colPhaseData, signalData.lastColPhaseData, singleMovementData
         phasingData.append(singleMovementData)
     
-#    print signalData.iName, phasingData
     if phasingData == []:
         raise ParsingCardError("I cannot parse its phasing data")
     numIntervals = len(phasingData[0])
@@ -1098,10 +1097,7 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
     """
 
     streetNames = excelCard.streetNames
-    dta.DtaLogger.debug("Street names for mapping are %s" % streetNames)
-
-
-        
+    dta.DtaLogger.debug("Street names for mapping are %s" % streetNames)     
 
     for node in network.iterRoadNodes():
         if node.getId() in mappedNodes.values():
@@ -1113,8 +1109,9 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
         baseStreetNames_cleaned = sorted(baseStreetNames_cleaned)
 
         if len(baseStreetNames_cleaned) != len(streetNames):
-            continue     
-
+            #dta.DtaLogger.error("Street names different lengths")
+            continue
+        
         for idx in range(len(baseStreetNames_cleaned)):
             if not difflib.get_close_matches(baseStreetNames_cleaned[idx], [streetNames[idx]], 1, CUTOFF):
                 break
@@ -1148,8 +1145,15 @@ def mapMovements(mec, baseNetwork):
         """Finds to which street the movement applies to and returns the 
         street"""
         for i in range(len(streetNames)):
-            if streetNames[i] in gMovName:
-                return streetNames[i]
+            if "3" in gMovName:
+                if "3" in streetNames[i] and not "23" in streetNames[i]:
+                    return streetNames[i]
+            if "23" in gMovName:
+                if "23" in streetNames[i]:
+                    return streetNames[i]
+            else:
+                if streetNames[i] in gMovName:
+                    return streetNames[i]
 
         matches = difflib.get_close_matches(gMovName, streetNames, 1)
         if matches:
@@ -1221,7 +1225,7 @@ def mapMovements(mec, baseNetwork):
             if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
                "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
                "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-               "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName :
+               "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName or "XING" in gMovName or "PEDS " in gMovName:
                 continue
 
 
@@ -1247,8 +1251,6 @@ def mapMovements(mec, baseNetwork):
             f.write("%25s%20s%20s\n" % (gMovName, str(gTurnTypes), str(gDirections)))
             f.close()
 
-            #if mec.fileName == "Fell_Pierce_Ch_18.xls":
-
             if not stName:
                 dta.DtaLogger.error("I cannot identify the approach of the group "
                                                  "movement %s in node %s stored as %s" 
@@ -1258,9 +1260,11 @@ def mapMovements(mec, baseNetwork):
                                                  % (gMovName, mec.iName, mec.iiName))
             bStName = mec.mappedStreet[stName]
             #collect all the links of the approach that have the same direction
-
             gLinks = []
-            candLinks = [link for link in bNode.iterIncomingLinks() if bStName in link.getLabel()]
+            if "3" in bStName and "23" not in bStName:
+                candLinks = [link for link in bNode.iterIncomingLinks()if "3" in link.getLabel() and "23" not in link.getLabel()]
+            else:
+                candLinks = [link for link in bNode.iterIncomingLinks() if bStName in link.getLabel()]
             for candLink in candLinks:
                 if gDirections:
                     if set(getPossibleLinkDirections(candLink)) & set(gDirections):
@@ -1321,6 +1325,9 @@ def mapMovements(mec, baseNetwork):
 
 
     index = defaultdict(int)
+    ## Commented lines are from format change.  Original code parsed all of the signal cards, then mapped them, then created time phases.
+    ## New code performs all processes on one excel card before moving to the next card.
+    
     #excelCardsWithMovements = []    
     #for mec in excelCards:
 
@@ -1339,7 +1346,6 @@ def mapMovements(mec, baseNetwork):
         numSteps = len(mec.phasingData.getElementsOfDimention(1))
         index[numGroupMovements] += 1
 
-#       if numGroupMovements == len(mec.streetNames):
         #for each group movement get the approach's street name
         
         try:
@@ -1369,7 +1375,7 @@ def mapMovements(mec, baseNetwork):
         if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
            "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
            "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
-           "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName:
+           "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName or "XING" in gMovName or "PEDS " in gMovName:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
@@ -1429,6 +1435,7 @@ def selectCSO(excelCard, startTime, endTime):
     returns the ExcelSignalTiming if there is one that is in operation during the 
     input hours. Otherwise it returns none
     """
+    ## Changed from looping through all cards here to looping through the cards in the main program section
 ##    for signalTiming in excelCard.iterSignalTiming():
 ##        dta.DtaLogger.error("start time is %s, end time is %s" % (signalTiming.startTime,signalTiming.endTime))
     
@@ -1443,7 +1450,8 @@ def selectCSO(excelCard, startTime, endTime):
             return signalTiming
 
     return None
-        
+
+    ## Assocated with pickle testing not used   
 ##def readNetIndex():
 ##
 ##    index = {}
@@ -1453,22 +1461,22 @@ def selectCSO(excelCard, startTime, endTime):
 ##    
 ##    return index
 
-def pickleCards(outfileName, cards):
-    """
-    Pickle the cards into the outfileName
-    """
-    outputStream = open(outfileName, "wb")
-    pickle.dump(cards, outputStream)
-    outputStream.close()    
-
-def unPickleCards(fileName):
-    """
-    Unpickle the cards stored in the file and return them
-    """
-    pkl_file = open(fileName, "rb")
-    excelCards = pickle.load(pkl_file)
-    pkl_file.close()
-    return excelCards
+##def pickleCards(outfileName, cards):
+##    """
+##    Pickle the cards into the outfileName
+##    """
+##    outputStream = open(outfileName, "wb")
+##    pickle.dump(cards, outputStream)
+##    outputStream.close()    
+##
+##def unPickleCards(fileName):
+##    """
+##    Unpickle the cards stored in the file and return them
+##    """
+##    pkl_file = open(fileName, "rb")
+##    excelCards = pickle.load(pkl_file)
+##    pkl_file.close()
+##    return excelCards
 
 def getExcelFileNames(directory):
 
@@ -1540,7 +1548,8 @@ def mapIntersectionsByName(network, excelCards, mappedExcelCard, mappedNodes):
     """
     Map each excel card to a dynameq node
     """
-
+    
+    ## These sets are now created and called in the _main_ section 
     #mappedExcelCards = []
 
     #mappedNodes = {}
@@ -1688,6 +1697,7 @@ def getMappedCards(net, excelCards, mappedExcelCard, mappedNodes, cardsDirectory
     Read the cards in the cards directory and map them to network nodes.
     Return the mapped signal objects cards in a list 
     """
+    ## This is not needed anymore.  The parsed excel card is passed to the function as an argument.
     #excelCards = parseExcelCardsToSignalObjects(cardsDirectory)
 
     cards = excelCards
@@ -1728,17 +1738,14 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
                         
     except ExcelCardError, e:
         dta.DtaLogger.error("Error 1: %s" % e)
-        #print e
         return False
     except dta.DtaError, e:
         dta.DtaLogger.error("Error 2: %s" % e)
-        #print str(e)
         return False
     try:
         node.addTimePlan(dPlan)
     except dta.DtaError, e:
         dta.DtaLogger.error("Error 3: %s" % e)
-        #print str(e)
         return False
         
     allPlans=dPlan
@@ -1782,7 +1789,7 @@ if __name__ == "__main__":
     START_TIME                    = sys.argv[4]
     END_TIME                      = sys.argv[5]
     if len(sys.argv) >= 7:
-        MOVEMENT_TURN_OVERRIDES   = sys.argv[6:]
+        MOVEMENT_TURN_OVERRIDES   = sys.argv[6]
     else:
         MOVEMENT_TURN_OVERRIDES   = None
     #OUTPUT_DYNAMEQ_NET_DIR        = sys.argv[6]
@@ -1801,24 +1808,23 @@ if __name__ == "__main__":
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
     
     if MOVEMENT_TURN_OVERRIDES:
-        overrides = []
-        for override_file in MOVEMENT_TURN_OVERRIDES:
-            inputstream = open(override_file, "r")
-            for line in inputstream:
-                line = line.strip("\n")
-                override = line.split(",")
-                if override[0] == "From Dir": continue # header line
-                if override[5] == 'Thru': override[5] = dta.Movement.DIR_TH
-                overrides.append(override)
+        overrides = []        
+        inputstream = open(MOVEMENT_TURN_OVERRIDES, "r")
+        for line in inputstream:
+            line = line.strip("\n")
+            override = line.split(",")
+            if override[0] == "From Dir": continue # header line
+            if override[5] == 'Thru': override[5] = dta.Movement.DIR_TH
+            overrides.append(override)
         net.setMovementTurnTypeOverrides(overrides)
-        
+    ## This section outputs the dynameq network as a shapefile.  This can be used for error-checking and validation after network changes have been made.        
 ##    projectFolder2 = "C:/SFCTA2/dta/testdata/Roads2010_example"
 ##    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
 ##    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
 
     for node in net.iterRoadNodes():
         node._control = 0
-      
+    ## This section was testing the pickle module, but it's not used anymore.      
 ##    in2 = open("test.pkl", "rb")
 ##    data2 = pickle.load(in2)
 ##    in2.close()    
@@ -1859,6 +1865,8 @@ if __name__ == "__main__":
             continue
         else:
             allPlansSet.append(allPlans)
+        ## This section is used to check for cards that have multiple CSOs matching the start and and time.  This allows us to identify
+        ## cards that have both weekend and weekday time plans so that we know which ones need fixed.
 ##        nummatches = checkNumberofTimes(cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
 ##        if nummatches>1:
 ##            allMoreMatchesSet.append(fileName)
