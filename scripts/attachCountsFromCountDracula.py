@@ -75,7 +75,8 @@ def exportTurnCountsToDynameqUserDataFile(cd_reader, sanfranciscoDynameqNet, sta
                                                                         outgoing_street_label=key[2].replace(" ",""), outgoing_direction=key[3],
                                                                         intersection_street_label=(key[4] if key[0]==key[2] else None),
                                                                         roadnode_id=key[5],
-                                                                        remove_label_spaces=True)
+                                                                        remove_label_spaces=True,
+                                                                        dir_need_not_be_primary=True)
             
             outfile.write(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
             for interval in range(num_intervals):
@@ -172,11 +173,11 @@ if __name__ == '__main__':
     
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfranciscoDynameqNet.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
-    sanfranciscoDynameqNet.readLinkShape(SF_SHAPEFILE, "A", "B",
-                                         skipField="OBJECTID", skipValueList=[5234, # Skip this one link at Woodside/Portola because it overlaps
-                                                                              2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
-                                                                              ])
 
+    # 5234 Skip this one link at Woodside/Portola because it overlaps
+    # 2798 Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
+    sanfranciscoDynameqNet.readLinkShape(SF_SHAPEFILE, "A", "B",
+                                         skipEvalStr="OBJECTID in [5234, 2798]")
     
     
     # Instantiate the count dracula reader and do the exports
