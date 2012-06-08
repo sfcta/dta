@@ -1145,12 +1145,19 @@ def mapMovements(mec, baseNetwork):
         """Finds to which street the movement applies to and returns the 
         street"""
         for i in range(len(streetNames)):
-            if "3" in gMovName:
+            if "3" in gMovName and not "23" in gMovName:
                 if "3" in streetNames[i] and not "23" in streetNames[i]:
                     return streetNames[i]
-            if "23" in gMovName:
+            elif "23" in gMovName:
                 if "23" in streetNames[i]:
                     return streetNames[i]
+            elif "BROADWAY" in gMovName:
+                if "TUNNEL" in gMovName:
+                    if "BROADWAY" in streetNames[i] and "TUNNEL" in streetNames[i]:
+                        return streetNames[i]
+                elif "TUNNEL" not in gMovName:
+                    if "BROADWAY" in streetNames[i] and "TUNNEL" not in streetNames[i]:
+                        return streetNames[i]
             else:
                 if streetNames[i] in gMovName:
                     return streetNames[i]
@@ -1263,6 +1270,10 @@ def mapMovements(mec, baseNetwork):
             gLinks = []
             if "3" in bStName and "23" not in bStName:
                 candLinks = [link for link in bNode.iterIncomingLinks()if "3" in link.getLabel() and "23" not in link.getLabel()]
+            elif "BROADWAY" in bStName and "TUNNEL" not in bStName:
+                candLinks = [link for link in bNode.iterIncomingLinks()if "BROADWAY" in link.getLabel() and "TUNNEL" not in link.getLabel()]
+            elif "BROADWAY" in bStName and "TUNNEL" in bStName:
+                candLinks = [link for link in bNode.iterIncomingLinks()if "BROADWAY" in link.getLabel() and "TUNNEL" in link.getLabel()]
             else:
                 candLinks = [link for link in bNode.iterIncomingLinks() if bStName in link.getLabel()]
             for candLink in candLinks:
@@ -1271,6 +1282,8 @@ def mapMovements(mec, baseNetwork):
                         gLinks.append(candLink)
                 else:
                     gLinks.append(candLink)
+
+            #dta.DtaLogger.info("Movement %s for street %s has links %s" % (gMovName,bStName,str([links.getLabel() for links in gLinks])))
 
             if len(gLinks) == 0:
                 dta.DtaLogger.error("%s#%d#I cannot identify the links for the group "
@@ -1631,7 +1644,7 @@ def convertSignalToDynameq(node, card, planInfo):
         if not cso:
             dta.DtaLogger.error("Unable to find CSO for signal %s" % card.fileName) 
             raise dta.DtaError("Unable to find CSO for signal %s" % card.fileName)
-    dta.DtaLogger.info("Signal %s selected CSO %s with start time %s and end time %s." % (card.fileName, cso, signalTiming.startTime, signalTiming.endTime))
+    dta.DtaLogger.debug("Signal %s selected CSO %s with start time %s and end time %s." % (card.fileName, cso, signalTiming.startTime, signalTiming.endTime))
     offset = card.signalTiming[cso].offset
     dPlan = TimePlan(node, offset, planInfo)
 
