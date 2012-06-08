@@ -427,6 +427,7 @@ ENDRUN
         
         for line in inputStream:
             fields      = line.strip().split()
+            if len(fields) == 0: continue # blank line
             startNodeId = int(fields[0])
             nodeId      = int(fields[1])
             endNodeId   = int(fields[2])
