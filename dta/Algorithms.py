@@ -225,14 +225,14 @@ def getConvexHull3(points, step):
         
         #print i, j
        # print points[i:j+1]
-        partialHull = getHull(points[i:j+1])
+        partialHull = getConvexHull(points[i:j+1])
         partialHull.pop()
         bigHull.extend(partialHull)
     
 
     return bigHull
 
-def getHull(points, upper=True):
+def getConvexHull(points, upper=True):
     """
     Return the convex hull of the given points 
     """ 
@@ -254,6 +254,46 @@ def getHull(points, upper=True):
 
     return hull
 
+def getContainingPolygon(net):
+    """
+
+    """
+    points = [(n.getX(), n.getY()) for n in net.iterRoadNodes()]
+    nodes = dict(izip(points, net.iterRoadNodes()))
+    
+    convexHull = getConvexHull(points)
+ 
+    firstNode = nodes[convexHull[0]]
+    node2 = nodes[convexHull[1]]
+    linkOrientation = firstNode.getOrientation((node2.getX(), node2.getY()))
+
+    polygon = [firstNode]
+
+    adjNodes = sorted(firstNode.iterAdjacentNodes(), key=lambda n: firstNode.getOrientation((n.getX(), n.getY())))    
+    for node in adjNodes:
+        orientation = firstNode.getOrientation((node.getX(), node.getY()))
+        if orientation >= linkOrientation:
+            polygon.append(node)
+            break 
+
+    while True:
+
+        node1 = polygon[-2]
+        node2 = polygon[-1]
+
+        adjNodes = sorted(lastNode.iterAdjacentNodes(), key=lambda n: lastNode.getOrientation(n))
+        index = adjNodes.index(lastNode)
+
+        if index == len(adjNodes) - 1:
+            index = [0]
+        else:
+            index += 1
+
+        if nodeToAdd == polygon[0]:
+            break 
+        
+        
+    
 def getSmallestPolygonContainingNetwork(network):
     """
     treat all the links as bidirectional
@@ -277,12 +317,12 @@ def getConvexHull2(setOfPoints):
     Refactored Graham's scan algorithm
     """
     points = sorted(setOfPoints, cmp=predicate)
-    upperHull = getHull(points, upper=True)
-    lowerHull = getHull(points, upper=False)
+    upperHull = getConvexHull(points, upper=True)
+    lowerHull = getConvexHull(points, upper=False)
     upperHull.extend(lowerHull[1:-1])
     return upperHull
         
-def getConvexHull(setOfPoints):
+def getConvexHullGrahamScan(setOfPoints):
     """
     Implementation of Graham's scan algorithm
     """

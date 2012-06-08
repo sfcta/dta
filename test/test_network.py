@@ -1107,3 +1107,5 @@ class TestNetwork(object):
 
         mov.isVehicleClassGroupProhibited("Transit")
         mov.prohibitAllVehicleClassGroups() 
+
+    

@@ -125,6 +125,8 @@ class Movement(object):
         self.simTimeStepInMin = None
         self.simStartTimeInMin = None
         self.simEndTimeInMin = None
+
+        self._obsCount = {}
         
     def getIncomingLink(self):
         """
@@ -628,3 +630,64 @@ class Movement(object):
         """
         self._permission = VehicleClassGroup.prohibitAllMovementsButTransit()
 
+    def setObsCount(self, startTimeInMin, endTimeInMin, count):
+        """
+        Set the number of vehicles executing the movement 
+        in the input time period 
+        """
+
+        self._validateInputTimes(startTimeInMin,endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        if startTimeInMin >= endTimeInMin:
+            raise DtaError("Invalid time bin (%d %s). The end time cannot be equal or less "
+                                "than the end time" % (startTimeInMin, endTimeInMin))
+        if count < 0:
+            raise DtaError('Count for time period from %d to %d cannot be '
+                                   'negative' % (startTimeInMin, endTimeInMin))
+        self._obsCount[startTimeInMin, endTimeInMin] = count
+
+    def getObsCount(self, startTimeInMin, endTimeInMin):
+        """Return the number of vehicles executing the
+        movement in the input time window. 
+        """
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        try:
+            return self._obsCount[startTimeInMin, endTimeInMin]            
+        except KeyError:
+            result = 0 
+            simTimeStep = self.simTimeStepInMin
+            if not simTimeStep:
+                raise DtaError("To compute the count you need to set "
+                                    "simulation time step")
+
+            for i in range((endTimeInMin - startTimeInMin) / simTimeStep):
+                multipleOfSimTimeStep = (i + 1) * simTimeStep
+                result = 0
+
+                for startTime, endTime in pairwise(range(startTimeInMin,
+                                                     endTimeInMin + 1, multipleOfSimTimeStep)):
+                    try:
+                        result += self._obsCount[startTime, endTime]
+                    except KeyError, e:
+                        result = 0
+                        break
+                else:
+                    return result
+                    
+            return result if result > 0 else None
+
+    def hasCountInfo(self):
+        """Return True if the movement contains count information else false"""
+        return True if len(self._obsCount) else False
+
+    def hasObsCount(self, startTimeInMin, endTimeInMin):
+        """Return True if there is a count for the input time period  
+        """
+        return True if self.getObsCount(startTimeInMin, endTimeInMin) else False 
+       
+        
+        

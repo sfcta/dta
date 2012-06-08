@@ -39,6 +39,7 @@ from .TimePlan import TimePlan
 from .VirtualLink import VirtualLink
 from .VirtualNode import VirtualNode
 from .VehicleClassGroup import VehicleClassGroup
+from .Utils import Time
 
 class DynameqNetwork(Network):
     """
@@ -869,3 +870,35 @@ class DynameqNetwork(Network):
                 mov.simEndTimeInMin = simEndTimeInMin
 
         self._readMovementOutFlowsAndTTs()
+
+    def readObsMovementCounts(self, countFileNameInDynameqDatFormat):
+        """
+        Assign the link counts
+        """
+
+        startTimeInMin = 0
+        endTimeInMin = 0
+        timeStepInMin = 0
+        lineNum = 0
+        for line in open(countFileNameInDynameqDatFormat, "r"):
+            if lineNum == 0:
+                times = line.strip().split()[3:]
+                startTimeInMin = Time.readFromStringWithoutColon(times[0]).getMinutes()
+                endTimeInMin = Time.readFromStringWithoutColon(times[-1]).getMinutes()
+                timeStepInMin = Time.readFromStringWithoutColon(times[1]).getMinutes() - \
+                                startTimeInMin
+                lineNum += 1
+                continue
+                
+            fields = map(int, map(float, line.strip().split()))
+            
+            link1 = self.getLinkForId(fields[0])
+            link2 = self.getLinkForId(fields[1]) 
+            mov = link1.getOutgoingMovement(link2.getEndNodeId())
+            
+
+            for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
+                if count < 0:
+                    continue
+                mov.setObsCount(s,s+timeStepInMin, count) 
+                        
