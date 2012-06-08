@@ -327,17 +327,17 @@ class Movement(object):
                 
     def getCenterLine(self):
         """
-        Get a list of points represeting the movement
+        Get a list of points representing the movement
         """
-        line1 = self._incomingLink.getCenterLine()
-        line2 = self._outgoingLink.getCenterLine()
+        inlink_cline  = self._incomingLink.getCenterLine(atStart=False, atEnd=True)
+        outlink_cline = self._outgoingLink.getCenterLine(atStart=True, atEnd=False)
 
-        if lineSegmentsCross(line1[0], line1[-1], line2[0], line2[-1]):
-            p1 = getMidPoint(*line1)
-            p2 = getMidPoint(*line2) 
-            self._centerLine = [line1[0], p1, p2, line2[-1]]
+        if lineSegmentsCross(inlink_cline[0], inlink_cline[-1], outlink_cline[0], outlink_cline[-1]):
+            p1 = getMidPoint(*inlink_cline)
+            p2 = getMidPoint(*outlink_cline) 
+            self._centerLine = [inlink_cline[0], p1, p2, outlink_cline[-1]]
         else:
-            self._centerLine = [line1[0], line1[-1], line2[0], line2[-1]]
+            self._centerLine = [inlink_cline[0], inlink_cline[-1], outlink_cline[0], outlink_cline[-1]]
             
         return self._centerLine
 

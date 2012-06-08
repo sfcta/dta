@@ -47,14 +47,23 @@ def addShifts(sanfranciscoCubeNet):
     e.g. some local lanes need to be shifted to be outside the through lanes.
     """
     # geary local
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3)  # Steiner to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3)  # Fillmore to Webster
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3, addShapepoints=True)  # Steiner to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3, addShapepoints=True)  # Fillmore to Webster
     
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3)  # Webster to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3)  # Fillmore to Avery
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3)  # Avery to Steiner
+    # geary - lyon 2 baker
+    geary_lyon2baker = sanfranciscoCubeNet.getLinkForNodeIdPair(26835,26811)
+    geary_lyon2baker.addShifts(0,1, addShapepoints=True) # shift access lane  
+    geary_lyon2baker.findOutgoingMovement(26762)._outgoingLane = 1
+    
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3, addShapepoints=True)  # Webster to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3, addShapepoints=True)  # Fillmore to Avery
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3, addShapepoints=True)  # Avery to Steiner
+    
+    # broadway tunnel - access links
+    sanfranciscoCubeNet.getLinkForNodeIdPair(25117,25111).addShifts(0,2, addShapepoints=True)  # Mason to Powell
+    
     # HWY 101 N On-Ramp at Marin / Bayshore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0)
+    sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0, addShapepoints=True)
     
 def removeHOVStubs(sanfranciscoDynameqNet):
     """
@@ -262,11 +271,12 @@ if __name__ == '__main__':
     sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     
     # Read the shape points so curvy streets look curvy
+    # 3, 4 are the Broadway Tunnel, being routed too far south in GIS file
     # 5234 # Skip this one link at Woodside/Portola because it overlaps
     # 2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
     if SF_CUBE_SHAPEFILE:
         sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
-                                          skipEvalStr="(OBJECTID in [5234,2798]) or (MEDIANDIV==1)")
+                                          skipEvalStr="(OBJECTID in [3,4,5234,2798]) or (MEDIANDIV==1)")
      
     # Some special links needing shifts
     addShifts(sanfranciscoCubeNet)

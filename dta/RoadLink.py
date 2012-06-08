@@ -335,7 +335,7 @@ class RoadLink(Link):
         
         self._lanePermissions[laneId] = vehicleClassGroup
         
-    def addShifts(self, startShift, endShift):
+    def addShifts(self, startShift, endShift, addShapepoints=False):
         """
          * *startShift*: the shift value of the first segment of the link, that is, the number of lanes from
            the center line of the roadway that the first segment is shifted.
@@ -344,14 +344,14 @@ class RoadLink(Link):
            
         Dynameq software requires the link to have at least 2 shape points in order to use these shifts.
         Thus, this method will also add the required shape points, if they're lacking (just a linear interpolation
-        1/3 and 2/3 along the line via :py:meth:`RoadLink.coordinatesAlongLink`
+        1/3 and 2/3 along the line via :py:meth:`RoadLink.coordinatesAlongLink` if *addShapepoints* is True.
         """
         self._startShift    = startShift
         self._endShift      = endShift
         
         # Dynameq requires the RoadLink to have at least 2 shapepoints in order to use the shifts
         # Add them, if necessary
-        if len(self._shapePoints) < 2:
+        if addShapepoints and len(self._shapePoints) < 2:
             self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.33, goPastEnd=False))
             self._shapePoints.append(self.coordinatesAlongLink(fromStart=True, distance=self.euclideanLength()*0.66, goPastEnd=False))
 
@@ -420,21 +420,32 @@ class RoadLink(Link):
         raise DtaError("coordinatesAlongLink: distance %.2f too long for link %d (%d-%d) with total distance %.2f" % 
                        (distance, self._id, self._startNode.getId(), self._endNode.getId(), total_distance))
 
+    def findOutgoingMovement(self, nodeId):
+        """
+        Returns the outgoing movement ending in the given *nodeId*.
+        
+        If None found, returns None.
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.getDestinationNode().getId() == nodeId:
+                return mov
+        return None        
+
     def hasOutgoingMovement(self, nodeId, vehicleClassGroup=None):
         """
         Return True if the link has an outgoing movement towards nodeId.
         Please note that the movement may be prohibited.
         """
-        if not vehicleClassGroup: 
-            for mov in self.iterOutgoingMovements():
-                if mov.getDestinationNode().getId() == nodeId:
-                    return True
-        else:
-            for mov in self.iterOutgoingMovements():
-                if mov.getDestinationNode().getId() == nodeId and \
-                   mov.getVehicleClassGroup() == vehicleClassGroup:
-                    return True            
+        movement = self.findOutgoingMovement(nodeId)
+        
+        if not movement:
+            return False
+        
+        if vehicleClassGroup and mov.getVehicleClassGroup() == vehicleClassGroup:
+            return True
+        
         return False
+
     
     def addOutgoingMovement(self, movement):
         """
@@ -580,28 +591,46 @@ class RoadLink(Link):
         self._length = newLength 
         
 
-    def getCenterLine(self):
+    def getCenterLine(self, atStart=False, atEnd=False):
         """
         Offset the link to the right 0.5*numLanes*:py:attr:`RoadLink.DEFAULT_LANE_WIDTH` and 
-        return a tuple of two points (each one being a tuple of two floats) representing the centerline 
+        return a tuple of two points (each one being a tuple of two floats) representing the centerline
+        
+        If *atStart* is True, then shapepoints are included and the first section of the line is used.
+        If *atEnd* is True, then shapepoints are included and the last section of the line is used.
+        
+        If neither is True, then shapepoints are not included. 
         """
 
-        dx = self._endNode.getX() - self._startNode.getX()
-        dy = self._endNode.getY() - self._startNode.getY() 
+        start_point = [ self._startNode.getX(), self._startNode.getY() ]
+        end_point   = [ self._endNode.getX()  , self._endNode.getY()   ]
+        
+        if atEnd and len(self._shapePoints) > 0:
+            start_point = self._shapePoints[-1]
+        elif atStart and len(self._shapePoints) > 0:
+            end_point = self._shapePoints[0]
+            
+        # base shift of the num lanes
+        start_shift = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH / 2.0
+        end_shift   = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH / 2.0
+        
+        # additional shift
+        if (len(self._shapePoints) == 0 or atStart) and self._startShift:
+            start_shift += RoadLink.DEFAULT_LANE_WIDTH*self._startShift
+        if (len(self._shapePoints) == 0 or atEnd) and self._endShift:
+            end_shift   += RoadLink.DEFAULT_LANE_WIDTH*self._endShift
+        
+        dx = end_point[0] - start_point[0]
+        dy = end_point[1] - start_point[1]
 
         length = self.getLengthInCoordinateUnits()
 
-        #TODO: throw an error if the length is Zero. In fact, you should have thrown an error logn time ago
+        #TODO: throw an error if the length is Zero. In fact, you should have thrown an error long time ago
         if length == 0:
             length = 1
 
-        scale = self.getNumLanes() * RoadLink.DEFAULT_LANE_WIDTH / 2.0 / length 
-
-        xOffset = dy * scale
-        yOffset = - dx * scale 
-
-        self._centerline = ((self._startNode.getX() + xOffset, self._startNode.getY() + yOffset),
-                            (self._endNode.getX() + xOffset, self._endNode.getY() + yOffset))
+        self._centerline = ((start_point[0] + dy*(start_shift/length), start_point[1] - dx*(start_shift/length)),
+                            (end_point[0]   + dy*(end_shift  /length), end_point[1]   - dx*(end_shift  /length)))
 
         return self._centerline
 
