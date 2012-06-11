@@ -707,8 +707,8 @@ class RoadLink(Link):
     def getAngle(self, other, usingShapepoints=False):
         """
         Return the angle in degrees (in the range (-180, 180]) between this link and *other*, 
-        an instance of :py:class:`Link` (where positive angles means the other is counter-clockwise from this,
-        and negative angles means the other is clockwise from self.)
+        an instance of :py:class:`Link` (where positive angles means the other is clockwise from this,
+        and negative angles means the other is counter-clockwise from self.)
         
         If *usingShapepoints*, links must have a node in common, and the section of the link involving
         that common node is examined.
@@ -736,7 +736,7 @@ class RoadLink(Link):
         self_angle = self.getOrientation(atEnd=(not self_at_start), usingShapepoints=usingShapepoints)
         other_angle = other.getOrientation(atEnd=(not other_at_start), usingShapepoints=usingShapepoints)
         
-        angle_between = self_angle - other_angle
+        angle_between = other_angle - self_angle
         if angle_between > 180: 
             angle_between -= 360.0
         elif angle_between <= -180:
