@@ -716,7 +716,6 @@ class RoadLink(Link):
         If *usingShapepoints* is False, both links are considered as vectors from the
         start node to end node.
         """
-        angle = self.getOldAngle(other, usingShapepoints)
         
         if not usingShapepoints or self.getStartNode() == other.getStartNode():
             self_at_start   = True
@@ -743,104 +742,8 @@ class RoadLink(Link):
         elif angle_between <= -180:
             angle_between += 360.0
 
-        # DtaLogger.debug("self_at_start = %d other_at_start = %d   start=start? %d" % (self_at_start, other_at_start, self.getStartNode() == other.getStartNode()))
-        DtaLogger.debug(" > 180? %s " % (str(angle_between > 180.0)))
-        DtaLogger.debug("%f %f, %f==%f usingShapepoints=%d " % (self_angle, other_angle, angle_between, angle, usingShapepoints))
-        assert(abs(angle_between-angle) < 0.00001 or abs(abs(angle_between-angle)-360.0) < 0.00001)
         return angle_between
 
-    def getOldAngle(self, other, usingShapepoints):
-        if self == other:
-            return 0
-        
-        # choose the start points/end points of the two vectors
-        # note: for shapepoint situation when two conditions are true, first one wins
-        if not usingShapepoints or self.getStartNode() == other.getStartNode():
-            self_at_start   = True
-            other_at_start  = True
-        elif self.getStartNode() == other.getEndNode():
-            self_at_start   = True
-            other_at_start  = False
-        elif self.getEndNode() == other.getStartNode():
-            self_at_start   = False
-            other_at_start  = True
-        elif self.getEndNode() == other.getEndNode():
-            self_at_start   = False
-            other_at_start  = False
-        else:
-            raise DtaError("RoadLink.getAngle() called on links %d and %d, which have no nodes in common" %
-                           (self.getId(), other.getId()))
-            
-        # the relevant self vector is the first link
-        if self_at_start:
-            start1 = [self.getStartNode().getX(), self.getStartNode().getY()]
-                
-            if usingShapepoints and self.getNumShapePoints() > 0:
-                end1 = self._shapePoints[0]
-            else:
-                end1 = [self.getEndNode().getX(), self.getEndNode().getY()]
-        # the relevant self vector is the last link
-        else:
-            end1 = [self.getEndNode().getX(), self.getEndNode().getY()]
-            
-            if usingShapepoints and self.getNumShapePoints() > 0:
-                start1 = self._shapePoints[-1]
-            else:
-                start1 = [self.getStartNode().getX(), self.getStartNode().getY()]
-            
-        # the relevant other vector is the first link
-        if other_at_start:
-            start2 = [other.getStartNode().getX(), other.getStartNode().getY()]
-                
-            if usingShapepoints and other.getNumShapePoints() > 0:
-                end2 = other._shapePoints[0]
-            else:
-                end2 = [other.getEndNode().getX(), other.getEndNode().getY()]
-        # the relevant other vector is the last link
-        else:
-            end2 = [other.getEndNode().getX(), other.getEndNode().getY()]
-                
-            if usingShapepoints and other.getNumShapePoints() > 0:
-                start2 = other._shapePoints[-1]
-            else:
-                start2 = [other.getStartNode().getX(), other.getStartNode().getY()]
-                    
-
-        if start1 == start2 and end1 == end2:
-            return 0
-
-        if start1 == end2 and end1 == start2:
-            return 180 
-
-        dx1 = end1[0] - start1[0]
-        dy1 = end1[1] - start1[1]
-        
-        dx2 = end2[0] - start2[0]
-        dy2 = end2[1] - start2[1]
-
-        DtaLogger.debug("start1=%s end1=%s" % (str(start1), str(end1)))
-        DtaLogger.debug("start2=%s end2=%s" % (str(start2), str(end2)))
-        DtaLogger.debug("dx,dy 1 = %f,%f  dx,dy 2 = %f,%f" % (dx1,dy1,dx2,dy2))
-
-        length1 = math.sqrt(dx1 ** 2 + dy1 ** 2)
-        length2 = math.sqrt(dx2 ** 2 + dy2 ** 2)
-
-        if length1 == 0:
-            raise DtaError("The length of link %d cannot be zero" % self.getId())
-        if length2 == 0:
-            raise DtaError("The length of link %d cannot be zero" % other.getId())
-
-        # angle relative to <1,0>
-        angle1 = math.atan2(dy1, dx1)*180.0/math.pi
-        angle2 = math.atan2(dy2, dx2)*180.0/math.pi
-        
-        angle_between = angle2 - angle1
-        if angle_between > 180.0: 
-            angle_between -= 360.0
-        elif angle_between <= -180:
-            angle_between += 360.0
-            
-        return angle_between
     
     def isOverlapping(self, other, usingShapepoints=False):
         """
@@ -856,7 +759,10 @@ class RoadLink(Link):
     def getOrientation(self, atEnd=True, usingShapepoints=True):
         """
         Returns the angle of the link in degrees from the North
-        measured clockwise. The link shape is taken into account.
+        measured clockwise.  The result is in [0, 360) 
+        
+        The link shape is taken into account if *usingShapepoints* is True.
+        
         If there are shape points, and *atEnd* is True, then the orientation
         is evaluated at the end point of the link, otherwise it's evaluated at
         the start of the link.
@@ -873,10 +779,6 @@ class RoadLink(Link):
             y1 = self.getStartNode().getY()
             x2 = self.getEndNode().getX()
             y2 = self.getEndNode().getY()
-
-        DtaLogger.debug("shapepoints = %s" % str(self._shapePoints))
-        DtaLogger.debug("point1 = %f,%f  point2 = %f,%f" % (x1,y1,x2,y2))
-        DtaLogger.debug("dx,dy = %f,%f" % (x2-x1,y2-y1))
 
         if x2 > x1 and y2 <= y1:   # 2nd quarter
             orientation = math.atan(math.fabs(y2-y1)/math.fabs(x2-x1)) + math.pi/2
