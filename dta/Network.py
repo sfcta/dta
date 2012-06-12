@@ -241,6 +241,11 @@ class Network(object):
         
         If *includeUTurns*, includes U-Turn movements for each link as well, otherwise omits these.
         
+        If either the incoming link or the outgoing link returns false for :py:meth:`RoadLink.allowsAll`,
+        then uses the lane permission from that link instead.
+        
+        .. todo:: This last bit is somewhat arbitrary, could be refined further.
+         
         """
         
         movements_added = 0
@@ -255,10 +260,25 @@ class Network(object):
                 for outgoingLink in node.iterOutgoingLinks():
                     if outgoingLink.isVirtualLink(): continue
                 
-                    #it already exists
+                    # it already exists
                     if incomingLink.hasOutgoingMovement(outgoingLink.getEndNodeId()): continue
                 
-                    mov = Movement.simpleMovementFactory(incomingLink, outgoingLink, vehicleClassGroup)
+                    # one of incoming or outgoing link doesn't allow all
+                    vcg = None
+                    if not incomingLink.allowsAll():
+                        DtaLogger.warn("addAllMovements: incoming link %d-%d %s %s does not allow all" % (incomingLink.getStartNode().getId(),
+                                                                                                          incomingLink.getEndNode().getId(),
+                                                                                                          incomingLink.getLabel(), incomingLink.getDirection()))
+                        vcg = incomingLink._lanePermissions[0]
+                        
+                    if not outgoingLink.allowsAll():
+                        DtaLogger.warn("addAllMovements: outgoing link %d-%d %s %s does not allow all" % (outgoingLink.getStartNode().getId(),
+                                                                                                          outgoingLink.getEndNode().getId(),
+                                                                                                          outgoingLink.getLabel(), outgoingLink.getDirection()))
+                        # this should really be more like an intersection between the incoming vcg and the outgoing
+                        vcg = outgoingLink._lanePermissions[0]
+
+                    mov = Movement.simpleMovementFactory(incomingLink, outgoingLink, vcg if vcg else vehicleClassGroup)
                 
                     # if it's a U-Turn and we don't want it, set the movement to prohibited
                     if mov.isUTurn() and not includeUTurns:
@@ -472,20 +492,22 @@ class Network(object):
         #fix the number of lanes on the new connectors
         for node in self.iterNodes():
 
-            if not node.isRoadNode():
-                continue 
-            if not node.hasConnector():
-                continue 
+            if not node.isRoadNode():   continue 
+            if not node.hasConnector(): continue
+            
+            # node is a roadnode with a connector
+             
             if node.isIntersection():                
                 for link in node.iterAdjacentLinks():
                     if link.isConnector():
                         link.setNumLanes(1) 
 
-            #remove the connector to connector movements
             movementsToDelete = []
             
             for ilink in node.iterIncomingLinks():                
                 for olink in node.iterOutgoingLinks():
+
+                    #prohibit the connector to connector movements
                     if ilink.isConnector() and olink.isConnector():
                         if ilink.hasOutgoingMovement(olink.getEndNodeId()):
                             mov = ilink.getOutgoingMovement(olink.getEndNodeId())
@@ -496,10 +518,25 @@ class Network(object):
                                  self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
                             ilink.addOutgoingMovement(prohibitedMovement) 
                     else:
+                        # fill in missing movements
                         if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
                             
-                            allowedMovement = Movement.simpleMovementFactory(ilink, olink,
-                               self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL))
+                            # one of incoming or outgoing link doesn't allow all
+                            vcg = self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL)
+                            if not ilink.allowsAll():
+                                DtaLogger.warn("moveCentroidConnectorsFromIntersectionsToMidblocks: incoming link %d-%d %s %s does not allow all" % 
+                                               (ilink.getStartNode().getId(), ilink.getEndNode().getId(),
+                                                ilink.getLabel(), ilink.getDirection()))
+                                vcg = ilink._lanePermissions[0]
+                                
+                            if not olink.allowsAll():
+                                DtaLogger.warn("moveCentroidConnectorsFromIntersectionsToMidblocks: outgoing link %d-%d %s %s does not allow all" % 
+                                               (olink.getStartNode().getId(), olink.getEndNode().getId(),
+                                                olink.getLabel(), olink.getDirection()))
+                                # this should really be more like an intersection between the incoming vcg and the outgoing
+                                vcg = olink._lanePermissions[0]
+                            
+                            allowedMovement = Movement.simpleMovementFactory(ilink, olink,vcg)
                             ilink.addOutgoingMovement(allowedMovement)
                             
             for mov in node.iterMovements():
@@ -1188,7 +1225,7 @@ class Network(object):
                                 linkToSplit._level, 
                                 linkToSplit.getLabel(),
                                 self._maxLinkId + 1)
-
+            newLink1._lanePermissions = copy.copy(linkToSplit._lanePermissions)
             self.addLink(newLink1)
 
             newLink2 = RoadLink(self._maxLinkId + 1,
@@ -1205,7 +1242,7 @@ class Network(object):
                                 linkToSplit._level,
                                 linkToSplit.getLabel(),
                                 self._maxLinkId + 1)
-
+            newLink2._lanePermissions = copy.copy(linkToSplit._lanePermissions)
             self.addLink(newLink2) 
 
             for inMov in linkToSplit.iterIncomingMovements():
@@ -1237,11 +1274,26 @@ class Network(object):
 
                 newLink2.addOutgoingMovement(newMovement)
 
+            # if one of incoming or outgoing link doesn't allow all
+            vcg = self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL)
+            if not newLink1.allowsAll():
+                DtaLogger.warn("splitLink: incoming link %d-%d %s %s does not allow all" % 
+                               (newLink1.getStartNode().getId(), newLink1.getEndNode().getId(),
+                                newLink1.getLabel(), newLink1.getDirection()))
+                vcg = newLink1._lanePermissions[0]
+                
+            if not newLink2.allowsAll():
+                DtaLogger.warn("splitLink: outgoing link %d-%d %s %s does not allow all" % 
+                               (newLink2.getStartNode().getId(), newLink2.getEndNode().getId(),
+                                newLink2.getLabel(), newLink2.getDirection()))
+                # this should really be more like an intersection between the incoming vcg and the outgoing
+                vcg = newLink2._lanePermissions[0]
+
             newMovement = Movement(midNode, 
                                    newLink1,
                                    newLink2,                               
                                    newLink1._freeflowSpeed,
-                                   self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL), 
+                                   vcg, 
                                    newLink1._numLanes,
                                    0,
                                    newLink1._numLanes,

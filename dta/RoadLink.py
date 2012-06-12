@@ -336,6 +336,19 @@ class RoadLink(Link):
         
         self._lanePermissions[laneId] = vehicleClassGroup
         
+    def allowsAll(self):
+        """
+        Is there a lane on this link that allows all?
+        """
+        # no lane permissions -- all allowed implicitly
+        if len(self._lanePermissions) == 0:
+            return True
+        
+        for lane_id,perm in self._lanePermissions.iteritems():
+            if perm.allowsAll(): return True
+            
+        return False
+        
     def addShifts(self, startShift, endShift, addShapepoints=False):
         """
          * *startShift*: the shift value of the first segment of the link, that is, the number of lanes from

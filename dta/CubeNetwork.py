@@ -18,6 +18,7 @@ __license__     = """
 import pdb
 import shapefile
 
+import copy
 import os
 import shutil
 import subprocess
@@ -60,6 +61,8 @@ ENDRUN
         for :py:class:`VehicleClassGroup` lookups        
         """ 
         Network.__init__(self, scenario)
+        #: (nodeA id, nodeB id) -> { dictionary } in case the caller wants to do anything else
+        self.additionalLinkVariables = {}
 
     def readNetfile(self, netFile, 
                     nodeVariableNames,
@@ -185,6 +188,10 @@ ENDRUN
         
         Last, use *linkSkipEvalStr* to skip import of certain links, and 
         use  *additionalLocals* is a dictionary to add to the locals dict for the ``eval`` calls above.
+        
+        Note that the dictionary of available variables from *linkVariableNames* is saved into
+        :py:attr:`CubeNetwork.additionalLinkVariables`, keyed by the tuple of link's node IDs,
+        in case the caller needs to do additional postprocessing of attributes on the network using those variables.
         """
         # need to keep this for reading links
         N_to_OldNode = {}
@@ -305,6 +312,8 @@ ENDRUN
                                     (nodeA.getId(), nodeB.getId(), str(e)))
                     continue 
             self.addLink(newLink)
+            self.additionalLinkVariables[(a,b)] = copy.deepcopy(localsdict)
+            
         DtaLogger.info("Read  %8d %-16s from %s" % (countConnectors, "connectors", linksCsvFilename))
         DtaLogger.info("Read  %8d %-16s from %s" % (countRoadLinks, "roadlinks", linksCsvFilename))
         linksFile.close()
