@@ -497,6 +497,8 @@ def checkForWeekdayPlan(sheet, row, column):
     FriValue = str(sheet.cell_value(row,column-2)).strip()
     if ThursValue=="X" and FriValue=="X":
         return True
+    elif ThursValue=="x" and FriValue=="x":
+        return True
     else:
         return False
     
@@ -612,7 +614,7 @@ def getOperationTimes(sheet, signalData):
                         endTime2 = int(endTimeAll[colonval+1:])
                         signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
 
-        #dta.DtaLogger.info("Operating times are from %s to %s" % (signalData.signalTiming[strCso].startTime, signalData.signalTiming[strCso].endTime))
+        #dta.DtaLogger.info("Operating times are from %s to %s for CSO %s" % (signalData.signalTiming[strCso].startTime, signalData.signalTiming[strCso].endTime, strCso))
         
     found = False
     # search down rows from top left row for CYCLE keyword
@@ -908,7 +910,7 @@ def extractStreetNames(intersection):
     """Split the Excel intersection string to two or more streetNames"""
 
     intersection = intersection.upper()
-    regex = re.compile(r",| AND|\&|\@|\/")
+    regex = re.compile(r",| AND|\&|\@|\ AT|\/")
     streetNames = regex.split(intersection)
     if len(streetNames) == 1:
         #log the error
@@ -1292,11 +1294,13 @@ def mapMovements(mec, baseNetwork):
             #collect all the links of the approach that have the same direction
             gLinks = []
             if "3" in bStName and "23" not in bStName:
-                candLinks = [link for link in bNode.iterIncomingLinks()if "3" in link.getLabel() and "23" not in link.getLabel()]
+                candLinks = [link for link in bNode.iterIncomingLinks() if "3" in link.getLabel() and "23" not in link.getLabel()]
+            elif "3" in bStName and "23" in bStName:
+                candLinks = [link for link in bNode.iterIncomingLinks() if "3" in link.getLabel() and "23" in link.getLabel()]
             elif "BROADWAY" in bStName and "TUNNEL" not in bStName:
-                candLinks = [link for link in bNode.iterIncomingLinks()if "BROADWAY" in link.getLabel() and "TUNNEL" not in link.getLabel()]
+                candLinks = [link for link in bNode.iterIncomingLinks() if "BROADWAY" in link.getLabel() and "TUNNEL" not in link.getLabel()]
             elif "BROADWAY" in bStName and "TUNNEL" in bStName:
-                candLinks = [link for link in bNode.iterIncomingLinks()if "BROADWAY" in link.getLabel() and "TUNNEL" in link.getLabel()]
+                candLinks = [link for link in bNode.iterIncomingLinks() if "BROADWAY" in link.getLabel() and "TUNNEL" in link.getLabel()]
             else:
                 candLinks = [link for link in bNode.iterIncomingLinks() if bStName in link.getLabel()]
             for candLink in candLinks:
