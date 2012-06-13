@@ -14,18 +14,18 @@ dta.Phase
    .. autosummary::
    
       ~Phase.__init__
-      ~Phase.addMovement
+      ~Phase.addPhaseMovement
       ~Phase.getDynameqStr
       ~Phase.getGreen
-      ~Phase.getMovement
-      ~Phase.getNumMovements
+      ~Phase.getNumPhaseMovements
+      ~Phase.getPhaseMovement
       ~Phase.getRed
       ~Phase.getTimePlan
       ~Phase.getYellow
-      ~Phase.hasMovement
-      ~Phase.hasPermittedMovement
-      ~Phase.hasProtectedMovement
-      ~Phase.iterMovements
+      ~Phase.hasPermittedPhaseMovement
+      ~Phase.hasPhaseMovement
+      ~Phase.hasProtectedPhaseMovement
+      ~Phase.iterPhaseMovements
       ~Phase.readFromDynameqString
    
    

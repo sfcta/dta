@@ -259,9 +259,14 @@ class Movement(object):
         Returns the type of the movement, one of :py:attr:`Movement.DIR_UTURN`, :py:attr:`Movement.DIR_RT`, :py:attr:`Movement.DIR_RT2`,
         :py:attr:`Movement.DIR_LT2`, :py:attr:`Movement.DIR_LT`, :py:attr:`Movement.DIR_TH`.
 
-        The movement type is determined by the angles of the incoming links (based on the start nodes and end nodes only);
-        however, if a Movement type override is set using :py:meth:`Movement.setOverrideTurnType` then that will supercede
-        the angle-based analysis.
+        The movement type is determined by the angle of the outgoing link with respect to that of the incoming link 
+        (based on the start nodes and end nodes only for now, but maybe it makes more sense to include shape points?).
+        
+        .. image:: /images/TurnTypes.png
+           :height: 400px
+           
+        However, if a Movement type override is set using :py:meth:`Movement.setOverrideTurnType` then that will
+        supercede the angle-based analysis.
         """
         if self._overrideTurnType != None:
             return self._overrideTurnType

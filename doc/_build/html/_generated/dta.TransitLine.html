@@ -90,6 +90,9 @@ A Transit Line consists of a set of attributes and a list of <a class="reference
 <tr><td><a class="reference internal" href="#dta.TransitLine.addSegment" title="dta.TransitLine.addSegment"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.addSegment</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.TransitLine.checkMovementsAreAllowed" title="dta.TransitLine.checkMovementsAreAllowed"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.checkMovementsAreAllowed</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.TransitLine.getDynameqFileHeaderStr" title="dta.TransitLine.getDynameqFileHeaderStr"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getDynameqFileHeaderStr</span></tt></a></td>
 <td></td>
 </tr>
@@ -169,8 +172,22 @@ A Transit Line consists of a set of attributes and a list of <a class="reference
 
 <dl class="method">
 <dt id="dta.TransitLine.addSegment">
-<tt class="descname">addSegment</tt><big>(</big><em>link</em>, <em>dwell</em>, <em>lane=1</em>, <em>stopside=0</em>, <em>position=-1</em><big>)</big><a class="headerlink" href="#dta.TransitLine.addSegment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descname">addSegment</tt><big>(</big><em>link</em>, <em>dwell</em>, <em>label=None</em>, <em>lane=1</em>, <em>stopside=0</em>, <em>position=-1</em><big>)</big><a class="headerlink" href="#dta.TransitLine.addSegment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instance with the given information and add it to this
+line.</p>
+<p>See :py:meth:<a href="#id5"><span class="problematic" id="id6">`</span></a>TransitSegment.__init__ for how most of the arguments are interpreted.
+Pass -1 for <em>position</em> to append it to the end of this line&#8217;s transit segments, otherwise
+the <em>position</em> will be used for insertion.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.TransitLine.checkMovementsAreAllowed">
+<tt class="descname">checkMovementsAreAllowed</tt><big>(</big><em>enableMovement</em><big>)</big><a class="headerlink" href="#dta.TransitLine.checkMovementsAreAllowed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates through the <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instances for this line, and warns about any
+two that are adjacent and share a node, but which do not have a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> between
+them allowing transit.</p>
+<p>If <em>makeUturnsRoundabouts</em> is passed, then U-Turns will be made into roundabouts.</p>
+</dd></dl>
 
 <dl class="classmethod">
 <dt id="dta.TransitLine.getDynameqFileHeaderStr">

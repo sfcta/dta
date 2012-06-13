@@ -25,6 +25,7 @@ dta.Movement
       ~Movement.getId
       ~Movement.getIncomingLink
       ~Movement.getNumLanes
+      ~Movement.getObsCount
       ~Movement.getOriginNode
       ~Movement.getOutgoingLink
       ~Movement.getProtectedCapacity
@@ -40,6 +41,8 @@ dta.Movement
       ~Movement.getTimeVaryingCostTimeStep
       ~Movement.getTurnType
       ~Movement.getVehicleClassGroup
+      ~Movement.hasCountInfo
+      ~Movement.hasObsCount
       ~Movement.isInConflict
       ~Movement.isLeftTurn
       ~Movement.isProhibitedToAllVehicleClassGroups
@@ -47,6 +50,8 @@ dta.Movement
       ~Movement.isThruTurn
       ~Movement.isUTurn
       ~Movement.prohibitAllVehicleClassGroups
+      ~Movement.prohibitAllVehiclesButTransit
+      ~Movement.setObsCount
       ~Movement.setOverrideTurnType
       ~Movement.setPenaltyInMin
       ~Movement.setSimInVolume

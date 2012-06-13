@@ -16,7 +16,9 @@ dta.VehicleClassGroup
       ~VehicleClassGroup.__init__
       ~VehicleClassGroup.allowsAll
       ~VehicleClassGroup.allowsNone
+      ~VehicleClassGroup.allowsTransit
       ~VehicleClassGroup.getProhibited
+      ~VehicleClassGroup.prohibitAllMovementsButTransit
    
    
 

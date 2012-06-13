@@ -238,6 +238,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.readLinkShape" title="dta.DynameqNetwork.readLinkShape"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readLinkShape</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.readObsMovementCounts" title="dta.DynameqNetwork.readObsMovementCounts"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readObsMovementCounts</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.readSimResults" title="dta.DynameqNetwork.readSimResults"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readSimResults</span></tt></a></td>
 <td></td>
 </tr>
@@ -282,6 +285,36 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="dta.DynameqNetwork.ADVANCED_FILE">
+<tt class="descname">ADVANCED_FILE</tt><a class="headerlink" href="#dta.DynameqNetwork.ADVANCED_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Advanced Network File name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.DynameqNetwork.BASE_FILE">
+<tt class="descname">BASE_FILE</tt><a class="headerlink" href="#dta.DynameqNetwork.BASE_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Base Network File name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.DynameqNetwork.CONTROL_FILE">
+<tt class="descname">CONTROL_FILE</tt><a class="headerlink" href="#dta.DynameqNetwork.CONTROL_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Traffic Control Plan File name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.DynameqNetwork.PRIORITIES_FILE">
+<tt class="descname">PRIORITIES_FILE</tt><a class="headerlink" href="#dta.DynameqNetwork.PRIORITIES_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Custom Priorities File name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.DynameqNetwork.TRANSIT_FILE">
+<tt class="descname">TRANSIT_FILE</tt><a class="headerlink" href="#dta.DynameqNetwork.TRANSIT_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Transit Lines File name</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.DynameqNetwork.addAllMovements">
 <tt class="descname">addAllMovements</tt><big>(</big><em>vehicleClassGroup</em>, <em>includeUTurns=False</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addAllMovements" title="Permalink to this definition">¶</a></dt>
@@ -290,6 +323,12 @@ makes a movement for the given <em>vehicleClassGroup</em> (a <a class="reference
 from each incoming link to each outgoing link 
 (not including <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances).</p>
 <p>If <em>includeUTurns</em>, includes U-Turn movements for each link as well, otherwise omits these.</p>
+<p>If either the incoming link or the outgoing link returns false for <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.allowsAll" title="dta.RoadLink.allowsAll"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.allowsAll()</span></tt></a>,
+then uses the lane permission from that link instead.</p>
+<div class="admonition-todo admonition " id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">This last bit is somewhat arbitrary, could be refined further.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -396,7 +435,7 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dt id="dta.DynameqNetwork.getLinkType">
 <tt class="descname">getLinkType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getLinkType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a unique integer representing the link type</p>
-<div class="admonition-todo admonition " id="index-0">
+<div class="admonition-todo admonition " id="index-1">
 <p class="first admonition-title">Todo</p>
 <p class="last">What is this for?</p>
 </div>
@@ -425,7 +464,7 @@ Raises <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title
 <dt id="dta.DynameqNetwork.getNodeType">
 <tt class="descname">getNodeType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.getNodeType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a unique integer representing the node type.</p>
-<div class="admonition-todo admonition " id="index-1">
+<div class="admonition-todo admonition " id="index-2">
 <p class="first admonition-title">Todo</p>
 <p class="last">What is this for?</p>
 </div>
@@ -646,7 +685,7 @@ error</p>
 <dd><p>This method will create a polygon around the current 
 (primary network). Every node or link of the secondary network 
 that is not in the polygon will be copied.</p>
-<div class="admonition-todo admonition " id="index-2">
+<div class="admonition-todo admonition " id="index-3">
 <p class="first admonition-title">Todo</p>
 <p class="last">Code review and more detailed documentation.</p>
 </div>
@@ -682,7 +721,7 @@ midblock location.</p>
 <p>If <em>moveVirtualNodeDist</em> is not None, if no candidate links are found, the method will 
 try moving the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instance around to find a candidate link. 
 <em>moveVirtualNodeDist</em> is in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
-<div class="admonition-todo admonition " id="index-3">
+<div class="admonition-todo admonition " id="index-4">
 <p class="first admonition-title">Todo</p>
 <p class="last">I would like more detail about this.  How are movements handled for VehicleClassGroups?</p>
 </div>
@@ -690,7 +729,7 @@ try moving the <a class="reference internal" href="dta.VirtualNode.html#dta.Virt
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks">
-<tt class="descname">moveCentroidConnectorsFromIntersectionsToMidblocks</tt><big>(</big><em>splitReverseLinks=False</em>, <em>moveVirtualNodeDist=None</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">moveCentroidConnectorsFromIntersectionsToMidblocks</tt><big>(</big><em>splitReverseLinks=False</em>, <em>moveVirtualNodeDist=None</em>, <em>externalNodeIds=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.moveCentroidConnectorsFromIntersectionsToMidblocks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove centroid connectors from intersections and attach them to midblock locations.
 If there is not a node defining a midblock location the algorithm will split the 
 relevant links (in both directions) and attach the connector to the newly 
@@ -739,12 +778,18 @@ will be used.</p>
 <p>Does this in two passes; in the first pass, the (a,b) from the shapefile is looked up in the network, and used
 to add shape points.  In the second pass, the (b,a) from the shapefile is looked up in the network, and used
 to add shape points <strong>if that link has not already been updated from the first pass</strong>.</p>
-<div class="admonition-todo admonition " id="index-4">
+<div class="admonition-todo admonition " id="index-5">
 <p class="first admonition-title">Todo</p>
 <p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
 node should be included too.  However, if we include either the first or the last shape point below,
 everything goes crazy.  I&#8217;m not sure why?</p>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.readObsMovementCounts">
+<tt class="descname">readObsMovementCounts</tt><big>(</big><em>countFileNameInDynameqDatFormat</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.readObsMovementCounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the link counts</p>
 </dd></dl>
 
 <dl class="method">
@@ -769,7 +814,7 @@ everything goes crazy.  I&#8217;m not sure why?</p>
 <dt id="dta.DynameqNetwork.removeShapePoints">
 <tt class="descname">removeShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.removeShapePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove shape points from the network</p>
-<div class="admonition-todo admonition " id="index-5">
+<div class="admonition-todo admonition " id="index-6">
 <p class="first admonition-title">Todo</p>
 <p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
 are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
@@ -800,7 +845,7 @@ the other kind?</p>
 <dt id="dta.DynameqNetwork.setMovementTurnTypeOverrides">
 <tt class="descname">setMovementTurnTypeOverrides</tt><big>(</big><em>overrides</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.setMovementTurnTypeOverrides" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets movement turn type overrides.  <em>overrides</em> is specified as a list of overrides, where each override
-is a tuple containing ( <em>from_dir</em>, <em>from_street</em>, <em>cross_street</em>, <em>to_dir</em>, <em>to_street</em>, <em>turn_type</em> ).</p>
+is a tuple containing ( <em>from_dir</em>, <em>from_street</em>, <em>cross_street</em>, <em>to_dir</em>, <em>to_street</em>, <em>turn_type</em>, [<em>perm_type</em>] ).</p>
 <p><em>from_dir</em> and <em>to_dir</em> should be one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a>, <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>, 
 and <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.</p>
 <p><em>from_street</em>, <em>cross_street</em> and <em>to_street</em> should be labels (corresponding to <a class="reference internal" href="dta.Link.html#dta.Link.getLabel" title="dta.Link.getLabel"><tt class="xref py py-meth docutils literal"><span class="pre">Link.getLabel()</span></tt></a>)</p>
@@ -814,7 +859,7 @@ and <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" t
 <dd><p>Split the input link in half. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
-<div class="admonition-todo admonition " id="index-6">
+<div class="admonition-todo admonition " id="index-7">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
 Currently it looks like an ALL and a PROHIBITED are required?</p>

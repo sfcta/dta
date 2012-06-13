@@ -121,12 +121,13 @@ Misc
    dta.ShortestPaths
    dta.Time
    dta.Utils
-   
-   
-Example: Building a network using dta
-==========================================
-.. literalinclude:: ..\scripts\createSFNetworkFromCubeNetwork.py
-   :linenos:
+
+Scripts
+=======
+.. toctree::
+
+   script_createSFNetworkFromCubeNetwork
+   script_importExcelSignals
 
 
 TODO List

@@ -18,9 +18,11 @@ dta.RoadLink
       ~RoadLink.addOutgoingMovement
       ~RoadLink.addShapePoint
       ~RoadLink.addShifts
+      ~RoadLink.allowsAll
       ~RoadLink.coordinatesAlongLink
       ~RoadLink.euclideanLength
       ~RoadLink.euclideanLengthInLengthUnits
+      ~RoadLink.findOutgoingMovement
       ~RoadLink.getAngle
       ~RoadLink.getCenterLine
       ~RoadLink.getDirection
