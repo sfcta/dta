@@ -1099,8 +1099,8 @@ class Network(object):
         if not incoming_link:
             candidate_str = ""
             for dir in candidate_links: candidate_str += dir + ":" + ",".join(candidate_links[dir].keys()) + "  "
-            raise DtaError("findMovementForRoadLabels: Couldn't find incoming link %s %s: %s" %
-                            (incoming_street_label, incoming_direction, candidate_str))
+            raise DtaError("findMovementForRoadLabels: Couldn't find incoming link %s %s at %s: %s" %
+                            (incoming_street_label, incoming_direction, intersection_street_label, candidate_str))
        
         # Found the intersection; now find the exact outgoing link      
         candidate_links = {} # dir -> { name -> link }
@@ -1138,8 +1138,8 @@ class Network(object):
         if not outgoing_link:
             candidate_str = ""
             for dir in candidate_links: candidate_str += dir + ":" + ",".join(candidate_links[dir].keys()) + "  "
-            raise DtaError("findMovementForRoadLabels: Couldn't find outgoing link %s %s: %s" %
-                            (outgoing_street_label, outgoing_direction, candidate_str))            
+            raise DtaError("findMovementForRoadLabels: Couldn't find outgoing link %s %s at %s: %s" %
+                            (outgoing_street_label, outgoing_direction, intersection_street_label, candidate_str))            
 
 
         return incoming_link.getOutgoingMovement(outgoing_link.getEndNode().getId())

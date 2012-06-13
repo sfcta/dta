@@ -43,7 +43,7 @@ IF ERRORLEVEL 1 goto done
 ::
 :createDemand
 FOR %%V IN (Car_NoToll Truck_NoToll) DO (
-  python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010.csv %%V 15:30 18:30 00:15 demand_%%V.dat
+  python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf_trn Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010.csv %%V 15:30 18:30 00:15 demand_%%V.dat
   IF ERRORLEVEL 1 goto done
 )
 :: primary output: demand_{Car,Truck}_NoToll.dat
@@ -55,7 +55,7 @@ goto done
 ::
 :importCounts
 set PYTHONPATH=%DTA_CODE_DIR%;Y:\lmz\CountDracula
-python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf
+python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf_trn
 IF ERRORLEVEL 1 goto done
 
 :done
