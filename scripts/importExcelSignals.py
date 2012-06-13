@@ -1,3 +1,8 @@
+"""
+This script reads the SF signal cards (which are in Excel workbooks) and creates corresponding
+:py:class:`dta.TimePlan` instances for them.
+"""
+
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
@@ -69,6 +74,7 @@ TURN_LEFT = ("LT", "LT2")
 TURN_THRU = ("TH", "TH2")
 TURN_RIGHT = ("RT", "RT2")
 
+#: How to use this script
 USAGE = r"""
 
  python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes.csv]
@@ -86,6 +92,9 @@ USAGE = r"""
  """
 
 class SignalData(object):
+    """
+    Class that represents the signal data for an intersection.
+    """
 
     attrNames = ["fileName", "iName", "topLeftCell", "phaseSeqCell", "pedPhaseCell",\
                               "sigInterCell", "colPhaseData", "lastColPhaseData"] \
@@ -1031,8 +1040,9 @@ def writeExtendedSummary(excelCards):
     output.close()
 
 def parseExcelCardFile(directory, fileName):
-    """Reads the excel file parses its infomation and returns
-    as SignalData object
+    """
+    Reads the excel file, parses its information and returns
+    as a :py:class:`SignalData` object.
     """
     sd = SignalData()
     sd.fileName = fileName
@@ -1620,33 +1630,7 @@ def getPossibleLinkDirections(link):
     else:
         result.append("WB")
 
-    return tuple(result)
-
-def simpleMovementFactory(incomingLink, outgoingLink):
-
-    mov = dta.Movement(incomingLink.getEndNode(),
-                   incomingLink,
-                   outgoingLink,
-                   30,
-                   dta.VehicleClassGroup("all", "*", "#ffff00"), numLanes=1)
-
-    return mov                                                                                           
-
-
-def removePartOfTheNetwork(net):
-    """
-    This function removes all the nodes that are south of 
-    node 4761. This function was used earlier in the 
-    development process
-    """
-    n = net.getNodeForId(27297)
-    nodesToDelete = []
-    for node in net.iterNodes():
-        if node.getY() < n.getY():
-            nodesToDelete.append(node)
-
-    for node in nodesToDelete:
-        net.removeNode(node)
+    return tuple(result)                                                                                        
 
 def convertSignalToDynameq(node, card, planInfo):
     """
@@ -1699,9 +1683,9 @@ def convertSignalToDynameq(node, card, planInfo):
                 if dMov.isProhibitedToAllVehicleClassGroups():
                     continue
                 phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
-                if not dPhase.hasMovement(phaseMovement.getStartNodeId(),
-                                          phaseMovement.getEndNodeId()):                    
-                    dPhase.addMovement(phaseMovement)
+                if not dPhase.hasPhaseMovement(phaseMovement.getMovement().getStartNodeId(),
+                                               phaseMovement.getMovement().getEndNodeId()):                    
+                    dPhase.addPhaseMovement(phaseMovement)
                     
         dPlan.addPhase(dPhase)
 
