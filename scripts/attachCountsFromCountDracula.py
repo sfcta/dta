@@ -36,22 +36,31 @@ import countdracula
 import datetime
 import sys
 
-def exportTurnCountsToDynameqUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime, period, num_intervals):
+def exportTurnCountsToDynameqUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime, period, num_intervals,
+                                               suffix=None, from_date=None, to_date=None, weekdays=None):
     """
     Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.
     
-    *cd_reader* is a CountDraculaReader instance where the counts are stored
-    *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file
-    *starttime* is a datetime.time instance defining the start time for the counts we'll extract
-    *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
-    *num_intervals* is an integer defining how many intervals we'll export
-    
-    Writes to a file called ``counts_movements_Xmin_Y_Z.dat`` where X is the number of minutes in the period, Y is the starttime and Z is
-    the endtime; e.g. counts_movements_15min_1600_1830.dat
+    * *cd_reader* is a CountDraculaReader instance where the counts are stored
+    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file
+    * *starttime* is a datetime.time instance defining the start time for the counts we'll extract
+    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
+    * *num_intervals* is an integer defining how many intervals we'll export
+    * *suffix* is an optional suffix for the file name (something descriptive)
+    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
+    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
+    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
+      only include the given weekdays.
+            
+    Writes to a file called ``counts_movements_Xmin_Y_Z_suffix.dat`` where X is the number of minutes in the period, Y is the starttime and Z is
+    the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat
     """    
     endtime         = datetime.datetime.combine(datetime.date(2000,1,1), starttime) + (num_intervals*period)
-    filename        = "counts_movements_%dmin_%s_%s.dat" % (period.seconds/60, starttime.strftime("%H%M"), endtime.strftime("%H%M"))
-    movement_counts = cd_reader.getTurningCounts(starttime=starttime, period=period, num_intervals=num_intervals)
+    filename        = "counts_movements_%dmin_%s_%s%s.dat" % (period.seconds/60, 
+                                                              starttime.strftime("%H%M"), endtime.strftime("%H%M"),
+                                                              "_%s" % suffix if suffix else "")
+    movement_counts = cd_reader.getTurningCounts(starttime=starttime, period=period, num_intervals=num_intervals,
+                                                 from_date=from_date, to_date=to_date, weekdays=weekdays)
     
     # file header (really just a comment)
     outfile         = open(filename, "w")
@@ -94,22 +103,32 @@ def exportTurnCountsToDynameqUserDataFile(cd_reader, sanfranciscoDynameqNet, sta
     dta.DtaLogger.info("Wrote movement counts for %d movements to %s; failed to find %d movements." % 
                        (movements_found, filename, movements_not_found))
 
-def exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime, period, num_intervals):
+def exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime, period, num_intervals,
+                                                   suffix=None, from_date=None, to_date=None, weekdays=None):
     """
     Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.
     
-    *cd_reader* is a CountDraculaReader instance where the counts are stored
-    *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file    
-    *starttime* is a datetime.time instance defining the start time for the counts we'll extract
-    *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
-    *num_intervals* is an integer defining how many intervals we'll export
-    
+    * *cd_reader* is a CountDraculaReader instance where the counts are stored
+    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file    
+    * *starttime* is a datetime.time instance defining the start time for the counts we'll extract
+    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
+    * *num_intervals* is an integer defining how many intervals we'll export
+    * *suffix* is an optional suffix for the file name (something descriptive)
+    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
+    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
+    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
+      only include the given weekdays.
+          
     Writes to a file called ``counts_links_Xmin_Y_Z.dat`` where X is the number of minutes in the period, Y is the starttime and Z is
     the endtime; e.g. counts_links_15min_1600_1830.dat
     """    
     endtime         = datetime.datetime.combine(datetime.date(2000,1,1), starttime) + (num_intervals*period)
-    filename        = "counts_links_%dmin_%s_%s.dat" % (period.seconds/60, starttime.strftime("%H%M"), endtime.strftime("%H%M"))
-    link_counts     = cd_reader.getMainlineCounts(starttime=starttime, period=period, num_intervals=num_intervals)
+    filename        = "counts_links_%dmin_%s_%s%s.dat" % (period.seconds/60, 
+                                                          starttime.strftime("%H%M"), 
+                                                          endtime.strftime("%H%M"),
+                                                          "_%s" % suffix if suffix else "")
+    link_counts     = cd_reader.getMainlineCounts(starttime=starttime, period=period, num_intervals=num_intervals,
+                                                  from_date=from_date, to_date=to_date, weekdays=weekdays)
     
     # file header (really just a comment)
     outfile         = open(filename, "w")
@@ -183,9 +202,31 @@ if __name__ == '__main__':
     # Instantiate the count dracula reader and do the exports
     # Time slices here are based on what we have available (according to CountDracula's querySanFranciscoCounts.py)
     cd_reader       = countdracula.CountsDatabaseReader(pw="ReadOnly", logger=dta.DtaLogger)
-    exportTurnCountsToDynameqUserDataFile   (cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00), period=datetime.timedelta(minutes=15), num_intervals=10)
-    exportTurnCountsToDynameqUserDataFile   (cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00), period=datetime.timedelta(minutes= 5), num_intervals=24)
-    exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00), period=datetime.timedelta(minutes=15), num_intervals=10)
+    
+    for suffix in ["all", "all_midweek", "recent", "recent_midweek"]:
+        from_date   = None
+        to_date     = None
+        weekdays    = None
+        
+        # year range
+        if suffix.find("recent") >= 0:
+            from_date   = datetime.date(year=2009,month=1 ,day=1 )
+            to_date     = datetime.date(year=2011,month=12,day=31)
+            
+        # weekdays
+        if suffix.find("midweek") >= 0:
+            weekdays    = [1,2,3] # Tues, Wed, Thurs
+            
+        dta.DtaLogger.info("Processing %s" % suffix)
+        exportTurnCountsToDynameqUserDataFile   (cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00), 
+                                                 period=datetime.timedelta(minutes=15), num_intervals=10, 
+                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays)
+        exportTurnCountsToDynameqUserDataFile   (cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00),
+                                                 period=datetime.timedelta(minutes= 5), num_intervals=24,
+                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays)
+        exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00),
+                                                 period=datetime.timedelta(minutes=15), num_intervals=10,
+                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays)
 
     
     

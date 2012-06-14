@@ -21,11 +21,17 @@ from .DtaError import DtaError
 
 class Phase(object):
     """
-    Represents a generic phase class that can contain one or more 
-    :py:class:`PhaseMovement' objects. 
-    """
+    A phase consists of timing (green, yellow and red times) plus a set of :py:class:`PhaseMovement` instances
+    that are allowed to move during the green time.
     
+    A phase can be Standard, or Custom; the difference being that a custom phase movement can
+    specify a subset of the movement lanes that are permitted/protected.
+    
+    Right now, Custom phases aren't really supported.
+    """
+    #: Custom phase, where the relevant movements have specified lanes that are permitted/protected
     TYPE_CUSTOM = 1
+    #: Standard phase
     TYPE_STANDARD = 0
 
     @classmethod
@@ -79,17 +85,20 @@ class Phase(object):
     def __init__(self, timePlan, green, yellow, red, phaseType=TYPE_STANDARD):
         """
         Constructor. 
-        :py:class:`TimePlan' is the timeplan instance the phase
-        green, red, and yellow are the green, yellow, and red times respectively (int or float) 
+        
+        * *timeplan* is the :py:class:`TimePlan` instance to which this Phase belongs.
+        * *green*, *red*, and *yellow* are numbers (int or float) representing the number of seconds
+          for each light
+           
         """
-        self._timePlan = timePlan
-        self._node = timePlan.getNode()
-        self._green = green
-        self._yellow = yellow
-        self._red = red
+        self._timePlan  = timePlan
+        self._node      = timePlan.getNode()
+        self._green     = green
+        self._yellow    = yellow
+        self._red       = red
         self._phaseType = phaseType
 
-        self._movements= []
+        self._phaseMovements= []
 
     def getDynameqStr(self):
         """
@@ -111,23 +120,24 @@ class Phase(object):
             red = str(self._red)
                     
         header = "PHASE\n%s %s %s %d" % (green, yellow, red, self._phaseType)
-        body = "\n".join([mov.getDynameqStr() for mov in self.iterMovements()])
+        body = "\n".join([mov.getDynameqStr() for mov in self.iterPhaseMovements()])
         return "%s\n%s" % (header, body)
 
-    def addMovement(self, movement):
+    def addPhaseMovement(self, phase_movement):
         """
-        Add the input movement to the phase. If the movement
-        allready exists and exception will be thrown
-        """
-        if not self.getTimePlan().getNode().hasMovement(movement.getStartNode().getId(),
-                                          movement.getEndNode().getId()):
-            raise DtaError("Movement %s is not does not belong to node %d" % (movement.getId(),
-                                                                                   movement.getAtNode().getId()))
-        if self.hasMovement(movement.getStartNodeId(), 
-                            movement.getEndNodeId()):
-            raise DtaError("Movement %s already belongs to this phase" % movement.getId())
+        Add the input *movement* (an instance of :py:class:`PhaseMovement`) to the phase. 
         
-        self._movements.append(movement)
+        If the movement already exists a :py:class:`DtaError` will be raised.
+        """
+        if not self.getTimePlan().getNode().hasMovement(phase_movement.getMovement().getStartNode().getId(),
+                                                        phase_movement.getMovement().getEndNode().getId()):
+            raise DtaError("Phase Movement %s is not does not belong to node %d" % (phase_movement.getMovement().getId(),
+                                                                                    phase_movement.getMovement().getAtNode().getId()))
+        if self.hasPhaseMovement(phase_movement.getMovement().getStartNodeId(), 
+                                 phase_movement.getMovement().getEndNodeId()):
+            raise DtaError("Phase Movement %s already belongs to this phase" % phase_movement.getMovement().getId())
+        
+        self._phaseMovements.append(phase_movement)
     
     def getTimePlan(self):
         """
@@ -135,79 +145,78 @@ class Phase(object):
         """
         return self._timePlan
 
-    def getNumMovements(self):
+    def getNumPhaseMovements(self):
         """
-        Return the number of movements in the phase
+        Return the number of phase movements in the phase
         """
-        return len(self._movements)
+        return len(self._phaseMovements)
                 
-    def getMovement(self, startNodeId, endNodeId):
+    def getPhaseMovement(self, startNodeId, endNodeId):
         """
-        Return the movement from startNodeId to endNodeId
+        Return the :py:class:`PhaseMovement` from startNodeId to endNodeId
         """
-        for movement in self.iterMovements():
-            if movement.getStartNodeId() == startNodeId and \
-                    movement.getEndNodeId() == endNodeId:
+        for movement in self.iterPhaseMovements():
+            if (movement.getMovement().getStartNodeId() == startNodeId and 
+                movement.getMovement().getEndNodeId() == endNodeId):
                 return movement
-        raise DtaError("Movement from %d to %d does not exist" % (startNodeId, endNodeId))
+        raise DtaError("Phase Movement from %d to %d does not exist" % (startNodeId, endNodeId))
 
-    def hasMovement(self, startNodeId, endNodeId):
+    def hasPhaseMovement(self, startNodeId, endNodeId):
         """
-        Return True if the phase has the movement with the given iid
-        else false
+        Return True iff the phase has the phase movement with the given id
         """
         try:
-            self.getMovement(startNodeId, endNodeId)
+            self.getPhaseMovement(startNodeId, endNodeId)
             return True
         except DtaError, e:
             return False
 
-    def hasProtectedMovement(self, startNodeId, endNodeId):
+    def hasProtectedPhaseMovement(self, startNodeId, endNodeId):
         """
         Return True if the phase has a protected movement from 
         input start node to end node
         """
         try:
-            mov = self.getMovement(startNodeId, endNodeId)
+            mov = self.getPhaseMovement(startNodeId, endNodeId)
             if mov.isProtected():
                 return True
             return False
         except DtaError, e:
             return False 
         
-    def hasPermittedMovement(self, startNodeId, endNodeId):
+    def hasPermittedPhaseMovement(self, startNodeId, endNodeId):
         """
         Return True if the phase has a permitted movement from 
         start node to end node
         """
         try:
-            mov = self.getMovement(startNodeId, endNodeId)
+            mov = self.getPhaseMovement(startNodeId, endNodeId)
             if mov.isPermitted():
                 return True
             return False
         except DtaError, e:
             return False 
         
-    def iterMovements(self):
+    def iterPhaseMovements(self):
         """
-        Return an iterator the the phase movements
+        Return an iterator the the :py:class:`PhaseMovement` instances for this Phase
         """
-        return iter(self._movements)
+        return iter(self._phaseMovements)
 
     def getGreen(self):
         """
-        Return the green time as an integer or float 
+        Return the green time in seconds (an integer or float) 
         """
         return self._green
 
     def getYellow(self):
         """
-        Return the yellow time as an integer or float 
+        Return the yellow time in seconds (an integer or float) 
         """
         return self._yellow
 
     def getRed(self):
         """
-        Return the red time as an integer or float 
+        Return the red time in seconds (an integer or float) 
         """
         return self._red 

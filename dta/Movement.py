@@ -259,38 +259,31 @@ class Movement(object):
         Returns the type of the movement, one of :py:attr:`Movement.DIR_UTURN`, :py:attr:`Movement.DIR_RT`, :py:attr:`Movement.DIR_RT2`,
         :py:attr:`Movement.DIR_LT2`, :py:attr:`Movement.DIR_LT`, :py:attr:`Movement.DIR_TH`.
 
-        The movement type is determined by the angles of the incoming links (based on the start nodes and end nodes only);
-        however, if a Movement type override is set using :py:meth:`Movement.setOverrideTurnType` then that will supercede
-        the angle-based analysis.
+        The movement type is determined by the angle of the outgoing link with respect to that of the incoming link 
+        (based on the start nodes and end nodes only for now, but maybe it makes more sense to include shape points?).
+        
+        .. image:: /images/TurnTypes.png
+           :height: 400px
+           
+        However, if a Movement type override is set using :py:meth:`Movement.setOverrideTurnType` then that will
+        supercede the angle-based analysis.
         """
         if self._overrideTurnType != None:
             return self._overrideTurnType
-        
-        dx1 = self._incomingLink.getEndNode().getX() - self._incomingLink.getStartNode().getX()
-        dy1 = self._incomingLink.getEndNode().getY() - self._incomingLink.getStartNode().getY()
-
-        dx2 = self._outgoingLink.getEndNode().getX() - self._outgoingLink.getStartNode().getX()
-        dy2 = self._outgoingLink.getEndNode().getY() - self._outgoingLink.getStartNode().getY()
-           
-        angle = (math.atan2(dy2, dx2) - math.atan2(dy1, dx1)) * 180 / math.pi
-        if angle < 0:
-            angle += 360
-
-        turnType = None
+                    
+        angle = self._incomingLink.getAngle(self._outgoingLink)
         if self.isUTurn():
             turnType =  Movement.DIR_UTURN
-        elif 135 <= angle < 180:
-            turnType =  Movement.DIR_LT2
+        elif -45 <= angle < 45:
+            turnType = Movement.DIR_TH
         elif 45 <= angle < 135:
-            turnType =  Movement.DIR_LT
-        elif 0 <= angle  < 45:
-            turnType =  Movement.DIR_TH
-        elif 315 <= angle < 360:
-            turnType =  Movement.DIR_TH
-        elif 225 <= angle < 315:
-            turnType =  Movement.DIR_RT
-        else:
-            turnType =  Movement.DIR_RT2
+            turnType = Movement.DIR_RT
+        elif 135 <= angle:
+            turnType = Movement.DIR_RT2
+        elif -135 <= angle < -45:
+            turnType = Movement.DIR_LT
+        elif angle < -135:
+            turnType = Movement.DIR_LT2
 
         return turnType
 
@@ -298,34 +291,7 @@ class Movement(object):
         """
         Return the direction of the movement as a string
         """
-        dx1 = self._incomingLink.getEndNode().getX() - self._incomingLink.getStartNode().getX()
-        dy1 = self._incomingLink.getEndNode().getY() - self._incomingLink.getStartNode().getY()
-
-        dx2 = self._outgoingLink.getEndNode().getX() - self._outgoingLink.getStartNode().getX()
-        dy2 = self._outgoingLink.getEndNode().getY() - self._outgoingLink.getStartNode().getY()
-           
-        angle = (math.atan2(dy2, dx2) - math.atan2(dy1, dx1)) * 180 / math.pi
-        if angle < 0:
-            angle += 360
-
-        turnType = None
-        if self.isUTurn():
-            turnType =  Movement.DIR_UTURN
-        elif 135 <= angle < 180:
-            turnType =  Movement.DIR_LT2
-        elif 45 <= angle < 135:
-            turnType =  Movement.DIR_LT
-        elif 0 <= angle  < 45:
-            turnType =  Movement.DIR_TH
-        elif 315 <= angle < 360:
-            turnType =  Movement.DIR_TH
-        elif 225 <= angle < 315:
-            turnType =  Movement.DIR_RT
-        else:
-            turnType =  Movement.DIR_RT2
-
-        linkDir = self._incomingLink.getDirection()
-        return linkDir + turnType
+        return self._incomingLink.getDirection() + self.getTurnType()
                 
     def getCenterLine(self):
         """

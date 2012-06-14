@@ -68,6 +68,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.moveVirtualNodesToAvoidShortConnectors
       ~DynameqNetwork.read
       ~DynameqNetwork.readLinkShape
+      ~DynameqNetwork.readObsMovementCounts
       ~DynameqNetwork.readSimResults
       ~DynameqNetwork.removeLink
       ~DynameqNetwork.removeNode

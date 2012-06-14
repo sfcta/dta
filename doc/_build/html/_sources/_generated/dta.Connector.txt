@@ -18,10 +18,12 @@ dta.Connector
       ~Connector.addOutgoingMovement
       ~Connector.addShapePoint
       ~Connector.addShifts
+      ~Connector.allowsAll
       ~Connector.coordinatesAlongLink
       ~Connector.endIsRoadNode
       ~Connector.euclideanLength
       ~Connector.euclideanLengthInLengthUnits
+      ~Connector.findOutgoingMovement
       ~Connector.getAngle
       ~Connector.getCenterLine
       ~Connector.getCentroid

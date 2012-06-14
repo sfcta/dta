@@ -64,7 +64,30 @@ def addShifts(sanfranciscoCubeNet):
     
     # HWY 101 N On-Ramp at Marin / Bayshore
     sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0, addShapepoints=True)
-    
+
+def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
+    """
+    Creates transit-only lanes based on the BUSLANE_PM field.
+    """
+    for link in sanfranciscoCubeNet.iterRoadLinks():
+        ab_tuple = (link.getStartNode().getId(), link.getEndNode().getId())
+        if ab_tuple not in sanfranciscoCubeNet.additionalLinkVariables: continue
+        
+        buslane_pm = int(sanfranciscoCubeNet.additionalLinkVariables[ab_tuple]["BUSLANE_PM"])
+        
+        # no transit lanes, don't worry about it
+        if buslane_pm == 0: continue
+        
+        for lane_id in range(link.getNumLanes()):
+            # diamond lane or side BRT lane
+            if lane_id == 0 and (buslane_pm == 1 or buslane_pm == 2):
+                link.addLanePermission(lane_id, transitVCG)
+            # center BRT lane
+            elif lane_id == link.getNumLanes()-1 and buslane_pm == 3:
+                link.addLanePermission(lane_id, transitVCG)
+            else:
+                link.addLanePermission(lane_id, allVCG)
+        
 def removeHOVStubs(sanfranciscoDynameqNet):
     """
     The San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
@@ -162,12 +185,11 @@ if __name__ == '__main__':
     # Generic is an implicit type
 
     # VehicleClassGroups
-    allVCG = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
-        dta.VehicleClassGroup.CLASSDEFINITION_ALL, 
-        "#bebebe")
+    allVCG     = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe")
+    transitVCG = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_TRANSIT,    dta.VehicleClassGroup.CLASSDEFINITION_TRANSIT,      "#55ff00")
     sanfranciscoScenario.addVehicleClassGroup(allVCG)
+    sanfranciscoScenario.addVehicleClassGroup(transitVCG)
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
-    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_TRANSIT,    dta.VehicleClassGroup.CLASSDEFINITION_TRANSIT,      "#55ff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
     
     # Generalized cost
@@ -263,7 +285,10 @@ if __name__ == '__main__':
                                            'speedLookup':speedLookup,
                                            'responseTimeLookup':responseTimeLookup
                                            })
-    
+
+    # Apply the transit lanes
+    createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
+        
     # create the movements for the network for all vehicles
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
     

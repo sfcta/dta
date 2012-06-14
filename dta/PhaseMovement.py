@@ -20,18 +20,21 @@ from .DtaError import DtaError
 
 class PhaseMovement(object):
     """
-    Represents a movement specific to a particular phase 
+    Represents a movement specific to a particular phase.  This is basically a :py:class:`Movement` with an
+    annotation of whether the Movement is permitted or protected.
+    
+    Does this really need to be its own class?  It's really just a tuple [Movement, permitted|protected]
     """
 
-    CUSTOM = 0        #the priorities of this movement related to other movements are custom defined
+    #: The movement is protected under this phase
     PROTECTED = 1     
+    #: The movement is permitted under this phase
     PERMITTED = 2
         
     def __init__(self, movement, capacityTag):
         """
-        Constructor that accepts
-        a :py:class:`Movement' object representing
-        one of the following flags [PhaseMovement.CUSTOM, PhaseMovement.PROTECTED, PhaseMovement.PERMITTED]         
+        Constructor.  *movement* is an instance of :py:class:`Movement`.
+        *capacityTag* is one of :py:attr:`PhaseMovement.PROTECTED` or :py:attr:`PhaseMovement.PERMITTED`         
         """
         self._movement = movement
         if not capacityTag in [PhaseMovement.PROTECTED, PhaseMovement.PERMITTED]:
@@ -43,44 +46,9 @@ class PhaseMovement(object):
         Return the dynameq string representaton of the phase 
         movement
         """
-        return "%s %s %d" % (self.getIncomingLink().getId(), self.getOutgoingLink().getId(), 
+        return "%s %s %d" % (self._movement.getIncomingLink().getId(), 
+                             self._movement.getOutgoingLink().getId(), 
                              self._capacityTag)
-
-    def getId(self):
-        """
-        Return the id of the movement as a sequence of three node ids
-        """
-        return self._movement.getId()
-
-    def getIncomingLink(self):
-        """
-        Returns the incomingLink, a :py:class:`Link` instance
-        """
-        return self._movement._incomingLink    
-    
-    def getOutgoingLink(self):
-        """
-        Returns the outgoung, a :py:class:`Link` instance
-        """
-        return self._movement._outgoingLink
-    
-    def getAtNode(self):
-        """
-        Returns the :py:class:`Node` at which the movement is happening
-        """
-        return self._movement._node  
-    
-    def getStartNode(self):
-        """
-        Returns the start :py:class:`Node` of the movement's incomingLink
-        """
-        return self._movement._incomingLink.getStartNode()
-    
-    def getEndNode(self):
-        """
-        Returns the end :py:class:`Node` of the movement's outgoing link
-        """        
-        return self._movement._outgoingLink.getEndNode()
 
     def getMovement(self):
         """
@@ -102,13 +70,13 @@ class PhaseMovement(object):
 
     def setProtected(self):
         """
-        Set the movement as protected
+        Sets the phase movement as protected
         """
         self._capacityTag = PhaseMovement.PROTECTED
 
     def setPermitted(self):
         """
-        Set the movement as permitted
+        Sets the phase movement as permitted
         """
         self._capacityTag = PhaseMovement.PERMITTED
     
@@ -116,73 +84,6 @@ class PhaseMovement(object):
         """
         implementation of the == operator
         """
-        if self._movement == other._movement and \
-                self._capacityTag == other._capacityTag:
+        if self._movement == other._movement and self._capacityTag == other._capacityTag:
             return True
         return False
-
-    def getStartNodeId(self):
-        """
-        Returns the start node id
-        """
-        return self._movement._incomingLink.getStartNodeId()
-    
-    def getEndNodeId(self):
-        """
-        Returns the end node id
-        """        
-        return self._movement._outgoingLink.getEndNodeId()
-
-    def isUTurn(self):
-        """
-        Return True if the movement is a U-Turn
-        """
-        return self._movement.isUTurn()
-
-    def isThruTurn(self):
-        """
-        Return True if the movement is a Through movement
-        """
-        return self._movement.isThruTurn()
-
-    def isLeftTurn(self):
-        """
-        Return True if the movement is a left turn
-        """
-        return self._movement.isLeftTurn()
-
-    def isRightTurn(self):
-        """
-        Return True if the movement is a right turn
-        """
-        return self._movement.isRightTurn()
-
-    def getNumLanes(self):
-        """
-        Return the number of lanes the movement has
-        """
-        return self._movement.getNumLanes()
-
-    def isInConflict(self, other):
-        """
-        other is an instance of :py:class:`Movement`. The method returns 
-        True if the current movement and the input one are in conflict
-        """
-        return self._movement.isInConflict(other)
-
-    def getCenterLine(self):
-        """
-        Return a tuple of (x,y) coordinates representing the centerline of the
-        movement
-        """
-        return self._movement.getCenterLine()
-
-    def getTurnType(self):
-        """
-        Return the type of the turn the movement makes as one of the following strings
-        UTURN, RT, RT2, LT2, LT, TH
-        """
-        return self._movement.getTurnType()
-        
-
-        

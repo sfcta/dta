@@ -15,6 +15,7 @@ dta.TransitLine
    
       ~TransitLine.__init__
       ~TransitLine.addSegment
+      ~TransitLine.checkMovementsAreAllowed
       ~TransitLine.getDynameqFileHeaderStr
       ~TransitLine.getDynameqStr
       ~TransitLine.getFirstNode

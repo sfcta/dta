@@ -196,18 +196,22 @@
 
 <dl class="method">
 <dt id="dta.TPPlusTransitRoute.toTransitLine">
-<tt class="descname">toTransitLine</tt><big>(</big><em>dtaNetwork</em>, <em>dtaRouteId</em>, <em>MODE_TO_LITYPE</em>, <em>headwayIndex</em>, <em>startTime</em>, <em>demandDurationInMin</em>, <em>doShortestPath=True</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.toTransitLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert this instance to an equivalent DTA transit line.  Returns an instance of a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>.</p>
+<tt class="descname">toTransitLine</tt><big>(</big><em>dtaNetwork</em>, <em>dtaRouteId</em>, <em>MODE_TO_LITYPE</em>, <em>MODE_TO_VTYPE</em>, <em>headwayIndex</em>, <em>startTime</em>, <em>demandDurationInMin</em>, <em>doShortestPath=True</em>, <em>maxShortestPathLen=4</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitRoute.toTransitLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this instance to an equivalent DTA transit line(s).  Returns list of instances of 
+<a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>.</p>
 <p>Links on the route are checked against the given <em>dtaNetwork</em> (an instance of <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a>).
 If <em>doShortestPath</em> is True, then a shortest path is searched for on the <em>dtaNetwork</em> and that
 is included (so this is assuming that the calling instance is missing some nodes; this can happen, for example, 
 if the DTA network has split links for centroid connectors, etc.).
-If <em>doShortestPath</em> is False, these links are dropped (?).</p>
+If <em>doShortestPath</em> is True then any shortest path segments longer than <em>maxShortestPathLen</em>
+are dropped (e.g. if they&#8217;re Light rail segments underground) and a second</p>
 <p>Other arguments:</p>
 <ul class="simple">
 <li><em>dtaRouteId</em> is the id number for the new <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a> instance.</li>
 <li><em>MODE_TO_LITYPE</em> maps the <tt class="xref py py-attr docutils literal"><span class="pre">TPPlusTransitRoute.mode</span></tt> attribute (strings) to a line type
 (either <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine.LINE_TYPE_BUS" title="dta.TransitLine.LINE_TYPE_BUS"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_TYPE_BUS</span></tt></a> or <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine.LINE_TYPE_TRAM" title="dta.TransitLine.LINE_TYPE_TRAM"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_TYPE_TRAM</span></tt></a>)</li>
+<li><em>MODE_TO_VTYPE</em> maps the <tt class="xref py py-attr docutils literal"><span class="pre">TPPlusTransitRoute.mode</span></tt> attribute (strings) to a 
+<a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a> name</li>
 <li><em>headwayIndex</em> is the index into the frequencies to use for the headway (for use with
 <a class="reference internal" href="#dta.TPPlusTransitRoute.getHeadway" title="dta.TPPlusTransitRoute.getHeadway"><tt class="xref py py-meth docutils literal"><span class="pre">TPPlusTransitRoute.getHeadway()</span></tt></a>)</li>
 <li><em>startTime</em> is the start time for the bus line (and instance of <a class="reference internal" href="dta.Time.html#dta.Time" title="dta.Time"><tt class="xref py py-class docutils literal"><span class="pre">Time</span></tt></a>),

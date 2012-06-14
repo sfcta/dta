@@ -19,7 +19,8 @@ __license__     = """
 import pdb
 
 from .Phase import Phase
-from .DtaError import DtaError 
+from .DtaError import DtaError
+from .Logger import DtaLogger
 from .Utils import Time
 
 
@@ -36,10 +37,11 @@ class PlanCollectionInfo(object):
         A PlanCollectionInfo object has some general info for all the time plans that are
         active between startTime and endTime. The inputs to the constructor are:
         
-        startTime: a :py:class:`Utils.Time' object representing the start time of the time plan collection
-        endTime: a :py:class:`Utils.Time' object representing the end time of the time plan collection
-        name: a python string containing the name of the plan collection
-        description: a python string containing the description of the plan collection 
+        * *startTime*: a :py:class:`dta.Time` object representing the start time of the time plan collection
+        * *endTime*: a :py:class:`dta.Time` object representing the end time of the time plan collection
+        * *name*: a string containing the name of the plan collection
+        * *description*: a string containing the description of the plan collection
+         
         """
         self._startTime = startTime
         self._endTime = endTime
@@ -65,14 +67,16 @@ class PlanCollectionInfo(object):
 
 class TimePlan(object):
     """
-    Represents gereric signal timeplan
+    Represents generic signal timeplan
     
     """
 
     CONTROL_TYPE_CONSTANT = 0
     CONTROL_TYPE_PRETIMED = 1
     
+    #: Turn on red is allowed
     TURN_ON_RED_YES = 1
+    #: Turn on red is not allowed
     TURN_ON_RED_NO = 0
 
     @classmethod
@@ -130,9 +134,13 @@ class TimePlan(object):
                  syncPhase=1, turnOnRed=TURN_ON_RED_YES):
         """
         Constructor.
-        :py:class:`RoadNode': the node the signal applies
-        offset: a positive integer representing the offset of the 
-        :py:class:`PlanCollectionInfo': containing information about the start and end times of the time plan  
+        
+        * *node* is a :py:class:`RoadNode' instance, the node at which the signal resides
+        * *offset* is a positive integer representing the synchronization offset, in seconds
+        * *planCollectionInfo* is a :py:class:`PlanCollectionInfo` instance, containing information about
+          the start and end times of the time plan
+        * *syncPhase* is an integer, the synchronization phase to which the offset applies
+        * *turnOnRed* is either :py:attr:`TimePlan.TURN_ON_RED_YES` or :py:attr:`TimePlan.TURN_ON_RED_NO`
         
         """
         self._node = node
@@ -155,20 +163,21 @@ class TimePlan(object):
 
     def addPhase(self, phase):
         """
-        Add the input phase instance to the timeplan's phases
+        Add the given *phase* (an instance of :py:class:`Phase`) to the timeplan
         """
         assert isinstance(phase, Phase)
         self._phases.append(phase)
 
     def iterPhases(self):
         """
-        Return an iterator to the phases in the timeplan
+        Return an iterator to the :py:class:`Phase` instances in the timeplan
         """
         return iter(self._phases)
 
     def isValid(self):
          """
-         Return True if the plan is valid otherwise return false
+         Return True if the plan is valid otherwise return false.  See :py:meth:`TimePlan.validate` for
+         details on the checks performed.
          """
          try:
              self.validate()
@@ -202,7 +211,8 @@ class TimePlan(object):
 
     def getPhase(self, phaseNum):
         """
-        Return the phase instance with the given index
+        Return the :py:class:`Phase` instance with the given index.
+        Throws a :py:class:`DtaError` if the *phaseNum* is invalid.
         """
         if phaseNum <= 0 or phaseNum > self.getNumPhases():
             return DtaError("Timeplan for node %s does not have a phase "
@@ -230,16 +240,20 @@ class TimePlan(object):
                                "the number of phases %d" % (self.getNodeId(), syncPhase, self.getNumPhases()))
         self._syncPhase = syncPhase 
 
-    def validate(self):
+    def validate(self, allRedPhaseOK=True):
         """
-        Make the following checks to the timeplan. If any of them fails raise an error
-        1. Sync Phase is a valid phase
+        Make the following checks to the timeplan. If any of them fails raise a :py:class:`DtaError`
+        
+        1. Sync phase is a valid phase
         2. Number of phases is equal or greater than two
-        3. The number of movements each phase has should be greater than zero
-        4. The phase movements are exactly the same with the node movements:
-               there is no node movement that is not served by a phase and there is
-               not a phase movement that does not exist in the node. 
-        5. If two movements conflict with each other then one of them is permitted and the other is protected
+        3. The number of movements each phase has should be greater than zero.  This check
+           is only performed if *allRedPhaseOK* is False.  All red phases may be reasonable when
+           there is a pedestrian scramble.
+        4. The phase movements are exactly the same as the node movements:
+           there is no node movement that is not served by a phase and there is
+           not a phase movement that does not exist in the node. 
+        5. If two movements conflict with each other then they can't both be protected
+        
         """
         if self._offset < 0:
             raise DtaError("Node %s. The offset cannot be less than 0" % self.getNode().getId())
@@ -251,15 +265,14 @@ class TimePlan(object):
         if self.getNumPhases() < 2:
             raise DtaError("Node %s has a timeplan with less than 2 phases" % self._node.getId())
 
-        # This section checked for all-red phases, but it is commented out because we think that Dynameq can handle red phases
+        if allRedPhaseOK == False:
+            for phase in self.iterPhases():
+                if phase.getNumPhaseMovements() < 1:
+                    raise DtaError("Node %s The number of movements in a phase "
+                                   "cannot be less than one" % self._node.getId())
 
-##        for phase in self.iterPhases():
-##            if phase.getNumMovements() < 1:
-##                raise DtaError("Node %s The number of movements in a phase "
-##                                    "cannot be less than one" % self._node.getId())
-
-        phaseMovements = set([mov.getId() for phase in self.iterPhases() 
-                                for mov in phase.iterMovements()]) 
+        phaseMovements = set([mov.getMovement().getId() for phase in self.iterPhases() 
+                              for mov in phase.iterPhaseMovements()]) 
 
         #if right turns on red add the right turns 
         if self._turnOnRed == TimePlan.TURN_ON_RED_YES:
@@ -279,18 +292,19 @@ class TimePlan(object):
                                 (self.getNode().getId(), "\t".join(map(str, nodeMovsNotInPhaseMovs)),
                                  "\t".join(map(str, phaseMovsNotInNodeMovs))))
         
-       #check that if two conflicting movements exist one of them is permitted or right turn
+        #check that if two conflicting movements exist one of them is permitted or right turn
         for phase in self.iterPhases():
-            for mov1 in phase.iterMovements():
-                for mov2 in phase.iterMovements():
-                   if mov1.getId() == mov2.getId():
-                       continue
-                   if not mov1.isInConflict(mov2):
-                       continue
+            for mov1 in phase.iterPhaseMovements():
+                for mov2 in phase.iterPhaseMovements():
+                    
+                   if mov1.getMovement().getId() == mov2.getMovement().getId(): continue
+                   if not mov1.getMovement().isInConflict(mov2.getMovement()): continue
+                   
                    if mov1.isProtected() and mov2.isProtected():
-                       if mov1.isRightTurn() or mov2.isRightTurn():
-                           continue
-                       raise DtaError("Movements %s, %s and %s, %s are in conflict and are both protected " %  (mov1.getId(), mov1.getTurnType(), mov2.getId(), mov2.getTurnType()))  
+                       if mov1.getMovement().isRightTurn() or mov2.getMovement().isRightTurn(): continue
+                       raise DtaError("Movements %s, %s and %s, %s are in conflict and are both protected " % 
+                                      (mov1.getMovement().getId(), mov1.getMovement().getTurnType(), 
+                                       mov2.getMovement().getId(), mov2.getMovement().getTurnType()))  
                                                                       
     def setPermittedMovements(self):
         """
@@ -302,28 +316,28 @@ class TimePlan(object):
         protected an error is being raised.
         """
         for phase in self.iterPhases():
-            for mov1 in phase.iterMovements():
-                for mov2 in phase.iterMovements():
+            for mov1 in phase.iterPhaseMovements():
+                for mov2 in phase.iterPhaseMovements():
                     
                     # same movement
-                    if mov1.getId() == mov2.getId(): continue
+                    if mov1.getMovement().getId() == mov2.getMovement().getId(): continue
                     
                     # no conflict
-                    if not mov1.isInConflict(mov2):  continue
+                    if not mov1.getMovement().isInConflict(mov2.getMovement()):  continue
                    
                     # two thru movements in conflict
-                    if mov1.isThruTurn() and mov2.isThruTurn():
+                    if mov1.getMovement().isThruTurn() and mov2.getMovement().isThruTurn():
                         raise DtaError("Movements %s and %s are in conflict and are both protected and thru movements" %
-                                       (mov1.getId(), mov2.getId()))
+                                       (mov1.getMovement().getId(), mov2.getMovement().getId()))
                     
                     
-                    if mov1.isLeftTurn() and (mov2.isThruTurn() or mov2.isRightTurn()):
+                    if mov1.getMovement().isLeftTurn() and (mov2.getMovement().isThruTurn() or mov2.getMovement().isRightTurn()):
                         # left is lower priority than through or right
                         mov1.setPermitted()
                         
-                    if mov1.isLeftTurn() and mov2.isLeftTurn():
+                    if mov1.getMovement().isLeftTurn() and mov2.getMovement().isLeftTurn():
                         # two left turns - first takes priority (?)
-                        if not mov1.isPermitted():
+                         if not mov1.isPermitted():
                             mov2.setPermitted()
 
 

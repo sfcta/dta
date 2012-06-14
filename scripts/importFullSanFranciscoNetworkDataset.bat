@@ -14,7 +14,7 @@ set PYTHONPATH=%DTA_CODE_DIR%
 :: 1) create the network from the Cube network
 ::
 :convertStaticNetwork
-python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\downtownSanFranciscoSubArea_2010.net %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\turnspm.pen %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\stclines.shp
 :: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt
 :: log     output: createSFNetworkFromCubeNetwork.{DEBUG,INFO}.log
 :: debug   output: sf_{links,nodes}.shp
@@ -43,7 +43,7 @@ IF ERRORLEVEL 1 goto done
 ::
 :createDemand
 FOR %%V IN (Car_NoToll Truck_NoToll) DO (
-  python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010.csv %%V 15:30 18:30 00:15 demand_%%V.dat
+  python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf_trn Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010.csv %%V 15:30 18:30 00:15 demand_%%V.dat
   IF ERRORLEVEL 1 goto done
 )
 :: primary output: demand_{Car,Truck}_NoToll.dat
@@ -55,7 +55,7 @@ goto done
 ::
 :importCounts
 set PYTHONPATH=%DTA_CODE_DIR%;Y:\lmz\CountDracula
-python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf
+python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf_trn
 IF ERRORLEVEL 1 goto done
 
 :done

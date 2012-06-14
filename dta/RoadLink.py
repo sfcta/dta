@@ -22,6 +22,7 @@ from collections import defaultdict
 
 from .DtaError import DtaError
 from .Link import Link
+from .Logger import DtaLogger
 from .Movement import Movement
 from .Node import Node
 from .VehicleClassGroup import VehicleClassGroup
@@ -336,6 +337,19 @@ class RoadLink(Link):
                            (laneId, self._numLanes))
         
         self._lanePermissions[laneId] = vehicleClassGroup
+        
+    def allowsAll(self):
+        """
+        Is there a lane on this link that allows all?
+        """
+        # no lane permissions -- all allowed implicitly
+        if len(self._lanePermissions) == 0:
+            return True
+        
+        for lane_id,perm in self._lanePermissions.iteritems():
+            if perm.allowsAll(): return True
+            
+        return False
         
     def addShifts(self, startShift, endShift, addShapepoints=False):
         """
@@ -708,8 +722,8 @@ class RoadLink(Link):
     def getAngle(self, other, usingShapepoints=False):
         """
         Return the angle in degrees (in the range (-180, 180]) between this link and *other*, 
-        an instance of :py:class:`Link` (where positive angles means the other is counter-clockwise from this,
-        and negative angles means the other is clockwise from self.)
+        an instance of :py:class:`Link` (where positive angles means the other is clockwise from this,
+        and negative angles means the other is counter-clockwise from self.)
         
         If *usingShapepoints*, links must have a node in common, and the section of the link involving
         that common node is examined.
@@ -717,12 +731,7 @@ class RoadLink(Link):
         If *usingShapepoints* is False, both links are considered as vectors from the
         start node to end node.
         """
-
-        if self == other:
-            return 0
         
-        # choose the start points/end points of the two vectors
-        # note: for shapepoint situation when two conditions are true, first one wins
         if not usingShapepoints or self.getStartNode() == other.getStartNode():
             self_at_start   = True
             other_at_start  = True
@@ -737,75 +746,19 @@ class RoadLink(Link):
             other_at_start  = False
         else:
             raise DtaError("RoadLink.getAngle() called on links %d and %d, which have no nodes in common" %
-                           (self.getId(), other.getId()))
-            
-        # the relevant self vector is the first link
-        if self_at_start:
-            start1 = [self.getStartNode().getX(), self.getStartNode().getY()]
-                
-            if usingShapepoints and self.getNumShapePoints() > 0:
-                end1 = self._shapePoints[0]
-            else:
-                end1 = [self.getEndNode().getX(), self.getEndNode().getY()]
-        # the relevant self vector is the last link
-        else:
-            end1 = [self.getEndNode().getX(), self.getEndNode().getY()]
-            
-            if self.getNumShapePoints() > 0:
-                start1 = self._shapePoints[-1]
-            else:
-                start1 = [self.getStartNode().getX(), self.getStartNode().getY()]
-            
-        # the relevant other vector is the first link
-        if other_at_start:
-            start2 = [other.getStartNode().getX(), other.getStartNode().getY()]
-                
-            if usingShapepoints and other.getNumShapePoints() > 0:
-                end2 = other._shapePoints[0]
-            else:
-                end2 = [other.getEndNode().getX(), other.getEndNode().getY()]
-        # the relevant other vector is the last link
-        else:
-            end2 = [other.getEndNode().getX(), other.getEndNode().getY()]
-                
-            if other.getNumShapePoints() > 0:
-                start2 = other._shapePoints[-1]
-            else:
-                start2 = [other.getStartNode().getX(), other.getStartNode().getY()]
-                    
-
-        if start1 == start2 and end1 == end2:
-            return 0
-
-        if start1 == end2 and end1 == start2:
-            return 180 
-
-        dx1 = end1[0] - start1[0]
-        dy1 = end1[1] - start1[1]
+                           (self.getId(), other.getId()))        
         
-        dx2 = end2[0] - start2[0]
-        dy2 = end2[1] - start2[1]
-
-
-        length1 = math.sqrt(dx1 ** 2 + dy1 ** 2)
-        length2 = math.sqrt(dx2 ** 2 + dy2 ** 2)
-
-        if length1 == 0:
-            raise DtaError("The length of link %d cannot be zero" % self.getId())
-        if length2 == 0:
-            raise DtaError("The length of link %d cannot be zero" % other.getId())
-
-        # angle relative to <1,0>
-        angle1 = math.atan2(dy1, dx1)*180.0/math.pi
-        angle2 = math.atan2(dy2, dx2)*180.0/math.pi
+        self_angle = self.getOrientation(atEnd=(not self_at_start), usingShapepoints=usingShapepoints)
+        other_angle = other.getOrientation(atEnd=(not other_at_start), usingShapepoints=usingShapepoints)
         
-        angle_between = angle2 - angle1
+        angle_between = other_angle - self_angle
         if angle_between > 180: 
-            angle_between -= 360
+            angle_between -= 360.0
         elif angle_between <= -180:
-            angle_between += 360
-            
+            angle_between += 360.0
+
         return angle_between
+
     
     def isOverlapping(self, other, usingShapepoints=False):
         """
@@ -818,23 +771,24 @@ class RoadLink(Link):
         
         return False
 
-    def getOrientation(self, atEnd=True):
+    def getOrientation(self, atEnd=True, usingShapepoints=True):
         """
         Returns the angle of the link in degrees from the North
-        measured clockwise. The link shape is taken into account.
+        measured clockwise.  The result is in [0, 360) 
+        
+        The link shape is taken into account if *usingShapepoints* is True.
+        
         If there are shape points, and *atEnd* is True, then the orientation
         is evaluated at the end point of the link, otherwise it's evaluated at
         the start of the link.
         """
-        if self._shapePoints:
+        if self._shapePoints and usingShapepoints:
             if atEnd:
-                # skip point -1 because of the centerline issue that makes the first point jump out from the centerline                                
-                x1, y1 = self._shapePoints[-2]
+                x1, y1 = self._shapePoints[-1]
                 x2, y2 = self.getEndNode().getX(), self.getEndNode().getY()
             else:
                 x1, y1 = self.getStartNode().getX(), self.getStartNode().getY()
-                # skip point 0 because of the centerline issue that makes the first point jump out from the centerline                
-                x2, y2 = self._shapePoints[1]  
+                x2, y2 = self._shapePoints[0]  
         else:
             x1 = self.getStartNode().getX()
             y1 = self.getStartNode().getY()
@@ -901,35 +855,37 @@ class RoadLink(Link):
         """
         Return True if the link has a through turn
         """
-        for mov in self.iterOutgoingMovements():
-            if mov.isRightTurn():
-                return True
-        return False
+        try:
+            mov = self.getRightTurn()
+            return True
+        except:
+            return False
 
     def getRightTurn(self):
         """
         Return the thru movement of the link or raise an error if it does not exist
         """
         for mov in self.iterOutgoingMovements():
-            if mov.isThruTurn():
+            if mov.isRightTurn():
                 return mov
-        raise DtaError("Link %d does not have a thru movement" % self.getId())
+        raise DtaError("Link %d does not have a right turn movement" % self.getId())
 
     def hasThruTurn(self):
         """
         Return True if the link has a through turn
         """
-        for mov in self.iterOutgoingMovements():
-            if mov.isThruTurn():
-                return True
-        return False
+        try:
+            mov = self.getThruTurn()
+            return True
+        except:
+            return False
 
     def getThruTurn(self):
         """
         Return the thru movement of the link or raise an error if it does not exist
         """
         for mov in self.iterOutgoingMovements():
-            if mov.isLeftTurn():
+            if mov.isThruTurn():
                 return mov
         raise DtaError("Link %d does not have a thru movement" % self.getId())
 
@@ -937,19 +893,20 @@ class RoadLink(Link):
         """
         Return True if the link has a through turn
         """
-        for mov in self.iterOutgoingMovements():
-            if mov.isLeftTurn():
-                return True
-        return False
+        try:
+            mov = self.getLeftTurn()
+            return True
+        except:
+            return False
 
     def getLeftTurn(self):
         """
-        Return the thru movement of the link or raise an error if it does not exist
+        Return the left turn movement of the link or raise an error if it does not exist
         """
         for mov in self.iterOutgoingMovements():
             if mov.isLeftTurn():
                 return mov
-        raise DtaError("Link %d does not have a thru movement" % self.getId())
+        raise DtaError("Link %d does not have a left turn movement" % self.getId())
         
     def getFreeFlowSpeedInMPH(self):
         """

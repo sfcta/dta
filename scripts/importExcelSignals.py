@@ -1,3 +1,8 @@
+"""
+This script reads the SF signal cards (which are in Excel workbooks) and creates corresponding
+:py:class:`dta.TimePlan` instances for them.
+"""
+
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
@@ -64,11 +69,12 @@ class StreetNameMappingError(ExcelCardError):
 GREEN = 0
 YELLOW = 1
 RED = 2
-
+:
 TURN_LEFT = ("LT", "LT2")
 TURN_THRU = ("TH", "TH2")
 TURN_RIGHT = ("RT", "RT2")
 
+#: How to use this script
 USAGE = r"""
 
  python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes.csv]
@@ -86,6 +92,9 @@ USAGE = r"""
  """
 
 class SignalData(object):
+    """
+    Class that represents the signal data for an intersection.
+    """
 
     attrNames = ["fileName", "iName", "topLeftCell", "phaseSeqCell", "pedPhaseCell",\
                               "sigInterCell", "colPhaseData", "lastColPhaseData"] \
@@ -336,7 +345,7 @@ class ExcelSignalTiming(object):
 
         self.isActuated = False
 
-        self.startTime = dta.Time(0,0)
+        self.startTime = dta.Time(23,59)
         self.endTime = dta.Time(23,59)
 
         self.times = ()
@@ -489,6 +498,19 @@ def getFirstColumnOfPhasingData(sheet, signalData):
                            "identified by the keyword 1 in the same row with the "
                            "STREET keyword")
 
+def checkForWeekdayPlan(sheet, row, column):
+    """
+    Checks the plan data to see if the CSO is used on weekdays (Thursday and Friday) 
+    """
+    ThursValue = str(sheet.cell_value(row,column-3)).strip()
+    FriValue = str(sheet.cell_value(row,column-2)).strip()
+    if ThursValue=="X" and FriValue=="X":
+        return True
+    elif ThursValue=="x" and FriValue=="x":
+        return True
+    else:
+        return False
+    
 def getOperationTimes(sheet, signalData):
 
 
@@ -497,14 +519,23 @@ def getOperationTimes(sheet, signalData):
     i = signalData.topLeftCell[0] + 12
     j = signalData.colPhaseData
 
-    def setTimes(row):
-
+    def setTimes(row,colCycle,sheet):
         hasAllOtherTimes = False
         gotStartTime = False
+        gotStartTime2=False
+
+        
         for curColumn in range(signalData.topLeftCell[1], signalData.colPhaseData):
             cellValue = sheet.cell_value(row, curColumn)
             if str(cellValue).strip():
-                if isinstance(cellValue, float):
+                # Check to see if CSO applies to weekdays and if not, set times to 23:59 to 23:59
+                isWeekdayPlan = checkForWeekdayPlan(sheet,row,colCycle)
+                if not isWeekdayPlan:
+                    signalData.signalTiming[strCso].startTime = dta.Time(23,59)
+                    signalData.signalTiming[strCso].endTime = dta.Time(23,59)
+                    gotStartTime = True
+                # If CSO does include weekdays, check time format and get signal times
+                elif isinstance(cellValue, float):
                     if cellValue == 1.0:
                         time = (0, 0, 0, 0, 0, 0)
                     else:
@@ -558,11 +589,11 @@ def getOperationTimes(sheet, signalData):
                         endTime2 = int(endTimeAll[colonval+1:])
                         signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
                     elif ":" in cellValue and len(cellValue)==5:
-                        if gotStartTime == False:
+                        if gotStartTime2 == False:
                             startTime1 = int(cellValue[:2])
                             startTime2 = int(cellValue[3:])
                             signalData.signalTiming[strCso].startTime = dta.Time(startTime1, startTime2)
-                            gotStartTime = True
+                            gotStartTime2 = True
                         else:
                             endTime1 = int(cellValue[:2])
                             endTime2 = int(cellValue[3:])
@@ -592,19 +623,22 @@ def getOperationTimes(sheet, signalData):
                         endTime2 = int(endTimeAll[colonval+1:])
                         signalData.signalTiming[strCso].endTime = dta.Time(endTime1, endTime2)
 
-        #dta.DtaLogger.info("Operating times are from %s to %s" % (signalData.signalTiming[strCso].startTime, signalData.signalTiming[strCso].endTime))
+        #dta.DtaLogger.info("Operating times are from %s to %s for CSO %s" % (signalData.signalTiming[strCso].startTime, signalData.signalTiming[strCso].endTime, strCso))
         
     found = False
-    for x in range(i-5, i + 7):        
+    # search down rows from top left row for CYCLE keyword
+    for x in range(i-5, i + 7):
+        # search over starting at phase data column for CYCLE keyword
         for y in range(j, j + 13):
             keyword = str(sheet.cell_value(x, y)).strip().upper()
             if keyword == "CYCLE":  #find the row with the CYCLE keyword
                 found = True
+                colCycle = y
                 streetCell = findStreet(sheet,signalData.topLeftCell)
                 z = streetCell[0]
                 for k in range(x + 1, z): #search down until just before signal phasing section
                     cso = []
-                    for l in range(y, y + 6): # search six cells to the right 
+                    for l in range(y, y + 6): # search six cells to the right of CYCLE column 
                         cellValue = sheet.cell_value(k, l)
                         if str(cellValue).strip() == "":
                             continue
@@ -647,7 +681,7 @@ def getOperationTimes(sheet, signalData):
                     if not CSOMatch:
                         dta.DtaLogger.error("ERROR CSO %s does not exist in the timing section. Please manually correct the signal" % strCso)
                         continue
-                    setTimes(k)  #set the start and end times
+                    setTimes(k,colCycle,sheet)  #set the start and end times
     if found == False:
         raise ParsingCardError("I cannot find start and end times") 
 
@@ -675,7 +709,7 @@ def getSignalIntervalData(sheet, signalData):
         
         if str(value).strip():
             finishedReadingData = True
-            if str(value).strip()=="NOTE":
+            if "NOTE" in str(value).strip() or "*" in str(value).strip():
                 break
             row = []
             for j in range(startY, signalData.colPhaseData):
@@ -885,7 +919,7 @@ def extractStreetNames(intersection):
     """Split the Excel intersection string to two or more streetNames"""
 
     intersection = intersection.upper()
-    regex = re.compile(r",| AND|\&|\@|\/")
+    regex = re.compile(r",| AND|\&|\@|\ AT|\/")
     streetNames = regex.split(intersection)
     if len(streetNames) == 1:
         #log the error
@@ -1006,8 +1040,9 @@ def writeExtendedSummary(excelCards):
     output.close()
 
 def parseExcelCardFile(directory, fileName):
-    """Reads the excel file parses its infomation and returns
-    as SignalData object
+    """
+    Reads the excel file, parses its information and returns
+    as a :py:class:`SignalData` object.
     """
     sd = SignalData()
     sd.fileName = fileName
@@ -1269,11 +1304,13 @@ def mapMovements(mec, baseNetwork):
             #collect all the links of the approach that have the same direction
             gLinks = []
             if "3" in bStName and "23" not in bStName:
-                candLinks = [link for link in bNode.iterIncomingLinks()if "3" in link.getLabel() and "23" not in link.getLabel()]
+                candLinks = [link for link in bNode.iterIncomingLinks() if "3" in link.getLabel() and "23" not in link.getLabel()]
+            elif "3" in bStName and "23" in bStName:
+                candLinks = [link for link in bNode.iterIncomingLinks() if "3" in link.getLabel() and "23" in link.getLabel()]
             elif "BROADWAY" in bStName and "TUNNEL" not in bStName:
-                candLinks = [link for link in bNode.iterIncomingLinks()if "BROADWAY" in link.getLabel() and "TUNNEL" not in link.getLabel()]
+                candLinks = [link for link in bNode.iterIncomingLinks() if "BROADWAY" in link.getLabel() and "TUNNEL" not in link.getLabel()]
             elif "BROADWAY" in bStName and "TUNNEL" in bStName:
-                candLinks = [link for link in bNode.iterIncomingLinks()if "BROADWAY" in link.getLabel() and "TUNNEL" in link.getLabel()]
+                candLinks = [link for link in bNode.iterIncomingLinks() if "BROADWAY" in link.getLabel() and "TUNNEL" in link.getLabel()]
             else:
                 candLinks = [link for link in bNode.iterIncomingLinks() if bStName in link.getLabel()]
             for candLink in candLinks:
@@ -1438,11 +1475,12 @@ def checkNumberofTimes(excelCard, startTime, endTime):
     nummatches = 0
     for signalTiming in excelCard.iterSignalTiming():
         if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime and signalTiming.endTime>signalTiming.startTime:
-            nummatches += 1
+                nummatches += 1
     if nummatches >1:
         for signalTiming in excelCard.iterSignalTiming():
-            dta.DtaLogger.error("Timing is start time %s, end time %s" % (signalTiming.startTime, signalTiming.endTime)) 
+            dta.DtaLogger.error("Timing is start time %s, end time %s for CSO %s" % (signalTiming.startTime, signalTiming.endTime, signalTiming.cso)) 
     return nummatches
+  
 def selectCSO(excelCard, startTime, endTime):
     """
     returns the ExcelSignalTiming if there is one that is in operation during the 
@@ -1592,33 +1630,7 @@ def getPossibleLinkDirections(link):
     else:
         result.append("WB")
 
-    return tuple(result)
-
-def simpleMovementFactory(incomingLink, outgoingLink):
-
-    mov = dta.Movement(incomingLink.getEndNode(),
-                   incomingLink,
-                   outgoingLink,
-                   30,
-                   dta.VehicleClassGroup("all", "*", "#ffff00"), numLanes=1)
-
-    return mov                                                                                           
-
-
-def removePartOfTheNetwork(net):
-    """
-    This function removes all the nodes that are south of 
-    node 4761. This function was used earlier in the 
-    development process
-    """
-    n = net.getNodeForId(27297)
-    nodesToDelete = []
-    for node in net.iterNodes():
-        if node.getY() < n.getY():
-            nodesToDelete.append(node)
-
-    for node in nodesToDelete:
-        net.removeNode(node)
+    return tuple(result)                                                                                        
 
 def convertSignalToDynameq(node, card, planInfo):
     """
@@ -1671,9 +1683,9 @@ def convertSignalToDynameq(node, card, planInfo):
                 if dMov.isProhibitedToAllVehicleClassGroups():
                     continue
                 phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
-                if not dPhase.hasMovement(phaseMovement.getStartNodeId(),
-                                          phaseMovement.getEndNodeId()):                    
-                    dPhase.addMovement(phaseMovement)
+                if not dPhase.hasPhaseMovement(phaseMovement.getMovement().getStartNodeId(),
+                                               phaseMovement.getMovement().getEndNodeId()):                    
+                    dPhase.addPhaseMovement(phaseMovement)
                     
         dPlan.addPhase(dPhase)
 
@@ -1831,10 +1843,7 @@ if __name__ == "__main__":
                 if override[5] == 'Thru': override[5] = dta.Movement.DIR_TH
                 overrides.append(override)
         net.setMovementTurnTypeOverrides(overrides)
-## This section outputs the dynameq network as a shapefile.  This can be used for error-checking and validation after network changes have been made.        
-##    projectFolder2 = "C:/SFCTA2/dta/testdata/Roads2010_example"
-##    net.writeNodesToShp(os.path.join(projectFolder2, "sf_nodes"))
-##    net.writeLinksToShp(os.path.join(projectFolder2, "sf_links"))
+
 
     for node in net.iterRoadNodes():
         node._control = 0
@@ -1881,16 +1890,16 @@ if __name__ == "__main__":
             allPlansSet.append(allPlans)
         ## This section is used to check for cards that have multiple CSOs matching the start and and time.  This allows us to identify
         ## cards that have both weekend and weekday time plans so that we know which ones need fixed.
-##        nummatches = checkNumberofTimes(cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
-##        if nummatches>1:
-##            allMoreMatchesSet.append(fileName)
-##            dta.DtaLogger.error("Signal %s has %d phases matching the start and end time" % (fileName, nummatches))
+        nummatches = checkNumberofTimes(cardsWithMovements, dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME))
+        if nummatches>1:
+            allMoreMatchesSet.append(fileName)
+            dta.DtaLogger.error("Signal %s has %d phases matching the start and end time" % (fileName, nummatches))
 
     dta.DtaLogger.info("Number of excel cards successfully parsed = %d" % len(cardsDone))
     dta.DtaLogger.info("Number of cards are %d; Number of mapped nodes are %d" % (len(cardsDone), len(mappedNodes)))
     dta.DtaLogger.info("Number of cards are %d; Number of cards with movements are %d" % (len(cardsDone),len(cardsWithMove)))
     dta.DtaLogger.info("Number of time plans = %d" % len(allPlansSet))
-    #dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
+    dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
     
     net.write(".", "sf_signals")
 
