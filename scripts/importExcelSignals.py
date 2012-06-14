@@ -69,7 +69,7 @@ class StreetNameMappingError(ExcelCardError):
 GREEN = 0
 YELLOW = 1
 RED = 2
-
+:
 TURN_LEFT = ("LT", "LT2")
 TURN_THRU = ("TH", "TH2")
 TURN_RIGHT = ("RT", "RT2")
