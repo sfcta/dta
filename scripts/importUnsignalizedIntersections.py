@@ -18,19 +18,15 @@ __license__     = """
 
 #import json
 import pdb
+import math
 
-import csv 
-import difflib
 from collections import defaultdict
 import os
-import pickle
 import re
-import xlrd
 from itertools import izip, chain
 import sys 
 
 import shapefile
-import datetime
 
 from dta.MultiArray import MultiArray
 
@@ -45,6 +41,8 @@ from dta.Network import Network
 from dta.Node import Node
 from dta.RoadLink import RoadLink
 from dta.RoadNode import RoadNode
+from dta.Utils import lineSegmentsCross, getMidPoint
+
 
 USAGE = r"""
 
@@ -59,12 +57,164 @@ USAGE = r"""
  The script writes a new dynameq network that includes the new priorities
  """
 
-def readAWSFromShapefile(self,nodesShpFilename, nodeVariableNames,
-                 nodeGeometryTypeEvalStr,
-                 nodeControlEvalStr,
-                 nodePriorityEvalStr,
-                 nodeLabelEvalStr,
-                 nodeLevelEvalStr):
+class StopNode(Node):
+    """
+    A Road Node subclass that represents a stop sign from a shapefile that is used to updated Road Node priorities.
+    """
+    #: the intersection is not signalized
+    CONTROL_TYPE_UNSIGNALIZED       = 0
+    #: the intersection is signalized
+    CONTROL_TYPE_SIGNALIZED         = 1
+    #: all control types
+    CONTROL_TYPES                   = [CONTROL_TYPE_UNSIGNALIZED,
+                                       CONTROL_TYPE_SIGNALIZED, 11]
+    
+
+    #: No template: either a signalized or unsignalized junction, where there is no yielding of any
+    #: kind, and the permitted capacity is equal to the protected capacity. 
+    PRIORITY_TEMPLATE_NONE          = 0
+    
+    #: All Way Stop Control - an intersection with a stop sign on every approach
+    PRIORITY_TEMPLATE_AWSC          = 1
+    
+    #: Two Way Stop Control - an intersection at which a minor street crosses a major street and
+    #: only the minor street is stop-controlled
+    PRIORITY_TEMPLATE_TWSC          = 2
+    
+    #: A junction on a roundabout at which vehicles enter the roundabout. Vehicles entering the
+    #: roundabout must yield to those already on the roundabout (by convention in most countries).
+    PRIORITY_TEMPLATE_ROUNDABOUT    = 3
+    
+    #: An uncontrolled (unsignalized) junction at which a minor street must yield to the major street,
+    #: which may or may not be explicitly marked with a Yield sign. 
+    PRIORITY_TEMPLATE_MERGE         = 4
+    
+    #: Any signalized intersection (three-leg, four-leg, etc.). For right-side driving, left-turn
+    #: movements yield to opposing through traffic and right turns, and right turns yield to the
+    #: conflicting through traffic (if applicable). For left-side driving, the rules are the same but reversed.
+    PRIORITY_TEMPLATE_SIGNALIZED    = 11
+    
+    #: For each control type, a list of available Capacity/Priority templates is provided.
+    #: Choosing a template from the list will automatically provide follow-up time values with
+    #: corresponding permitted capacity values in the movements table below, and define all movement
+    #: priority relationships at the node with corresponding gap acceptance values.     
+    PRIORITY_TEMPLATES              = [PRIORITY_TEMPLATE_NONE,
+                                       PRIORITY_TEMPLATE_AWSC,
+                                       PRIORITY_TEMPLATE_TWSC,
+                                       PRIORITY_TEMPLATE_ROUNDABOUT,
+                                       PRIORITY_TEMPLATE_MERGE,
+                                       PRIORITY_TEMPLATE_SIGNALIZED]
+        
+    def __init__(self, id, x, y, geometryType, control, priority, label=None, level=None):
+        """
+        Constructor.
+        
+         * *id* is a unique identifier (unique within the containing network), an integer
+         * *x* and *y* are coordinates in the units specified by :py:attr:`Node.COORDINATE_UNITS`
+         * *geometryType* is one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION` or 
+           :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`
+         * *control* is one of :py:attr:`RoadNode.CONTROL_TYPE_UNSIGNALIZED` or 
+           :py:attr:`RoadNode.CONTROL_TYPE_SIGNALIZED`
+         * *priority* is one of
+         
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_NONE`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_AWSC`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_TWSC`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_MERGE`
+           * :py:attr:`RoadNode.PRIORITY_TEMPLATE_SIGNALIZED`
+                                       
+         * *label* is a string, for readability.  If None passed, will default to "label [id]"
+         * *level* is for vertical alignment.  More details TBD.  If None passed, will use default.  
+        """
+        if geometryType not in [Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION]:
+            raise DtaError("RoadNode initialized with invalid type: %d" % type)
+        
+        if control not in StopNode.CONTROL_TYPES:
+            raise DtaError("RoadNode initailized with invalid control: %d" % control)
+        
+        Node.__init__(self, id, x, y, geometryType, label, level)
+
+        self._control    = control
+        self._priority   = priority
+        self._label = label
+        
+
+
+    def matchStopNodes(self,net,matchedNodes,matchedAllNodes):
+        foundNodeMatch = False
+        for node in net.iterRoadNodes():
+            if abs(node.getX()-self.getX())<2 and abs(node.getY()-self.getY())<1:
+                if node not in matchedAllNodes:
+                    matchedAllNodes.append(node)
+                if node in matchedNodes:
+                    foundNodeMatch = True
+                    matchedNodes.append(node)
+                    #dta.DtaLogger.debug("Four-way stop %s at %s was matched to node %s (already matched) from (x,y)" % (stop.getId(),stop._label,node.getStreetNames()))
+                    return True
+                    continue
+                else:
+                    node._priority = self._priority
+                    node._control = self._control
+                    matchedNodes.append(node)
+                    foundNodeMatch = True
+                    dta.DtaLogger.info("Stop %s at %s was matched to node %s from (x,y)" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
+                    return True
+
+            else:
+                continue
+                                    
+        return foundNodeMatch 
+
+    def matchStopLinks(self,net,matchedNodes,matchedAllNodes):
+        foundLinkMatch = False
+        streetNamesSet = []
+        streetLabel = str(self._label)
+        splitval = streetLabel.find("&")
+        streetNamesSet.append(streetLabel[:splitval])
+        streetNamesSet.append(streetLabel[splitval+1:])
+        streetNamesSet = [cleanStreetName(sn) for sn in streetNamesSet]
+
+        #dta.DtaLogger.debug("Street Name Set = %s" % str([streetName for streetName in streetNamesSet]))
+    
+        for node in net.iterRoadNodes():
+            streetsMatched = 0
+            baseStreetNames = node.getStreetNames()
+            baseStreetNames = [cleanStreetName(bs) for bs in baseStreetNames]
+            if len(baseStreetNames) < len(streetNamesSet):
+                continue
+            for streetName in streetNamesSet:
+                if streetName in baseStreetNames:
+                    streetsMatched +=1
+                else:
+                    continue
+            if streetsMatched == len(streetNamesSet):
+                if node not in matchedAllNodes:
+                    matchedAllNodes.append(node)
+                if node in matchedNodes:
+                    matchedNodes.append(node)
+                    #dta.DtaLogger.debug("Four-way stop %s at %s was matched to node %s (already matched)" % (stop.getId(),stop._label,node.getStreetNames()))
+                    foundLinkMatch = True
+                    return True
+                    continue
+                else:
+                    node._priority = self._priority
+                    node._control = self._control
+                    matchedNodes.append(node)
+                    foundLinkMatch = True
+                    dta.DtaLogger.info("Stop %s at %s was matched to node %s" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
+                    return True
+
+            else:
+                continue
+        return foundLinkMatch
+
+def readAWSFromShapefile(stops,nodesShpFilename, nodeVariableNames,
+                nodeGeometryTypeEvalStr,
+                nodeControlEvalStr,
+                nodePriorityEvalStr,
+                nodeLabelEvalStr,
+                nodeLevelEvalStr):
 
     sf = shapefile.Reader(nodesShpFilename)
     shapes = sf.shapes()
@@ -77,21 +227,21 @@ def readAWSFromShapefile(self,nodesShpFilename, nodeVariableNames,
         n = int(localsdict["ObjectID"])
             
         newNode = None
-        newNode = RoadNode(id=n,x=x,y=y,
-                            geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
-                            control=eval(nodeControlEvalStr, globals(), localsdict),
-                            priority=eval(nodePriorityEvalStr, globals(), localsdict),
-                            label=str(localsdict["Intersecti"]),
-                            level=eval(nodeLevelEvalStr, globals(), localsdict))
+        newNode = StopNode(id=n,x=x,y=y,
+                        geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
+                        control=eval(nodeControlEvalStr, globals(), localsdict),
+                        priority=eval(nodePriorityEvalStr, globals(), localsdict),
+                        label=str(localsdict["Intersecti"]),
+                        level=eval(nodeLevelEvalStr, globals(), localsdict))
 
-        self.append(newNode)
+        stops.append(newNode)
 
-def readOthFromShapefile(self,priorityStreets,nodesShpFilename, nodeVariableNames,
-                 nodeGeometryTypeEvalStr,
-                 nodeControlEvalStr,
-                 nodePriorityEvalStr,
-                 nodeLabelEvalStr,
-                 nodeLevelEvalStr):
+def readOthFromShapefile(stops,priorityStreets,nodesShpFilename, nodeVariableNames,
+            nodeGeometryTypeEvalStr,
+            nodeControlEvalStr,
+            nodePriorityEvalStr,
+            nodeLabelEvalStr,
+            nodeLevelEvalStr):
 
     sf = shapefile.Reader(nodesShpFilename)
     shapes = sf.shapes()
@@ -108,82 +258,15 @@ def readOthFromShapefile(self,priorityStreets,nodesShpFilename, nodeVariableName
         interPriority = str(localsdict["X_STREET"])+","+str(localsdict["STREET"])
             
         newNode = None
-        newNode = RoadNode(id=n,x=x,y=y,
-                            geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
-                            control=eval(nodeControlEvalStr, globals(), localsdict),
-                            priority=eval(nodePriorityEvalStr, globals(), localsdict),
-                            label=str(localsdict["CONCATENAT"]),
-                            level=eval(nodeLevelEvalStr, globals(), localsdict))
+        newNode = StopNode(id=n,x=x,y=y,
+                        geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
+                        control=eval(nodeControlEvalStr, globals(), localsdict),
+                        priority=eval(nodePriorityEvalStr, globals(), localsdict),
+                        label=str(localsdict["CONCATENAT"]),
+                        level=eval(nodeLevelEvalStr, globals(), localsdict))
 
-        self.append(newNode)
+        stops.append(newNode)
         priorityStreet.append(interPriority)
-
-def matchStopNodes(self,net,matchedNodes,matchedAllNodes):
-    foundNodeMatch = False
-    for node in net.iterRoadNodes():
-        if abs(node.getX()-stop.getX())<2 and abs(node.getY()-stop.getY())<1:
-            if node in matchedNodes:
-                foundNodeMatch = True
-                matchedNodes.append(node)
-                #dta.DtaLogger.debug("Four-way stop %s at %s was matched to node %s (already matched) from (x,y)" % (stop.getId(),stop._label,node.getStreetNames()))
-                return True
-                continue
-            else:
-                node._priority = stop._priority
-                node._control = stop._control
-                matchedNodes.append(node)
-                foundNodeMatch = True
-                dta.DtaLogger.info("Stop %s at %s was matched to node %s from (x,y)" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
-                return True
-            if node not in matchedAllNodes:
-                matchedAllNodes.append(node)
-        else:
-            continue
-                                    
-    return foundNodeMatch 
-
-def matchStopLinks(self,net,matchedNodes,matchedAllNodes):
-    foundLinkMatch = False
-    streetNamesSet = []
-    streetLabel = str(stop._label)
-    splitval = streetLabel.find("&")
-    streetNamesSet.append(streetLabel[:splitval])
-    streetNamesSet.append(streetLabel[splitval+1:])
-    streetNamesSet = [cleanStreetName(sn) for sn in streetNamesSet]
-
-    #dta.DtaLogger.debug("Street Name Set = %s" % str([streetName for streetName in streetNamesSet]))
-    
-    for node in net.iterRoadNodes():
-        streetsMatched = 0
-        baseStreetNames = node.getStreetNames()
-        baseStreetNames = [cleanStreetName(bs) for bs in baseStreetNames]
-        if len(baseStreetNames) < len(streetNamesSet):
-            continue
-        for streetName in streetNamesSet:
-            if streetName in baseStreetNames:
-                streetsMatched +=1
-            else:
-                continue
-        if streetsMatched == len(streetNamesSet):
-            if node in matchedNodes:
-                matchedNodes.append(node)
-                #dta.DtaLogger.debug("Four-way stop %s at %s was matched to node %s (already matched)" % (stop.getId(),stop._label,node.getStreetNames()))
-                foundLinkMatch = True
-                return True
-                continue
-            else:
-                node._priority = stop._priority
-                node._control = stop._control
-                matchedNodes.append(node)
-                foundLinkMatch = True
-                dta.DtaLogger.info("Stop %s at %s was matched to node %s" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
-                return True
-            if node not in matchedAllNodes:
-                matchedAllNodes.append(node)
-
-        else:
-            continue
-    return foundLinkMatch
 
 def cleanStreetName(streetName):
 
@@ -278,9 +361,9 @@ def updateNodePriority(net,matchedNodes):
     for node in net.iterRoadNodes():
         if node in matchedNodes:
             if matchedNodes.count(node)>=4:
-                node._priority = "PRIORITY_TEMPLATE_AWSC"
+                node._priority = 1
             elif matchedNodes.count(node)<4:
-                node._priority = "PRIORITY_TEMPLATE_TWSC"
+                node._priority = 2
     return True
                 
     
@@ -317,8 +400,8 @@ if __name__ == "__main__":
         nodesShpFilename=othStopShapefile,
         nodeVariableNames=["ID","STREET","X_STREET","CONCATENAT"],
         nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
-        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_UNSIGNALIZED",
-        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_TWSC",
+        nodeControlEvalStr               = "StopNode.CONTROL_TYPE_UNSIGNALIZED",
+        nodePriorityEvalStr              = "StopNode.PRIORITY_TEMPLATE_TWSC",
         nodeLabelEvalStr                 = "None",
         nodeLevelEvalStr                 = "None" )
     matchedAllNodes = []
@@ -328,11 +411,11 @@ if __name__ == "__main__":
     # Try to match stops to nodes using X & Y coordinates, and if that fails, using link names
     for stop in otherStops:
         readOStopNodes.append(stop)
-        foundStopNode = matchStopNodes(stop,net,matchedOthNodes, matchedAllNodes)
+        foundStopNode = stop.matchStopNodes(net,matchedOthNodes, matchedAllNodes)
         if foundStopNode == False:
-            foundStopLinks = matchStopLinks(stop,net,matchedOthNodes, matchedAllNodes)
+            foundStopLinks = stop.matchStopLinks(net,matchedOthNodes, matchedAllNodes)
             if foundStopLinks == False:
-                dta.DtaLogger.error("Cannot match four-way stop %s at %s" % (stop.getId(),stop._label))
+                dta.DtaLogger.error("Cannot match stop %s at %s" % (stop.getId(),stop._label))
                 continue
             else:
                 foundOStopNodes.append(stop)
@@ -353,8 +436,8 @@ if __name__ == "__main__":
         nodesShpFilename=allStopShapefile,
         nodeVariableNames=["ObjectID","X","Y","Intersecti"],
         nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
-        nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_UNSIGNALIZED",
-        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_AWSC",
+        nodeControlEvalStr               = "StopNode.CONTROL_TYPE_UNSIGNALIZED",
+        nodePriorityEvalStr              = "StopNode.PRIORITY_TEMPLATE_AWSC",
         nodeLabelEvalStr                 = "None",
         nodeLevelEvalStr                 = "None" )
 
@@ -364,11 +447,11 @@ if __name__ == "__main__":
     # Try to match stops to nodes using X & Y coordinates, and if that fails, using link names
     for stop in allwaysStops:
         readAWStopNodes.append(stop)
-        foundStopNode = matchStopNodes(stop,net,matchedNodes,matchedAllNodes)
+        foundStopNode = stop.matchStopNodes(net,matchedNodes,matchedAllNodes)
         if foundStopNode == False:
-            foundStopLinks = matchStopLinks(stop,net,matchedNodes,matchedAllNodes)
+            foundStopLinks = stop.matchStopLinks(net,matchedNodes,matchedAllNodes)
             if foundStopLinks == False:
-                dta.DtaLogger.error("Cannot match four-way stop %s at %s" % (stop.getId(),stop._label))
+                dta.DtaLogger.error("Cannot match stop %s at %s" % (stop.getId(),stop._label))
                 continue
             else:
                 foundAWStopNodes.append(stop)
