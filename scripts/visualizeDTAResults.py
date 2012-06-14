@@ -90,10 +90,10 @@ if __name__ == "__main__":
     reportingTimeStep = int(REPORTING_TIME_STEP)
     net.readSimResults(simStartTime, simEndTime, 5)
     
-#    DtaLogger.info("Reading 15-minute link counts")
-#    net.readObsLinkCounts(COUNT_DIR + "/" + LINK_COUNT_FILE_15MIN)
-#    DtaLogger.info("Reading 15-minute movement counts")
-#    net.readObsMovementCounts(COUNT_DIR + "/" + MOVEMENT_COUNT_FILE_15MIN)
+    DtaLogger.info("Reading 15-minute link counts")
+    net.readObsLinkCounts(COUNT_DIR + "/" + LINK_COUNT_FILE_15MIN)
+    DtaLogger.info("Reading 15-minute movement counts")
+    net.readObsMovementCounts(COUNT_DIR + "/" + MOVEMENT_COUNT_FILE_15MIN)
     DtaLogger.info("Reading 5-minute movement counts")
     net.readObsMovementCounts(COUNT_DIR + "/" + MOVEMENT_COUNT_FILE_5MIN)
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
             continue
           
         # writes once every specified interval minutes interval, aggregating  to specified min intervals   
-        for sTime in range(simStartTime, simEndTime-1, reportingTimeStep):
+        for sTime in range(simStartTime, simEndTime-1, simTimeStep):
             if sTime + reportingTimeStep >= simEndTime:
                 continue
 
@@ -153,7 +153,7 @@ if __name__ == "__main__":
                 continue
                 
             # writes once every specified minutes interval, aggregating to specified min intervals   
-            for sTime in range(simStartTime, simEndTime-1, reportingTimeStep):
+            for sTime in range(simStartTime, simEndTime-1, simTimeStep):
                 if sTime + reportingTimeStep >= simEndTime:
                     continue
                 if mov.hasObsCount(sTime, sTime + reportingTimeStep):                               

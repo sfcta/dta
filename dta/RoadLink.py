@@ -960,27 +960,7 @@ class RoadLink(Link):
         try:
             return self._obsCount[startTimeInMin, endTimeInMin]            
         except KeyError:
-            result = 0 
-            simTimeStep = self.simTimeStepInMin
-            if not simTimeStep:
-                raise DtaError("To compute the count you need to set "
-                                    "simulation time step")
-
-            for i in range((endTimeInMin - startTimeInMin) / simTimeStep):
-                multipleOfSimTimeStep = (i + 1) * simTimeStep
-                result = 0
-                
-                for startTime, endTime in pairwise(range(startTimeInMin, 
-                                 endTimeInMin + 1, multipleOfSimTimeStep)):                                 	
-                    try:
-                        result += self._obsCount[startTime, endTime]
-                    except KeyError, e:
-                        result = 0
-                        break
-                else:
-                    return result
-                    
-            return result if result > 0 else None
+            return None
 
     def getSumOfAllMovementCounts(self, startTimeInMin, endTimeInMin):
         """Return the sum of all outgoing movement counts"""

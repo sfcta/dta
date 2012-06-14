@@ -906,6 +906,20 @@ class DynameqNetwork(Network):
                 if count < 0:
                     continue
                 mov.setObsCount(s,s+timeStepInMin, count) 
+                
+            # next, aggregate to 15-minute and 60-minute bins if needed
+            for aggregateTimeStep in [15, 60]: 
+            	if timeStepInMin<aggregateTimeStep: 
+            		for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
+            			if s == startTimeInMin: 
+            				aggregateCount = 0            		
+            			elif s % aggregateTimeStep == 0: 
+            				mov.setObsCount(s-aggregateTimeStep, s, aggregateCount)
+            				aggregateCount = 0
+            			if count<0: 
+            				continue
+            			aggregateCount = aggregateCount + count
+            
                         
 
     def readObsLinkCounts(self, countFileNameInDynameqDatFormat):
@@ -935,3 +949,17 @@ class DynameqNetwork(Network):
                 if count < 0:
                     continue
                 link.setObsCount(s,s+timeStepInMin, count) 
+            
+            # next, aggregate to 15-minute and 60-minute bins if needed
+            for aggregateTimeStep in [15, 60]: 
+            	if timeStepInMin<aggregateTimeStep: 
+            		for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
+            			if s == startTimeInMin: 
+            				aggregateCount = 0            		
+            			elif s % aggregateTimeStep == 0: 
+            				link.setObsCount(s-aggregateTimeStep, s, aggregateCount)
+            				aggregateCount = 0
+            			if count<0: 
+            				continue
+            			aggregateCount = aggregateCount + count
+            		
