@@ -14,7 +14,7 @@ set PYTHONPATH=%DTA_CODE_DIR%
 :: 1) create the network from the Cube network
 ::
 :convertStaticNetwork
-python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\downtownSanFranciscoSubArea_2010.net %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\turnspm.pen %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\stclines.shp
 :: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt
 :: log     output: createSFNetworkFromCubeNetwork.{DEBUG,INFO}.log
 :: debug   output: sf_{links,nodes}.shp
