@@ -26,6 +26,7 @@ from .Movement import Movement
 from .Node import Node
 from .VehicleClassGroup import VehicleClassGroup
 from .Utils import polylinesCross, lineSegmentsCross
+from .Algorithms import pairwise
 
 class RoadLink(Link):
     """
@@ -114,6 +115,7 @@ class RoadLink(Link):
 
         self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
+        self._obsCount = {}
 
     def _validateInputTimes(self, startTimeInMin, endTimeInMin):
         """Checks that the input times belong to the simulation window"""
@@ -972,5 +974,94 @@ class RoadLink(Link):
         Set the group number fo the link
         """
         self._group = group
+                
+    def setObsCount(self, startTimeInMin, endTimeInMin, count):
+        """
+        Set the number of vehicles Traversing the link 
+        in the input time period 
+        """
+
+        self._validateInputTimes(startTimeInMin,endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        if startTimeInMin >= endTimeInMin:
+            raise DtaError("Invalid time bin (%d %s). The end time cannot be equal or less "
+                           "than the end time" % (startTimeInMin, endTimeInMin))
+        if count < 0:
+            raise DtaError('Count for time period from %d to %d cannot be '
+                                   'negative' % (startTimeInMin, endTimeInMin))
+        self._obsCount[startTimeInMin, endTimeInMin] = count
+
+    def getObsCount(self, startTimeInMin, endTimeInMin):
+        """Return the number of vehicles traversing the
+        link in the input time window. 
+        """
+
+        self._validateInputTimes(startTimeInMin, endTimeInMin)
+        self._checkOutputTimeStep(startTimeInMin, endTimeInMin)
+
+        try:
+            return self._obsCount[startTimeInMin, endTimeInMin]            
+        except KeyError:
+            result = 0 
+            simTimeStep = self.simTimeStepInMin
+            if not simTimeStep:
+                raise DtaError("To compute the count you need to set "
+                                    "simulation time step")
+
+            for i in range((endTimeInMin - startTimeInMin) / simTimeStep):
+                multipleOfSimTimeStep = (i + 1) * simTimeStep
+                result = 0
+                
+                for startTime, endTime in pairwise(range(startTimeInMin, 
+                                 endTimeInMin + 1, multipleOfSimTimeStep)):                                 	
+                    try:
+                        result += self._obsCount[startTime, endTime]
+                    except KeyError, e:
+                        result = 0
+                        break
+                else:
+                    return result
+                    
+            return result if result > 0 else None
+
+    def getSumOfAllMovementCounts(self, startTimeInMin, endTimeInMin):
+        """Return the sum of all outgoing movement counts"""
+        if not self.hasAllMovementCounts(startTimeInMin, endTimeInMin): 
+            return -1
+        else: 
+            totalCount = 0
+            for mov in self.iterOutgoingMovements():
+                    totalCount = totalCount + mov.getObsCount(startTimeInMin, endTimeInMin)
+        return totalCount       
+    
+    def hasCountInfo(self):
+        """Return True if the link contains count information else false"""
+        return True if len(self._obsCount) else False
         
-        
+    def hasMovementCountInfo(self):
+        """Return True if any outgoing movement on the link
+        contains count information else false
+        """
+        if self.hasCountInfo(): 
+            return True
+        for mov in self.iterOutgoingMovements():
+            if mov.hasCountInfo():
+                return True
+        return False
+
+    def hasObsCount(self, startTimeInMin, endTimeInMin):
+        """Return True if there is a count for the input time period  
+        """
+        return True if self.getObsCount(startTimeInMin, endTimeInMin) else False 
+
+    def hasAllMovementCounts(self, startTimeInMin, endTimeInMin):
+        """Return True if there is a count for all outgoing movements
+        in the input time period  
+        """
+        status = True
+        for mov in self.iterOutgoingMovements():
+            if not mov.hasObsCount(startTimeInMin, endTimeInMin):   
+                  status = False
+        return status
+
