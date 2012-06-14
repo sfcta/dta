@@ -46,10 +46,15 @@ class DynameqNetwork(Network):
     A Dynameq DTA Network.
     """
     
+    #: Dynameq's Base Network File name
     BASE_FILE       = '%s_base.dqt'
+    #: Dynameq's Advanced Network File name
     ADVANCED_FILE   = '%s_advn.dqt'
+    #: Dynameq's Traffic Control Plan File name
     CONTROL_FILE    = '%s_ctrl.dqt'
+    #: Dynameq's Transit Lines File name
     TRANSIT_FILE    = '%s_ptrn.dqt'
+    #: Dynameq's Custom Priorities File name
     PRIORITIES_FILE = '%s_prio.dqt'
     
     BASE_HEADER          = """<DYNAMEQ>

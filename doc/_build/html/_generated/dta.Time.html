@@ -83,6 +83,9 @@ Adds a few simple methods to the standard python datetime.time class.</p>
 <tr><td><a class="reference internal" href="#dta.Time.readFromString" title="dta.Time.readFromString"><tt class="xref py py-obj docutils literal"><span class="pre">readFromString</span></tt></a>(timeAsString)</td>
 <td>Read a string representing time in the format %H:%M e.g. 16:30</td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Time.readFromStringWithoutColon" title="dta.Time.readFromStringWithoutColon"><tt class="xref py py-obj docutils literal"><span class="pre">readFromStringWithoutColon</span></tt></a>(timeAsString)</td>
+<td>Read a string representing time in the format %H:%M e.g. 16:30</td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
@@ -171,6 +174,13 @@ object.</p>
 <dl class="classmethod">
 <dt id="dta.Time.readFromString">
 <em class="property">classmethod </em><tt class="descname">readFromString</tt><big>(</big><em>timeAsString</em><big>)</big><a class="headerlink" href="#dta.Time.readFromString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a string representing time in the format %H:%M e.g. 16:30
+and return a time object</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="dta.Time.readFromStringWithoutColon">
+<em class="property">classmethod </em><tt class="descname">readFromStringWithoutColon</tt><big>(</big><em>timeAsString</em><big>)</big><a class="headerlink" href="#dta.Time.readFromStringWithoutColon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a string representing time in the format %H:%M e.g. 16:30
 and return a time object</p>
 </dd></dl>

@@ -111,6 +111,9 @@ used.</li>
 <tr><td><a class="reference internal" href="#dta.RoadLink.addShifts" title="dta.RoadLink.addShifts"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.addShifts</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.allowsAll" title="dta.RoadLink.allowsAll"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.allowsAll</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.coordinatesAlongLink</span></tt></a></td>
 <td></td>
 </tr>
@@ -118,6 +121,9 @@ used.</li>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.euclideanLengthInLengthUnits" title="dta.RoadLink.euclideanLengthInLengthUnits"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.euclideanLengthInLengthUnits</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadLink.findOutgoingMovement" title="dta.RoadLink.findOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.findOutgoingMovement</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.RoadLink.getAngle" title="dta.RoadLink.getAngle"><tt class="xref py py-obj docutils literal"><span class="pre">RoadLink.getAngle</span></tt></a></td>
@@ -364,7 +370,7 @@ such as showing curvature.</p>
 
 <dl class="method">
 <dt id="dta.RoadLink.addShifts">
-<tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShifts" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em>, <em>addShapepoints=False</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShifts" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><ul class="simple">
 <li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from
@@ -375,7 +381,13 @@ lanes from the center line of the roadway that the last segment is shifted.</li>
 </div></blockquote>
 <p>Dynameq software requires the link to have at least 2 shape points in order to use these shifts.
 Thus, this method will also add the required shape points, if they&#8217;re lacking (just a linear interpolation
-1/3 and 2/3 along the line via <a class="reference internal" href="#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAlongLink()</span></tt></a></p>
+1/3 and 2/3 along the line via <a class="reference internal" href="#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAlongLink()</span></tt></a> if <em>addShapepoints</em> is True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadLink.allowsAll">
+<tt class="descname">allowsAll</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.allowsAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is there a lane on this link that allows all?</p>
 </dd></dl>
 
 <dl class="method">
@@ -401,11 +413,18 @@ If <em>distance</em> is longer than the euclidean distance of the link, and not 
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.findOutgoingMovement">
+<tt class="descname">findOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.RoadLink.findOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the outgoing movement ending in the given <em>nodeId</em>.</p>
+<p>If None found, returns None.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.getAngle">
 <tt class="descname">getAngle</tt><big>(</big><em>other</em>, <em>usingShapepoints=False</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getAngle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the angle in degrees (in the range (-180, 180]) between this link and <em>other</em>, 
-an instance of <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> (where positive angles means the other is counter-clockwise from this,
-and negative angles means the other is clockwise from self.)</p>
+an instance of <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> (where positive angles means the other is clockwise from this,
+and negative angles means the other is counter-clockwise from self.)</p>
 <p>If <em>usingShapepoints</em>, links must have a node in common, and the section of the link involving
 that common node is examined.</p>
 <p>If <em>usingShapepoints</em> is False, both links are considered as vectors from the
@@ -414,9 +433,12 @@ start node to end node.</p>
 
 <dl class="method">
 <dt id="dta.RoadLink.getCenterLine">
-<tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getCenterLine" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getCenterLine</tt><big>(</big><em>atStart=False</em>, <em>atEnd=False</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getCenterLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Offset the link to the right 0.5*numLanes*:py:attr:<cite>RoadLink.DEFAULT_LANE_WIDTH</cite> and 
 return a tuple of two points (each one being a tuple of two floats) representing the centerline</p>
+<p>If <em>atStart</em> is True, then shapepoints are included and the first section of the line is used.
+If <em>atEnd</em> is True, then shapepoints are included and the last section of the line is used.</p>
+<p>If neither is True, then shapepoints are not included.</p>
 </dd></dl>
 
 <dl class="method">
@@ -484,7 +506,7 @@ shape points are used with the <em>atEnd</em> argument.</p>
 <dl class="method">
 <dt id="dta.RoadLink.getLeftTurn">
 <tt class="descname">getLeftTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.getLeftTurn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the thru movement of the link or raise an error if it does not exist</p>
+<dd><p>Return the left turn movement of the link or raise an error if it does not exist</p>
 </dd></dl>
 
 <dl class="method">
@@ -546,10 +568,11 @@ shape points are used with the <em>atEnd</em> argument.</p>
 
 <dl class="method">
 <dt id="dta.RoadLink.getOrientation">
-<tt class="descname">getOrientation</tt><big>(</big><em>atEnd=True</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOrientation" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getOrientation</tt><big>(</big><em>atEnd=True</em>, <em>usingShapepoints=True</em><big>)</big><a class="headerlink" href="#dta.RoadLink.getOrientation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the angle of the link in degrees from the North
-measured clockwise. The link shape is taken into account.
-If there are shape points, and <em>atEnd</em> is True, then the orientation
+measured clockwise.  The result is in [0, 360)</p>
+<p>The link shape is taken into account if <em>usingShapepoints</em> is True.</p>
+<p>If there are shape points, and <em>atEnd</em> is True, then the orientation
 is evaluated at the end point of the link, otherwise it&#8217;s evaluated at
 the start of the link.</p>
 </dd></dl>

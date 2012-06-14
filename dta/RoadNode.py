@@ -107,7 +107,6 @@ class RoadNode(Node):
 
         self._control    = control
         self._priority   = priority
-        self._label = label
         
         #: indexed by the :py:class:`PlanCollectionInfo`
         self._timePlans = {}

@@ -40,6 +40,7 @@ from .MultiArray import MultiArray
 from .Network import Network
 from .Node import Node
 from .Phase import Phase
+from .PhaseMovement import PhaseMovement
 from .RoadLink import RoadLink
 from .RoadNode import RoadNode
 from .Path import Path
@@ -61,7 +62,7 @@ __all__ = ['DtaError', 'DtaLogger', 'setupLogging',
            'Scenario', 'DynameqScenario', 'VehicleType', 'VehicleClassGroup',
            'Node', 'RoadNode', 'Centroid', 'VirtualNode',
            'Link', 'RoadLink', 'Connector', 'VirtualLink', 'DynameqDemand',
-           'PlanCollectionInfo', 'TimePlan',
+           'PlanCollectionInfo', 'TimePlan', 'PhaseMovement',
            'TPPlusTransitNode', 'TPPlusTransitRoute', 'TransitLine', 'TransitSegment',
            'Route', 'Phase', 'MultiArray',
            'crossProduct', 'direction', 'lineSegmentsCross', 'onSegment', 'Time', 'CountsVsVolumes', 'ShortestPaths'

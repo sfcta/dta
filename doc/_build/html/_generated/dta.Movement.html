@@ -126,6 +126,9 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.getNumLanes" title="dta.Movement.getNumLanes"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getNumLanes</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Movement.getObsCount" title="dta.Movement.getObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getObsCount</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Movement.getOriginNode" title="dta.Movement.getOriginNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getOriginNode</span></tt></a></td>
 <td></td>
 </tr>
@@ -171,6 +174,12 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <tr><td><a class="reference internal" href="#dta.Movement.getVehicleClassGroup" title="dta.Movement.getVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getVehicleClassGroup</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Movement.hasCountInfo" title="dta.Movement.hasCountInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.hasCountInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.hasObsCount" title="dta.Movement.hasObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.hasObsCount</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Movement.isInConflict" title="dta.Movement.isInConflict"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isInConflict</span></tt></a></td>
 <td></td>
 </tr>
@@ -190,6 +199,12 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.prohibitAllVehicleClassGroups" title="dta.Movement.prohibitAllVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.prohibitAllVehicleClassGroups</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.prohibitAllVehiclesButTransit" title="dta.Movement.prohibitAllVehiclesButTransit"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.prohibitAllVehiclesButTransit</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Movement.setObsCount" title="dta.Movement.setObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setObsCount</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Movement.setOverrideTurnType" title="dta.Movement.setOverrideTurnType"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setOverrideTurnType</span></tt></a></td>
@@ -263,7 +278,7 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <dl class="method">
 <dt id="dta.Movement.getCenterLine">
 <tt class="descname">getCenterLine</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getCenterLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of points represeting the movement</p>
+<dd><p>Get a list of points representing the movement</p>
 </dd></dl>
 
 <dl class="method">
@@ -318,6 +333,13 @@ This attribute can vary over time.  Pass <cite>None</cite> to let the software c
 <dt id="dta.Movement.getNumLanes">
 <tt class="descname">getNumLanes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getNumLanes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of lanes the movement has</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.getObsCount">
+<tt class="descname">getObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.getObsCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of vehicles executing the
+movement in the input time window.</p>
 </dd></dl>
 
 <dl class="method">
@@ -412,15 +434,29 @@ input time</p>
 <tt class="descname">getTurnType</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getTurnType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the type of the movement, one of <a class="reference internal" href="#dta.Movement.DIR_UTURN" title="dta.Movement.DIR_UTURN"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_UTURN</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_RT" title="dta.Movement.DIR_RT"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_RT</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_RT2" title="dta.Movement.DIR_RT2"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_RT2</span></tt></a>,
 <a class="reference internal" href="#dta.Movement.DIR_LT2" title="dta.Movement.DIR_LT2"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_LT2</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_LT" title="dta.Movement.DIR_LT"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_LT</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_TH" title="dta.Movement.DIR_TH"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_TH</span></tt></a>.</p>
-<p>The movement type is determined by the angles of the incoming links (based on the start nodes and end nodes only);
-however, if a Movement type override is set using <a class="reference internal" href="#dta.Movement.setOverrideTurnType" title="dta.Movement.setOverrideTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.setOverrideTurnType()</span></tt></a> then that will supercede
-the angle-based analysis.</p>
+<p>The movement type is determined by the angle of the outgoing link with respect to that of the incoming link 
+(based on the start nodes and end nodes only for now, but maybe it makes more sense to include shape points?).</p>
+<img alt="../_images/TurnTypes.png" src="../_images/TurnTypes.png" style="height: 400px;" />
+<p>However, if a Movement type override is set using <a class="reference internal" href="#dta.Movement.setOverrideTurnType" title="dta.Movement.setOverrideTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.setOverrideTurnType()</span></tt></a> then that will
+supercede the angle-based analysis.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Movement.getVehicleClassGroup">
 <tt class="descname">getVehicleClassGroup</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.getVehicleClassGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the vehicle class group</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.hasCountInfo">
+<tt class="descname">hasCountInfo</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.hasCountInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the movement contains count information else false</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.hasObsCount">
+<tt class="descname">hasObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement.hasObsCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a count for the input time period</p>
 </dd></dl>
 
 <dl class="method">
@@ -456,13 +492,29 @@ the angle-based analysis.</p>
 <dl class="method">
 <dt id="dta.Movement.isUTurn">
 <tt class="descname">isUTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.isUTurn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the movement is a U-Turn</p>
+<dd><p>Return True if the movement is a U-Turn.</p>
+<p>This is True if either the incoming start node is the same as the outgoing end node, or if
+the incoming link and outgoing link have the same name and have an orientation difference
+of between 160 and 180 degrees according to <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.getOrientation" title="dta.RoadLink.getOrientation"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getOrientation()</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Movement.prohibitAllVehicleClassGroups">
 <tt class="descname">prohibitAllVehicleClassGroups</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.prohibitAllVehicleClassGroups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the movement to prohibited to all vehicles</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.prohibitAllVehiclesButTransit">
+<tt class="descname">prohibitAllVehiclesButTransit</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Movement.prohibitAllVehiclesButTransit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the movement to prohibited to all vehicles but transit</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement.setObsCount">
+<tt class="descname">setObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>count</em><big>)</big><a class="headerlink" href="#dta.Movement.setObsCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the number of vehicles executing the movement 
+in the input time period</p>
 </dd></dl>
 
 <dl class="method">

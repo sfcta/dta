@@ -17,6 +17,7 @@ dta.Time
       ~Time.fromMinutes
       ~Time.getMinutes
       ~Time.readFromString
+      ~Time.readFromStringWithoutColon
    
    
 
