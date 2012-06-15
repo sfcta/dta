@@ -144,6 +144,8 @@ class StopNode(Node):
     def matchStopNodes(self,net,matchedNodes,matchedAllNodes):
         foundNodeMatch = False
         for node in net.iterRoadNodes():
+            if node._control==1:
+                continue
             if abs(node.getX()-self.getX())<2 and abs(node.getY()-self.getY())<1:
                 if node not in matchedAllNodes:
                     matchedAllNodes.append(node)
@@ -156,9 +158,10 @@ class StopNode(Node):
                 else:
                     node._priority = self._priority
                     node._control = self._control
+                    node._label = self._label
                     matchedNodes.append(node)
                     foundNodeMatch = True
-                    dta.DtaLogger.info("Stop %s at %s was matched to node %s from (x,y)" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
+                    dta.DtaLogger.debug("Stop %s at %s was matched to node %s from (x,y)" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
                     return True
 
             else:
@@ -178,6 +181,8 @@ class StopNode(Node):
         #dta.DtaLogger.debug("Street Name Set = %s" % str([streetName for streetName in streetNamesSet]))
     
         for node in net.iterRoadNodes():
+            if node._control==1:
+                continue
             streetsMatched = 0
             baseStreetNames = node.getStreetNames()
             baseStreetNames = [cleanStreetName(bs) for bs in baseStreetNames]
@@ -200,9 +205,10 @@ class StopNode(Node):
                 else:
                     node._priority = self._priority
                     node._control = self._control
+                    node._label = self._label
                     matchedNodes.append(node)
                     foundLinkMatch = True
-                    dta.DtaLogger.info("Stop %s at %s was matched to node %s" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
+                    dta.DtaLogger.debug("Stop %s at %s was matched to node %s" % (stop.getId(),str(stop._label).strip(),node.getStreetNames()))
                     return True
 
             else:
@@ -250,19 +256,21 @@ def readOthFromShapefile(stops,priorityStreets,nodesShpFilename, nodeVariableNam
     fields = [field[0] for field in sf.fields[1:]]
     for shape, recordValues in izip(shapes, records):
         if len(shape.points) == 0:
-            dta.DtaLogger.error("No shape points for ID = %d, intersection = %s" % (int(localsdict["ID"]),str(localsdict["CONCATENAT"])))
-            continue
-        x, y = shape.points[0]
+            x, y = 0,0
+        else:
+            x, y = shape.points[0]
+
+
         localsdict = dict(izip(fields, recordValues))
         n = int(localsdict["ID"])
-        interPriority = str(localsdict["X_STREET"])+","+str(localsdict["STREET"])
+        interPriority = str(localsdict["X_STREET"])+"&"+str(localsdict["STREET"])
             
         newNode = None
         newNode = StopNode(id=n,x=x,y=y,
                         geometryType=eval(nodeGeometryTypeEvalStr, globals(), localsdict),
                         control=eval(nodeControlEvalStr, globals(), localsdict),
                         priority=eval(nodePriorityEvalStr, globals(), localsdict),
-                        label=str(localsdict["CONCATENAT"]),
+                        label=interPriority,
                         level=eval(nodeLevelEvalStr, globals(), localsdict))
 
         stops.append(newNode)
@@ -299,7 +307,8 @@ def cleanStreetName(streetName):
                    "01ST":"1ST",
                    "WEST GATE":"WESTGATE",
                    "MIDDLEPOINT":"MIDDLE POINT",
-                   "ST FRANCIS":"SAINT FRANCIS"}
+                   "ST FRANCIS":"SAINT FRANCIS",
+                   "MT VERNON":"MOUNT VERNON"}
 
 
     itemsToRemove = [" STREETS",
@@ -356,18 +365,41 @@ def cleanStreetNames(streetNames):
     return newStreetNames
 
 def updateNodePriority(net,matchedNodes):
+    conflictNodes = []
     # If node was matched 4 or more times, it is set to all-way stop.  If node was matched fewer times, it is set to two-way stop.
-
     for node in net.iterRoadNodes():
         if node in matchedNodes:
-            if matchedNodes.count(node)>=4:
+            if matchedNodes.count(node)>=node.getNumIncomingLinks():
                 node._priority = 1
-            elif matchedNodes.count(node)<4:
-                node._priority = 2
+            elif matchedNodes.count(node)<node.getNumIncomingLinks() and matchedNodes.count(node)>=1:
+                if float(matchedNodes.count(node))/float(node.getNumIncomingLinks())>0.5:
+                    node._priority=1
+                else:
+                    node._priority = 2
+                    maxFac = 100
+                    maxFacName = ""
+                    for links in node.iterIncomingLinks():
+                        streetLabel = str(node._label)
+                        splitval = streetLabel.find("&")
+                        streetName = streetLabel[:splitval]
+                        streetName = cleanStreetName(streetName)
+                        #dta.DtaLogger.info("TW stop at node %s has link %s with facility type %s and %s has priority." % (node.getId(),links.getLabel(),links.getFacilityType(),streetName))
+                        if links.getFacilityType()==maxFac:
+                            if links.getLabel()==maxFacName:
+                                continue
+                            else:
+                                dta.DtaLogger.error("Two-way stop %s at %s has conflicting facility types.  Set to four-way." % (node.getId(),node.getStreetNames()))
+                                node._priority = 1
+                                if node not in conflictNodes:
+                                    conflictNodes.append(node)
+                                #for link2 in node.iterIncomingLinks():
+                                    #dta.DtaLogger.error("TW stop tagged %d of %d times at node %s at %d, %d has link %s with facility type %s and %s has priority." % (matchedNodes.count(node),node.getNumIncomingLinks(),node.getId(),node.getX(),node.getY(),link2.getLabel(),link2.getFacilityType(),streetName))
+                        elif links.getFacilityType()<maxFac:
+                            maxFac = links.getFacilityType()
+                            maxFacName = links.getLabel()
+    dta.DtaLogger.info("%d stops are two-way with facility type conflicts" % len(conflictNodes))
     return True
                 
-    
-
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
@@ -421,13 +453,15 @@ if __name__ == "__main__":
                 foundOStopNodes.append(stop)
         else:
             foundOStopNodes.append(stop)
-            
-    udpatedPriorities = updateNodePriority(net,matchedOthNodes)
+    # Check to see how many stop signs were found at each node and update priorities to all-way or two-way accordingly.        
 
                 
     dta.DtaLogger.info("Number of other stop nodes read in = %d" % len(readOStopNodes))
     dta.DtaLogger.info("Number of other stop nodes matched = %d" % len(foundOStopNodes))
 
+    # All-way stop file is imported second so that if there is an all-way stop that wasn't correctly detected by the other shapefile,
+    # this section of code will find it again and change the priority to all-way
+    
     allStopShapefile = ALL_WAY_STOPS
     allwaysStops = []
     # Import all-way stops shape file
@@ -457,6 +491,14 @@ if __name__ == "__main__":
                 foundAWStopNodes.append(stop)
         else:
             foundAWStopNodes.append(stop)
+    # Remove nodes updated as all-way from other set
+    for node in matchedOthNodes:
+        if node in matchedNodes:
+            matchedOthNodes.remove(node)
+        else:
+            continue
+    
+    udpatedPriorities = updateNodePriority(net,matchedOthNodes)
 
     dta.DtaLogger.info("Number of other stop nodes read in = %d" % len(readOStopNodes))
     dta.DtaLogger.info("Number of other stop nodes matched = %d" % len(foundOStopNodes))

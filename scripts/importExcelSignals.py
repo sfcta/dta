@@ -69,7 +69,7 @@ class StreetNameMappingError(ExcelCardError):
 GREEN = 0
 YELLOW = 1
 RED = 2
-:
+
 TURN_LEFT = ("LT", "LT2")
 TURN_THRU = ("TH", "TH2")
 TURN_RIGHT = ("RT", "RT2")
@@ -1774,6 +1774,7 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         return False
         
     allPlans=dPlan
+    node._control=1
         
     return allPlans
 
