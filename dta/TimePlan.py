@@ -286,11 +286,15 @@ class TimePlan(object):
         if phaseMovements != nodeMovements:
             nodeMovsNotInPhaseMovs = nodeMovements.difference(phaseMovements)
             phaseMovsNotInNodeMovs = phaseMovements.difference(nodeMovements)
-            raise DtaError("Node %s. The phase movements are not the same with node movements."
-                                "\tNode movements missing from the phase movements: \t%s"
-                                "\tPhase movements not registered as node movements: \t%s" % 
-                                (self.getNode().getId(), "\t".join(map(str, nodeMovsNotInPhaseMovs)),
-                                 "\t".join(map(str, phaseMovsNotInNodeMovs))))
+            error_str = ""
+            if len(nodeMovsNotInPhaseMovs) > 0:
+                error_str += "; Node movements missing from the phase movements: "
+                error_str += ",".join(map(str, nodeMovsNotInPhaseMovs))
+            if len(phaseMovsNotInNodeMovs) > 0:
+                error_str += "; Phase movements not registered as node movements: "
+                error_str += ",".join(map(str, phaseMovsNotInNodeMovs))
+            raise DtaError("Node %s. The phase movements != node movements. %s" %
+                           (self._node.getId(), error_str))
         
         #check that if two conflicting movements exist one of them is permitted or right turn
         for phase in self.iterPhases():
