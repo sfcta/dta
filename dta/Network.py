@@ -1767,14 +1767,18 @@ class Network(object):
         Export all the nodes to a shapefile with the given name (without the shp extension)"
         """
         w = shapefile.Writer(shapefile.POINT)
-        w.field("ID", "N", 10)
-        w.field("IsRoad", "C", 10)
-        w.field("IsCentroid", "C", 10)
-        w.field("IsVNode", "C", 10) 
+        w.field("ID",           "N", 10)
+        w.field("Type",         "C", 12)
 
         for node in self.iterNodes():
             w.point(node.getX(), node.getY())
-            w.record(node.getId(), str(node.isRoadNode()), str(node.isCentroid()), str(node.isVirtualNode()))
+            if node.isRoadNode():
+                type = "RoadNode"
+            elif node.isCentroid():
+                type = "Centroid"
+            elif node.isVirtualNode():
+                type = "VirtualNode"
+            w.record(node.getId(), type)
 
         w.save(name)
         DtaLogger.info("Wrote nodes to shapefile %s" % name)
@@ -1784,16 +1788,15 @@ class Network(object):
         Export all the links to a shapefile with the given name (without the shp extension)
         """
         w = shapefile.Writer(shapefile.POLYLINE) 
-        w.field("ID", "N", 10)
-        w.field("Start", "N", 10)
-        w.field("End", "N", 10)
+        w.field("ID",       "N", 10)
+        w.field("Start",    "N", 10)
+        w.field("End",      "N", 10)
 
-        w.field("IsRoad", "C", 10) 
-        w.field("IsConn", "C", 10) 
-        w.field("IsVirtual", "C", 10)
-        w.field("Label", "C", 60)
-        w.field("facType", "N", 10)
+        w.field("Type",     "C", 10) 
+        w.field("Label",    "C", 60)
+        w.field("facType",  "N", 10)
         w.field("numLanes", "N", 10)
+        w.field("Direction","C", 2 )
         
         for link in self.iterLinks():
             if link.isVirtualLink():
@@ -1804,6 +1807,7 @@ class Network(object):
                 label       = ""
                 facType     = -1
                 numLanes    = -1
+                direction   = ""
             else:
                 centerline  = link.getCenterLine()
                 shapepoints = copy.deepcopy(link._shapePoints)
@@ -1814,10 +1818,16 @@ class Network(object):
                 label       = link.getLabel()
                 facType     = link.getFacilityType()
                 numLanes    = link.getNumLanes()
+                if link.isConnector():
+                    type    = "Connector"
+                elif link.isRoadLink():
+                    type    = "RoadLink"
+                elif link.isVirtualLink():
+                    type    = "VirtualLink"
+                direction   = link.getDirection()
                 
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
-                     facType, numLanes)
+                     type, label, facType, numLanes, direction)
 
         w.save(name)
         DtaLogger.info("Wrote links to shapefile %s" % name)        
