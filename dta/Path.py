@@ -17,6 +17,7 @@ __license__     = """
 """
 from itertools import izip
 from .DtaError import DtaError
+from dta.Algorithms import ShortestPaths, pairwise
 import shapefile 
                     
 class Path(object):
@@ -38,10 +39,44 @@ class Path(object):
             w.line(parts=[points])
             w.record(path.getName())
         w.save(outFileName)
+    
+    @classmethod
+    def createPath(cls, net, name, intersectionList):
+        """
+        Returns a :py:class:'path' instance based on a shortest path that goes through all the intersections in the intersection list
         
+          * *net* is a :py:class:`Network' object
+          * *intersectionList* is a list of at least two intersections that the path will go through having the form:
+               e.g. : [["Mission St", "1st St"], ["Mission St", "8th St"]]
+        """
+        linkList=[]
+        prevNode = None
+        
+        for intersection in intersectionList:
+            node = net.findNodeForRoadLabels(intersection)
+            links_to_add_to_list = []
+            if prevNode:
+                if prevNode.hasOutgoingLinkForNodeId(node.getId()):
+                    links_to_add_to_list = [net.getLinkForNodeIdPair(prevNode.getId(), node.getId())]
+                else:
+                    #print "Repairing path"
+                    ShortestPaths.initializeMovementCostsWithLength(net)
+                    ShortestPaths.labelCorrectingWithLabelsOnNodes(net, prevNode) 
+                    intermediate_path_of_nodes = ShortestPaths.getShortestPathBetweenNodes(prevNode, node)
+                    #print "Intermediate path of nodes: ", [n.getId() for n in intermediate_path_of_nodes]
+                    for nodeA, nodeB in pairwise(intermediate_path_of_nodes):
+                        if nodeA.hasOutgoingLinkForNodeId(nodeB.getId()):
+                            links_to_add_to_list.append(  net.getLinkForNodeIdPair(nodeA.getId(), nodeB.getId())  )
+                    
+            prevNode = node
+            linkList = linkList + links_to_add_to_list
+            print "link list:", [l.getId() for l in linkList]
+            
+        return Path(net, name, linkList)
+    
     def __init__(self, net, name, iterLinks):
         """
-        Constructor that accepts a network, the path name, and a sequence of connected links
+        Constructor that accepts a network, the path name, and a sequence of connected links instances
         """
         self._net = net
         self._name = name
@@ -49,17 +84,19 @@ class Path(object):
 
         self._links = list(iterLinks)
 
-        for linkUpstream, linkDownstream in izip(self._links, self._links[1:]):
-            if not linkUpstream.hasOutgoingMovement(linkDownstream.getEndNodeId()):
+        for linkUpstream, linkDownstream in pairwise(self._links):
+            if not linkUpstream.findOutgoingMovement(linkDownstream.getEndNodeId()):
                 raise DtaError("Link %d does not have an outgoing movement towards "
                                "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
-            mov = linkUpstream.getOutgoingMovement(linkDownstream.getEndNodeId())
+            mov = linkUpstream.findOutgoingMovement(linkDownstream.getEndNodeId())
             if mov.isProhibitedToAllVehicleClassGroups():
                 raise DtaError("Link %d does not allow an outgoing movement towards "
                                "node %d to any vehicle class" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
-                
+            if linkDownstream == self._links[-1]:
+                break
+            
         if len(self._links) == 0:
-            raise DtaError('A path cannot istantiated without any links')
+            raise DtaError('A path cannot instantiated without any links')
         self._lengthInMiles = sum([link.getLength() for link  in self.iterLinks()])
         self._obsTTInMin = {}
 

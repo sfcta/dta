@@ -882,7 +882,29 @@ class Network(object):
             return True
         except DtaError:
             return False
-    
+
+    def findNodeForRoadLabels(self, road_label_list):
+        """ 
+        Finds matching node for a set of road labels and returns a :py:class:`RoadNode` instance.
+        
+          * *road_label_list* a list of road names e.g. [mission st, 6th st]
+        
+        """
+        #print "Trying to find: %s" % (", ".join(road_label_list) )
+        for roadnode in self.iterRoadNodes():
+            streetnames = roadnode.getStreetNames(incoming=True, outgoing=True)
+            #print "Trying: ", streetnames
+            match = True
+            for road_label in road_label_list:
+                if  road_label not in streetnames:
+                    match = False                   
+            if match:
+                #print "Found match: ", streetnames
+                return roadnode
+        
+        raise DtaError("findNodeForRoadLabels: Couldn't find intersection with %s in the Network" % 
+                           (", ".join(road_label_list)  )  )
+                           
     def findLinksForRoadLabels(self, on_street_label, on_direction,
                                        from_street_label, to_street_label,
                                        remove_label_spaces=False):

@@ -1785,6 +1785,7 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         return False
         
     allPlans=dPlan
+    node._control=1
         
     return allPlans
 

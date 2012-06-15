@@ -878,7 +878,7 @@ class DynameqNetwork(Network):
 
     def readObsMovementCounts(self, countFileNameInDynameqDatFormat):
         """
-        Assign the link counts
+        Assign the movement counts
         """
 
         startTimeInMin = 0
@@ -906,4 +906,60 @@ class DynameqNetwork(Network):
                 if count < 0:
                     continue
                 mov.setObsCount(s,s+timeStepInMin, count) 
+                
+            # next, aggregate to 15-minute and 60-minute bins if needed
+            for aggregateTimeStep in [15, 60]: 
+            	if timeStepInMin<aggregateTimeStep: 
+            		for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
+            			if s == startTimeInMin: 
+            				aggregateCount = 0            		
+            			elif s % aggregateTimeStep == 0: 
+            				mov.setObsCount(s-aggregateTimeStep, s, aggregateCount)
+            				aggregateCount = 0
+            			if count<0: 
+            				continue
+            			aggregateCount = aggregateCount + count
+            
                         
+
+    def readObsLinkCounts(self, countFileNameInDynameqDatFormat):
+        """
+        Assign the link counts
+        """
+
+        startTimeInMin = 0
+        endTimeInMin = 0
+        timeStepInMin = 0
+        lineNum = 0
+        for line in open(countFileNameInDynameqDatFormat, "r"):
+            if lineNum == 0:
+                times = line.strip().split()[2:]
+                startTimeInMin = Time.readFromStringWithoutColon(times[0]).getMinutes()
+                endTimeInMin = Time.readFromStringWithoutColon(times[-1]).getMinutes()
+                timeStepInMin = Time.readFromStringWithoutColon(times[1]).getMinutes() - \
+                                startTimeInMin
+                lineNum += 1
+                continue
+                
+            fields = map(int, map(float, line.strip().split()))
+            
+            link = self.getLinkForId(fields[0])
+
+            for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[1:]):
+                if count < 0:
+                    continue
+                link.setObsCount(s,s+timeStepInMin, count) 
+            
+            # next, aggregate to 15-minute and 60-minute bins if needed
+            for aggregateTimeStep in [15, 60]: 
+            	if timeStepInMin<aggregateTimeStep: 
+            		for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
+            			if s == startTimeInMin: 
+            				aggregateCount = 0            		
+            			elif s % aggregateTimeStep == 0: 
+            				link.setObsCount(s-aggregateTimeStep, s, aggregateCount)
+            				aggregateCount = 0
+            			if count<0: 
+            				continue
+            			aggregateCount = aggregateCount + count
+            		
