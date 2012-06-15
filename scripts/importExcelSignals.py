@@ -1632,7 +1632,7 @@ def getPossibleLinkDirections(link):
 
     return tuple(result)                                                                                        
 
-def convertSignalToDynameq(node, card, planInfo):
+def convertSignalToDynameq(net, node, card, planInfo):
     """
     Convert the excel signal described by the card object to
     a Dynameq time plan and return it. The input planInfo
@@ -1686,7 +1686,18 @@ def convertSignalToDynameq(node, card, planInfo):
                 if not dPhase.hasPhaseMovement(phaseMovement.getMovement().getStartNodeId(),
                                                phaseMovement.getMovement().getEndNodeId()):                    
                     dPhase.addPhaseMovement(phaseMovement)
-                    
+                
+                # overrides
+                if (dMov.getIncomingLink().getLabel()=="SAN ANSELMO AVE" and dMov.getIncomingLink().hasDirection(dta.RoadLink.DIR_WB) and
+                    dMov.getOutgoingLink().getLabel()=="PORTOLA DR"      and dMov.getOutgoingLink().hasDirection(dta.RoadLink.DIR_WB)):
+                    dPhase.addPhaseMovement(PhaseMovement(net.findMovementForRoadLabels("SANTA ANA AVE", dta.RoadLink.DIR_NB,
+                                                                                        "PORTOLA DR",    dta.RoadLink.DIR_WB,
+                                                                                        "PORTOLA DR",
+                                                                                        use_dir_for_movement=False), PhaseMovement.PERMITTED))
+                    dPhase.addPhaseMovement(PhaseMovement(net.findMovementForRoadLabels("SANTA ANA AVE", dta.RoadLink.DIR_NB,
+                                                                                        "14TH AVE",      dta.RoadLink.DIR_WB,
+                                                                                        "PORTOLA DR",
+                                                                                        use_dir_for_movement=False), PhaseMovement.PERMITTED))
         dPlan.addPhase(dPhase)
 
     return dPlan
@@ -1757,7 +1768,7 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
     nodeId = card.mappedNodeId
     node = net.getNodeForId(nodeId)
     try:
-        dPlan = convertSignalToDynameq(node, card, planInfo)
+        dPlan = convertSignalToDynameq(net, node, card, planInfo)
         dPlan.setPermittedMovements()            
         dPlan.validate()
                         
