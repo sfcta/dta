@@ -1011,34 +1011,6 @@ def cleanStreetNames(streetNames):
         newStreetNames.pop(0)
     return newStreetNames
 
-def writeSummary(excelCards):
-    
-    output = open("cardLayout.txt", "w")    
-    output.write("\t".join(SignalData.attrNames))
-    output.write("\t" + "\t".join(SignalData.streets))
-    output.write("\t" + "\t".join(SignalData.mappingInfo) + "\n")
-    for sd in excelCards:
-        info = str(sd)
-        output.write(info + "\n")    
-    output.close()
-
-def writeExtendedSummary(excelCards):
-    
-    output = open("extendedSummary.txt", "w")    
-    output.write("\t".join(SignalData.attrNames))
-    output.write("\t" + "\t".join(SignalData.streets))
-    output.write("\t" + "\t".join(SignalData.mappingInfo) + "\n")
-    cardNum = 0
-    for sd in excelCards:
-        cardinfo = str(sd)
-        output.write("%d\t%s\t%s\t%s\n" %(cardNum, sd.iName, sd.iiName, cardinfo))
-        if sd.phasingData:
-            for gMovement in sd.phasingData.getElementsOfDimention(0):
-                output.write("%d\t%s\t" % (cardNum, gMovement))
-                output.write("\t".join(map(str, sd.mappedMovements[gMovement])) + "\n")
-        cardNum += 1                  
-    output.close()
-
 def parseExcelCardFile(directory, fileName):
     """
     Reads the excel file, parses its information and returns
@@ -1784,10 +1756,10 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         dta.DtaLogger.error("Error 3: %s" % e)
         return False
         
-    allPlans=dPlan
+    assert(node._control == 1)
     node._control=1
         
-    return allPlans
+    return dPlan
 
 def verifySingleSignal(net, fileName, mappedNodes):
     """
@@ -1915,3 +1887,6 @@ if __name__ == "__main__":
     
     net.write(".", "sf_signals")
 
+    #net.writeLinksToShp("sf_signals_link")
+    #net.writeNodesToShp("sf_signals_node")    
+    
