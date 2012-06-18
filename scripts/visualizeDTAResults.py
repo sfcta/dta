@@ -69,8 +69,17 @@ if __name__ == "__main__":
     LINK_COUNT_FILE_15MIN                = sys.argv[7] 
     MOVEMENT_COUNT_FILE_15MIN            = sys.argv[8]
     MOVEMENT_COUNT_FILE_5MIN             = sys.argv[9]  
-        
-    
+
+    #INPUT_DYNAMEQ_NET_DIR                = "~/Documents/sfcta/06082012/"
+    #INPUT_DYNAMEQ_NET_PREFIX             = "sf_jun7_530p"
+    #REPORTING_TIME_STEP                  = 15
+    #LINK_OUT_FILE                        = "linkOut.csv"
+    #MOVEMENT_OUT_FILE                    = "movOut.csv"
+    #COUNT_DIR                            = "~/Documents/sfcta/06082012/counts_links_15min_1600_1830.dat"   
+    #LINK_COUNT_FILE_15MIN                = sys.argv[7] 
+    #MOVEMENT_COUNT_FILE_15MIN            = sys.argv[8]
+    #MOVEMENT_COUNT_FILE_5MIN             = sys.argv[9]  
+            
     # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
     dta.VehicleType.LENGTH_UNITS= "feet"
     dta.Node.COORDINATE_UNITS   = "feet"
@@ -175,4 +184,18 @@ if __name__ == "__main__":
     
     outputStream.close()                    
         
-    DtaLogger.info("Finished!")                 
+    DtaLogger.info("Finished!")
+
+
+    #net.writeLinksToShp("sf_links")
+    #net.writeNodesToShp("sf_nodes")
+
+    link1 = gearyWBStart = net.getLinkForId(18394)
+    link2 = gearyWBEnd = net.getLinkForId(27449)
+    dta.Algorithms.ShortestPaths.initializeMovementCostsWithLength(net) 
+    pathLinks = dta.Algorithms.ShortestPaths.getShortestPathBetweenLinks(net, link1, link2, runSP=True)
+    path = dta.Path(net, "test", pathLinks)    
+    volumesVsCounts = dta.CorridorPlots.CountsVsVolumes(net, path, False)
+    
+    volumesVsCounts.writeVolumesVsCounts(16*60, 17*60, 'gearyWB16_17')
+       

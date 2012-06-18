@@ -292,12 +292,11 @@ class CountsVsVolumes(object):
         ax.set_ylim(0, int(max(valuesToPlot)) + 1)
 
         #ax.plot(newLocations[1:9], [400, 400, 500, 500, 400, 400, 500, 500], c="r", label="Capacities")
-        ax.plot(newLocations[1:3], [400, 400], c="r", label="Capacities")        
-        ax.plot(newLocations[3:5], [500, 500], c="r", label="Capacities")
-        ax.plot(newLocations[5:7], [400, 400], c="r", label="Capacities")
-        ax.plot(newLocations[7:9], [500, 500], c="r", label="Capacities")
+        #ax.plot(newLocations[1:3], [400, 400], c="r", label="Capacities")        
+        #ax.plot(newLocations[3:5], [500, 500], c="r", label="Capacities")
+        #ax.plot(newLocations[5:7], [400, 400], c="r", label="Capacities")
+        #ax.plot(newLocations[7:9], [500, 500], c="r", label="Capacities")
 
-        
         ax.grid(True)
 
         p2, = speedAxis.plot(newLocations, speedValuesToPlot, "g-", label="Link Speeds")
@@ -317,20 +316,12 @@ class CountsVsVolumes(object):
         #    if ltVolumes[i] == 0:
         #        ltVolumes[i] = ltVolumes[i] + 50 
             
-
-        pdb.set_trace()
+        
         ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, width=BAR_WIDTH,bottom=0, color='r', label="LT Volumes Off")
         ax.bar(locations[1:], rtVolumes, width=BAR_WIDTH, bottom=0, color='y', label="RT Volumes Off")
-
-        #newLocations2 = locations[1:]
-        #for i in range(len(newLocations2)):
-        #    newLocations2[i] = newLocations2[i] + i * BAR_WIDTH
-        
-        #ax.bar(newLocations2 - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes Off")
-        #ax.bar(newLocations2, rtVolumes, BAR_WIDTH, color='y', label="RT Volumes Off") 
-        
-        #ax.set_xticks(locations)
-        #ax.set_xticklabels(["" for i in range(len(locations))])
+                
+        ax.set_xticks(locations[1:])
+        ax.set_xticklabels(["" for i in range(len(locations) - 1)])
 
         ax.legend(loc=2)
         ax.set_ylabel('Vehicles Per Hour')        

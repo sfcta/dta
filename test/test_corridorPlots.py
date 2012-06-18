@@ -23,6 +23,7 @@ import random
 
 import dta
 from dta.Utils import Time
+from dta.PhaseMovement import PhaseMovement 
 
 dta.VehicleType.LENGTH_UNITS= "feet"
 dta.Node.COORDINATE_UNITS   = "feet"
@@ -98,7 +99,6 @@ class TestCorridorPlots:
         pi = net.getPlanCollectionInfo(Time(7, 0), Time(9, 0))
 
         node = net.getNodeForId(25956)
-
                 
         for link in node.iterIncomingLinks():
             for mov in link.iterOutgoingMovements(): 
@@ -113,25 +113,24 @@ class TestCorridorPlots:
 
         for mov in p1Movs:
             
-            pMov = dta.PhaseMovement.PhaseMovement(mov, 1)
-            if pMov.isUTurn():
+            pMov = PhaseMovement(mov, 1)
+            if pMov.getMovement().isUTurn():
                 continue
             if mov.isLeftTurn():
                 pMov.setPermitted() 
-            p1.addMovement(pMov)
+            p1.addPhaseMovement(pMov)
 
         p2 = dta.Phase(tp, 40, 3, 2) 
         p2Movs = [mov for mov in net.getLinkForId(14620).iterOutgoingMovements()]
         p2Movs.extend([mov for mov in net.getLinkForId(14582).iterOutgoingMovements()])
 
         for mov in p2Movs:
-            pMov = dta.PhaseMovement.PhaseMovement(mov, 1)
-            if pMov.isUTurn():
+            pMov = PhaseMovement(mov, 1)
+            if pMov.getMovement().isUTurn():
                 continue 
             if mov.isLeftTurn():
                 pMov.setPermitted()
-            p2.addMovement(pMov)
-
+            p2.addPhaseMovement(pMov)
 
 
         tp.addPhase(p1)
@@ -142,8 +141,6 @@ class TestCorridorPlots:
         mov = net.getLinkForId(101674).getOutgoingMovement(25958)
         mov.getProtectedCapacity(planInfo=pi) 
         
-        pdb.set_trace()
-
         net.writeLinksToShp("gearySubnet_links")
         net.writeNodesToShp("gearySubnet_nodes")
         

@@ -349,9 +349,9 @@ class Movement(object):
             tp = self._node.getTimePlan(planInfo=planInfo)
             greenTime = 0
             for phase in tp.iterPhases():                                
-                if phase.hasMovement(self.getStartNodeId(), self.getEndNodeId()):
-                    mov = phase.getMovement(self.getStartNodeId(), self.getEndNodeId())
-                    if mov.isProtected:
+                if phase.hasPhaseMovement(self.getStartNodeId(), self.getEndNodeId()):
+                    mov = phase.getPhaseMovement(self.getStartNodeId(), self.getEndNodeId())
+                    if mov.isProtected():
                         greenTime += phase.getGreen()
             if greenTime > 0:                
                 return float(greenTime) / tp.getCycleLength() * self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
