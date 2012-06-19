@@ -883,11 +883,38 @@ class Network(object):
         except DtaError:
             return False
 
+    def findNodeNearestCoords(self, x, y, quick_dist=None):
+        """
+        Iterates though :py:class:`RoadNode` instances and returns 
+        the node closest to (*x*, *y*), as well as the distance.
+        
+        Uses *quick_dist* (if passed) to skip skip distance calcs and ignore anything
+        greater than *quick_dist* difference in either coordinate.
+        
+        So the return is a tuple: (distance, RoadNode)
+        
+        *x*,*y* and *quick_dist* are  in :py:attr:`Node.COORDINATE_UNITS`
+        """
+        min_dist     = sys.float_info.max
+        closest_node = None
+        
+        for roadnode in self.iterRoadNodes():
+            
+            if quick_dist and abs(roadnode.getX()-x) > quick_dist: continue
+            if quick_dist and abs(roadnode.getY()-y) > quick_dist: continue
+            
+            dist = math.sqrt( (roadnode.getX()-x)**2 + (roadnode.getY()-y)**2 )
+            if dist < min_dist:
+                min_dist = dist
+                closest_node = roadnode
+        
+        return (min_dist, closest_node)
+
     def findNodeForRoadLabels(self, road_label_list):
         """ 
         Finds matching node for a set of road labels and returns a :py:class:`RoadNode` instance.
         
-          * *road_label_list* a list of road names e.g. [mission st, 6th st]
+        *road_label_list* is a list of road names e.g. [mission st, 6th st]
         
         """
         #print "Trying to find: %s" % (", ".join(road_label_list) )
