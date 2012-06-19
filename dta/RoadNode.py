@@ -37,7 +37,7 @@ class RoadNode(Node):
     CONTROL_TYPE_SIGNALIZED         = 1
     #: all control types
     CONTROL_TYPES                   = [CONTROL_TYPE_UNSIGNALIZED,
-                                       CONTROL_TYPE_SIGNALIZED, 11]
+                                       CONTROL_TYPE_SIGNALIZED]
     
 
     #: No template: either a signalized or unsignalized junction, where there is no yielding of any
@@ -261,11 +261,20 @@ class RoadNode(Node):
         else:
             raise DtaError("Link %d is not adjacent to node %d" % (link.getId(), node.getId()))
 
-    def addTimePlan(self, timePlan):
+    def addTimePlan(self, timePlan, raiseValidateError=False):
         """
         Add the given *timePlan*, an instance of :py:class:`TimePlan`, to the current collection.
+        
+        This method will call :py:meth:`TimePlan.validate`
+        If *raiseValidateError*, any errors will be raised; otherwise they will just be warned.
         """
-        timePlan.validate()
+        try:
+            timePlan.validate()
+        except DtaError, e:
+            DtaLogger.warn("RoadNode %d addTimePlan() validation failure: %s" % (self.getId(), str(e)))
+            if raiseValidateError:
+                raise e
+                        
         self._timePlans[timePlan.getPlanInfo()] = timePlan
         self._control = RoadNode.CONTROL_TYPE_SIGNALIZED
         
@@ -295,11 +304,26 @@ class RoadNode(Node):
         """
         return iter(self._timePlans.itervalues())
 
-
-
+    def setAllWayStopControl(self):
+        """
+        Sets the road node's stop control to all way stop.
+        
+        Raises an error if it was already marked as signalized.
+        """
+        if self._control == RoadNode.CONTROL_TYPE_SIGNALIZED:
+            raise DtaError("setAllWayStopControl: Node %d set to signalized" % self.getId())
+        
+        self._priority = RoadNode.PRIORITY_TEMPLATE_AWSC
         
         
+    def setTwoWayStopControl(self):
+        """
+        Sets the road node's stop control to two way stop.
         
-
-
+        Raises an error if it was already marked as signalized.
+        """
+        if self._control == RoadNode.CONTROL_TYPE_SIGNALIZED:
+            raise DtaError("setAllWayStopControl: Node %d set to signalized" % self.getId())
+        
+        self._priority = RoadNode.PRIORITY_TEMPLATE_TWSC
         

@@ -26,7 +26,7 @@ class Node(object):
     
     .. note:: lmz has read over this, so todos are marked.
     """
-    #: Static variable represengint the units of the x,y (and so therefore Euclidean length)
+    #: Static variable representing the units of the x,y (and so therefore Euclidean length)
     #: Should be ``meters`` or ``feet``
     COORDINATE_UNITS = None
     

@@ -1751,11 +1751,12 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         dta.DtaLogger.error("Error 2: %s" % e)
         return False
     try:
-        node.addTimePlan(dPlan)
+        node.addTimePlan(dPlan, raiseValidateError=True)
     except dta.DtaError, e:
         dta.DtaLogger.error("Error 3: %s" % e)
         return False
-        
+
+    # todo: remove these.  node.addTimePlan() set the control variable        
     assert(node._control == 1)
     node._control=1
         
