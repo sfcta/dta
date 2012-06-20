@@ -1221,9 +1221,8 @@ def mapMovements(mec, baseNetwork):
             for indicator in dirIndicators:
                 if indicator in gMovName:
                     result.extend(dir)
-        if not "RT" in result:
-            if "TH" in result:
-                result.extend(TURN_RIGHT)
+        if not TURN_RIGHT in result:
+            result.extend(TURN_RIGHT)
 
         return result
 
