@@ -209,16 +209,17 @@ if __name__ == '__main__':
                         8339,8832])     # externals
     # Derived in Y:\dta\TrafficFlowParameters.xlsx
     # Updated for freeways and expressways based on Caltrans sensors for freeways in SF
+    # Updated for locals/collectors and arterials based on MTA speed data
     speedLookup = { \
         'FT1 AT0':35, 'FT1 AT1':40, 'FT1 AT2':45, 'FT1 AT3':45, 'FT1 AT4':55, 'FT1 AT5':55, 
         'FT2 AT0':50, 'FT2 AT1':65, 'FT2 AT2':65, 'FT2 AT3':65, 'FT2 AT4':70, 'FT2 AT5':70, 
         'FT3 AT0':50, 'FT3 AT1':65, 'FT3 AT2':65, 'FT3 AT3':65, 'FT3 AT4':65, 'FT3 AT5':65, 
-        'FT4 AT0':25, 'FT4 AT1':30, 'FT4 AT2':35, 'FT4 AT3':35, 'FT4 AT4':35, 'FT4 AT5':35, 
+        'FT4 AT0':20, 'FT4 AT1':25, 'FT4 AT2':30, 'FT4 AT3':30, 'FT4 AT4':35, 'FT4 AT5':35, 
         'FT5 AT0':30, 'FT5 AT1':30, 'FT5 AT2':35, 'FT5 AT3':35, 'FT5 AT4':40, 'FT5 AT5':40, 
-        'FT7 AT0':30, 'FT7 AT1':35, 'FT7 AT2':40, 'FT7 AT3':40, 'FT7 AT4':40, 'FT7 AT5':40, 
-        'FT11 AT0':25, 'FT11 AT1':30, 'FT11 AT2':35, 'FT11 AT3':35, 'FT11 AT4':35, 'FT11 AT5':35, 
-        'FT12 AT0':30, 'FT12 AT1':30, 'FT12 AT2':40, 'FT12 AT3':40, 'FT12 AT4':40, 'FT12 AT5':40, 
-        'FT15 AT0':35, 'FT15 AT1':40, 'FT15 AT2':45, 'FT15 AT3':50, 'FT15 AT4':50, 'FT15 AT5':50, 
+        'FT7 AT0':25, 'FT7 AT1':30, 'FT7 AT2':35, 'FT7 AT3':35, 'FT7 AT4':40, 'FT7 AT5':40, 
+        'FT11 AT0':20, 'FT11 AT1':25, 'FT11 AT2':30, 'FT11 AT3':30, 'FT11 AT4':35, 'FT11 AT5':35, 
+        'FT12 AT0':25, 'FT12 AT1':30, 'FT12 AT2':35, 'FT12 AT3':35, 'FT12 AT4':40, 'FT12 AT5':40, 
+        'FT15 AT0':25, 'FT15 AT1':30, 'FT15 AT2':35, 'FT15 AT3':35, 'FT15 AT4':50, 'FT15 AT5':50, 
     }
     # Derived in Y:\dta\TrafficFlowParameters.xlsx
     responseTimeLookup = { \
