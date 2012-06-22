@@ -65,6 +65,14 @@ FOR %%V IN (Car_NoToll Truck_NoToll) DO (
 :: primary output: demand_{Car,Truck}_NoToll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
 
+:copyFinal
+:: THESE are the files to import into dynameq
+copy sf_stops_scen.dqt sf_final_scen.dqt
+copy sf_stops_base.dqt sf_final_base.dqt
+copy sf_stops_advn.dqt sf_final_advn.dqt
+copy sf_stops_ctrl.dqt sf_final_ctrl.dqt
+copy sf_trn_ptrn.dqt   sf_final_ptrn.dqt
+
 goto done
 ::
 :: 5) import the counts into userdata files for Dynameq to read
