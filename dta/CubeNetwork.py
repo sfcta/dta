@@ -455,8 +455,8 @@ ENDRUN
             # a negative one means prohibited
             if turnPen == -1:
                 # DtaLogger.info("Removing movement %d-%d-%d found in turn prohibition file" % (startNodeId, nodeId, endNodeId))
-                #mov.prohibitAllVehicleClassGroups()
-                mov.prohibitAllVehiclesButTransit()
+                mov.prohibitAllVehicleClassGroups()
+                # mov.prohibitAllVehiclesButTransit()
                 movements_removed += 1
             
             elif turnPen > 0:

@@ -177,14 +177,14 @@ class DynameqNetwork(Network):
             DtaLogger.info("Read  %8d %-16s from %s" % (count, "VERTICES", advancedfile))
 
         # control file Processing
-        controlFile = os.path.join(dir, DynameqNetwork.CONTROL_FILE % file_prefix)
-        #The structure of the code is different than the previous read ones
-        #Reason 1: The control file does not contain a signal for each line
-        #Reason 2: If multiple time periods exist one more nesting level is added 
-
-        #if os.path.exists(controlFile):
-        #    for tp in TimePlan.read(self, controlFile):
-        #        tp.getNode().addTimePlan(tp)
+        controlfile = os.path.join(dir, DynameqNetwork.CONTROL_FILE % file_prefix)
+        if os.path.exists(controlfile):
+            
+            count = 0
+            for tp in TimePlan.readDynameqPlans(self, controlfile):
+                tp.getNode().addTimePlan(tp)
+                count += 1
+            DtaLogger.info("Read  %8d %-16s from %s" % (count, "TIME PLANS", controlfile))
                         
         #TODO: what about the custom priorities file?  I don't see that in pbtools               
         ## TODO - what about the public transit file?
@@ -730,14 +730,15 @@ class DynameqNetwork(Network):
         """
         Output the control plans to disk
         """
+        count = 0        
         for planInfo in self.iterPlanCollectionInfo():
             ctrl_object.write(planInfo.getDynameqStr())
             for node in sorted(self.iterRoadNodes(), key=lambda node: node.getId()):
                 if node.hasTimePlan(planInfo):
-                    tp = node.getTimePlan(planInfo)                    
-                    ctrl_object.write(tp.getDynameqStr())
-
-
+                    ctrl_object.write(node.getTimePlan(planInfo).getDynameqStr())
+                    count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "TIME PLANS", ctrl_object.name))
+            
     def _readMovementOutFlowsAndTTs(self):
         """
         Read the movement travel times (in seconds) add assign them 

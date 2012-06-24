@@ -1011,34 +1011,6 @@ def cleanStreetNames(streetNames):
         newStreetNames.pop(0)
     return newStreetNames
 
-def writeSummary(excelCards):
-    
-    output = open("cardLayout.txt", "w")    
-    output.write("\t".join(SignalData.attrNames))
-    output.write("\t" + "\t".join(SignalData.streets))
-    output.write("\t" + "\t".join(SignalData.mappingInfo) + "\n")
-    for sd in excelCards:
-        info = str(sd)
-        output.write(info + "\n")    
-    output.close()
-
-def writeExtendedSummary(excelCards):
-    
-    output = open("extendedSummary.txt", "w")    
-    output.write("\t".join(SignalData.attrNames))
-    output.write("\t" + "\t".join(SignalData.streets))
-    output.write("\t" + "\t".join(SignalData.mappingInfo) + "\n")
-    cardNum = 0
-    for sd in excelCards:
-        cardinfo = str(sd)
-        output.write("%d\t%s\t%s\t%s\n" %(cardNum, sd.iName, sd.iiName, cardinfo))
-        if sd.phasingData:
-            for gMovement in sd.phasingData.getElementsOfDimention(0):
-                output.write("%d\t%s\t" % (cardNum, gMovement))
-                output.write("\t".join(map(str, sd.mappedMovements[gMovement])) + "\n")
-        cardNum += 1                  
-    output.close()
-
 def parseExcelCardFile(directory, fileName):
     """
     Reads the excel file, parses its information and returns
@@ -1249,9 +1221,8 @@ def mapMovements(mec, baseNetwork):
             for indicator in dirIndicators:
                 if indicator in gMovName:
                     result.extend(dir)
-        if not "RT" in result:
-            if "TH" in result:
-                result.extend(TURN_RIGHT)
+        if not TURN_RIGHT in result:
+            result.extend(TURN_RIGHT)
 
         return result
 
@@ -1632,7 +1603,7 @@ def getPossibleLinkDirections(link):
 
     return tuple(result)                                                                                        
 
-def convertSignalToDynameq(node, card, planInfo):
+def convertSignalToDynameq(net, node, card, planInfo):
     """
     Convert the excel signal described by the card object to
     a Dynameq time plan and return it. The input planInfo
@@ -1686,7 +1657,18 @@ def convertSignalToDynameq(node, card, planInfo):
                 if not dPhase.hasPhaseMovement(phaseMovement.getMovement().getStartNodeId(),
                                                phaseMovement.getMovement().getEndNodeId()):                    
                     dPhase.addPhaseMovement(phaseMovement)
-                    
+                
+                # overrides
+                if (dMov.getIncomingLink().getLabel()=="SAN ANSELMO AVE" and dMov.getIncomingLink().hasDirection(dta.RoadLink.DIR_WB) and
+                    dMov.getOutgoingLink().getLabel()=="PORTOLA DR"      and dMov.getOutgoingLink().hasDirection(dta.RoadLink.DIR_WB)):
+                    dPhase.addPhaseMovement(PhaseMovement(net.findMovementForRoadLabels("SANTA ANA AVE", dta.RoadLink.DIR_NB,
+                                                                                        "PORTOLA DR",    dta.RoadLink.DIR_WB,
+                                                                                        "PORTOLA DR",
+                                                                                        use_dir_for_movement=False), PhaseMovement.PERMITTED))
+                    dPhase.addPhaseMovement(PhaseMovement(net.findMovementForRoadLabels("SANTA ANA AVE", dta.RoadLink.DIR_NB,
+                                                                                        "14TH AVE",      dta.RoadLink.DIR_WB,
+                                                                                        "PORTOLA DR",
+                                                                                        use_dir_for_movement=False), PhaseMovement.PERMITTED))
         dPlan.addPhase(dPhase)
 
     return dPlan
@@ -1757,7 +1739,7 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
     nodeId = card.mappedNodeId
     node = net.getNodeForId(nodeId)
     try:
-        dPlan = convertSignalToDynameq(node, card, planInfo)
+        dPlan = convertSignalToDynameq(net, node, card, planInfo)
         dPlan.setPermittedMovements()            
         dPlan.validate()
                         
@@ -1768,15 +1750,16 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
         dta.DtaLogger.error("Error 2: %s" % e)
         return False
     try:
-        node.addTimePlan(dPlan)
+        node.addTimePlan(dPlan, raiseValidateError=True)
     except dta.DtaError, e:
         dta.DtaLogger.error("Error 3: %s" % e)
         return False
-        
-    allPlans=dPlan
+
+    # todo: remove these.  node.addTimePlan() set the control variable        
+    assert(node._control == 1)
     node._control=1
         
-    return allPlans
+    return dPlan
 
 def verifySingleSignal(net, fileName, mappedNodes):
     """
@@ -1904,3 +1887,6 @@ if __name__ == "__main__":
     
     net.write(".", "sf_signals")
 
+    #net.writeLinksToShp("sf_signals_link")
+    #net.writeNodesToShp("sf_signals_node")    
+    

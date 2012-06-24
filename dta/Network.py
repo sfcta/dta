@@ -884,6 +884,33 @@ class Network(object):
         except DtaError:
             return False
 
+    def findNodeNearestCoords(self, x, y, quick_dist=None):
+        """
+        Iterates though :py:class:`RoadNode` instances and returns 
+        the node closest to (*x*, *y*), as well as the distance.
+        
+        Uses *quick_dist* (if passed) to skip skip distance calcs and ignore anything
+        greater than *quick_dist* difference in either coordinate.
+        
+        So the return is a tuple: (distance, RoadNode)
+        
+        *x*,*y* and *quick_dist* are  in :py:attr:`Node.COORDINATE_UNITS`
+        """
+        min_dist     = sys.float_info.max
+        closest_node = None
+        
+        for roadnode in self.iterRoadNodes():
+            
+            if quick_dist and abs(roadnode.getX()-x) > quick_dist: continue
+            if quick_dist and abs(roadnode.getY()-y) > quick_dist: continue
+            
+            dist = math.sqrt( (roadnode.getX()-x)**2 + (roadnode.getY()-y)**2 )
+            if dist < min_dist:
+                min_dist = dist
+                closest_node = roadnode
+        
+        return (min_dist, closest_node)
+
     def findNodeForRoadLabels(self, road_label_list, CUTOFF):
         """ 
         Finds matching node for a set of road labels and returns a :py:class:`RoadNode` instance.
@@ -891,8 +918,7 @@ class Network(object):
           * *road_label_list* a list of road names e.g. [mission st, 6th st]
 
         This method will provide an approximate matching if CUTOFF  is less than one. From
-        our experience a CUTOFF of 0.7 provides good results
-        
+        our experience a CUTOFF of 0.7 provides good results        
         """
         #print "Trying to find: %s" % (", ".join(road_label_list) )
 
@@ -1798,14 +1824,18 @@ class Network(object):
         Export all the nodes to a shapefile with the given name (without the shp extension)"
         """
         w = shapefile.Writer(shapefile.POINT)
-        w.field("ID", "N", 10)
-        w.field("IsRoad", "C", 10)
-        w.field("IsCentroid", "C", 10)
-        w.field("IsVNode", "C", 10) 
+        w.field("ID",           "N", 10)
+        w.field("Type",         "C", 12)
 
         for node in self.iterNodes():
             w.point(node.getX(), node.getY())
-            w.record(node.getId(), str(node.isRoadNode()), str(node.isCentroid()), str(node.isVirtualNode()))
+            if node.isRoadNode():
+                type = "RoadNode"
+            elif node.isCentroid():
+                type = "Centroid"
+            elif node.isVirtualNode():
+                type = "VirtualNode"
+            w.record(node.getId(), type)
 
         w.save(name)
         DtaLogger.info("Wrote nodes to shapefile %s" % name)
@@ -1815,16 +1845,15 @@ class Network(object):
         Export all the links to a shapefile with the given name (without the shp extension)
         """
         w = shapefile.Writer(shapefile.POLYLINE) 
-        w.field("ID", "N", 10)
-        w.field("Start", "N", 10)
-        w.field("End", "N", 10)
+        w.field("ID",       "N", 10)
+        w.field("Start",    "N", 10)
+        w.field("End",      "N", 10)
 
-        w.field("IsRoad", "C", 10) 
-        w.field("IsConn", "C", 10) 
-        w.field("IsVirtual", "C", 10)
-        w.field("Label", "C", 60)
-        w.field("facType", "N", 10)
+        w.field("Type",     "C", 10) 
+        w.field("Label",    "C", 60)
+        w.field("facType",  "N", 10)
         w.field("numLanes", "N", 10)
+        w.field("Direction","C", 2 )
         
         for link in self.iterLinks():
             if link.isVirtualLink():
@@ -1835,6 +1864,7 @@ class Network(object):
                 label       = ""
                 facType     = -1
                 numLanes    = -1
+                direction   = ""
             else:
                 centerline  = link.getCenterLine()
                 shapepoints = copy.deepcopy(link._shapePoints)
@@ -1845,10 +1875,16 @@ class Network(object):
                 label       = link.getLabel()
                 facType     = link.getFacilityType()
                 numLanes    = link.getNumLanes()
+                if link.isConnector():
+                    type    = "Connector"
+                elif link.isRoadLink():
+                    type    = "RoadLink"
+                elif link.isVirtualLink():
+                    type    = "VirtualLink"
+                direction   = link.getDirection()
                 
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
-                     str(link.isRoadLink()), str(link.isConnector()), str(link.isVirtualLink()), label,
-                     facType, numLanes)
+                     type, label, facType, numLanes, direction)
 
         w.save(name)
         DtaLogger.info("Wrote links to shapefile %s" % name)        

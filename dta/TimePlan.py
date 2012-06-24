@@ -53,7 +53,7 @@ class PlanCollectionInfo(object):
         Return a Dynameq parsable string containing information about the time plan such as
         the start time, the end time, its name, and description
         """ 
-        return ("PLAN_INFO\n%s %s\n%s\n%s" %  
+        return ("PLAN_INFO\n%s %s\n%s\n%s\n" %  
                 (self._startTime.strftime("%H:%M"), 
                  self._endTime.strftime("%H:%M"),
                  self._name, self._description))
@@ -117,14 +117,18 @@ class TimePlan(object):
                     raise StopIteration
                 nodeId = int(currentLine)
                 node = net.getNodeForId(nodeId)
-                lineIter.next() # PLAN keyword
+                
+                # PLAN keyword
+                planKeyword = lineIter.next().strip()
+                assert(planKeyword == "PLAN")
+                
                 type_, offset, sync, tor = map(int, lineIter.next().strip().split())
                 
                 timePlan = TimePlan(node, offset, planCollectionInfo, 
                                     syncPhase=sync, 
                                     turnOnRed=tor)
                                      
-                for phase in Phase.read(net, timePlan, lineIter):
+                for phase in Phase.readFromDynameqString(net, timePlan, lineIter):
                     timePlan.addPhase(phase)
                 yield timePlan
         except StopIteration:
@@ -158,8 +162,9 @@ class TimePlan(object):
         """
         nodeInfo = "NODE\n%s\n" % self.getNode().getId()
         planInfo = "PLAN\n%d %d %d %d\n" % (self._type, self._offset, self._syncPhase, self._turnOnRed)
-        phases = "\n".join([phase.getDynameqStr() for phase in self.iterPhases()])
-        return "%s%s%s\n" % (nodeInfo, planInfo, phases)
+        # ending newlines included in phases
+        phases = "".join([phase.getDynameqStr() for phase in self.iterPhases()])
+        return "%s%s%s" % (nodeInfo, planInfo, phases)
 
     def addPhase(self, phase):
         """
@@ -286,11 +291,15 @@ class TimePlan(object):
         if phaseMovements != nodeMovements:
             nodeMovsNotInPhaseMovs = nodeMovements.difference(phaseMovements)
             phaseMovsNotInNodeMovs = phaseMovements.difference(nodeMovements)
-            raise DtaError("Node %s. The phase movements are not the same with node movements."
-                                "\tNode movements missing from the phase movements: \t%s"
-                                "\tPhase movements not registered as node movements: \t%s" % 
-                                (self.getNode().getId(), "\t".join(map(str, nodeMovsNotInPhaseMovs)),
-                                 "\t".join(map(str, phaseMovsNotInNodeMovs))))
+            error_str = ""
+            if len(nodeMovsNotInPhaseMovs) > 0:
+                error_str += "; Node movements missing from the phase movements: "
+                error_str += ",".join(map(str, nodeMovsNotInPhaseMovs))
+            if len(phaseMovsNotInNodeMovs) > 0:
+                error_str += "; Phase movements not registered as node movements: "
+                error_str += ",".join(map(str, phaseMovsNotInNodeMovs))
+            raise DtaError("Node %s. The phase movements != node movements. %s" %
+                           (self._node.getId(), error_str))
         
         #check that if two conflicting movements exist one of them is permitted or right turn
         for phase in self.iterPhases():

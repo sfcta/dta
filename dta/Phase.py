@@ -36,11 +36,13 @@ class Phase(object):
 
     @classmethod
     def readFromDynameqString(self, net, timeplan, lineIter):
-        """Parses the dynameq phase string defined in multiple lines of text and returns a
-        Dynameq phase object. 
-        lineIter is an iterator over the lines of a text file containing the Dynameq phase info. 
-        net is an instance of :py:class:`DynameqNetwork'
-        timePlan is an instance of :py:class:`TimePlan'
+        """
+        Parses the dynameq phase string defined in multiple lines of text and returns a :py:class:`Phase` object.
+         
+        * *lineIter* is an iterator over the lines of a text file containing the Dynameq phase info. 
+        * *net* is an instance of :py:class:`DynameqNetwork`
+        * *timePlan* is an instance of :py:class:`TimePlan`
+        
         """         
         endOfFile = True
         try:
@@ -68,9 +70,9 @@ class Phase(object):
                     inLink = net.getLinkForId(inLinkId) 
                     outLink = net.getLinkForId(outLinkId) 
                     movement = inLink.getOutgoingMovement(outLink.getEndNodeId())
-                    movement = PhaseMovement(movement, capacityTag)                     
+                    phase_movement = PhaseMovement(movement, capacityTag)                     
                     try:
-                        phase.addMovement(movement)
+                        phase.addPhaseMovement(phase_movement)
                     except DtaError, e:
                         print str(e)
                     currentLine = lineIter.next().strip()
@@ -102,7 +104,7 @@ class Phase(object):
 
     def getDynameqStr(self):
         """
-        Return the dynameq representation of the phase as a string
+        Return the Dynameq representation of the phase as a string.  Includes ending newline.
         """
         if int(self._green) == self._green:
             green = str(int(self._green))
@@ -119,9 +121,12 @@ class Phase(object):
         else:
             red = str(self._red)
                     
-        header = "PHASE\n%s %s %s %d" % (green, yellow, red, self._phaseType)
-        body = "\n".join([mov.getDynameqStr() for mov in self.iterPhaseMovements()])
-        return "%s\n%s" % (header, body)
+        header = "PHASE\n%s %s %s %d\n" % (green, yellow, red, self._phaseType)
+        if len(self._phaseMovements) > 0:
+            body = "\n".join([mov.getDynameqStr() for mov in self.iterPhaseMovements()]) + "\n"
+        else:
+            body = ""
+        return "%s%s" % (header, body)
 
     def addPhaseMovement(self, phase_movement):
         """

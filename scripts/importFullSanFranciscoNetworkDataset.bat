@@ -14,29 +14,45 @@ set PYTHONPATH=%DTA_CODE_DIR%
 :: 1) create the network from the Cube network
 ::
 :convertStaticNetwork
-python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\downtownSanFranciscoSubArea_2010.net %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\turnspm.pen %DTA_CODE_DIR%\testdata\cubeSubarea_downtownSF\stclines.shp
+python %DTA_CODE_DIR%\scripts\createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp notused notused Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
 :: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt
 :: log     output: createSFNetworkFromCubeNetwork.{DEBUG,INFO}.log
 :: debug   output: sf_{links,nodes}.shp
 IF ERRORLEVEL 1 goto done
 
 ::
-:: 2) attach the signal data to the DTA network
+:: 2) attach the transit lines to the DTA network
+:: 
+:importTransit
+python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
+:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt
+:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
+IF ERRORLEVEL 1 goto done
+
+
+::
+:: 3) attach the signal data to the DTA network
+:: 
+:: This step needs to go after the transit step because the transit step enables all movements for transit (so if there is a transit line
+:: turning left at an intersection and the left was prohibited, it will become transit-only.)  That way, the signal validation will make
+:: sure that transit gets green time.
 ::
 :importSignals
-python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf Y:\dta\SanFrancisco\2010\network\excelSignalCards 15:30 18:30 Y:\dta\SanFrancisco\2010\network\movement_override.csv Y:\dta\SanFrancisco\2010\network\uturnPros.csv
+python %DTA_CODE_DIR%\scripts\importExcelSignals.py . sf_trn Y:\dta\SanFrancisco\2010\network\excelSignalCards 15:30 18:30 Y:\dta\SanFrancisco\2010\network\movement_override.csv Y:\dta\SanFrancisco\2010\network\uturnPros.csv
 :: primary output: Dynameq files sf_signals_{scen,base,advn,ctrl}.dqt
 :: log     output: importExcelSignals.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
 
 ::
-:: 3) attach the transit lines to the DTA network
-:: 
-:importTransit
-python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf_signals Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
-:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt
-:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
+:: 4) attach the stop sign data to the DTA network
+::
+:: This step needs to go after import signals because signals win over stop signs; if a node has a signal, we'll leave it alone.
+::
+:importStopSigns
+python %DTA_CODE_DIR%\scripts\importUnsignalizedIntersections.py . sf_signals Q:\GIS\CityGIS\TrafficControl\StopSigns\stops_signs.shp 
 IF ERRORLEVEL 1 goto done
+:: primary output: Dynameq files sf_stops_{scen,base,advn,??}.dqt
+:: log     output: importUnsignalizedIntersections.{DEBUG,INFO}.log
 
 ::
 :: 4) create the demand
@@ -48,6 +64,14 @@ FOR %%V IN (Car_NoToll Truck_NoToll) DO (
 )
 :: primary output: demand_{Car,Truck}_NoToll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
+
+:copyFinal
+:: THESE are the files to import into dynameq
+copy sf_stops_scen.dqt sf_final_scen.dqt
+copy sf_stops_base.dqt sf_final_base.dqt
+copy sf_stops_advn.dqt sf_final_advn.dqt
+copy sf_stops_ctrl.dqt sf_final_ctrl.dqt
+copy sf_trn_ptrn.dqt   sf_final_ptrn.dqt
 
 goto done
 ::
