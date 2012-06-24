@@ -53,7 +53,7 @@ class Path(object):
         prevNode = None
         
         for intersection in intersectionList:
-            node = net.findNodeForRoadLabels(intersection)
+            node = net.findNodeForRoadLabels(intersection, CUTOFF=0.7)
             links_to_add_to_list = []
             if prevNode:
                 if prevNode.hasOutgoingLinkForNodeId(node.getId()):
