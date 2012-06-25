@@ -17,7 +17,7 @@ __license__     = """
 """
 from itertools import izip
 from .DtaError import DtaError
-from dta.Algorithms import ShortestPaths, pairwise
+from dta.Algorithms import ShortestPaths
 import shapefile 
                     
 class Path(object):
@@ -31,7 +31,7 @@ class Path(object):
         Write the paths as a shapefile
         """
         w = shapefile.Writer(shapefile.POLYLINE) 
-        w.field("NAME", "C", 40)
+        w.field("NAME", "C", 80)
         for path in paths:
             points = []
             for node in path.iterNodes():
@@ -41,7 +41,7 @@ class Path(object):
         w.save(outFileName)
     
     @classmethod
-    def createPath(cls, net, name, intersectionList):
+    def createPath(cls, net, name, intersectionList, cutoff=0.7):
         """
         Returns a :py:class:'path' instance based on a shortest path that goes through all the intersections in the intersection list
         
@@ -53,7 +53,7 @@ class Path(object):
         prevNode = None
         
         for intersection in intersectionList:
-            node = net.findNodeForRoadLabels(intersection, CUTOFF=0.7)
+            node = net.findNodeForRoadLabels(intersection, CUTOFF=cutoff)
             links_to_add_to_list = []
             if prevNode:
                 if prevNode.hasOutgoingLinkForNodeId(node.getId()):
@@ -64,13 +64,12 @@ class Path(object):
                     ShortestPaths.labelCorrectingWithLabelsOnNodes(net, prevNode) 
                     intermediate_path_of_nodes = ShortestPaths.getShortestPathBetweenNodes(prevNode, node)
                     #print "Intermediate path of nodes: ", [n.getId() for n in intermediate_path_of_nodes]
-                    for nodeA, nodeB in pairwise(intermediate_path_of_nodes):
+                    for nodeA, nodeB in izip(intermediate_path_of_nodes, intermediate_path_of_nodes[1:]):
                         if nodeA.hasOutgoingLinkForNodeId(nodeB.getId()):
                             links_to_add_to_list.append(  net.getLinkForNodeIdPair(nodeA.getId(), nodeB.getId())  )
                     
             prevNode = node
             linkList = linkList + links_to_add_to_list
-            print "link list:", [l.getId() for l in linkList]
             
         return Path(net, name, linkList)
     
@@ -84,7 +83,7 @@ class Path(object):
 
         self._links = list(iterLinks)
 
-        for linkUpstream, linkDownstream in pairwise(self._links):
+        for linkUpstream, linkDownstream in izip(self._links, self._links[1:]):
             if not linkUpstream.findOutgoingMovement(linkDownstream.getEndNodeId()):
                 raise DtaError("Link %d does not have an outgoing movement towards "
                                "node %d" % (linkUpstream.getId(), linkDownstream.getEndNodeId()))
@@ -154,7 +153,7 @@ class Path(object):
             mov = self._links[0].getEmanatingMovement(self._links[1].nodeBid)
             return travelTime + mov.getSimTTInMin(timeInSteps, timeInSteps + timeStepInMin)
 
-        for upLink, downLink in pairwise(self.iterLinks()):
+        for upLink, downLink in izip(self._links, self._linsk[1:]):
             mov = upLink.getEmanatingMovement(downLink.nodeBid) 
             movTT = mov.getSimTTInMin(timeInSteps, timeInSteps + timeStepInMin)
 

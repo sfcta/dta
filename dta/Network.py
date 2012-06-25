@@ -928,7 +928,7 @@ class Network(object):
             
             streetnames = [label.upper() for label in roadnode.getStreetNames(incoming=True, outgoing=True)] 
 
-            if len(road_label_list) != streetnames:
+            if len(road_label_list) != len(streetnames):
                 continue 
 
             for idx in range(len(road_label_list)):

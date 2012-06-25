@@ -69,7 +69,31 @@ def getGearySubNet():
     scenario.read(projectFolder, prefix) 
     net = DynameqNetwork(scenario) 
     net.read(projectFolder, prefix) 
+    return net
+
+def getCubeSubarea():
+
+    projectFolder = os.path.join(mainFolder, 'cubeSubarea_downtownSF/dynameqNetwork')
+    prefix = 'sf' 
+
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
+    scenario.read(projectFolder, prefix) 
+    net = DynameqNetwork(scenario) 
+    net.read(projectFolder, prefix) 
+
     return net 
+
+def getDowntownSF():
+
+    projectFolder = os.path.join(mainFolder, 'dynameqNetwork_downtownSF')
+    prefix = 'sfDowntown' 
+
+    scenario = DynameqScenario(Time(0,0), Time(12,0))
+    scenario.read(projectFolder, prefix) 
+    net = DynameqNetwork(scenario) 
+    net.read(projectFolder, prefix) 
+
+    return net
 
 def getCubeSubarea():
 
@@ -256,7 +280,7 @@ class TestNetwork(object):
 
             
 
-    def test_3addMovements(self):
+    def NOtest_3addMovements(self):
 
         net = getSimpleNet()
         mov = simpleMovementFactory(net.getLinkForNodeIdPair(1, 5),
@@ -336,7 +360,7 @@ class TestNetwork(object):
         #net.checkAdjacentNodesExist()
         #net.checkAdjacentLinksExist() 
         
-    def test_7removeLink2(self):
+    def NOtest_7removeLink2(self):
 
         net = getSimpleNet()
         addAllMovements(net)
@@ -397,7 +421,7 @@ class TestNetwork(object):
         #net.checkAdjacentNodesExist()
         #net.checkAdjacentLinksExist() 
         
-    def test_9splitLink(self):
+    def NOtest_9splitLink(self):
 
         net = getSimpleNet()
         addAllMovements(net)
@@ -900,7 +924,7 @@ class TestNetwork(object):
         numShapePoints = sum([1 for node in net.iterNodes() if node.isMidblockNode() and node.isRoadNode()])        
         assert numShapePoints == 40
 
-    def test_1renameLink(self):
+    def NOtest_1renameLink(self):
 
         net = getSimpleNet()
         addAllMovements(net)
@@ -923,7 +947,7 @@ class TestNetwork(object):
         assert link_15.hasOutgoingMovement(4)
         assert link_15.hasOutgoingMovement(3)
 
-    def test_1renameNode(self):
+    def NOtest_1renameNode(self):
 
         net = getSimpleNet()
         addAllMovements(net)
@@ -1106,6 +1130,18 @@ class TestNetwork(object):
                 mov.allowVehicleClassGroup("Truck")                
 
         mov.isVehicleClassGroupProhibited("Transit")
-        mov.prohibitAllVehicleClassGroups() 
+        mov.prohibitAllVehicleClassGroups()
 
-    
+    def test_getNodeByStreetNames(self):
+
+        net = getDowntownSF()
+
+        node = net.getNodeForId(25261)
+        answer = net.findNodeForRoadLabels(['HYDE', 'WASHINGTON'], 0.7)
+        assert node == answer
+        answer = net.findNodeForRoadLabels(['HYDE ST', 'WASHINGTON ST'], 1.0)
+        assert node == answer        
+
+        nose.tools.assert_raises(DtaError, net.findNodeForRoadLabels, ['HYDE', 'WASHINGTON'], 1.0)
+
+          

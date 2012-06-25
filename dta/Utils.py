@@ -426,7 +426,7 @@ class Time(datetime.time):
     @classmethod
     def readFromStringWithoutColon(cls, timeAsString):
         """
-        Read a string representing time in the format %H:%M e.g. 16:30
+        Read a string representing time in the format %H:%M e.g. 1630
         and return a time object
         """
         startTimeDT = datetime.datetime.strptime(timeAsString, "%H%M")  
