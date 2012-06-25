@@ -18,6 +18,7 @@ __license__     = """
 import pdb 
 import copy
 import random
+import difflib
 
 import shapefile 
 
@@ -910,25 +911,32 @@ class Network(object):
         
         return (min_dist, closest_node)
 
-    def findNodeForRoadLabels(self, road_label_list):
+    def findNodeForRoadLabels(self, road_label_list, CUTOFF):
         """ 
         Finds matching node for a set of road labels and returns a :py:class:`RoadNode` instance.
         
-        *road_label_list* is a list of road names e.g. [mission st, 6th st]
-        
+          * *road_label_list* a list of road names e.g. [mission st, 6th st]
+
+        This method will provide an approximate matching if CUTOFF  is less than one. From
+        our experience a CUTOFF of 0.7 provides good results        
         """
         #print "Trying to find: %s" % (", ".join(road_label_list) )
-        for roadnode in self.iterRoadNodes():
-            streetnames = roadnode.getStreetNames(incoming=True, outgoing=True)
-            #print "Trying: ", streetnames
-            match = True
-            for road_label in road_label_list:
-                if  road_label not in streetnames:
-                    match = False                   
-            if match:
-                #print "Found match: ", streetnames
-                return roadnode
+
+        road_label_list_u = [label.upper() for label in road_label_list]
         
+        for roadnode in self.iterRoadNodes():
+            
+            streetnames = [label.upper() for label in roadnode.getStreetNames(incoming=True, outgoing=True)] 
+
+            if len(road_label_list) != len(streetnames):
+                continue 
+
+            for idx in range(len(road_label_list)):
+                if not difflib.get_close_matches(streetnames[idx], [road_label_list_u[idx]], 1, CUTOFF):
+                    break
+            else:
+               return roadnode  
+                    
         raise DtaError("findNodeForRoadLabels: Couldn't find intersection with %s in the Network" % 
                            (", ".join(road_label_list)  )  )
                            
