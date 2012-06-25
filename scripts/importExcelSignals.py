@@ -1212,17 +1212,22 @@ def mapMovements(mec, baseNetwork):
 
         #todo ends with LT
         leftTurnIndicators = ["LT'S","-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
-        rightTurnIndicators = ["-R", "RIGHT TURN", " RT"]
+        rightTurnIndicators = ["RIGHT TURN"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
-        indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators}
+        indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators, TURN_RIGHT:rightTurnIndicators}
         result = []
+        thruadded=0
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
                 if indicator in gMovName:
                     result.extend(dir)
-        if not TURN_RIGHT in result:
-            result.extend(TURN_RIGHT)
+                    if dir==TURN_THRU:
+                        thruadded=1
+                if dir==TURN_RIGHT and thruadded==1:
+                    result.extend(dir)
+##        if "RT" not in result and thruadded==1:
+##            result.extend(TURN_RIGHT)
 
         return result
 
