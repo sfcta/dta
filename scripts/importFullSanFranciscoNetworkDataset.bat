@@ -79,7 +79,7 @@ goto done
 ::
 :importCounts
 set PYTHONPATH=%DTA_CODE_DIR%;Y:\lmz\CountDracula
-python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf_trn
+python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf_final
 IF ERRORLEVEL 1 goto done
 
 :done

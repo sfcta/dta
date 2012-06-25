@@ -79,25 +79,59 @@ def exportTurnCountsToDynameqUserDataFile(cd_reader, sanfranciscoDynameqNet, sta
         real_counts = [count for count in counts if count > 0]
         if len(real_counts) == 0: continue
         
+        dta.DtaLogger.debug("Finding movement for %s %s to %s %s @ %d (x street %s)" % 
+                            (key[0], key[1], key[2], key[3], key[5], key[4]))
+        
+        second_try = False
         try:
             movement = sanfranciscoDynameqNet.findMovementForRoadLabels(incoming_street_label=key[0].replace(" ",""), incoming_direction=key[1],
                                                                         outgoing_street_label=key[2].replace(" ",""), outgoing_direction=key[3],
                                                                         intersection_street_label=(key[4] if key[0]==key[2] else None),
                                                                         roadnode_id=key[5],
                                                                         remove_label_spaces=True,
-                                                                        dir_need_not_be_primary=True)
-            
+                                                                        use_dir_for_movement=False,    # use labels
+                                                                        dir_need_not_be_primary=True)  # dir not need be primary
+                
             outfile.write(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
             for interval in range(num_intervals):
                 outfile.write(" %6.1f" % counts[interval])
             outfile.write("\n")
             
+            dta.DtaLogger.debug(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
             movements_found += 1
             
         except dta.DtaError, e:
             
-            dta.DtaLogger.error("Failed to find movement: %s; counts=%s" % (str(e), str(counts)))               
-            movements_not_found += 1
+            dta.DtaLogger.warn("Failed to find movement @ %d: %s; counts=%s" % (key[5], str(e), str(counts)))    
+            # try again
+            second_try = True
+            
+        if second_try:
+            try:
+                movement = sanfranciscoDynameqNet.findMovementForRoadLabels(incoming_street_label=key[0].replace(" ",""), incoming_direction=key[1],
+                                                                            outgoing_street_label=key[2].replace(" ",""), outgoing_direction=key[3],
+                                                                            intersection_street_label=(key[4] if key[0]==key[2] else None),
+                                                                            roadnode_id=key[5],
+                                                                            remove_label_spaces=True,
+                                                                            use_dir_for_movement=True,     # use directions over labels
+                                                                            dir_need_not_be_primary=False) # keep it tighter tho
+                    
+                outfile.write(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
+                for interval in range(num_intervals):
+                    outfile.write(" %6.1f" % counts[interval])
+                outfile.write("\n")
+                
+                movements_found += 1
+                dta.DtaLogger.warn("Found movement by loosening label constraints: %s %s to %s %s" % 
+                                   (movement.getIncomingLink().getLabel(), movement.getIncomingLink().getDirection(),
+                                    movement.getOutgoingLink().getLabel(), movement.getOutgoingLink().getDirection()))
+                dta.DtaLogger.debug(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
+                
+            
+            except dta.DtaError, e:
+                
+                dta.DtaLogger.error("Failed to find movement @ %d: %s; counts=%s" % (key[5], str(e), str(counts)))                  
+                movements_not_found += 1
             
     outfile.close()
     dta.DtaLogger.info("Wrote movement counts for %d movements to %s; failed to find %d movements." % 
@@ -153,15 +187,14 @@ def exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, 
                                                                   to_street_label=key[3].replace(" ",""),
                                                                   remove_label_spaces=True)
             
-            # attribute the counts to all parts
-            for link in links:
-                outfile.write(" %8d" % link.getId())
-                for interval in range(num_intervals):
-                    outfile.write(" %6.1f" % counts[interval])
-                outfile.write("\n")
+            # attribute the counts to the first part
+            outfile.write(" %8d" % links[0].getId())
+            for interval in range(num_intervals):
+                outfile.write(" %6.1f" % counts[interval])
+            outfile.write("\n")
             
             links_found += 1
-            
+
         except dta.DtaError, e:
             
             dta.DtaLogger.error("Failed to find links: %s; counts=%s" % (str(e), str(counts)))               
@@ -178,7 +211,6 @@ if __name__ == '__main__':
     
     SF_DYNAMEQ_NET_DIR          = sys.argv[1] 
     SF_DYNAMEQ_NET_PREFIX       = sys.argv[2]
-    SF_SHAPEFILE                = r"Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp"
                 
     dta.setupLogging("attachCountsFromCountDracula.INFO.log", "attachCountsFromCountDracula.DEBUG.log", logToConsole=True)
     
@@ -192,11 +224,6 @@ if __name__ == '__main__':
     
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfranciscoDynameqNet.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
-
-    # 5234 Skip this one link at Woodside/Portola because it overlaps
-    # 2798 Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
-    sanfranciscoDynameqNet.readLinkShape(SF_SHAPEFILE, "A", "B",
-                                         skipEvalStr="OBJECTID in [5234, 2798]")
     
     
     # Instantiate the count dracula reader and do the exports

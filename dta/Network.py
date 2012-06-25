@@ -981,7 +981,17 @@ class Network(object):
             raise DtaError("findLinksForRoadLabels: Couldn't find intersection2 with %s and %s in the Network" % 
                            (on_street_label, to_street_label))
         
-        # DtaLogger.debug("from: %s  to: %s" % (str(roadnode_from), str(roadnode_to)))
+        # Debug output
+        if False:            
+            debug_from = ""
+            for r in roadnode_from:
+                if len(debug_from) > 0: debug_from += ","
+                debug_from += str(r.getId())
+            debug_to = ""
+            for r in roadnode_to:
+                if len(debug_to) > 0: debug_to += ","
+                debug_to += str(r.getId())
+            DtaLogger.debug("from: %s  to: %s" % (debug_from, debug_to))
         
         debug_str = ""
         
