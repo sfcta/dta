@@ -24,19 +24,18 @@ import pdb
 
 USAGE = r"""
 
- python createSFNetworkFromCubeNetwork.py  [-n output_nodes.shp] [-l output_links.shp] geary_dynameq_net_dir geary_dynameq_net_prefix sf_cube_net_file sf_cube_turnpen_file [cube_attach_shapefile]
+ python createSFNetworkFromCubeNetwork.py  [-n output_nodes.shp] [-l output_links.shp]  sf_cube_net_file sf_cube_turnpen_file [cube_attach_shapefile]
  
  e.g.
  
- python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\nwSubarea\2008 Base2008 Y:\dta\SanFrancisco\2010 Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+ python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
  
- This script reads the San Francisco Cube network (SanFranciscoSubArea_2010.net) and optionally the *cube_attach_shapefile*
+ This script reads the San Francisco Cube network and optionally the *cube_attach_shapefile*
  and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.
  
-  * Currently, it ignores the first two args (they are for the Geary DTA network, which we're skipping for now; leaving it there for future)
-  * The third arg is the San Francisco Cube network for conversion to a Dynameq DTA network
-  * The fourth arg is the turn penalty file to use
-  * An optional fifth argument is the shapefile to use to add shape points to the roadway network (to show road curvature, etc)
+  * The first arg is the San Francisco Cube network for conversion to a Dynameq DTA network
+  * The second arg is the turn penalty file to use
+  * An optional third argument is the shapefile to use to add shape points to the roadway network (to show road curvature, etc)
   * Optional shapefile outputs: -n to specify a node shapefile output, -l to specify a link shapefile output
  
  """
@@ -116,31 +115,29 @@ def removeHOVStubs(sanfranciscoDynameqNet):
         dta.DtaLogger.info("Removing HOV Stub node %d" % node.getId())
         sanfranciscoDynameqNet.removeNode(node)
 
-
+#: this_is_main
 if __name__ == '__main__':
     
     optlist, args = getopt.getopt(sys.argv[1:], "n:l:")
 
-    if len(args) <= 4:
+    if len(args) <= 2:
         print USAGE
         sys.exit(2)
     
-    GEARY_DYNAMEQ_NET_DIR       = args[0] 
-    GEARY_DYNAMEQ_NET_PREFIX    = args[1]
-    SF_CUBE_NET_FILE            = args[2]
-    SF_CUBE_TURN_PROHIBITIONS   = args[3]
+    SF_CUBE_NET_FILE            = args[0]
+    SF_CUBE_TURN_PROHIBITIONS   = args[1]
     
     SF_CUBE_SHAPEFILE           = None
     if len(args) > 4:
-        SF_CUBE_SHAPEFILE       = args[4]
+        SF_CUBE_SHAPEFILE       = args[2]
 
     OUTPUT_NODE_SHAPEFILE       = None
     OUTPUT_LINK_SHAPEFILE       = None
     for (opt,arg) in optlist:
         if opt=="-n":
-            OUTPUT_NODE_SHAPEFILE   = arg
+            OUTPUT_NODE_SHAPEFILE  = arg
         elif opt=="-l":
-            OUTPUT_LINK_SHAPEFILE    = arg
+            OUTPUT_LINK_SHAPEFILE  = arg
             
     # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
     dta.VehicleType.LENGTH_UNITS= "feet"
@@ -148,17 +145,10 @@ if __name__ == '__main__':
     dta.RoadLink.LENGTH_UNITS   = "miles"
 
     dta.setupLogging("createSFNetworkFromCubeNetwork.INFO.log", "createSFNetworkFromCubeNetwork.DEBUG.log", logToConsole=True)
-    
-    # The Geary network was created in an earlier Phase of work, so it already exists as
-    # a Dynameq DTA network.  Initialize it from the Dynameq text files.
-    #gearyScenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
-
-    #gearyScenario.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX) 
-    #gearynetDta = dta.DynameqNetwork(scenario=gearyScenario)
-    #gearynetDta.read(dir=GEARY_DYNAMEQ_NET_DIR, file_prefix=GEARY_DYNAMEQ_NET_PREFIX)
-    
+        
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
+    # This is where we define the :py:class:`dta.Scenario`
     sanfranciscoScenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
 
     # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll 
@@ -275,8 +265,7 @@ if __name__ == '__main__':
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
        linkEffectiveLengthFactorEvalStr = "1",
-     # Response Time Factor estimated based on Caltrans sensors for freeways in SF, applied to all network until further results come out for the rest of FT's 
-       linkResponseTimeFactorEvalStr    = "1.15",
+       linkResponseTimeFactorEvalStr    = "1.15",  # estimated based on Caltrans sensors for freeways in SF, applied to all network until further analysis
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
@@ -351,13 +340,5 @@ if __name__ == '__main__':
     if OUTPUT_NODE_SHAPEFILE: sanfranciscoDynameqNet.writeNodesToShp(OUTPUT_NODE_SHAPEFILE)
     if OUTPUT_LINK_SHAPEFILE: sanfranciscoDynameqNet.writeLinksToShp(OUTPUT_LINK_SHAPEFILE) 
  
-    exit(0)
-    
-    # Merge them together
-    sanfranciscoNet = gearynetDta
-    sanfranciscoNet.merge(sanfranciscoCubeNet)
-    
-    # Write the result.  sanfrancisco_dta is a DynameqNetwork
-    sanfranciscoNet.write(dir = ".", file_prefix="sf")
     
     
