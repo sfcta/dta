@@ -289,18 +289,7 @@ Find these and remove them</p>
 212
 213
 214
-215
-216
-217
-218
-219
-220
-221
-222
-223
-224
-225
-226</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+215</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     
     <span class="n">optlist</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;n:l:&quot;</span><span class="p">)</span>
 
@@ -485,9 +474,6 @@ Find these and remove them</p>
     <span class="n">sanfranciscoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
     
-    <span class="c"># Why would we want to do this?</span>
-    <span class="c"># sanfranciscoDynameqNet.removeShapePoints()</span>
-    
     <span class="c"># the San Francisco network has a few &quot;HOV stubs&quot; -- links intended to facilitate future coding of HOV lanes</span>
     <span class="n">removeHOVStubs</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">)</span>
     
@@ -496,18 +482,10 @@ Find these and remove them</p>
                                                                          <span class="n">distanceFromCentroid</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
     
     <span class="c"># Move the centroid connectors from intersection nodes to midblock locations</span>
-    <span class="c"># TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?</span>
-        
+    <span class="c"># TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        </span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">moveCentroidConnectorsFromIntersectionsToMidblocks</span><span class="p">(</span><span class="n">splitReverseLinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">externalNodeIds</span><span class="o">=</span><span class="p">[])</span>
-    
-    <span class="c"># TODO: I think this isn&#39;t necessary; but discuss if the soln below is ok</span>
-    <span class="c"># sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),</span>
-    <span class="c">#                                                              maxDistToMove=100) # feet</span>
 
-
-
-    <span class="c"># right now this warns; I think some of the handling above might be joined into this (especially if this</span>
-    <span class="c"># is the problem the method is meant to solve)</span>
+    <span class="c"># Warn on overlapping links, and move virtual nodes up to 100 feet if that helps</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleOverlappingLinks</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     
     <span class="c"># finally -- Dynameq requires links to be longer than the longest vehicle</span>

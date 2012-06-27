@@ -301,9 +301,6 @@ if __name__ == '__main__':
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
     sanfranciscoDynameqNet.deepcopy(sanfranciscoCubeNet)
     
-    # Why would we want to do this?
-    # sanfranciscoDynameqNet.removeShapePoints()
-    
     # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
     removeHOVStubs(sanfranciscoDynameqNet)
     
@@ -312,18 +309,10 @@ if __name__ == '__main__':
                                                                          distanceFromCentroid=50)
     
     # Move the centroid connectors from intersection nodes to midblock locations
-    # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?
-        
+    # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        
     sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=[])
-    
-    # TODO: I think this isn't necessary; but discuss if the soln below is ok
-    # sanfranciscoDynameqNet.moveVirtualNodesToAvoidShortConnectors(1.05*sanfranciscoScenario.maxVehicleLength(),
-    #                                                              maxDistToMove=100) # feet
 
-
-
-    # right now this warns; I think some of the handling above might be joined into this (especially if this
-    # is the problem the method is meant to solve)
+    # Warn on overlapping links, and move virtual nodes up to 100 feet if that helps
     sanfranciscoDynameqNet.handleOverlappingLinks(warn=True, moveVirtualNodeDist=100)
     
     # finally -- Dynameq requires links to be longer than the longest vehicle
