@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>attachCountsFromCountDracula &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for attachCountsFromCountDracula</h1><div class="highlight"><pre>
+<span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    This file is part of DTA.</span>
+
+<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
+<span class="s">    it under the terms of the GNU General Public License as published by</span>
+<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="s">    (at your option) any later version.</span>
+
+<span class="s">    DTA is distributed in the hope that it will be useful,</span>
+<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="s">    GNU General Public License for more details.</span>
+
+<span class="s">    You should have received a copy of the GNU General Public License</span>
+<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="s">&quot;&quot;&quot;</span>
+    
+
+<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
+
+<span class="s"> python attachCountsFromCountDracula.py dynameq_net_dir dynameq_net_prefix</span>
+<span class="s"> </span>
+<span class="s"> e.g.</span>
+<span class="s"> </span>
+<span class="s"> python attachCountsFromCountDracula.py . sf</span>
+<span class="s"> </span>
+
+<span class="s"> Checks the CountDracula counts database for movement and turn counts for a few different</span>
+<span class="s"> timeslice specifications, and writes the data files for Dynameq into the current dir.</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">dta</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<div class="viewcode-block" id="exportTurnCountsToDynameqUserDataFile"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile">[docs]</a><span class="k">def</span> <span class="nf">exportTurnCountsToDynameqUserDataFile</span><span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">num_intervals</span><span class="p">,</span>
+                                               <span class="n">suffix</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.</span>
+<span class="sd">    </span>
+<span class="sd">    * *cd_reader* is a CountDraculaReader instance where the counts are stored</span>
+<span class="sd">    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file</span>
+<span class="sd">    * *starttime* is a datetime.time instance defining the start time for the counts we&#39;ll extract</span>
+<span class="sd">    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)</span>
+<span class="sd">    * *num_intervals* is an integer defining how many intervals we&#39;ll export</span>
+<span class="sd">    * *suffix* is an optional suffix for the file name (something descriptive)</span>
+<span class="sd">    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates</span>
+<span class="sd">    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates</span>
+<span class="sd">    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will</span>
+<span class="sd">      only include the given weekdays.</span>
+<span class="sd">            </span>
+<span class="sd">    Writes to a file called ``counts_movements_Xmin_Y_Z_suffix.dat`` where X is the number of minutes in the period, Y is the starttime and Z is</span>
+<span class="sd">    the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">endtime</span>         <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">num_intervals</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">filename</span>        <span class="o">=</span> <span class="s">&quot;counts_movements_</span><span class="si">%d</span><span class="s">min_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s%s</span><span class="s">.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> 
+                                                              <span class="n">starttime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span> <span class="n">endtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span>
+                                                              <span class="s">&quot;_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">movement_counts</span> <span class="o">=</span> <span class="n">cd_reader</span><span class="o">.</span><span class="n">getTurningCounts</span><span class="p">(</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">num_intervals</span><span class="o">=</span><span class="n">num_intervals</span><span class="p">,</span>
+                                                 <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+    
+    <span class="c"># file header (really just a comment)</span>
+    <span class="n">outfile</span>         <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;*</span><span class="si">%8s</span><span class="s"> </span><span class="si">%8s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;in&quot;</span><span class="p">,</span> <span class="s">&quot;out&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+        <span class="n">curtime</span>     <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;   </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">curtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="c"># For each movement count, see if we can find the right place for it in the sanfranciscoDynameqNet</span>
+    <span class="n">movements_found</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">movements_not_found</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">counts</span> <span class="ow">in</span> <span class="n">movement_counts</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+
+        <span class="c"># ignore if there are no real counts here</span>
+        <span class="n">real_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">count</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span> <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">real_counts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Finding movement for </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> @ </span><span class="si">%d</span><span class="s"> (x street </span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> 
+                            <span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+        
+        <span class="n">second_try</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">movement</span> <span class="o">=</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">findMovementForRoadLabels</span><span class="p">(</span><span class="n">incoming_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">incoming_direction</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                                        <span class="n">outgoing_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">outgoing_direction</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                                                                        <span class="n">intersection_street_label</span><span class="o">=</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span><span class="p">),</span>
+                                                                        <span class="n">roadnode_id</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                                                        <span class="n">remove_label_spaces</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                                                        <span class="n">use_dir_for_movement</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>    <span class="c"># use labels</span>
+                                                                        <span class="n">dir_need_not_be_primary</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># dir not need be primary</span>
+                
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+            <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%6.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">counts</span><span class="p">[</span><span class="n">interval</span><span class="p">])</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+            
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+            <span class="n">movements_found</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+        <span class="k">except</span> <span class="n">dta</span><span class="o">.</span><span class="n">DtaError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Failed to find movement @ </span><span class="si">%d</span><span class="s">: </span><span class="si">%s</span><span class="s">; counts=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">counts</span><span class="p">)))</span>    
+            <span class="c"># try again</span>
+            <span class="n">second_try</span> <span class="o">=</span> <span class="bp">True</span>
+            
+        <span class="k">if</span> <span class="n">second_try</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">movement</span> <span class="o">=</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">findMovementForRoadLabels</span><span class="p">(</span><span class="n">incoming_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">incoming_direction</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                                            <span class="n">outgoing_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">outgoing_direction</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                                                                            <span class="n">intersection_street_label</span><span class="o">=</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span><span class="p">),</span>
+                                                                            <span class="n">roadnode_id</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                                                            <span class="n">remove_label_spaces</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                                                            <span class="n">use_dir_for_movement</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>     <span class="c"># use directions over labels</span>
+                                                                            <span class="n">dir_need_not_be_primary</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c"># keep it tighter tho</span>
+                    
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+                <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+                    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%6.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">counts</span><span class="p">[</span><span class="n">interval</span><span class="p">])</span>
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+                
+                <span class="n">movements_found</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Found movement by loosening label constraints: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> 
+                                   <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>
+                                    <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">()))</span>
+                <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+                
+            
+            <span class="k">except</span> <span class="n">dta</span><span class="o">.</span><span class="n">DtaError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                
+                <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to find movement @ </span><span class="si">%d</span><span class="s">: </span><span class="si">%s</span><span class="s">; counts=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">counts</span><span class="p">)))</span>                  
+                <span class="n">movements_not_found</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+    <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Wrote movement counts for </span><span class="si">%d</span><span class="s"> movements to </span><span class="si">%s</span><span class="s">; failed to find </span><span class="si">%d</span><span class="s"> movements.&quot;</span> <span class="o">%</span> 
+                       <span class="p">(</span><span class="n">movements_found</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">movements_not_found</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="exportMainlineCountsToDynameUserDataFile"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile">[docs]</a><span class="k">def</span> <span class="nf">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">num_intervals</span><span class="p">,</span>
+                                                   <span class="n">suffix</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.</span>
+<span class="sd">    </span>
+<span class="sd">    * *cd_reader* is a CountDraculaReader instance where the counts are stored</span>
+<span class="sd">    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file    </span>
+<span class="sd">    * *starttime* is a datetime.time instance defining the start time for the counts we&#39;ll extract</span>
+<span class="sd">    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)</span>
+<span class="sd">    * *num_intervals* is an integer defining how many intervals we&#39;ll export</span>
+<span class="sd">    * *suffix* is an optional suffix for the file name (something descriptive)</span>
+<span class="sd">    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates</span>
+<span class="sd">    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates</span>
+<span class="sd">    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will</span>
+<span class="sd">      only include the given weekdays.</span>
+<span class="sd">          </span>
+<span class="sd">    Writes to a file called ``counts_links_Xmin_Y_Z.dat`` where X is the number of minutes in the period, Y is the starttime and Z is</span>
+<span class="sd">    the endtime; e.g. counts_links_15min_1600_1830.dat</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">endtime</span>         <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">num_intervals</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">filename</span>        <span class="o">=</span> <span class="s">&quot;counts_links_</span><span class="si">%d</span><span class="s">min_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s%s</span><span class="s">.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> 
+                                                          <span class="n">starttime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span> 
+                                                          <span class="n">endtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span>
+                                                          <span class="s">&quot;_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">link_counts</span>     <span class="o">=</span> <span class="n">cd_reader</span><span class="o">.</span><span class="n">getMainlineCounts</span><span class="p">(</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">num_intervals</span><span class="o">=</span><span class="n">num_intervals</span><span class="p">,</span>
+                                                  <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+    
+    <span class="c"># file header (really just a comment)</span>
+    <span class="n">outfile</span>         <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;*</span><span class="si">%8s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="s">&quot;link&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+        <span class="n">curtime</span>     <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;   </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">curtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="c"># For each link count, see if we can find the right place for it in the sanfranciscoDynameqNet</span>
+    <span class="n">links_found</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">links_not_found</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">counts</span> <span class="ow">in</span> <span class="n">link_counts</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+
+        <span class="c"># ignore if there are no real counts here</span>
+        <span class="n">real_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">count</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span> <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">real_counts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">links</span> <span class="o">=</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">findLinksForRoadLabels</span><span class="p">(</span><span class="n">on_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">on_direction</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                                  <span class="n">from_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span>
+                                                                  <span class="n">to_street_label</span><span class="o">=</span><span class="n">key</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">),</span>
+                                                                  <span class="n">remove_label_spaces</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c"># attribute the counts to the first part</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%6.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">counts</span><span class="p">[</span><span class="n">interval</span><span class="p">])</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+            
+            <span class="n">links_found</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">except</span> <span class="n">dta</span><span class="o">.</span><span class="n">DtaError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to find links: </span><span class="si">%s</span><span class="s">; counts=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">counts</span><span class="p">)))</span>               
+            <span class="n">links_not_found</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+    <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Wrote link counts for </span><span class="si">%d</span><span class="s"> links to </span><span class="si">%s</span><span class="s">; failed to find </span><span class="si">%d</span><span class="s"> links.&quot;</span> <span class="o">%</span> 
+                       <span class="p">(</span><span class="n">links_found</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">links_not_found</span><span class="p">))</span>
+
+<span class="c">#: this_is_main</span></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="kn">import</span> <span class="nn">countdracula</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">USAGE</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">SF_DYNAMEQ_NET_DIR</span>          <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> 
+    <span class="n">SF_DYNAMEQ_NET_PREFIX</span>       <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                
+    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;attachCountsFromCountDracula.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;attachCountsFromCountDracula.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
+        
+    <span class="c"># Read the SF scenario and DTA network</span>
+    <span class="n">sanfranciscoScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
+    
+    <span class="n">sanfranciscoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
+    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
+    
+    
+    <span class="c"># Instantiate the count dracula reader and do the exports</span>
+    <span class="c"># Time slices here are based on what we have available (according to CountDracula&#39;s querySanFranciscoCounts.py)</span>
+    <span class="n">cd_reader</span>       <span class="o">=</span> <span class="n">countdracula</span><span class="o">.</span><span class="n">CountsDatabaseReader</span><span class="p">(</span><span class="n">pw</span><span class="o">=</span><span class="s">&quot;ReadOnly&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="s">&quot;all_midweek&quot;</span><span class="p">,</span> <span class="s">&quot;recent&quot;</span><span class="p">,</span> <span class="s">&quot;recent_midweek&quot;</span><span class="p">]:</span>
+        <span class="n">from_date</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">to_date</span>     <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">weekdays</span>    <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="c"># year range</span>
+        <span class="k">if</span> <span class="n">suffix</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;recent&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">from_date</span>   <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2009</span><span class="p">,</span><span class="n">month</span><span class="o">=</span><span class="mi">1</span> <span class="p">,</span><span class="n">day</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+            <span class="n">to_date</span>     <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2011</span><span class="p">,</span><span class="n">month</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="n">day</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+            
+        <span class="c"># weekdays</span>
+        <span class="k">if</span> <span class="n">suffix</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;midweek&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">weekdays</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c"># Tues, Wed, Thurs</span>
+            
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processing </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="n">exportTurnCountsToDynameqUserDataFile</span>   <span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span> 
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+        <span class="n">exportTurnCountsToDynameqUserDataFile</span>   <span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span> <span class="mi">5</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+        <span class="n">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+
+    
+    
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

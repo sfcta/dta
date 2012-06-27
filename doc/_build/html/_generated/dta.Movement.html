@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>dta.Movement &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
-    <link rel="next" title="dta.MultiArray" href="dta.MultiArray.html" />
-    <link rel="prev" title="dta.DtaLogger" href="dta.DtaLogger.html" /> 
+    <link rel="next" title="dta.Path" href="dta.Path.html" />
+    <link rel="prev" title="dta.TransitSegment" href="dta.TransitSegment.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,10 +37,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dta.MultiArray.html" title="dta.MultiArray"
+          <a href="dta.Path.html" title="dta.Path"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="dta.DtaLogger.html" title="dta.DtaLogger"
+          <a href="dta.TransitSegment.html" title="dta.TransitSegment"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -57,7 +57,8 @@
 <dt id="dta.Movement">
 <em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Movement</tt><big>(</big><em>node</em>, <em>incomingLink</em>, <em>outgoingLink</em>, <em>freeflowSpeed</em>, <em>vehicleClassGroup</em>, <em>numLanes=None</em>, <em>incomingLane=None</em>, <em>outgoingLane=None</em>, <em>followupTime=0</em><big>)</big><a class="headerlink" href="#dta.Movement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Base class that represents a movement.</p>
+<p>A movement consists of an incoming link, and outgoing link, and attributes
+that define the movement from one to the other (is it a turn?  what&#8217;s the capacity? etc.)</p>
 <dl class="method">
 <dt id="dta.Movement.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>node</em>, <em>incomingLink</em>, <em>outgoingLink</em>, <em>freeflowSpeed</em>, <em>vehicleClassGroup</em>, <em>numLanes=None</em>, <em>incomingLane=None</em>, <em>outgoingLane=None</em>, <em>followupTime=0</em><big>)</big><a class="headerlink" href="#dta.Movement.__init__" title="Permalink to this definition">¶</a></dt>
@@ -582,11 +583,11 @@ defined by the vehicle class group.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="dta.DtaLogger.html"
-                        title="previous chapter">dta.DtaLogger</a></p>
+  <p class="topless"><a href="dta.TransitSegment.html"
+                        title="previous chapter">dta.TransitSegment</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="dta.MultiArray.html"
-                        title="next chapter">dta.MultiArray</a></p>
+  <p class="topless"><a href="dta.Path.html"
+                        title="next chapter">dta.Path</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/_generated/dta.Movement.txt"
@@ -619,10 +620,10 @@ defined by the vehicle class group.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dta.MultiArray.html" title="dta.MultiArray"
+          <a href="dta.Path.html" title="dta.Path"
              >next</a> |</li>
         <li class="right" >
-          <a href="dta.DtaLogger.html" title="dta.DtaLogger"
+          <a href="dta.TransitSegment.html" title="dta.TransitSegment"
              >previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>

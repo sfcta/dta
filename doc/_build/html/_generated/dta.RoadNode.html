@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>dta.RoadNode &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -234,6 +234,12 @@
 <tr><td><a class="reference internal" href="#dta.RoadNode.iterUpstreamNodes" title="dta.RoadNode.iterUpstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.iterUpstreamNodes</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.setAllWayStopControl" title="dta.RoadNode.setAllWayStopControl"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.setAllWayStopControl</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.RoadNode.setTwoWayStopControl" title="dta.RoadNode.setTwoWayStopControl"><tt class="xref py py-obj docutils literal"><span class="pre">RoadNode.setTwoWayStopControl</span></tt></a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="attribute">
@@ -307,8 +313,10 @@ only the minor street is stop-controlled</p>
 
 <dl class="method">
 <dt id="dta.RoadNode.addTimePlan">
-<tt class="descname">addTimePlan</tt><big>(</big><em>timePlan</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addTimePlan" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">addTimePlan</tt><big>(</big><em>timePlan</em>, <em>raiseValidateError=False</em><big>)</big><a class="headerlink" href="#dta.RoadNode.addTimePlan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the given <em>timePlan</em>, an instance of <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a>, to the current collection.</p>
+<p>This method will call <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan.validate" title="dta.TimePlan.validate"><tt class="xref py py-meth docutils literal"><span class="pre">TimePlan.validate()</span></tt></a>
+If <em>raiseValidateError</em>, any errors will be raised; otherwise they will just be warned.</p>
 </dd></dl>
 
 <dl class="method">
@@ -619,6 +627,20 @@ to this node</p>
 <dt id="dta.RoadNode.iterUpstreamNodes">
 <tt class="descname">iterUpstreamNodes</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.iterUpstreamNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an iterator to the start nodes of all incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.setAllWayStopControl">
+<tt class="descname">setAllWayStopControl</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.setAllWayStopControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the road node&#8217;s stop control to all way stop.</p>
+<p>Raises an error if it was already marked as signalized.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.RoadNode.setTwoWayStopControl">
+<tt class="descname">setTwoWayStopControl</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadNode.setTwoWayStopControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the road node&#8217;s stop control to two way stop.</p>
+<p>Raises an error if it was already marked as signalized.</p>
 </dd></dl>
 
 </dd></dl>

@@ -23,6 +23,8 @@ dta.DynameqNetwork
       ~DynameqNetwork.deepcopy
       ~DynameqNetwork.findLinksForRoadLabels
       ~DynameqNetwork.findMovementForRoadLabels
+      ~DynameqNetwork.findNodeForRoadLabels
+      ~DynameqNetwork.findNodeNearestCoords
       ~DynameqNetwork.getLinkForId
       ~DynameqNetwork.getLinkForNodeIdPair
       ~DynameqNetwork.getLinkType
@@ -68,6 +70,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.moveVirtualNodesToAvoidShortConnectors
       ~DynameqNetwork.read
       ~DynameqNetwork.readLinkShape
+      ~DynameqNetwork.readObsLinkCounts
       ~DynameqNetwork.readObsMovementCounts
       ~DynameqNetwork.readSimResults
       ~DynameqNetwork.removeLink

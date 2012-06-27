@@ -32,7 +32,6 @@ USAGE = r"""
 
 
 import dta
-import countdracula
 import datetime
 import sys
 
@@ -203,7 +202,11 @@ def exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, 
     outfile.close()
     dta.DtaLogger.info("Wrote link counts for %d links to %s; failed to find %d links." % 
                        (links_found, filename, links_not_found))
+
+#: this_is_main
 if __name__ == '__main__':
+
+    import countdracula
     
     if len(sys.argv) != 3:
         print USAGE

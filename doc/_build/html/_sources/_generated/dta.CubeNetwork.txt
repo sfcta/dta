@@ -24,6 +24,8 @@ dta.CubeNetwork
       ~CubeNetwork.deepcopy
       ~CubeNetwork.findLinksForRoadLabels
       ~CubeNetwork.findMovementForRoadLabels
+      ~CubeNetwork.findNodeForRoadLabels
+      ~CubeNetwork.findNodeNearestCoords
       ~CubeNetwork.getLinkForId
       ~CubeNetwork.getLinkForNodeIdPair
       ~CubeNetwork.getLinkType

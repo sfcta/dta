@@ -1,0 +1,7 @@
+@import url("default.css");
+
+div#module-dta div.figure {
+  border: 2px solid #999999;
+  background-color:white;
+  padding: 1em;
+}

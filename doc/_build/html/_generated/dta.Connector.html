@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>dta.Connector &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -172,6 +172,9 @@ a Centroid or a VirtualNode.</p>
 <tr><td><a class="reference internal" href="#dta.Connector.getNumShapePoints" title="dta.Connector.getNumShapePoints"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getNumShapePoints</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Connector.getObsCount" title="dta.Connector.getObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getObsCount</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getObsMeanTT" title="dta.Connector.getObsMeanTT"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getObsMeanTT</span></tt></a></td>
 <td></td>
 </tr>
@@ -229,16 +232,31 @@ a Centroid or a VirtualNode.</p>
 <tr><td><a class="reference internal" href="#dta.Connector.getStartNodeId" title="dta.Connector.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getStartNodeId</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Connector.getSumOfAllMovementCounts" title="dta.Connector.getSumOfAllMovementCounts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSumOfAllMovementCounts</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getThruTurn" title="dta.Connector.getThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getThruTurn</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.getVirtualNode" title="dta.Connector.getVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getVirtualNode</span></tt></a></td>
 <td></td>
 </tr>
+<tr><td><a class="reference internal" href="#dta.Connector.hasAllMovementCounts" title="dta.Connector.hasAllMovementCounts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasAllMovementCounts</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.hasCountInfo" title="dta.Connector.hasCountInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasCountInfo</span></tt></a></td>
+<td></td>
+</tr>
 <tr><td><a class="reference internal" href="#dta.Connector.hasDirection" title="dta.Connector.hasDirection"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasDirection</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.hasLeftTurn" title="dta.Connector.hasLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasLeftTurn</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.hasMovementCountInfo" title="dta.Connector.hasMovementCountInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasMovementCountInfo</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.hasObsCount" title="dta.Connector.hasObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasObsCount</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.hasOutgoingMovement" title="dta.Connector.hasOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasOutgoingMovement</span></tt></a></td>
@@ -290,6 +308,9 @@ a Centroid or a VirtualNode.</p>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.setNumLanes" title="dta.Connector.setNumLanes"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setNumLanes</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Connector.setObsCount" title="dta.Connector.setObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setObsCount</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Connector.setSimOutVolume" title="dta.Connector.setSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setSimOutVolume</span></tt></a></td>
@@ -537,6 +558,13 @@ shape points are used with the <em>atEnd</em> argument.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getObsCount">
+<tt class="descname">getObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getObsCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of vehicles traversing the
+link in the input time window.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getObsMeanTT">
 <tt class="descname">getObsMeanTT</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getObsMeanTT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the observed mean travel time of the link in minutes</p>
@@ -662,6 +690,12 @@ See addShifts() for details.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.getSumOfAllMovementCounts">
+<tt class="descname">getSumOfAllMovementCounts</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.getSumOfAllMovementCounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sum of all outgoing movement counts</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.getThruTurn">
 <tt class="descname">getThruTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getThruTurn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the thru movement of the link or raise an error if it does not exist</p>
@@ -671,6 +705,19 @@ See addShifts() for details.</p>
 <dt id="dta.Connector.getVirtualNode">
 <tt class="descname">getVirtualNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getVirtualNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the Virtual Node associated with this connector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.hasAllMovementCounts">
+<tt class="descname">hasAllMovementCounts</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.hasAllMovementCounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a count for all outgoing movements
+in the input time period</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.hasCountInfo">
+<tt class="descname">hasCountInfo</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.hasCountInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the link contains count information else false</p>
 </dd></dl>
 
 <dl class="method">
@@ -685,6 +732,19 @@ False otherwise.  <em>atEnd</em> is interpreted by the <a class="reference inter
 <dt id="dta.Connector.hasLeftTurn">
 <tt class="descname">hasLeftTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.hasLeftTurn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the link has a through turn</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.hasMovementCountInfo">
+<tt class="descname">hasMovementCountInfo</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.hasMovementCountInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if any outgoing movement on the link
+contains count information else false</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.hasObsCount">
+<tt class="descname">hasObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector.hasObsCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a count for the input time period</p>
 </dd></dl>
 
 <dl class="method">
@@ -797,6 +857,13 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
 <dt id="dta.Connector.setNumLanes">
 <tt class="descname">setNumLanes</tt><big>(</big><em>numLanes</em><big>)</big><a class="headerlink" href="#dta.Connector.setNumLanes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the number of lanes to the given value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.setObsCount">
+<tt class="descname">setObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>count</em><big>)</big><a class="headerlink" href="#dta.Connector.setObsCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the number of vehicles Traversing the link 
+in the input time period</p>
 </dd></dl>
 
 <dl class="method">

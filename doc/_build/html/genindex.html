@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Index &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -183,6 +183,7 @@
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.asPrettyString">asPrettyString() (dta.MultiArray method)</a></dt>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.asPrettyString4">asPrettyString4() (dta.MultiArray method)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.assignCardNames">assignCardNames() (in module importExcelSignals)</a></dt>
+    <dt><a href="script_attachCountsFromCountDracula.html#module-attachCountsFromCountDracula">attachCountsFromCountDracula (module)</a></dt>
 </dl></td>
 </tr></table>
 
@@ -201,7 +202,11 @@
     <dt><a href="script_importExcelSignals.html#importExcelSignals.checkForWeekdayPlan">checkForWeekdayPlan() (in module importExcelSignals)</a></dt>
     <dt><a href="_generated/dta.TransitLine.html#dta.TransitLine.checkMovementsAreAllowed">checkMovementsAreAllowed() (dta.TransitLine method)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.checkNumberofTimes">checkNumberofTimes() (in module importExcelSignals)</a></dt>
+    <dt><a href="script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.checkStreetnameConsistency">checkStreetnameConsistency() (in module importUnsignalizedIntersections)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.cleanStreetName">cleanStreetName() (in module importExcelSignals)</a></dt>
+    <dd><dl>
+      <dt><a href="script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.cleanStreetName">(in module importUnsignalizedIntersections)</a></dt>
+  </dl></dd>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.cleanStreetNames">cleanStreetNames() (in module importExcelSignals)</a></dt>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.collapse">collapse() (dta.MultiArray method)</a></dt>
     <dt><a href="_generated/dta.Connector.html#dta.Connector">Connector (class in dta)</a></dt>
@@ -219,6 +224,7 @@
   </dl></dd>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.copy">copy() (dta.MultiArray method)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.createDynameqSignals">createDynameqSignals() (in module importExcelSignals)</a></dt>
+    <dt><a href="_generated/dta.Path.html#dta.Path.createPath">createPath() (dta.Path class method)</a></dt>
     <dt><a href="script_createSFNetworkFromCubeNetwork.html#module-createSFNetworkFromCubeNetwork">createSFNetworkFromCubeNetwork (module)</a></dt>
     <dt><a href="script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.createTransitOnlyLanes">createTransitOnlyLanes() (in module createSFNetworkFromCubeNetwork)</a></dt>
     <dt><a href="_generated/dta.Utils.html#dta.crossProduct">crossProduct() (in module dta)</a></dt>
@@ -280,12 +286,14 @@
   </dl></dd>
     <dt><a href="_generated/dta.Scenario.html#dta.Scenario.events">events (dta.Scenario attribute)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.ExcelCardError">ExcelCardError</a></dt>
+    <dt><a href="script_importExcelSignals.html#importExcelSignals.ExcelSignalTiming">ExcelSignalTiming (class in importExcelSignals)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
-    <dt><a href="script_importExcelSignals.html#importExcelSignals.ExcelSignalTiming">ExcelSignalTiming (class in importExcelSignals)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.ExcelSignalTimingError">ExcelSignalTimingError</a></dt>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.expand">expand() (dta.MultiArray method)</a></dt>
+    <dt><a href="script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile">exportMainlineCountsToDynameUserDataFile() (in module attachCountsFromCountDracula)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.exportToJSON">exportToJSON() (in module importExcelSignals)</a></dt>
+    <dt><a href="script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile">exportTurnCountsToDynameqUserDataFile() (in module attachCountsFromCountDracula)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.extractStreetNames">extractStreetNames() (in module importExcelSignals)</a></dt>
 </dl></td>
 </tr></table>
@@ -306,9 +314,19 @@
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.findMovementForRoadLabels">(dta.DynameqNetwork method)</a></dt>
       <dt><a href="_generated/dta.Network.html#dta.Network.findMovementForRoadLabels">(dta.Network method)</a></dt>
   </dl></dd>
-    <dt><a href="script_importExcelSignals.html#importExcelSignals.findNodeWithSameStreetNames">findNodeWithSameStreetNames() (in module importExcelSignals)</a></dt>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.findNodeForRoadLabels">findNodeForRoadLabels() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.findNodeForRoadLabels">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.findNodeForRoadLabels">(dta.Network method)</a></dt>
+  </dl></dd>
+    <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.findNodeNearestCoords">findNodeNearestCoords() (dta.CubeNetwork method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.findNodeNearestCoords">(dta.DynameqNetwork method)</a></dt>
+      <dt><a href="_generated/dta.Network.html#dta.Network.findNodeNearestCoords">(dta.Network method)</a></dt>
+  </dl></dd>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="script_importExcelSignals.html#importExcelSignals.findNodeWithSameStreetNames">findNodeWithSameStreetNames() (in module importExcelSignals)</a></dt>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.findOutgoingMovement">findOutgoingMovement() (dta.Connector method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.findOutgoingMovement">(dta.RoadLink method)</a></dt>
@@ -656,7 +674,11 @@
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.getNumVirtualNodes">(dta.DynameqNetwork method)</a></dt>
       <dt><a href="_generated/dta.Network.html#dta.Network.getNumVirtualNodes">(dta.Network method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.Movement.html#dta.Movement.getObsCount">getObsCount() (dta.Movement method)</a></dt>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.getObsCount">getObsCount() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.Movement.html#dta.Movement.getObsCount">(dta.Movement method)</a></dt>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.getObsCount">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.getObsMeanTT">getObsMeanTT() (dta.Connector method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.getObsMeanTT">(dta.RoadLink method)</a></dt>
@@ -789,6 +811,10 @@
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.getStreetNames">(dta.VirtualNode method)</a></dt>
   </dl></dd>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.getSum">getSum() (dta.MultiArray method)</a></dt>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.getSumOfAllMovementCounts">getSumOfAllMovementCounts() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.getSumOfAllMovementCounts">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.getThruTurn">getThruTurn() (dta.Connector method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.getThruTurn">(dta.RoadLink method)</a></dt>
@@ -840,6 +866,10 @@
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.handleShortLinks">(dta.DynameqNetwork method)</a></dt>
       <dt><a href="_generated/dta.Network.html#dta.Network.handleShortLinks">(dta.Network method)</a></dt>
   </dl></dd>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.hasAllMovementCounts">hasAllMovementCounts() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.hasAllMovementCounts">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.hasCentroidForId">hasCentroidForId() (dta.CubeNetwork method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.hasCentroidForId">(dta.DynameqNetwork method)</a></dt>
@@ -851,7 +881,11 @@
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.hasConnector">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.hasConnector">(dta.VirtualNode method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.Movement.html#dta.Movement.hasCountInfo">hasCountInfo() (dta.Movement method)</a></dt>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.hasCountInfo">hasCountInfo() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.Movement.html#dta.Movement.hasCountInfo">(dta.Movement method)</a></dt>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.hasCountInfo">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.hasDirection">hasDirection() (dta.Connector method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.hasDirection">(dta.RoadLink method)</a></dt>
@@ -888,15 +922,23 @@
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.hasMovement">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.hasMovement">(dta.VirtualNode method)</a></dt>
   </dl></dd>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.hasMovementCountInfo">hasMovementCountInfo() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.hasMovementCountInfo">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.TransitLine.html#dta.TransitLine.hasNode">hasNode() (dta.TransitLine method)</a></dt>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.hasNodeForId">hasNodeForId() (dta.CubeNetwork method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.hasNodeForId">(dta.DynameqNetwork method)</a></dt>
       <dt><a href="_generated/dta.Network.html#dta.Network.hasNodeForId">(dta.Network method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.Movement.html#dta.Movement.hasObsCount">hasObsCount() (dta.Movement method)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.hasObsCount">hasObsCount() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.Movement.html#dta.Movement.hasObsCount">(dta.Movement method)</a></dt>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.hasObsCount">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.hasOutgoingLinkForId">hasOutgoingLinkForId() (dta.Centroid method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.Node.html#dta.Node.hasOutgoingLinkForId">(dta.Node method)</a></dt>
@@ -946,7 +988,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.TransitLine.html#dta.TransitLine.id">id (dta.TransitLine attribute)</a></dt>
+    <dt><a href="script_importCubeDemand.html#module-importCubeDemand">importCubeDemand (module)</a></dt>
     <dt><a href="script_importExcelSignals.html#module-importExcelSignals">importExcelSignals (module)</a></dt>
+    <dt><a href="script_importTPPlusTransitRoutes.html#module-importTPPlusTransitRoutes">importTPPlusTransitRoutes (module)</a></dt>
+    <dt><a href="script_importUnsignalizedIntersections.html#module-importUnsignalizedIntersections">importUnsignalizedIntersections (module)</a></dt>
     <dt><a href="_generated/dta.ShortestPaths.html#dta.ShortestPaths.initialiseMovementCostsWithFFTT">initialiseMovementCostsWithFFTT() (dta.ShortestPaths static method)</a></dt>
     <dt><a href="_generated/dta.ShortestPaths.html#dta.ShortestPaths.initializeEdgeCostsWithLength">initializeEdgeCostsWithLength() (dta.ShortestPaths static method)</a></dt>
     <dt><a href="_generated/dta.ShortestPaths.html#dta.ShortestPaths.initializeMovementCostsWithLength">initializeMovementCostsWithLength() (dta.ShortestPaths static method)</a></dt>
@@ -1025,14 +1070,14 @@
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.isVirtualNode">(dta.VirtualNode method)</a></dt>
   </dl></dd>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.iterAdjacentConnectors">iterAdjacentConnectors() (dta.Centroid method)</a></dt>
+</dl></td>
+  <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.iterAdjacentLinks">iterAdjacentLinks() (dta.Centroid method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.Node.html#dta.Node.iterAdjacentLinks">(dta.Node method)</a></dt>
       <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.iterAdjacentLinks">(dta.RoadNode method)</a></dt>
       <dt><a href="_generated/dta.VirtualNode.html#dta.VirtualNode.iterAdjacentLinks">(dta.VirtualNode method)</a></dt>
   </dl></dd>
-</dl></td>
-  <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.Centroid.html#dta.Centroid.iterAdjacentNodes">iterAdjacentNodes() (dta.Centroid method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.Node.html#dta.Node.iterAdjacentNodes">(dta.Node method)</a></dt>
@@ -1329,10 +1374,12 @@
       <dt><a href="_generated/dta.Network.html#dta.Network.readLinkShape">(dta.Network method)</a></dt>
   </dl></dd>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.readNetfile">readNetfile() (dta.CubeNetwork method)</a></dt>
+    <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.readObsLinkCounts">readObsLinkCounts() (dta.DynameqNetwork method)</a></dt>
     <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.readObsMovementCounts">readObsMovementCounts() (dta.DynameqNetwork method)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.readSimResults">readSimResults() (dta.DynameqNetwork method)</a></dt>
+    <dt><a href="script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.readStopSignShapefile">readStopSignShapefile() (in module importUnsignalizedIntersections)</a></dt>
     <dt><a href="script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.removeHOVStubs">removeHOVStubs() (in module createSFNetworkFromCubeNetwork)</a></dt>
     <dt><a href="_generated/dta.Demand.html#dta.Demand.removeInvalidODPairs">removeInvalidODPairs() (dta.Demand method)</a></dt>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.removeLink">removeLink() (dta.CubeNetwork method)</a></dt>
@@ -1380,6 +1427,7 @@
     <dd><dl>
       <dt><a href="script_importExcelSignals.html#importExcelSignals.selectCSO">(in module importExcelSignals)</a></dt>
   </dl></dd>
+    <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.setAllWayStopControl">setAllWayStopControl() (dta.RoadNode method)</a></dt>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.setEndNode">setEndNode() (dta.Connector method)</a></dt>
     <dt><a href="_generated/dta.Connector.html#dta.Connector.setGroup">setGroup() (dta.Connector method)</a></dt>
     <dd><dl>
@@ -1404,7 +1452,11 @@
     <dd><dl>
       <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.setNumLanes">(dta.RoadLink method)</a></dt>
   </dl></dd>
-    <dt><a href="_generated/dta.Movement.html#dta.Movement.setObsCount">setObsCount() (dta.Movement method)</a></dt>
+    <dt><a href="_generated/dta.Connector.html#dta.Connector.setObsCount">setObsCount() (dta.Connector method)</a></dt>
+    <dd><dl>
+      <dt><a href="_generated/dta.Movement.html#dta.Movement.setObsCount">(dta.Movement method)</a></dt>
+      <dt><a href="_generated/dta.RoadLink.html#dta.RoadLink.setObsCount">(dta.RoadLink method)</a></dt>
+  </dl></dd>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setOverrideTurnType">setOverrideTurnType() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setPenaltyInMin">setPenaltyInMin() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.PhaseMovement.html#dta.PhaseMovement.setPermitted">setPermitted() (dta.PhaseMovement method)</a></dt>
@@ -1427,6 +1479,7 @@
     <dt><a href="_generated/dta.Connector.html#dta.Connector.setStartNode">setStartNode() (dta.Connector method)</a></dt>
     <dt><a href="_generated/dta.TimePlan.html#dta.TimePlan.setSyncPhase">setSyncPhase() (dta.TimePlan method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setTimeVaryingCosts">setTimeVaryingCosts() (dta.Movement method)</a></dt>
+    <dt><a href="_generated/dta.RoadNode.html#dta.RoadNode.setTwoWayStopControl">setTwoWayStopControl() (dta.RoadNode method)</a></dt>
     <dt><a href="_generated/dta.Demand.html#dta.Demand.setValue">setValue() (dta.Demand method)</a></dt>
     <dt><a href="_generated/dta.Movement.html#dta.Movement.setVehicleClassGroup">setVehicleClassGroup() (dta.Movement method)</a></dt>
     <dt><a href="_generated/dta.ShortestPaths.html#dta.ShortestPaths">ShortestPaths (class in dta)</a></dt>
@@ -1475,6 +1528,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.unpickle">unpickle() (dta.MultiArray class method)</a></dt>
+    <dt><a href="script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.updateNodePriority">updateNodePriority() (in module importUnsignalizedIntersections)</a></dt>
     <dt><a href="script_importExcelSignals.html#importExcelSignals.USAGE">USAGE (in module importExcelSignals)</a></dt>
 </dl></td>
   <td style="width: 33%" valign="top"><dl>
@@ -1511,7 +1565,6 @@
   </dl></dd>
     <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.writeCountListToFile">writeCountListToFile() (dta.DynameqNetwork method)</a></dt>
     <dt><a href="_generated/dta.Demand.html#dta.Demand.writeDynameqTable">writeDynameqTable() (dta.Demand method)</a></dt>
-    <dt><a href="script_importExcelSignals.html#importExcelSignals.writeExtendedSummary">writeExtendedSummary() (in module importExcelSignals)</a></dt>
     <dt><a href="_generated/dta.CubeNetwork.html#dta.CubeNetwork.writeLinksToShp">writeLinksToShp() (dta.CubeNetwork method)</a></dt>
     <dd><dl>
       <dt><a href="_generated/dta.DynameqNetwork.html#dta.DynameqNetwork.writeLinksToShp">(dta.DynameqNetwork method)</a></dt>
@@ -1530,7 +1583,6 @@
       <dt><a href="_generated/dta.Network.html#dta.Network.writeNodesToShp">(dta.Network method)</a></dt>
   </dl></dd>
     <dt><a href="_generated/dta.Path.html#dta.Path.writePathsToShp">writePathsToShp() (dta.Path class method)</a></dt>
-    <dt><a href="script_importExcelSignals.html#importExcelSignals.writeSummary">writeSummary() (in module importExcelSignals)</a></dt>
     <dt><a href="_generated/dta.MultiArray.html#dta.MultiArray.writeToCSV">writeToCSV() (dta.MultiArray method)</a></dt>
 </dl></td>
 </tr></table>

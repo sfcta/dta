@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dta &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for dta</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">.. figure:: /images/DtaAnywayFlow.png</span>
+<span class="sd">   :width: 470px</span>
+<span class="sd">   :figwidth: 470px</span>
+<span class="sd">   :align: right</span>
+<span class="sd">   :alt: SFCTA usage of DTA Anyway</span>
+<span class="sd">   </span>
+<span class="sd">   SFCTA uses DTA Anyway to generate a DTA network using this series of scripts, each one</span>
+<span class="sd">   adding a new layer of data onto the network.</span>
+
+
+<span class="sd">DTA Anyway is a python module that facilitates network coding, analysis and visualization for</span>
+<span class="sd">DTA (Dynamic Traffic Assignment).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    This file is part of DTA.</span>
+
+<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
+<span class="s">    it under the terms of the GNU General Public License as published by</span>
+<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="s">    (at your option) any later version.</span>
+
+<span class="s">    DTA is distributed in the hope that it will be useful,</span>
+<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="s">    GNU General Public License for more details.</span>
+
+<span class="s">    You should have received a copy of the GNU General Public License</span>
+<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.Algorithms</span> <span class="kn">import</span> <span class="n">ShortestPaths</span>
+<span class="kn">from</span> <span class="nn">.Centroid</span> <span class="kn">import</span> <span class="n">Centroid</span>
+<span class="kn">from</span> <span class="nn">.Connector</span> <span class="kn">import</span> <span class="n">Connector</span>
+<span class="kn">from</span> <span class="nn">.CorridorPlots</span> <span class="kn">import</span> <span class="n">CountsVsVolumes</span>
+<span class="kn">from</span> <span class="nn">.CubeNetwork</span> <span class="kn">import</span> <span class="n">CubeNetwork</span>
+<span class="kn">from</span> <span class="nn">.Demand</span> <span class="kn">import</span> <span class="n">Demand</span>
+<span class="kn">from</span> <span class="nn">.DtaError</span> <span class="kn">import</span> <span class="n">DtaError</span>
+<span class="kn">from</span> <span class="nn">.DynameqNetwork</span> <span class="kn">import</span> <span class="n">DynameqNetwork</span>
+<span class="kn">from</span> <span class="nn">.DynameqScenario</span> <span class="kn">import</span> <span class="n">DynameqScenario</span>
+<span class="kn">from</span> <span class="nn">.Link</span> <span class="kn">import</span> <span class="n">Link</span>
+<span class="kn">from</span> <span class="nn">.Logger</span> <span class="kn">import</span> <span class="n">DtaLogger</span><span class="p">,</span> <span class="n">setupLogging</span>
+<span class="kn">from</span> <span class="nn">.Movement</span> <span class="kn">import</span> <span class="n">Movement</span>
+<span class="kn">from</span> <span class="nn">.MultiArray</span> <span class="kn">import</span> <span class="n">MultiArray</span>
+<span class="kn">from</span> <span class="nn">.Network</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span> <span class="nn">.Node</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">.Phase</span> <span class="kn">import</span> <span class="n">Phase</span>
+<span class="kn">from</span> <span class="nn">.PhaseMovement</span> <span class="kn">import</span> <span class="n">PhaseMovement</span>
+<span class="kn">from</span> <span class="nn">.RoadLink</span> <span class="kn">import</span> <span class="n">RoadLink</span>
+<span class="kn">from</span> <span class="nn">.RoadNode</span> <span class="kn">import</span> <span class="n">RoadNode</span>
+<span class="kn">from</span> <span class="nn">.Path</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">.Scenario</span> <span class="kn">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">.TimePlan</span> <span class="kn">import</span> <span class="n">PlanCollectionInfo</span><span class="p">,</span> <span class="n">TimePlan</span>
+<span class="kn">from</span> <span class="nn">.TPPlusTransitRoute</span> <span class="kn">import</span> <span class="n">TPPlusTransitNode</span><span class="p">,</span> <span class="n">TPPlusTransitRoute</span>
+<span class="kn">from</span> <span class="nn">.TransitLine</span> <span class="kn">import</span> <span class="n">TransitLine</span><span class="p">,</span> <span class="n">TransitSegment</span>
+<span class="kn">from</span> <span class="nn">.Utils</span> <span class="kn">import</span> <span class="n">crossProduct</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">lineSegmentsCross</span><span class="p">,</span> <span class="n">onSegment</span><span class="p">,</span> <span class="n">Time</span>
+<span class="kn">from</span> <span class="nn">.VehicleClassGroup</span> <span class="kn">import</span> <span class="n">VehicleClassGroup</span>
+<span class="kn">from</span> <span class="nn">.VehicleType</span> <span class="kn">import</span> <span class="n">VehicleType</span>
+<span class="kn">from</span> <span class="nn">.VirtualLink</span> <span class="kn">import</span> <span class="n">VirtualLink</span>
+<span class="kn">from</span> <span class="nn">.VirtualNode</span> <span class="kn">import</span> <span class="n">VirtualNode</span>
+
+
+<span class="kn">from</span> <span class="nn">.Algorithms</span> <span class="kn">import</span> <span class="n">dfs</span> 
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;DtaError&#39;</span><span class="p">,</span> <span class="s">&#39;DtaLogger&#39;</span><span class="p">,</span> <span class="s">&#39;setupLogging&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Network&#39;</span><span class="p">,</span> <span class="s">&#39;DynameqNetwork&#39;</span><span class="p">,</span> <span class="s">&#39;CubeNetwork&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Scenario&#39;</span><span class="p">,</span> <span class="s">&#39;DynameqScenario&#39;</span><span class="p">,</span> <span class="s">&#39;VehicleType&#39;</span><span class="p">,</span> <span class="s">&#39;VehicleClassGroup&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Node&#39;</span><span class="p">,</span> <span class="s">&#39;RoadNode&#39;</span><span class="p">,</span> <span class="s">&#39;Centroid&#39;</span><span class="p">,</span> <span class="s">&#39;VirtualNode&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Link&#39;</span><span class="p">,</span> <span class="s">&#39;RoadLink&#39;</span><span class="p">,</span> <span class="s">&#39;Connector&#39;</span><span class="p">,</span> <span class="s">&#39;VirtualLink&#39;</span><span class="p">,</span> <span class="s">&#39;DynameqDemand&#39;</span><span class="p">,</span>
+           <span class="s">&#39;PlanCollectionInfo&#39;</span><span class="p">,</span> <span class="s">&#39;TimePlan&#39;</span><span class="p">,</span> <span class="s">&#39;PhaseMovement&#39;</span><span class="p">,</span>
+           <span class="s">&#39;TPPlusTransitNode&#39;</span><span class="p">,</span> <span class="s">&#39;TPPlusTransitRoute&#39;</span><span class="p">,</span> <span class="s">&#39;TransitLine&#39;</span><span class="p">,</span> <span class="s">&#39;TransitSegment&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Route&#39;</span><span class="p">,</span> <span class="s">&#39;Phase&#39;</span><span class="p">,</span> <span class="s">&#39;MultiArray&#39;</span><span class="p">,</span>
+           <span class="s">&#39;crossProduct&#39;</span><span class="p">,</span> <span class="s">&#39;direction&#39;</span><span class="p">,</span> <span class="s">&#39;lineSegmentsCross&#39;</span><span class="p">,</span> <span class="s">&#39;onSegment&#39;</span><span class="p">,</span> <span class="s">&#39;Time&#39;</span><span class="p">,</span> <span class="s">&#39;CountsVsVolumes&#39;</span><span class="p">,</span> <span class="s">&#39;ShortestPaths&#39;</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

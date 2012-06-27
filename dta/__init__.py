@@ -1,8 +1,17 @@
 """
 
+.. figure:: /images/DtaAnywayFlow.png
+   :width: 470px
+   :figwidth: 470px
+   :align: right
+   :alt: SFCTA usage of DTA Anyway
+   
+   SFCTA uses DTA Anyway to generate a DTA network using this series of scripts, each one
+   adding a new layer of data onto the network.
+
+
 DTA Anyway is a python module that facilitates network coding, analysis and visualization for
-DTA (Dynamic Traffic Assignment).  This is a stub file to illustrate header convention; this
-module docstring will be improved during development.
+DTA (Dynamic Traffic Assignment).
 
 """
 

@@ -45,6 +45,7 @@ dta.Connector
       ~Connector.getNumLanes
       ~Connector.getNumOutgoingMovements
       ~Connector.getNumShapePoints
+      ~Connector.getObsCount
       ~Connector.getObsMeanTT
       ~Connector.getObsSpeedInMPH
       ~Connector.getOrientation
@@ -64,10 +65,15 @@ dta.Connector
       ~Connector.getSimTTInMin
       ~Connector.getStartNode
       ~Connector.getStartNodeId
+      ~Connector.getSumOfAllMovementCounts
       ~Connector.getThruTurn
       ~Connector.getVirtualNode
+      ~Connector.hasAllMovementCounts
+      ~Connector.hasCountInfo
       ~Connector.hasDirection
       ~Connector.hasLeftTurn
+      ~Connector.hasMovementCountInfo
+      ~Connector.hasObsCount
       ~Connector.hasOutgoingMovement
       ~Connector.hasRightTurn
       ~Connector.hasSameAttributes
@@ -85,6 +91,7 @@ dta.Connector
       ~Connector.setLabel
       ~Connector.setLength
       ~Connector.setNumLanes
+      ~Connector.setObsCount
       ~Connector.setSimOutVolume
       ~Connector.setSimTTInMin
       ~Connector.setStartNode

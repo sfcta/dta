@@ -7,6 +7,14 @@
    Run "make html" to generate
    the _generated/*.rst files and _build/* 
   
+Overview
+========
+.. automodule:: dta
+   :no-members:
+   :no-undoc-members:
+   :no-inherited-members:
+   :no-show-inheritance:
+
 Installation
 ============
 Required python modules:
@@ -19,14 +27,6 @@ Required python modules:
 Optional python modules:
  * `sphinx <http://sphinx.pocoo.org>`_ Python documentation generator.
  * `nose <http://pypi.python.org/pypi/nose>`_ For unit tests.
-
-Overview
-========
-.. automodule:: dta
-   :no-members:
-   :no-undoc-members:
-   :no-inherited-members:
-   :no-show-inheritance:
 
 Network classes
 ===============
@@ -104,6 +104,16 @@ Transit classes
    dta.TPPlusTransitRoute
    dta.TransitLine
    dta.TransitSegment
+
+Movement and Path classes
+=========================
+.. autosummary::
+   :nosignatures:
+   :toctree: _generated
+
+   dta.Movement
+   dta.Path
+   dta.ShortestPaths
    
 Misc
 ================
@@ -111,28 +121,31 @@ Misc
    :nosignatures:
    :toctree: _generated
 
-   dta.Demand   
+   dta.Demand
    dta.DtaError
    dta.DtaLogger
-   dta.Movement
    dta.MultiArray
-   dta.Network
-   dta.Path
-   dta.ShortestPaths
    dta.Time
    dta.Utils
 
 Scripts
 =======
 .. toctree::
-
+   :maxdepth: 1
+   
    script_createSFNetworkFromCubeNetwork
+   script_importTPPlusTransitRoutes
    script_importExcelSignals
+   script_importUnsignalizedIntersections
+   script_importCubeDemand
+   script_attachCountsFromCountDracula
 
+TODOs
+=====
 
-TODO List
-=========
-.. todolist::
+.. toctree::
+
+   todos
          
 Indices and tables
 ==================

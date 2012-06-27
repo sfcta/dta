@@ -23,6 +23,8 @@ dta.Network
       ~Network.deepcopy
       ~Network.findLinksForRoadLabels
       ~Network.findMovementForRoadLabels
+      ~Network.findNodeForRoadLabels
+      ~Network.findNodeNearestCoords
       ~Network.getLinkForId
       ~Network.getLinkForNodeIdPair
       ~Network.getLinkType

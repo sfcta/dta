@@ -32,7 +32,8 @@ from .Algorithms import pairwise
 
 class Movement(object):
     """
-    Base class that represents a movement.
+    A movement consists of an incoming link, and outgoing link, and attributes
+    that define the movement from one to the other (is it a turn?  what's the capacity? etc.)
     """
     #: U-turn movement (returned by :py:meth:`Movement.getTurnType`)
     DIR_UTURN   = "UTURN"

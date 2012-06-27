@@ -43,11 +43,11 @@ class Path(object):
     @classmethod
     def createPath(cls, net, name, intersectionList, cutoff=0.7):
         """
-        Returns a :py:class:'path' instance based on a shortest path that goes through all the intersections in the intersection list
+        Returns a :py:class:`Path` instance based on a shortest path that goes through all the intersections in the intersection list
         
-          * *net* is a :py:class:`Network' object
+          * *net* is a :py:class:`Network` object
           * *intersectionList* is a list of at least two intersections that the path will go through having the form:
-               e.g. : [["Mission St", "1st St"], ["Mission St", "8th St"]]
+               e.g. : ``[["Mission St", "1st St"], ["Mission St", "8th St"]]``
         """
         linkList=[]
         prevNode = None

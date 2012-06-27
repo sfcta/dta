@@ -43,6 +43,7 @@ dta.RoadLink
       ~RoadLink.getNumLanes
       ~RoadLink.getNumOutgoingMovements
       ~RoadLink.getNumShapePoints
+      ~RoadLink.getObsCount
       ~RoadLink.getObsMeanTT
       ~RoadLink.getObsSpeedInMPH
       ~RoadLink.getOrientation
@@ -61,9 +62,14 @@ dta.RoadLink
       ~RoadLink.getSimTTInMin
       ~RoadLink.getStartNode
       ~RoadLink.getStartNodeId
+      ~RoadLink.getSumOfAllMovementCounts
       ~RoadLink.getThruTurn
+      ~RoadLink.hasAllMovementCounts
+      ~RoadLink.hasCountInfo
       ~RoadLink.hasDirection
       ~RoadLink.hasLeftTurn
+      ~RoadLink.hasMovementCountInfo
+      ~RoadLink.hasObsCount
       ~RoadLink.hasOutgoingMovement
       ~RoadLink.hasRightTurn
       ~RoadLink.hasSameAttributes
@@ -80,6 +86,7 @@ dta.RoadLink
       ~RoadLink.setLabel
       ~RoadLink.setLength
       ~RoadLink.setNumLanes
+      ~RoadLink.setObsCount
       ~RoadLink.setSimOutVolume
       ~RoadLink.setSimTTInMin
    

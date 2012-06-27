@@ -7,8 +7,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <title>Overview &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -47,7 +47,17 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="installation">
+  <div class="section" id="module-dta">
+<span id="overview"></span><h1>Overview<a class="headerlink" href="#module-dta" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-right" style="width: 470px">
+<img alt="SFCTA usage of DTA Anyway" src="_images/DtaAnywayFlow.png" style="width: 470px;" />
+<p class="caption">SFCTA uses DTA Anyway to generate a DTA network using this series of scripts, each one
+adding a new layer of data onto the network.</p>
+</div>
+<p>DTA Anyway is a python module that facilitates network coding, analysis and visualization for
+DTA (Dynamic Traffic Assignment).</p>
+</div>
+<div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <dl class="docutils">
 <dt>Required python modules:</dt>
@@ -66,12 +76,6 @@
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="module-dta">
-<span id="overview"></span><h1>Overview<a class="headerlink" href="#module-dta" title="Permalink to this headline">¶</a></h1>
-<p>DTA Anyway is a python module that facilitates network coding, analysis and visualization for
-DTA (Dynamic Traffic Assignment).  This is a stub file to illustrate header convention; this
-module docstring will be improved during development.</p>
 </div>
 <div class="section" id="network-classes">
 <h1>Network classes<a class="headerlink" href="#network-classes" title="Permalink to this headline">¶</a></h1>
@@ -99,7 +103,7 @@ module docstring will be improved during development.</p>
 <div class="section" id="scenario-classes">
 <h1>Scenario classes<a class="headerlink" href="#scenario-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-65f9f2a92be17e37379d09b413fc6b342c53b6be.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
+<img src="_images/inheritance-74fad0d57212b27f092c1e924fcbe4548bc79227.png" alt="Inheritance diagram of dta.Scenario, dta.DynameqScenario, dta.VehicleType, dta.VehicleClassGroup" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -151,7 +155,7 @@ module docstring will be improved during development.</p>
 <div class="section" id="link-classes">
 <h1>Link classes<a class="headerlink" href="#link-classes" title="Permalink to this headline">¶</a></h1>
 <p class="graphviz">
-<img src="_images/inheritance-cb53b763c37049317054c794c9be4515eb2fd304.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
+<img src="_images/inheritance-7de1cbdcbba12647c3f8e9e3946c82fa2758066b.png" alt="Inheritance diagram of dta.Link, dta.RoadLink, dta.VirtualLink, dta.Connector" class="inheritance"/>
 </p>
 <table border="1" class="docutils">
 <colgroup>
@@ -220,6 +224,26 @@ module docstring will be improved during development.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="movement-and-path-classes">
+<h1>Movement and Path classes<a class="headerlink" href="#movement-and-path-classes" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="_generated/dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Movement</span></tt></a></td>
+<td>A movement consists of an incoming link, and outgoing link, and attributes</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.Path.html#dta.Path" title="dta.Path"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Path</span></tt></a></td>
+<td>A path in the network represented by a sequence of links</td>
+</tr>
+<tr><td><a class="reference internal" href="_generated/dta.ShortestPaths.html#dta.ShortestPaths" title="dta.ShortestPaths"><tt class="xref py py-obj docutils literal"><span class="pre">dta.ShortestPaths</span></tt></a></td>
+<td>Shortest path algorithms and various utilities</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="misc">
 <h1>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="docutils">
@@ -237,20 +261,8 @@ module docstring will be improved during development.</p>
 <tr><td><a class="reference internal" href="_generated/dta.DtaLogger.html#dta.DtaLogger" title="dta.DtaLogger"><tt class="xref py py-obj docutils literal"><span class="pre">dta.DtaLogger</span></tt></a></td>
 <td>Instances of the Logger class represent a single logging channel. A</td>
 </tr>
-<tr><td><a class="reference internal" href="_generated/dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Movement</span></tt></a></td>
-<td>Base class that represents a movement.</td>
-</tr>
 <tr><td><a class="reference internal" href="_generated/dta.MultiArray.html#dta.MultiArray" title="dta.MultiArray"><tt class="xref py py-obj docutils literal"><span class="pre">dta.MultiArray</span></tt></a></td>
 <td>Multidimentinal array of custom numpy data types supporting</td>
-</tr>
-<tr><td><a class="reference internal" href="_generated/dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Network</span></tt></a></td>
-<td>Base class that represents a DTA Network.  Networks exist on a continuum between</td>
-</tr>
-<tr><td><a class="reference internal" href="_generated/dta.Path.html#dta.Path" title="dta.Path"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Path</span></tt></a></td>
-<td>A path in the network represented by a sequence of links</td>
-</tr>
-<tr><td><a class="reference internal" href="_generated/dta.ShortestPaths.html#dta.ShortestPaths" title="dta.ShortestPaths"><tt class="xref py py-obj docutils literal"><span class="pre">dta.ShortestPaths</span></tt></a></td>
-<td>Shortest path algorithms and various utilities</td>
 </tr>
 <tr><td><a class="reference internal" href="_generated/dta.Time.html#dta.Time" title="dta.Time"><tt class="xref py py-obj docutils literal"><span class="pre">dta.Time</span></tt></a></td>
 <td>Class that represents a time (without a specific date).</td>
@@ -265,232 +277,22 @@ module docstring will be improved during development.</p>
 <h1>Scripts<a class="headerlink" href="#scripts" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="script_createSFNetworkFromCubeNetwork.html">Creating SF Network from Cube Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_createSFNetworkFromCubeNetwork.html">Creating the SF DTA Network from Cube Network and Defining the Scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_importTPPlusTransitRoutes.html">Importing Transit Routes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="script_importExcelSignals.html">Importing Excel Signals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_importUnsignalizedIntersections.html">Importing Stop Signs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_importCubeDemand.html">Importing Static Demand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_attachCountsFromCountDracula.html">Importing Validation Counts</a></li>
 </ul>
 </div>
 </div>
-<div class="section" id="todo-list">
-<h1>TODO List<a class="headerlink" href="#todo-list" title="Permalink to this headline">¶</a></h1>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">again, this isn&#8217;t accurate, because it&#8217;s upstream nodes plus downstream nodes, confusing
-when they are the same...</p>
+<div class="section" id="todos">
+<h1>TODOs<a class="headerlink" href="#todos" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="todos.html">TODO List</a></li>
+</ul>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-0"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 142.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">his is not really accurate, why not call it what it is?  Number of upstream nodes?  And put it
-in <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a>?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-1"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 151.)</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">This is not really accurate, why not call it what it is?  Number of downstream nodes?  And put it
-in <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a>?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-2"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 172.)</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">And an intersection is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-3"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 263.)</p>
-<div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">And a junction is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-4"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 271.)</p>
-<div class="admonition-todo admonition " id="index-5">
-<p class="first admonition-title">Todo</p>
-<p class="last">The function definition is misleading because the results aren&#8217;t verified as <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Centroid.html#index-5"><em>original entry</em></a> is located in  _generated\dta.Centroid.rst, line 309.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">This last bit is somewhat arbitrary, could be refined further.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-0"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 99.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">What is this for?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-1"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 229.)</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">What is this for?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 256.)</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">Code review and more detailed documentation.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 481.)</p>
-<div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">I would like more detail about this.  How are movements handled for VehicleClassGroups?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 516.)</p>
-<div class="admonition-todo admonition " id="index-5">
-<p class="first admonition-title">Todo</p>
-<p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
-node should be included too.  However, if we include either the first or the last shape point below,
-everything goes crazy.  I&#8217;m not sure why?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 648.)</p>
-<div class="admonition-todo admonition " id="index-6">
-<p class="first admonition-title">Todo</p>
-<p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
-are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
-the other kind?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-6"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 679.)</p>
-<div class="admonition-todo admonition " id="index-7">
-<p class="first admonition-title">Todo</p>
-<p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
-Currently it looks like an ALL and a PROHIBITED are required?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.CubeNetwork.html#index-7"><em>original entry</em></a> is located in  _generated\dta.CubeNetwork.rst, line 726.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">This last bit is somewhat arbitrary, could be refined further.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-0"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 130.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">What is this for?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-1"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 248.)</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">What is this for?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-2"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 275.)</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">Code review and more detailed documentation.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-3"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 500.)</p>
-<div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">I would like more detail about this.  How are movements handled for VehicleClassGroups?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-4"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 535.)</p>
-<div class="admonition-todo admonition " id="index-5">
-<p class="first admonition-title">Todo</p>
-<p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
-node should be included too.  However, if we include either the first or the last shape point below,
-everything goes crazy.  I&#8217;m not sure why?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-5"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 606.)</p>
-<div class="admonition-todo admonition " id="index-6">
-<p class="first admonition-title">Todo</p>
-<p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
-are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
-the other kind?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-6"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 640.)</p>
-<div class="admonition-todo admonition " id="index-7">
-<p class="first admonition-title">Todo</p>
-<p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
-Currently it looks like an ALL and a PROHIBITED are required?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.DynameqNetwork.html#index-7"><em>original entry</em></a> is located in  _generated\dta.DynameqNetwork.rst, line 687.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">This last bit is somewhat arbitrary, could be refined further.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-0"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 101.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">What is this for?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-1"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 219.)</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">What is this for?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-2"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 246.)</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">Code review and more detailed documentation.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-3"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 471.)</p>
-<div class="admonition-todo admonition " id="index-4">
-<p class="first admonition-title">Todo</p>
-<p class="last">I would like more detail about this.  How are movements handled for VehicleClassGroups?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-4"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 506.)</p>
-<div class="admonition-todo admonition " id="index-5">
-<p class="first admonition-title">Todo</p>
-<p class="last">Dynameq warns/throws away shape points when there is only one, which makes me think the start or end
-node should be included too.  However, if we include either the first or the last shape point below,
-everything goes crazy.  I&#8217;m not sure why?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-5"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 570.)</p>
-<div class="admonition-todo admonition " id="index-6">
-<p class="first admonition-title">Todo</p>
-<p class="last">These are not the same &#8220;shape points&#8221; as the <tt class="xref py py-class docutils literal"><span class="pre">RoadLink._shapePoints</span></tt>.  Define what these
-are (call them something else if they&#8217;re not the same).  Also, why wouldn&#8217;t we convert them to
-the other kind?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-6"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 592.)</p>
-<div class="admonition-todo admonition " id="index-7">
-<p class="first admonition-title">Todo</p>
-<p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
-Currently it looks like an ALL and a PROHIBITED are required?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Network.html#index-7"><em>original entry</em></a> is located in  _generated\dta.Network.rst, line 639.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">And an intersection is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Node.html#index-0"><em>original entry</em></a> is located in  _generated\dta.Node.rst, line 229.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">And a junction is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.Node.html#index-1"><em>original entry</em></a> is located in  _generated\dta.Node.rst, line 237.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">I think a picture would be useful here</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadNode.html#index-0"><em>original entry</em></a> is located in  _generated\dta.RoadNode.rst, line 153.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">explain the 0.009 minimum length &#8211; is it just to make sure resulting links aren&#8217;t too small?
-If we keep it, make it an arg, it really is in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a></p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadNode.html#index-1"><em>original entry</em></a> is located in  _generated\dta.RoadNode.rst, line 154.)</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">And an intersection is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadNode.html#index-2"><em>original entry</em></a> is located in  _generated\dta.RoadNode.rst, line 328.)</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">And a junction is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.RoadNode.html#index-3"><em>original entry</em></a> is located in  _generated\dta.RoadNode.rst, line 336.)</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">what makes this a Centroid as opposed to just an adjacent node?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.VirtualNode.html#index-0"><em>original entry</em></a> is located in  _generated\dta.VirtualNode.rst, line 76.)</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">Why is this useful, it returns one when there could be others?</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.VirtualNode.html#index-1"><em>original entry</em></a> is located in  _generated\dta.VirtualNode.rst, line 84.)</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">And an intersection is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.VirtualNode.html#index-2"><em>original entry</em></a> is located in  _generated\dta.VirtualNode.rst, line 229.)</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">And a junction is what?  Technical definition please.</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="_generated/dta.VirtualNode.html#index-3"><em>original entry</em></a> is located in  _generated\dta.VirtualNode.rst, line 237.)</p>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -509,8 +311,8 @@ If we keep it, make it an arg, it really is in <a class="reference internal" hre
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Installation</a></li>
-<li><a class="reference internal" href="#module-dta">Overview</a></li>
+<li><a class="reference internal" href="#">Overview</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#network-classes">Network classes</a><ul>
 </ul>
 </li>
@@ -529,13 +331,18 @@ If we keep it, make it an arg, it really is in <a class="reference internal" hre
 <li><a class="reference internal" href="#transit-classes">Transit classes</a><ul>
 </ul>
 </li>
+<li><a class="reference internal" href="#movement-and-path-classes">Movement and Path classes</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#misc">Misc</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#scripts">Scripts</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#todo-list">TODO List</a></li>
+<li><a class="reference internal" href="#todos">TODOs</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 

@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>dta.DynameqNetwork &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -101,6 +101,12 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.findMovementForRoadLabels" title="dta.DynameqNetwork.findMovementForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.findMovementForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.findNodeForRoadLabels" title="dta.DynameqNetwork.findNodeForRoadLabels"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.findNodeForRoadLabels</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.findNodeNearestCoords" title="dta.DynameqNetwork.findNodeNearestCoords"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.findNodeNearestCoords</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.getLinkForId" title="dta.DynameqNetwork.getLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.getLinkForId</span></tt></a></td>
@@ -236,6 +242,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.readLinkShape" title="dta.DynameqNetwork.readLinkShape"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readLinkShape</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.DynameqNetwork.readObsLinkCounts" title="dta.DynameqNetwork.readObsLinkCounts"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readObsLinkCounts</span></tt></a></td>
 <td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.DynameqNetwork.readObsMovementCounts" title="dta.DynameqNetwork.readObsMovementCounts"><tt class="xref py py-obj docutils literal"><span class="pre">DynameqNetwork.readObsMovementCounts</span></tt></a></td>
@@ -415,6 +424,30 @@ for identifying the intersection but not necessary for the movement (e.g. only t
 if <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a> means the link must be going eastbound <em>somewhat</em> even if it&#8217;s really heading
 south east and so <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.getDirection" title="dta.RoadLink.getDirection"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.getDirection()</span></tt></a> returns :py:attr:RoadLink.DIR_SB`.</p>
 <p>Raises a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a> on failure, returns a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instance on success.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.findNodeForRoadLabels">
+<tt class="descname">findNodeForRoadLabels</tt><big>(</big><em>road_label_list</em>, <em>CUTOFF</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.findNodeForRoadLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds matching node for a set of road labels and returns a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>road_label_list</em> a list of road names e.g. [mission st, 6th st]</li>
+</ul>
+</div></blockquote>
+<p>This method will provide an approximate matching if CUTOFF  is less than one. From
+our experience a CUTOFF of 0.7 provides good results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.findNodeNearestCoords">
+<tt class="descname">findNodeNearestCoords</tt><big>(</big><em>x</em>, <em>y</em>, <em>quick_dist=None</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.findNodeNearestCoords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates though <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances and returns 
+the node closest to (<em>x</em>, <em>y</em>), as well as the distance.</p>
+<p>Uses <em>quick_dist</em> (if passed) to skip skip distance calcs and ignore anything
+greater than <em>quick_dist</em> difference in either coordinate.</p>
+<p>So the return is a tuple: (distance, RoadNode)</p>
+<p><em>x</em>,*y* and <em>quick_dist</em> are  in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -787,9 +820,15 @@ everything goes crazy.  I&#8217;m not sure why?</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.readObsLinkCounts">
+<tt class="descname">readObsLinkCounts</tt><big>(</big><em>countFileNameInDynameqDatFormat</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.readObsLinkCounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the link counts</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.readObsMovementCounts">
 <tt class="descname">readObsMovementCounts</tt><big>(</big><em>countFileNameInDynameqDatFormat</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.readObsMovementCounts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assign the link counts</p>
+<dd><p>Assign the movement counts</p>
 </dd></dl>
 
 <dl class="method">

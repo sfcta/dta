@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>dta.Path &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.ShortestPaths" href="dta.ShortestPaths.html" />
-    <link rel="prev" title="dta.Network" href="dta.Network.html" /> 
+    <link rel="prev" title="dta.Movement" href="dta.Movement.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,7 +40,7 @@
           <a href="dta.ShortestPaths.html" title="dta.ShortestPaths"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="dta.Network.html" title="dta.Network"
+          <a href="dta.Movement.html" title="dta.Movement"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -62,7 +62,7 @@ that are connected to each other</p>
 <dl class="method">
 <dt id="dta.Path.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>net</em>, <em>name</em>, <em>iterLinks</em><big>)</big><a class="headerlink" href="#dta.Path.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor that accepts a network, the path name, and a sequence of connected links</p>
+<dd><p>Constructor that accepts a network, the path name, and a sequence of connected links instances</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -74,6 +74,9 @@ that are connected to each other</p>
 <tbody valign="top">
 <tr><td><a class="reference internal" href="#dta.Path.__init__" title="dta.Path.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
 <td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+</tr>
+<tr><td><a class="reference internal" href="#dta.Path.createPath" title="dta.Path.createPath"><tt class="xref py py-obj docutils literal"><span class="pre">Path.createPath</span></tt></a></td>
+<td></td>
 </tr>
 <tr><td><a class="reference internal" href="#dta.Path.getCrossStreetName" title="dta.Path.getCrossStreetName"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getCrossStreetName</span></tt></a></td>
 <td></td>
@@ -125,6 +128,24 @@ that are connected to each other</p>
 </tr>
 </tbody>
 </table>
+<dl class="classmethod">
+<dt id="dta.Path.createPath">
+<em class="property">classmethod </em><tt class="descname">createPath</tt><big>(</big><em>net</em>, <em>name</em>, <em>intersectionList</em>, <em>cutoff=0.69999999999999996</em><big>)</big><a class="headerlink" href="#dta.Path.createPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a <a class="reference internal" href="#dta.Path" title="dta.Path"><tt class="xref py py-class docutils literal"><span class="pre">Path</span></tt></a> instance based on a shortest path that goes through all the intersections in the intersection list</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><em>net</em> is a <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> object</p>
+</li>
+<li><dl class="first docutils">
+<dt><em>intersectionList</em> is a list of at least two intersections that the path will go through having the form:</dt>
+<dd><p class="first last">e.g. : <tt class="docutils literal"><span class="pre">[[&quot;Mission</span> <span class="pre">St&quot;,</span> <span class="pre">&quot;1st</span> <span class="pre">St&quot;],</span> <span class="pre">[&quot;Mission</span> <span class="pre">St&quot;,</span> <span class="pre">&quot;8th</span> <span class="pre">St&quot;]]</span></tt></p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.Path.getCrossStreetName">
 <tt class="descname">getCrossStreetName</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#dta.Path.getCrossStreetName" title="Permalink to this definition">¶</a></dt>
@@ -235,8 +256,8 @@ time period</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="dta.Network.html"
-                        title="previous chapter">dta.Network</a></p>
+  <p class="topless"><a href="dta.Movement.html"
+                        title="previous chapter">dta.Movement</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="dta.ShortestPaths.html"
                         title="next chapter">dta.ShortestPaths</a></p>
@@ -275,7 +296,7 @@ time period</p>
           <a href="dta.ShortestPaths.html" title="dta.ShortestPaths"
              >next</a> |</li>
         <li class="right" >
-          <a href="dta.Network.html" title="dta.Network"
+          <a href="dta.Movement.html" title="dta.Movement"
              >previous</a> |</li>
         <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>

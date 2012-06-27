@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>dta.Phase &mdash; DTA Anyway v1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -146,7 +146,7 @@ for each light</li>
 <dl class="method">
 <dt id="dta.Phase.getDynameqStr">
 <tt class="descname">getDynameqStr</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Phase.getDynameqStr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the dynameq representation of the phase as a string</p>
+<dd><p>Return the Dynameq representation of the phase as a string.  Includes ending newline.</p>
 </dd></dl>
 
 <dl class="method">
@@ -214,11 +214,12 @@ input start node to end node</p>
 <dl class="classmethod">
 <dt id="dta.Phase.readFromDynameqString">
 <em class="property">classmethod </em><tt class="descname">readFromDynameqString</tt><big>(</big><em>net</em>, <em>timeplan</em>, <em>lineIter</em><big>)</big><a class="headerlink" href="#dta.Phase.readFromDynameqString" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the dynameq phase string defined in multiple lines of text and returns a
-Dynameq phase object. 
-lineIter is an iterator over the lines of a text file containing the Dynameq phase info. 
-net is an instance of :py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>DynameqNetwork&#8217;
-timePlan is an instance of :py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>TimePlan&#8217;</p>
+<dd><p>Parses the dynameq phase string defined in multiple lines of text and returns a <a class="reference internal" href="#dta.Phase" title="dta.Phase"><tt class="xref py py-class docutils literal"><span class="pre">Phase</span></tt></a> object.</p>
+<ul class="simple">
+<li><em>lineIter</em> is an iterator over the lines of a text file containing the Dynameq phase info.</li>
+<li><em>net</em> is an instance of <a class="reference internal" href="dta.DynameqNetwork.html#dta.DynameqNetwork" title="dta.DynameqNetwork"><tt class="xref py py-class docutils literal"><span class="pre">DynameqNetwork</span></tt></a></li>
+<li><em>timePlan</em> is an instance of <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a></li>
+</ul>
 </dd></dl>
 
 </dd></dl>

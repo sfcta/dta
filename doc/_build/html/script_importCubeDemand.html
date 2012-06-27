@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Importing Static Demand &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/dta.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="index.html" />
+    <link rel="next" title="Importing Validation Counts" href="script_attachCountsFromCountDracula.html" />
+    <link rel="prev" title="Importing Stop Signs" href="script_importUnsignalizedIntersections.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="script_attachCountsFromCountDracula.html" title="Importing Validation Counts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="script_importUnsignalizedIntersections.html" title="Importing Stop Signs"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-importCubeDemand">
+<span id="importing-static-demand"></span><h1>Importing Static Demand<a class="headerlink" href="#module-importCubeDemand" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    This file is part of DTA.</span>
+
+<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
+<span class="s">    it under the terms of the GNU General Public License as published by</span>
+<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="s">    (at your option) any later version.</span>
+
+<span class="s">    DTA is distributed in the hope that it will be useful,</span>
+<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="s">    GNU General Public License for more details.</span>
+
+<span class="s">    You should have received a copy of the GNU General Public License</span>
+<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pdb</span> 
+<span class="kn">import</span> <span class="nn">dta</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
+
+<span class="s"> python importCubeDemand.py dynameq_net_dir dynameq_net_prefix cube_demand_table cubeVehicleClass startTime endTime timeStep output_demand_table</span>
+<span class="s"> </span>
+<span class="s"> e.g.</span>
+<span class="s"> </span>
+<span class="s"> python importCubeDemand.py ../testdata/dynameqNetwork_gearySubset/ smallTestNet ../testdata/dynameqNetwork_gearySubset/cubeTestDemand.txt &quot;TRUCK&quot; 15:30 18:30 00:15 ../testdata/dynameqNetwork_gearySubset/sfTestDemand </span>
+
+<span class="s"> The command line above will import the TRUCK trips in the cubeTestDemand.txt table to the dynameq network located in </span>
+<span class="s"> ../testdata/dynameqNetwork_gearySubset/ and having the prefix smallTestNet.</span>
+<span class="s"> The time period associated with the cubeTestDemand.txt table is from 15:30 to 18:30. The output table will have one time period,</span>
+<span class="s"> the same as the one applied to Cube, and will be saved at ../testdata/dynameqNetwork_gearySubset/sfTestDemand in the dynameq</span>
+<span class="s"> specific format (cell values are hourly trip rates). Currently the timeStep variable (00:15) in our example is not used. </span>
+<span class="s"> </span>
+<span class="s"> &quot;&quot;&quot;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">USAGE</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">INPUT_DYNAMEQ_NET_DIR</span>         <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span>      <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">CUBE_TABLE</span>                    <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">CUBE_VEH_CLASS</span>                <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">START_TIME</span>                    <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">END_TIME</span>                      <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+    <span class="n">TIME_STEP</span>                     <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+    <span class="n">OUTPUT_DYNAMEQ_TABLE</span>          <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+
+    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
+
+    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;importCubeDemand.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;importCubeDemand.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+    <span class="n">scenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">scenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span> 
+    <span class="n">net</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
+
+    <span class="n">startTime</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME</span><span class="p">)</span>
+    <span class="n">endTime</span>   <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">END_TIME</span><span class="p">)</span>
+    <span class="n">timeStep</span>  <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">TIME_STEP</span><span class="p">)</span>
+
+    <span class="n">demand</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Demand</span><span class="o">.</span><span class="n">readCubeODTable</span><span class="p">(</span><span class="n">CUBE_TABLE</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">CUBE_VEH_CLASS</span><span class="p">,</span> <span class="n">startTime</span><span class="p">,</span> <span class="n">endTime</span><span class="p">)</span>
+
+    <span class="n">demand</span><span class="o">.</span><span class="n">writeDynameqTable</span><span class="p">(</span><span class="n">OUTPUT_DYNAMEQ_TABLE</span><span class="p">)</span>
+
+
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Wrote</span><span class="si">%10.2f</span><span class="s"> </span><span class="si">%-16s</span><span class="s">   to </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">demand</span><span class="o">.</span><span class="n">getTotalNumTrips</span><span class="p">(),</span>
+                                                      <span class="s">&quot;TRIPS&quot;</span><span class="p">,</span> <span class="n">OUTPUT_DYNAMEQ_TABLE</span><span class="p">))</span>
+
+
+    
+    
+
+
+    
+    
+        
+        
+</pre></div>
+</td></tr></table></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="script_importUnsignalizedIntersections.html"
+                        title="previous chapter">Importing Stop Signs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="script_attachCountsFromCountDracula.html"
+                        title="next chapter">Importing Validation Counts</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/script_importCubeDemand.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="script_attachCountsFromCountDracula.html" title="Importing Validation Counts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="script_importUnsignalizedIntersections.html" title="Importing Stop Signs"
+             >previous</a> |</li>
+        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

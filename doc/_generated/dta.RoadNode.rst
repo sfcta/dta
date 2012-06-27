@@ -59,6 +59,8 @@ dta.RoadNode
       ~RoadNode.iterOutgoingLinks
       ~RoadNode.iterTimePlans
       ~RoadNode.iterUpstreamNodes
+      ~RoadNode.setAllWayStopControl
+      ~RoadNode.setTwoWayStopControl
    
    
 
