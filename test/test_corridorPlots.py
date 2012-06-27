@@ -66,7 +66,13 @@ def getGearySubNet():
         if link.isConnector():
             continue
         link._label  = str(link.getId())
+
+        link.setObsCount(0, 60, random.randint(150, 450))
+        
         for mov in link.iterOutgoingMovements():
+            
+            mov.setObsCount(0, 60, random.randint(50, 150))
+            
             for start, end in izip(range(0, 60, 15), range(15, 61, 15)):
                 mov.setSimOutVolume(start, end, random.randint(20, 50))
                 mov.setSimInVolume(start, end, random.randint(20, 50))
@@ -74,6 +80,7 @@ def getGearySubNet():
                 randInt = random.randint(2,4) 
                 tt = mov.getFreeFlowTTInMin() * float(randInt)
                 mov.setSimTTInMin(start, end, tt)
+
     
     return net 
 

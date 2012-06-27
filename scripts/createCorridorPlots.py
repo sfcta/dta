@@ -95,6 +95,14 @@ if __name__ == "__main__":
     simTimeStep = 5
     net.readSimResults(simStartTime, simEndTime, 5)
 
+    DtaLogger.info("Reading 15-minute link counts")
+    net.readObsLinkCounts(COUNT_DIR + "/" + LINK_COUNT_FILE_15MIN)
+    DtaLogger.info("Reading 15-minute movement counts")
+    net.readObsMovementCounts(COUNT_DIR + "/" + MOVEMENT_COUNT_FILE_15MIN)
+    DtaLogger.info("Reading 5-minute movement counts")
+    net.readObsMovementCounts(COUNT_DIR + "/" + MOVEMENT_COUNT_FILE_5MIN)
+    
+
     reportStartTime = Time.readFromString(REPORTING_START_TIME).getMinutes()
     reportEndTime = Time.readFromString(REPORTING_END_TIME).getMinutes()
 

@@ -70,6 +70,15 @@ class CountsVsVolumes(object):
         Return a list of intersection locations along the route
         """
         return self._intLocations
+
+    def getMidLinkLocations(self):
+        """
+        Return a list of link midpoint locations
+        """
+        result = []
+        for loc1, loc2 in izip(self._intLocations, self._intLocations[1:]):
+            result.append((loc1 + loc2) / 2.0)
+        return result 
     
     def getVolumesAlongCorridor(self, startTimeInMin, endTimeInMin):
         """Generator method that returns the edge, leftTurn and right turn
@@ -143,6 +152,8 @@ class CountsVsVolumes(object):
             linkCounts.append(edgeCount)
             leftTurnCounts.append(leftTurnCount)
             rightTurnCounts.append(rightTurnCount)
+            
+        return linkCounts, leftTurnCounts, rightTurnCounts
 
     def getMovementVolumesCrossingCorridor(self, startTimeInMin, endTimeInMin):
         """
@@ -223,7 +234,6 @@ class CountsVsVolumes(object):
             else:
                 volumeLocations.append(edge.getLengthInFeet())
 
-            print edge.iid, edge.getSimVolume(startTimeInMin, endTimeInMin)
             volumes.append(edge.getSimVolume(startTimeInMin, endTimeInMin))
 
         plt.clf()
@@ -239,7 +249,6 @@ class CountsVsVolumes(object):
         #ax.set_yticklabels(map(str, range(len(yticks))))
         ax.set_yticklabels(["" for i in range(len(yticks))])
         return ax
-
 
     def writeVolumesVsCounts(self, startTimeInMin, endTimeInMin, outPlotFileName, svg=False):
         """
@@ -263,6 +272,9 @@ class CountsVsVolumes(object):
         names = self.getIntersectionNames()
         locations = np.array(self.getIntersectionLocations())
         linkOutVolumes, linkInVolumes, ltVolumes, rtVolumes, thruCapacities = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
+        linkCounts, ltCounts, rtCounts = self.getCountsAlongCorridor(startTimeInMin, endTimeInMin)
+        
+        
         #linkCapacities, ltCapacities = self.getCapacitiesAlongCorridor(startTimeInMin, endTimeInMin) 
 
         #throuCapacities = [link.getCapacity(startTimeInMin, endTimeInMin) for link in self._path.iterLinks()]
@@ -283,10 +295,22 @@ class CountsVsVolumes(object):
             valuesToPlot.append(linkInVolumes[i])
             valuesToPlot.append(linkOutVolumes[i])
             speedValuesToPlot.append(speedsAlongCorridor[i])
-            speedValuesToPlot.append(speedsAlongCorridor[i])            
+            speedValuesToPlot.append(speedsAlongCorridor[i])
             
-        ax.plot(newLocations, valuesToPlot, c='b')
+        ax.plot(newLocations, valuesToPlot, c='b', label="Volume")
 
+        #plot the link count info
+        linkCountLoc = self.getMidLinkLocations()
+        linkCountsCleaned = []
+        for lCountLoc, lCount in izip(linkCountLoc, linkCounts):
+            if lCount != None:
+                linkCountsCleaned.append((lCountLoc, lCount))
+
+        if linkCountsCleaned:
+            ax.scatter([elem[0] for elem in linkCountsCleaned],
+                       [elem[1] for elem in linkCountsCleaned],
+                       c="k")
+        
         ax.set_xticks(locations)
         ax.set_xticklabels(names, rotation=90)
         ax.set_ylim(0, int(max(valuesToPlot)) + 1)
@@ -310,12 +334,25 @@ class CountsVsVolumes(object):
 
         ax = plt.subplot(312)
 
-        #for i in range(len(rtVolumes)):
-        #    if rtVolumes[i] == 0:
-        #        rtVolumes[i] = rtVolumes[i] + 50
-        #    if ltVolumes[i] == 0:
-        #        ltVolumes[i] = ltVolumes[i] + 50 
-            
+        linkCountsCleaned = []
+        for lCountLoc, lCount in izip(locations[1:], ltCounts):
+            if lCount != None:
+                linkCountsCleaned.append((lCountLoc - BAR_WIDTH, lCount))
+
+        if linkCountsCleaned:            
+            ax.scatter([elem[0] for elem in linkCountsCleaned],
+                       [elem[1] for elem in linkCountsCleaned],
+                       c="k", marker="^", s=100)
+
+        linkCountsCleaned = []
+        for rCountLoc, rCount in izip(locations[1:], rtCounts):
+            if rCount != None:
+                linkCountsCleaned.append((rCountLoc + BAR_WIDTH, rCount))
+
+        if linkCountsCleaned:            
+            ax.scatter([elem[0] for elem in linkCountsCleaned],
+                       [elem[1] for elem in linkCountsCleaned],
+                       c="k", marker="s", s=100)
         
         ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, width=BAR_WIDTH,bottom=0, color='r', label="LT Volumes Off")
         ax.bar(locations[1:], rtVolumes, width=BAR_WIDTH, bottom=0, color='y', label="RT Volumes Off")
