@@ -297,7 +297,7 @@ class CountsVsVolumes(object):
             speedValuesToPlot.append(speedsAlongCorridor[i])
             speedValuesToPlot.append(speedsAlongCorridor[i])
             
-        ax.plot(newLocations, valuesToPlot, c='b', label="Volume")
+        p1, = ax.plot(newLocations, valuesToPlot, c='b', label="Link Volume")
 
         #plot the link count info
         linkCountLoc = self.getMidLinkLocations()
@@ -323,12 +323,12 @@ class CountsVsVolumes(object):
 
         ax.grid(True)
 
-        p2, = speedAxis.plot(newLocations, speedValuesToPlot, "g-", label="Link Speeds")
+        p2, = speedAxis.plot(newLocations, speedValuesToPlot, "g-", label="Link Speed")
         speedAxis.set_ylim(0, int(max(speedsAlongCorridor) + 1))
 
         #ax.legend(loc=1)
         speedAxis.set_ylabel('Link Speeds (mph)')        
-
+        ax.legend([p1, p2], [l.get_label() for l in [p1, p2]], loc=3)
         
         #############################
 
