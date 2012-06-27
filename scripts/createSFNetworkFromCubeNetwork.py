@@ -128,7 +128,7 @@ if __name__ == '__main__':
     SF_CUBE_TURN_PROHIBITIONS   = args[1]
     
     SF_CUBE_SHAPEFILE           = None
-    if len(args) > 4:
+    if len(args) > 2:
         SF_CUBE_SHAPEFILE       = args[2]
 
     OUTPUT_NODE_SHAPEFILE       = None
