@@ -16,32 +16,13 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-#import json
-import pdb
-import math
-
-from collections import defaultdict
-import os
-import re
-from itertools import izip, chain
-import sys 
-
-import shapefile
-
-from dta.MultiArray import MultiArray
 
 import dta
-from dta.DynameqScenario import DynameqScenario
-from dta.DynameqNetwork import DynameqNetwork
-from dta.Algorithms import pairwise, any2, all2 
-from dta.DtaError import DtaError
-from dta.Logger import DtaLogger
-from dta.Movement import Movement
-from dta.Network import Network
-from dta.Node import Node
-from dta.RoadLink import RoadLink
-from dta.RoadNode import RoadNode
-from dta.Utils import lineSegmentsCross, getMidPoint
+from itertools import izip
+import os
+import re
+import shapefile
+import sys 
 
 
 USAGE = r"""
@@ -68,6 +49,7 @@ def readStopSignShapefile(shapefilename):
     sf      = shapefile.Reader(shapefilename)
     fields  = [field[0] for field in sf.fields[1:]]
     count   = 0
+    nocnn_id= 1
     
     # what we're returning
     cnn_to_recordlist = {}
@@ -81,6 +63,9 @@ def readStopSignShapefile(shapefilename):
 
         point = sr.shape.points[0]
         cnn   = sr_record_dict['CNN']
+        if cnn == 0:
+            cnn = "nocnn_%d" % nocnn_id
+            nocnn_id += 1
         
         # add the point
         sr_record_dict['COORDS'] = point
@@ -89,11 +74,16 @@ def readStopSignShapefile(shapefilename):
         cnn_to_recordlist[cnn].append(sr_record_dict)
         count += 1
 
-    DtaLogger.info("Read %d unique nodes and %d stop signs from %s" % (len(cnn_to_recordlist), count, shapefilename))
+    dta.DtaLogger.info("Read %d unique nodes and %d stop signs from %s" % (len(cnn_to_recordlist), count, shapefilename))
     return cnn_to_recordlist
     
 def cleanStreetName(streetName):
+    """
+    Given a streetname, this function attempts to make it uniform with the San Francisco DTA Network streetnames.
+    """
 
+    # these will be treated as regexes so you can specify ^ for the beginning of the string
+    # $ for the end, wild chars, etc
     corrections = {"TWELFTH":"12TH", 
                    "ELEVENTH":"11TH",
                    "TENTH":"10TH",
@@ -106,10 +96,7 @@ def cleanStreetName(streetName):
                    "THIRD":"3RD",
                    "SECOND":"2ND",
                    "FIRST":"1ST",
-                   "O'FARRELL":"O FARRELL",
                    "3RDREET":"3RD",
-                   "EMBARCADERO/KING":"THE EMBARCADERO",
-                   "VAN NESSNUE":"VAN NESS",
                    "3RD #3":"3RD",
                    "BAYSHORE #3":"BAYSHORE",
                    "09TH":"9TH",
@@ -121,63 +108,55 @@ def cleanStreetName(streetName):
                    "03RD":"3RD",
                    "02ND":"2ND",
                    "01ST":"1ST",
-                   "WEST GATE":"WESTGATE",
+                   "ARMY":"CESAR CHAVEZ",
+                   "DEL SUR":"DELSUR",
+                   "EMBARCADERO/KING":"THE EMBARCADERO",
+                   "GREAT HIGHWAY":"GREAT HWY",
+                   "O'FARRELL":"O FARRELL",
+                   "MARTIN L(UTHER)? KING":"MLK",
+                   "MCALLISTER":"MC ALLISTER",
+                   "MCKINNON":"MC KINNON",
                    "MIDDLEPOINT":"MIDDLE POINT",
-                   "ST FRANCIS":"SAINT FRANCIS",
-                   "MT VERNON":"MOUNT VERNON"}
+                   "MT VERNON":"MOUNT VERNON",
+                   "^ST ":"SAINT ",            
+                   "VAN NESSNUE":"VAN NESS",                   
+                   "WEST GATE":"WESTGATE",
+                   }
 
-
-    itemsToRemove = [" STREETS",
-                     " STREET",
-                     " STS.",
-                     " STS",
-                     " ST.",
-                     " ST",
-                     " ROAD",
-                     " RD.",
-                     " RD",
-                     " AVENUE",
-                     " AVE.",
-                     " AVES",
-                     " AVE",
-                     " BLVD.",
-                     " BLVD",
-                     " BOULEVARD",
-                     "MASTER:",
-                     " DRIVE",
-                     " DR.",
-                     " WAY",
-                     " WY",
-                     " CT",
-                     " TERR",
-                     " HWY"]
-
-    newStreetName = streetName.strip()
+    cleaned_name = streetName.strip()
     for wrongName, rightName in corrections.items():
-        if wrongName in streetName:
-            newStreetName = streetName.replace(wrongName, rightName)
-        if streetName == 'EMBARCADERO':
-            newStreetName = "THE EMBARCADERO"
-        if streetName.endswith(" DR"):
-            newStreetName = streetName[:-3]
-        if streetName.endswith(" AV"):
-            newStreetName = streetName[:-3]
+        cleaned_name = re.sub(wrongName, rightName, cleaned_name)
+    return cleaned_name
 
-    for item in itemsToRemove:
-        if item in newStreetName:
-            newStreetName = newStreetName.replace(item, "")
-
-    return newStreetName.strip()
-
-
-def cleanStreetNames(streetNames):
-    """Accept street names as a list and return a list 
-    with the cleaned street names"""
+def checkStreetnameConsistency(dta_node_id, dta_streets, stopsign_streets, stopsign_x_streets):
+    """
+    Verifies that the stopsign streets and the stopsign_x_streets are subsets of dta_streets.
+    Warns about violations.
     
-    newStreetNames = map(cleanStreetName, streetNames)
-    if len(newStreetNames) > 1 and newStreetNames[0] == "":
-        newStreetNames.pop(0)
-    return newStreetNames
+    *dta_node_id* is an integer, just used for logging.  All three  remaining inputs are lists of strings.
+    """
+    # these are what we're checking
+    # check once, and "stopsign street" overrides "stopsign X street"
+    checkname_to_checktype = {}
+    for stopsign_x_street in stopsign_x_streets:
+        checkname_to_checktype[cleanStreetName(stopsign_x_street)] = "stopsign X street"
+
+    for stopsign_street in stopsign_streets:
+        checkname_to_checktype[cleanStreetName(stopsign_street)] = "stopsign street"
+    
+    # actually check them now
+    for checkname,checktype in checkname_to_checktype.iteritems():
+
+        found = False
+        for dta_street in dta_streets:
+            # if any of the dta_streets start with it, coo
+            if dta_street.startswith(checkname):
+                found = True
+                break
+            
+        if not found:    
+            dta.DtaLogger.warn("Streetname consistency check: node %d doesn't have %s [%s]  (Searched %s)" % 
+                               (dta_node_id, checktype, checkname, str(dta_streets)))
 
 def updateNodePriority(net,matchedNodes):
     conflictNodes = []
@@ -214,7 +193,8 @@ def updateNodePriority(net,matchedNodes):
                             maxFacName = links.getLabel()
     dta.DtaLogger.info("%d stops are two-way with facility type conflicts" % len(conflictNodes))
     return True
-                
+
+#: this_is_main                
 if __name__ == "__main__":
 
     if len(sys.argv) != 4:
@@ -248,34 +228,39 @@ if __name__ == "__main__":
     for cnn, stopsignlist in cnn_to_recordlist.iteritems():
         
         # these are the streets for the stop signs
-        stopsign_streets = []
+        stopsign_streets   = []
+        stopsign_x_streets = []
         for stopsign in stopsignlist:
             if stopsign['STREET'] not in stopsign_streets:
                 stopsign_streets.append(stopsign['STREET'])
+            if stopsign['X_STREET'] not in stopsign_x_streets:
+                stopsign_x_streets.append(stopsign['X_STREET'])
 
         # find the nearest node to this                
         (min_dist, roadnode) = net.findNodeNearestCoords(stopsignlist[0]['COORDS'][0], stopsignlist[0]['COORDS'][1], quick_dist=100.0)
         
         if roadnode == None:
-            DtaLogger.warn("Could not find road node near %s and %s in the stop sign file" % (stopsignlist[0]['STREET'], stopsignlist[0]['X_STREET']))
+            dta.DtaLogger.warn("Could not find road node near %s and %s in the stop sign file" % (stopsignlist[0]['STREET'], stopsignlist[0]['X_STREET']))
             count_notmapped += 1
             continue
 
-        DtaLogger.debug("min_dist = %.3f roadnodeID=%d roadnode_streets=%s stopsign_streets=%s" % 
-                        (min_dist, roadnode.getId(), str(roadnode.getStreetNames(incoming=True, outgoing=False)),
-                         str(stopsign_streets)))
+        dta.DtaLogger.debug("min_dist = %.3f roadnodeID=%d roadnode_streets=%s stopsign_streets=%s" % 
+                            (min_dist, roadnode.getId(), str(roadnode.getStreetNames(incoming=True, outgoing=False)),
+                             str(stopsign_streets)))
 
-        # todo: streetname checking; make sure that the stopsign_streets are a subset of the roadnode_streets
+        # streetname checking; warn if stopsign_streets are not found in the roadnode_streets
+        checkStreetnameConsistency(roadnode.getId(), roadnode.getStreetNames(incoming=True, outgoing=False),
+                                   stopsign_streets, stopsign_x_streets)
                         
         # if the roadnode is already a signalized intersection, move on
         if roadnode.hasTimePlan():
-            DtaLogger.warn("Roadnode %d already has signal. Ignoring stop sign info." % roadnode.getId())
+            dta.DtaLogger.warn("Roadnode %d already has signal. Ignoring stop sign info." % roadnode.getId())
             count_hassignal += 1
             continue
         
         # if the number of incoming links == the number of stop signs, mark it an all way stop
         if len(stopsignlist) > roadnode.getNumIncomingLinks():
-            DtaLogger.warn("Roadnode %d missing incoming links?  More stop signs than incoming links" % roadnode.getId())
+            dta.DtaLogger.warn("Roadnode %d missing incoming links?  More stop signs than incoming links" % roadnode.getId())
             count_moreincoming += 1 # not exclusive count!
             
         if  len(stopsignlist) >= roadnode.getNumIncomingLinks():
@@ -296,7 +281,8 @@ if __name__ == "__main__":
     
     net.write(".", "sf_stops")
 
-        
+    net.writeNodesToShp("sf_stops_nodes")
+    net.writeLinksToShp("sf_stops_links")         
     
 
             
