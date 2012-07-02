@@ -69,6 +69,7 @@ if __name__ == "__main__":
     LINK_COUNT_FILE_15MIN                = sys.argv[7] 
     MOVEMENT_COUNT_FILE_15MIN            = sys.argv[8]
     MOVEMENT_COUNT_FILE_5MIN             = sys.argv[9]  
+    LINK_VOLUME_FILE_TOTAL               = "AllLinks.csv"
 
     #INPUT_DYNAMEQ_NET_DIR                = "~/Documents/sfcta/06082012/"
     #INPUT_DYNAMEQ_NET_PREFIX             = "sf_jun7_530p"
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     DtaLogger.info("Reading 5-minute movement counts")
     net.readObsMovementCounts(COUNT_DIR + "/" + MOVEMENT_COUNT_FILE_5MIN)
 
-        # print 15-minute link counts           
+    # print 15-minute link counts           
     DtaLogger.info("Writing %d-minute link counts" % reportingTimeStep)
         
     # start with the header
@@ -182,21 +183,43 @@ if __name__ == "__main__":
                     outputStream.write("%d," % mov.getObsCount(sTime, sTime + reportingTimeStep))
                     outputStream.write("%d\n" % mov.getSimOutVolume(sTime, sTime + reportingTimeStep))
     
-    outputStream.close()                    
+    outputStream.close()         
+ 
+    # write the shape file   
+    DtaLogger.info("Writing shape files")  
+    
+    net.writeLinksToShp("sf_links")
+    net.writeNodesToShp("sf_nodes")
+        
+    
+    # write out the total volume on all links  
+    DtaLogger.info("Writing total volumes")    
+    
+    # start with the header
+    outputStream = open(LINK_VOLUME_FILE_TOTAL, "w") 
+    outputStream.write("LinkID,Label,FacilityType,FreeflowSpeed,NumLanes,StartTime,EndTime,ModelVolume\n")
+        
+    # now loop through all links 
+    for link in net.iterRoadLinks():  
+        outputStream.write("%d," % link.getId())
+        outputStream.write("%s," % link.getLabel())
+        outputStream.write("%d," % link.getFacilityType())
+        outputStream.write("%d," % link.getFreeFlowSpeedInMPH())
+        outputStream.write("%d," % link.getNumLanes())
+        outputStream.write("%s," % Time.fromMinutes(simStartTime))
+        outputStream.write("%s," % Time.fromMinutes(simEndTime))       
+        outputStream.write("%d\n" % link.getSimOutVolume(simStartTime, simEndTime))
+
+    # done in a separate script
+    #link1 = gearyWBStart = net.getLinkForId(18394)
+    #link2 = gearyWBEnd = net.getLinkForId(27449)
+    #dta.Algorithms.ShortestPaths.initializeMovementCostsWithLength(net) 
+    #pathLinks = dta.Algorithms.ShortestPaths.getShortestPathBetweenLinks(net, link1, link2, runSP=True)
+    #path = dta.Path(net, "test", pathLinks)    
+    #volumesVsCounts = dta.CorridorPlots.CountsVsVolumes(net, path, False)
+    #
+    ##TODO: input start time, end time
+    #volumesVsCounts.writeVolumesVsCounts(16*60, 17*60, 'gearyWB16_17')
+                 
         
     DtaLogger.info("Finished!")
-
-
-    #net.writeLinksToShp("sf_links")
-    #net.writeNodesToShp("sf_nodes")
-
-    link1 = gearyWBStart = net.getLinkForId(18394)
-    link2 = gearyWBEnd = net.getLinkForId(27449)
-    dta.Algorithms.ShortestPaths.initializeMovementCostsWithLength(net) 
-    pathLinks = dta.Algorithms.ShortestPaths.getShortestPathBetweenLinks(net, link1, link2, runSP=True)
-    path = dta.Path(net, "test", pathLinks)    
-    volumesVsCounts = dta.CorridorPlots.CountsVsVolumes(net, path, False)
-
-    #TODO: input start time, end time
-    volumesVsCounts.writeVolumesVsCounts(16*60, 17*60, 'gearyWB16_17')
-       
