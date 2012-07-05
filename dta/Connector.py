@@ -185,6 +185,15 @@ class Connector(RoadLink):
                 return link.getEndNode()
         raise DtaError("I cannot identify the centroid associated with connector %d" % self.getId())
             
-            
+    def isBoundaryConnector(self):
+        """Return True if the connector's centroid is in the list of exteral centroids
+        """
+        externalCentroids=[1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
+                        7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
+                        8339,8832]
+        if self.getCentroid().getId() in externalCentroids:
+            return True
+        else:
+            return False            
 
             

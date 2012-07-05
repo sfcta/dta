@@ -54,10 +54,95 @@ USAGE = r"""
 import sys
 import dta
 import csv
+import re
 from dta.Logger import DtaLogger
 from dta.Utils import Time
 from dta.Path import Path
 from dta.DtaError import DtaError
+
+def cleanStreetName(streetName):
+
+    corrections = {"TWELFTH":"12TH", 
+                    "ELEVENTH":"11TH",
+                    "TENTH":"10TH",
+                    "NINTH":"9TH",
+                    "EIGHTH":"8TH",
+                    "SEVENTH":"7TH",
+                    "SIXTH":"6TH",
+                    "FIFTH":"5TH",
+                    "FOURTH":"4TH",
+                    "THIRD":"3RD",
+                    "SECOND":"2ND",
+                    "FIRST":"1ST",
+                    "O'FARRELL":"O FARRELL",
+                    "3RDREET":"3RD",
+                    "EMBARCADERO/KING":"THE EMBARCADERO",
+                    "VAN NESSNUE":"VAN NESS",
+                    "3RD #3":"3RD",
+                    "BAYSHORE #3":"BAYSHORE",
+                    "09TH":"9TH",
+                    "08TH":"8TH",
+                    "07TH":"7TH",
+                    "06TH":"6TH",
+                    "05TH":"5TH",
+                    "04TH":"4TH",
+                    "03RD":"3RD",
+                    "02ND":"2ND",
+                    "01ST":"1ST"}
+
+
+    itemsToRemove = [" STREETS",
+                    " STREET",
+                    " STS.",
+                    " STS",
+                    " ST.",
+                    " ST",
+                    " ROAD",
+                    " RD.",
+                    " RD",
+                    " AVENUE",
+                    " AVE.",
+                    " AVES",
+                    " AVE",
+                    " BLVD.",
+                    " BLVD",
+                    " BOULEVARD",
+                    "MASTER:",
+                    " DRIVE",
+                    " DR.",
+                    " WAY",
+                    " WY",
+                    " CT",
+                    " TERR",
+                    " HWY"]
+
+    newStreetName = streetName.strip()
+    for wrongName, rightName in corrections.items():
+        if wrongName in streetName:
+            newStreetName = streetName.replace(wrongName, rightName)
+        if streetName == 'EMBARCADERO':
+            newStreetName = "THE EMBARCADERO"
+        if streetName.endswith(" DR"):
+            newStreetName = streetName[:-3]
+        if streetName.endswith(" AV"):
+            newStreetName = streetName[:-3]
+
+    for item in itemsToRemove:
+        if item in newStreetName:
+            newStreetName = newStreetName.replace(item, "")
+
+    return newStreetName.strip()
+
+    
+
+def cleanStreetNames(streetNames):
+    """Accept street names as a list and return a list 
+    with the cleaned street names"""
+    
+    newStreetNames = map(cleanStreetName, streetNames)
+    if len(newStreetNames) > 1 and newStreetNames[0] == "":
+        newStreetNames.pop(0)
+    return newStreetNames
 
 if __name__ == "__main__":
     
@@ -112,32 +197,47 @@ if __name__ == "__main__":
 
     allRoutes = []
     for record in csv.DictReader(open(ROUTE_DEFINITION_FILE, "r")):
+        streetNames = []
 
-        name = record["RouteName"].strip()        
-        if "/" in name:
-            DtaLogger.error("Please remove / character from path %s from %s to %s" % (name, start, end))
-            continue
+        name = record["RouteName"].strip()
+        regex = re.compile(r",| AND|\&|\@|\ AT|\/")
+        streetNames = regex.split(name)
+        streetNames_cleaned = [cleanStreetName(nm) for nm in streetNames]
+
+        #if "/" in name:
+        #    DtaLogger.error("Please remove / character from path %s from %s to %s" % (name, start, end))
+        #    continue
 
         avgTTInMin = float(record["totalAvgTT"]) / 60.0
+        
         end = record["End"].strip()
         start = record["Start"].strip()
+
+        end = cleanStreetName(end)
+        start = cleanStreetName(start)
         
-        fullName = "%s from %s to %s" % (name, start, end)
-        
-        try: 
-            path = Path.createPath(net, fullName, [[name, start], [name, end]], cutoff=0.7)
-            DtaLogger.info("CREATED path %s from %s to %s" % (name, start, end))            
-        except DtaError:
-            DtaLogger.error("Failed to create path %s from %s to %s" % (name, start, end))
-            continue            
+        for street in streetNames_cleaned:
+            fullName = "%s from %s to %s" % (street, start, end)
+            name = street
+            try: 
+                path = Path.createPath(net, fullName, [[street, start], [street, end]], cutoff=0.7)
+                DtaLogger.info("CREATED path %s from %s to %s" % (street, start, end))
+                break
+            except DtaError:
+                DtaLogger.error("Failed to create path %s from %s to %s" % (street, start, end))
+                continue
 
         allRoutes.append(path)
         print "%s,%f,%f,%f\n" % ("%s from %s to %s" % (name, start, end), path.getSimTTInMin(reportStartTime, reportEndTime), avgTTInMin, path.getLengthInMiles())
         routeTTOuput.write("%s,%f,%f,%f\n" % ("%s from %s to %s" % (name, start, end), path.getSimTTInMin(16*60, 17*60), avgTTInMin, path.getLengthInMiles()))
 
-        
+        #outfileStreets = []
+        #outfileStreets.append(name)
+        #outfileStreets.append(start)
+        outfileName = name
         volumesVsCounts = dta.CorridorPlots.CountsVsVolumes(net, path, False)
-        volumesVsCounts.writeVolumesVsCounts(reportStartTime, reportEndTime, record["RouteName"])
+        #outfileName = "_".join(outfileStreets)
+        volumesVsCounts.writeVolumesVsCounts(reportStartTime, reportEndTime, outfileName)
 
     Path.writePathsToShp(allRoutes, "allRoutes") 
     routeTTOuput.close()

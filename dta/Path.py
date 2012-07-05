@@ -67,6 +67,7 @@ class Path(object):
                     for nodeA, nodeB in izip(intermediate_path_of_nodes, intermediate_path_of_nodes[1:]):
                         if nodeA.hasOutgoingLinkForNodeId(nodeB.getId()):
                             links_to_add_to_list.append(  net.getLinkForNodeIdPair(nodeA.getId(), nodeB.getId())  )
+                            
                     
             prevNode = node
             linkList = linkList + links_to_add_to_list

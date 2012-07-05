@@ -452,3 +452,4 @@ class Node(object):
         """
         return sum(link.getNumOutgoingMovements() for link in self.iterIncomingLinks())
         
+

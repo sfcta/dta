@@ -38,7 +38,7 @@ from .VehicleType import VehicleType
 from .VehicleClassGroup import VehicleClassGroup
 from .Movement import Movement
 from .Algorithms import *
-from .Utils import Time 
+from .Utils import Time
 
 class Network(object):
     """
@@ -545,10 +545,16 @@ class Network(object):
                     continue
                     
                 if mov.getIncomingLink().isConnector() and mov.getOutgoingLink().isRoadLink():
-                    mov.getIncomingLink().setNumLanes(mov.getOutgoingLink().getNumLanes())
+                    if mov.getIncomingLink().isBoundaryConnector():
+                        mov.getIncomingLink().setNumLanes(sum([link.getNumLanes() for link in node.iterOutgoingLinks() if link.isRoadLink()]))
+                    else:
+                        mov.getIncomingLink().setNumLanes(mov.getOutgoingLink().getNumLanes())
                 
                 if mov.getIncomingLink().isRoadLink() and mov.getOutgoingLink().isConnector():
-                    mov.getOutgoingLink().setNumLanes(mov.getIncomingLink().getNumLanes())
+                    if mov.getOutgoingLink().isBoundaryConnector():
+                        mov.getOutgoingLink().setNumLanes(sum([link.getNumLanes() for link in node.iterIncomingLinks() if link.isRoadLink()]))
+                    else:
+                        mov.getOutgoingLink().setNumLanes(mov.getIncomingLink().getNumLanes())
                             
 
                     
@@ -918,25 +924,35 @@ class Network(object):
           * *road_label_list* a list of road names e.g. [mission st, 6th st]
 
         This method will provide an approximate matching if CUTOFF  is less than one. From
-        our experience a CUTOFF of 0.7 provides good results        
+        our experience a CUTOFF of 0.7 provides good results
+        
         """
         #print "Trying to find: %s" % (", ".join(road_label_list) )
 
         road_label_list_u = [label.upper() for label in road_label_list]
-        
         for roadnode in self.iterRoadNodes():
-            
-            streetnames = [label.upper() for label in roadnode.getStreetNames(incoming=True, outgoing=True)] 
+            streetmatch = 0
+            streetnames = [label.upper() for label in roadnode.getStreetNames(incoming=True, outgoing=True)]
+##            if len(road_label_list) != len(streetnames):
+##                continue
 
-            if len(road_label_list) != len(streetnames):
-                continue 
+##            road_label_list_u = set(road_label_list_u)
+##            road_label_list_u = sorted(road_label_list_u)
 
-            for idx in range(len(road_label_list)):
-                if not difflib.get_close_matches(streetnames[idx], [road_label_list_u[idx]], 1, CUTOFF):
-                    break
-            else:
-               return roadnode  
-                    
+##            for idx in range(len(road_label_list_u)):
+##                if not difflib.get_close_matches(streetnames[idx], [road_label_list_u[idx]], 1, CUTOFF):
+##                    break
+##            else:
+##               return roadnode
+            for idx in range(len(streetnames)):
+                for label_street in road_label_list_u:
+                    if label_street in str(streetnames[idx]):
+                        streetmatch += 1
+
+            if streetmatch >= len(road_label_list_u):
+                return roadnode
+
+        dta.DtaLogger.error("Couldn't find intersection with %s in the Network" % road_label_list_u)            
         raise DtaError("findNodeForRoadLabels: Couldn't find intersection with %s in the Network" % 
                            (", ".join(road_label_list)  )  )
                            

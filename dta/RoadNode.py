@@ -165,6 +165,9 @@ class RoadNode(Node):
             #    continue
             if candidateLink.getLength() < MIN_LENGTH_IN_MILES:
                 continue
+            if connector.isBoundaryConnector():
+                if candidateLink.isFreeway() or candidateLink.isRamp():
+                    continue
 
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
             middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd)

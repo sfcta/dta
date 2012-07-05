@@ -51,6 +51,10 @@ class RoadLink(Link):
     DIR_NB = "NB"
     #: Southbound return value for :py:meth:`RoadLink.getDirection`
     DIR_SB = "SB"
+
+    #Set facility types for freeway and ramp links
+    FACILITY_TYPE_FREEWAY = 1
+    FACILITY_TYPE_RAMP = 8
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
@@ -558,7 +562,8 @@ class RoadLink(Link):
 
     def euclideanLengthInLengthUnits(self):
         """
-        Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.        
+        Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.
+        
         """
         if RoadLink.LENGTH_UNITS == "miles" and Node.COORDINATE_UNITS == "feet":
             return (self.euclideanLength() / 5280.0)
@@ -580,7 +585,8 @@ class RoadLink(Link):
             return self._length
         else:
             return self.euclideanLengthInLengthUnits()
-                
+        
+        
     def getLengthInCoordinateUnits(self):
         """
         Returns the length of the link in :py:attr:`Node.COORDINATE_UNITS` units.
@@ -1001,4 +1007,14 @@ class RoadLink(Link):
             if not mov.hasObsCount(startTimeInMin, endTimeInMin):   
                   status = False
         return status
+
+    def isFreeway(self):
+        """Return True if the link is a freeway
+        """
+        return True if self._facilityType == RoadLink.FACILITY_TYPE_FREEWAY else False
+
+    def isRamp(self):
+        """Return True if the link is a ramp
+        """
+        return True if self._facilityType == RoadLink.FACILITY_TYPE_RAMP else False
 

@@ -224,7 +224,7 @@ if __name__ == '__main__':
         'FT15 AT0':3.0688, 'FT15 AT1':2.9205, 'FT15 AT2':2.7831, 'FT15 AT3':2.8080, 'FT15 AT4':2.8080, 'FT15 AT5':2.8080, 
     }
     # see http://code.google.com/p/dta/wiki/NetworkDescriptionForSF
-    ftToDTALookup = {"2":1,
+    ftToDTALookup = {"2":dta.RoadLink.FACILITY_TYPE_FREEWAY,
                      "3":2,
                      "1":3,
                      "7":4,
@@ -232,7 +232,7 @@ if __name__ == '__main__':
                      "12":5,
                      "4":6,
                      "11":7,
-                     "5":8,
+                     "5":dta.RoadLink.FACILITY_TYPE_RAMP,
                      # centroid connectors should be what?
                      "6":9,
                      }
