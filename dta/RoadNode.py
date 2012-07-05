@@ -129,12 +129,14 @@ class RoadNode(Node):
         """
         return False
     
-    def getCandidateLinksForSplitting(self, connector):
+    def getCandidateLinksForSplitting(self, connector, disallowConnectorEvalStr):
         """
         Given a :py:class:`Connector` instance whose start node or end node is the calling instance,
         returns a list of :py:class:`RoadLink` instances where:
         
         * The link is at least 0.009 miles long (why?)
+        * If *disallowConnectorEvalStr*, then it evaluates as False for a :py:class:`RoadLink` 
+          (using :py:meth:`RoadLink.disallowSplitForConnector`
         * If one were to create a new link between the *connector*'s :py:class:`VirtualNode` and
           the midpoint of the link, none of the other :py:class:`RoadLink` instances adjacent to the calling node
           would cross it.
@@ -161,20 +163,22 @@ class RoadNode(Node):
         
         for candidateLink in self.iterAdjacentRoadLinks():
             
-            #if connector.getCentroid().isConnectedToRoadNode(candidateLink.getOtherEnd(self)):
-            #    continue
             if candidateLink.getLength() < MIN_LENGTH_IN_MILES:
                 continue
-            if connector.isBoundaryConnector():
-                if candidateLink.isFreeway() or candidateLink.isRamp():
-                    continue
+            
+            # if this one isn't allowed, don't consider it
+            if disallowConnectorEvalStr and candidateLink.disallowSplitForConnector(disallowConnectorEvalStr): continue
 
             candidateLinkStart, candidateLinkEnd = candidateLink.getCenterLine()
             middlePointAtCandidateLink = getMidPoint(candidateLinkStart, candidateLinkEnd)
             otherCross = False
             for everyOtherRoadLink in self.iterAdjacentRoadLinks():
-                if candidateLink == everyOtherRoadLink:
-                    continue 
+                
+                if candidateLink == everyOtherRoadLink: continue 
+                
+                # don't worry about this one if it's not a candidate for splitting itself.
+                if disallowConnectorEvalStr and everyOtherRoadLink.disallowSplitForConnector(disallowConnectorEvalStr): continue
+                
                 otherLinkStart, otherLinkEnd = everyOtherRoadLink.getCenterLine() 
                 if lineSegmentsCross(vNode, middlePointAtCandidateLink, otherLinkStart, otherLinkEnd):
                     otherCross = True

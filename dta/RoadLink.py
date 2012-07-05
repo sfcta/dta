@@ -52,9 +52,6 @@ class RoadLink(Link):
     #: Southbound return value for :py:meth:`RoadLink.getDirection`
     DIR_SB = "SB"
 
-    #Set facility types for freeway and ramp links
-    FACILITY_TYPE_FREEWAY = 1
-    FACILITY_TYPE_RAMP = 8
     
     def __init__(self, id, startNode, endNode, reverseAttachedLinkId, facilityType, length,
                  freeflowSpeed, effectiveLengthFactor, responseTimeFactor, numLanes, 
@@ -772,7 +769,7 @@ class RoadLink(Link):
         See :py:meth:`RoadLink.getAngle()` for explanation of *usingShapePoints*.
         """
         # oriented the same way -- small angle
-        if abs(self.getAngle(other, usingShapepoints)) <= 0.75:
+        if abs(self.getAngle(other, usingShapepoints)) <= 0.80:
             return True
         
         return False
@@ -1008,13 +1005,13 @@ class RoadLink(Link):
                   status = False
         return status
 
-    def isFreeway(self):
-        """Return True if the link is a freeway
+    def disallowSplitForConnector(self, disallowConnectorEvalStr):
         """
-        return True if self._facilityType == RoadLink.FACILITY_TYPE_FREEWAY else False
-
-    def isRamp(self):
-        """Return True if the link is a ramp
+        Returns True if this road link should *not* be split for a :py:class:`Connector`.
+        
+        Used by :py:meth:`RoadNode.getCandidateLinksForSplitting`, which is used by
+        :py:meth:`Network.moveCentroidConnectorsFromIntersectionsToMidblocks`.
+        
+        Basically this DTA Anyway user defines this functionality by passing in *disallowConnectorEvalStr*.
         """
-        return True if self._facilityType == RoadLink.FACILITY_TYPE_RAMP else False
-
+        return eval(disallowConnectorEvalStr)

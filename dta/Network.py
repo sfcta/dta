@@ -441,7 +441,8 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
-    def moveCentroidConnectorsFromIntersectionsToMidblocks(self, splitReverseLinks=False, moveVirtualNodeDist=None, externalNodeIds=[]):
+    def moveCentroidConnectorsFromIntersectionsToMidblocks(self, splitReverseLinks=False, moveVirtualNodeDist=None, 
+                                                                  externalNodeIds=[], disallowConnectorEvalStr=None):
         """
         Remove centroid connectors from intersections and attach them to midblock locations.
         If there is not a node defining a midblock location the algorithm will split the 
@@ -451,6 +452,11 @@ class Network(object):
         If *moveVirtualNodeDist* is not None, if no candidate links are found, the method will 
         try moving the :py:class:`VirtualNode` instance around to find a candidate link. 
         *moveVirtualNodeDist* is in :py:attr:`Node.COORDINATE_UNITS`
+
+        Pass *disallowConnectorEvalStr* for a :py:class:`RoadLink` to evaluate
+        whether or not it should be available for splitting for a Connector.  For example,
+        *disallowConnectorEvalStr* could be ``True if self.getFacilityType() in [1,8] else False`` if links with
+        facility types 1 and 8 are not splittable, say if they are freeways or ramps.
                 
         Before:
         
@@ -481,7 +487,8 @@ class Network(object):
             for con in connectors:
                 try:
                     self.moveCentroidConnectorFromIntersectionToMidblock(node, con, splitReverseLink=splitReverseLinks, 
-                                                                         moveVirtualNodeDist=moveVirtualNodeDist) 
+                                                                         moveVirtualNodeDist=moveVirtualNodeDist,
+                                                                         disallowConnectorEvalStr=disallowConnectorEvalStr) 
                     #DtaLogger.info("Removed centroid connectors from intersection %d" % node.getId())
                 except DtaError, e:
                     DtaLogger.error("moveCentroidConnectorFromIntersectionToMidblock(node=%d, con=%d) errored: %s" % 
@@ -558,12 +565,18 @@ class Network(object):
                             
 
                     
-    def moveCentroidConnectorFromIntersectionToMidblock(self, roadNode, connector, splitReverseLink=False, moveVirtualNodeDist=None):
+    def moveCentroidConnectorFromIntersectionToMidblock(self, roadNode, connector, splitReverseLink=False, 
+                                                               moveVirtualNodeDist=None, disallowConnectorEvalStr=None):
         """
         Remove the input connector for an intersection and attach it to a midblock 
         location. If a midblock location does does not exist a RoadLink close
         to the connector is split in half and the connector is attached to the new 
-        midblock location.
+        midblock location.  
+        
+        Pass *disallowConnectorEvalStr* for a :py:class:`RoadLink` to evaluate
+        whether or not it should be available for splitting for a Connector.  For example,
+        *disallowConnectorEvalStr* could be ``True if self._facilitype in [1,8]`` if links with
+        facility types 1 and 8 are not splittable, say if they are freeways or ramps.
         
         If *moveVirtualNodeDist* is not None, if no candidate links are found, the method will 
         try moving the :py:class:`VirtualNode` instance around to find a candidate link. 
@@ -599,7 +612,7 @@ class Network(object):
             virtualNode._x = try_loc[0]
             virtualNode._y = try_loc[1]
             
-            candidateLinks = roadNode.getCandidateLinksForSplitting(connector)
+            candidateLinks = roadNode.getCandidateLinksForSplitting(connector, disallowConnectorEvalStr)
             
             # no candidate links found -- try moving the virtual node
             if len(candidateLinks) == 0:
@@ -1754,11 +1767,6 @@ class Network(object):
         # they're the same
         if link1 == link2: return
 
-        if node.getId() == 9004052:
-            DtaLogger.debug("node %d link1 %d and link2 %d have angle %.3f" % \
-                            (node.getId(), link1.getId(), link2.getId(),
-                             link1.getAngle(link2, True)))
-                    
         # not overlapping
         try:
             if not link1.isOverlapping(link2, usingShapepoints=True): return
