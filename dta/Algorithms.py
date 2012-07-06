@@ -387,7 +387,21 @@ def getClosestNode(net, inputNode):
             minDist = dist 
             closestNode = node 
 
-    return closestNode, math.sqrt(minDist) 
+    return closestNode, math.sqrt(minDist)
+
+def getClosestCentroid(net, inputCent):
+    """
+    Return the closest centroid in the input network
+    """
+    minDist = sys.maxint 
+    closestCent = None
+    for centroid in net.iterCentroids():
+        dist = (centroid.getX() - inputCent.getX()) ** 2 + (centroid.getY() - inputCent.getY()) ** 2
+        if dist < minDist and centroid!=inputCent:
+            minDist = dist 
+            closestCent = centroid
+
+    return closestCent, math.sqrt(minDist) 
 
 def getSPPathBetweenLinks(net, pathName, sourceLinkId, destLinkId):
     """
