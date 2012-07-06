@@ -224,6 +224,7 @@ if __name__ == "__main__":
     count_moreincoming  = 0
     count_allway        = 0
     count_twoway        = 0
+    count_allway_fromtwo= 0
     # the cnn is unique per intersection so loop through each intersection with stop signs
     for cnn, stopsignlist in cnn_to_recordlist.iteritems():
         
@@ -270,13 +271,42 @@ if __name__ == "__main__":
         
         # two way stop
         # todo: look at the matching facility type issue and set up custom priorities
-        roadnode.setTwoWayStopControl()
-        count_twoway += 1
+
+        # collect the through movements
+        through_movements = []        
+        for inlink in roadnode.iterIncomingLinks():
+            try:
+                through_movements.append(inlink.getThruTurn())
+            except:
+                pass
+        
+        # for now: set to all way stops if multiple incoming through movements conflict and 
+        # their incoming links have the same facility type
+        allway   = False        
+        for mov1 in through_movements:
+            for mov2 in through_movements:
+                if mov1 == mov2: continue
+                if not mov1.isInConflict(mov2): continue
+                # now they're in conflict
+                
+                if mov1.getIncomingLink().getFacilityType() == mov2.getIncomingLink().getFacilityType():
+                    # and equivalent priority
+                    roadnode.setAllWayStopControl()
+                    allway = True
+                    count_allway_fromtwo += 1
+                    break
+            # alway - done already
+            if allway: break 
+            
+        if not allway: 
+            roadnode.setTwoWayStopControl()
+            count_twoway += 1
         
     dta.DtaLogger.info("Read %d stop-sign intersections" % len(cnn_to_recordlist))
     dta.DtaLogger.info("  %-4d: Failed to map" % count_notmapped)
     dta.DtaLogger.info("  %-4d: Ignored because they're signalized" % count_hassignal)
     dta.DtaLogger.info("  %-4d: Setting as allway-stop (including %d questionable, with more stop signs than incoming links)" % (count_allway, count_moreincoming))
+    dta.DtaLogger.info("  %-4d: Setting as allway-stop in lieu of custom priorities" % count_allway_fromtwo)
     dta.DtaLogger.info("  %-4d: Setting as twoway-stop" % count_twoway)
     
     net.write(".", "sf_stops")
