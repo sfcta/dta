@@ -264,8 +264,8 @@ if __name__ == '__main__':
        linkFacilityTypeEvalStr          = "ftToDTALookup[FT]",
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
-       linkEffectiveLengthFactorEvalStr = "1",
-       linkResponseTimeFactorEvalStr    = "1.15",  # estimated based on Caltrans sensors for freeways in SF, applied to all network until further analysis
+       linkEffectiveLengthFactorEvalStr = "1.18", # estimated based on queue length survey data
+       linkResponseTimeFactorEvalStr    = "1.1 if FT=='2' else 1.25",  # estimated based on saturation flow analysis on survey data and PeMS freeway sensors
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
