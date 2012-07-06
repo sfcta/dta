@@ -24,7 +24,7 @@ from itertools import izip
 import numpy as np
 
 import dta
-from dta.Algorithms import hasPath 
+from dta.Algorithms import hasPath, getClosestCentroid 
 from dta.DtaError import DtaError
 from dta.MultiArray import MultiArray
 from dta.Utils import Time
@@ -62,6 +62,20 @@ class Demand(object):
             if tripsInHourlyFlows == 0:
                 continue
             if origin == destination:
+                origCent = net.getNodeForId(origin)
+                destCent, dist = getClosestCentroid(net, origCent)
+                tripsIntrazonal = tripsInHourlyFlows/2
+                tripsBefore = demand.getTotalNumTrips()
+                tripsOD = demand.getValue(endTime, origCent.getId(), destCent.getId())
+                tripsDO = demand.getValue(endTime, destCent.getId(), origCent.getId())
+                tripsOD += tripsIntrazonal
+                tripsDO += tripsIntrazonal
+                demand.setValue(endTime, origCent.getId(), destCent.getId(), tripsOD)
+                demand.setValue(endTime, destCent.getId(), origCent.getId(), tripsDO)
+                if abs(demand.getTotalNumTrips() - trips - tripsBefore)>0.05:
+                    dta.DtaLogger.error("Trips before intrazonal = %f, trips added = %f, trips after intrazonal = %f" % (tripsBefore,trips, demand.getTotalNumTrips()))
+                dist = dist/5280
+                dta.DtaLogger.debug("Assigning %f intrazonal trips from zone %s to zone %s, %8.4f miles away." % (tripsInHourlyFlows,origCent.getId(),destCent.getId(),dist))
                 numIntrazonalTrips += trips
                 continue
             if not net.hasCentroidForId(origin):
@@ -70,18 +84,20 @@ class Demand(object):
             if not net.hasCentroidForId(destination):
                 dta.DtaLogger.error("Destination zone %s does not exist" % destination)
                 continue
-            demand.setValue(endTime, origin, destination, tripsInHourlyFlows)
+            tripsOD = demand.getValue(endTime, origin, destination)
+            tripsOD += tripsInHourlyFlows
+            demand.setValue(endTime, origin, destination, tripsOD)
 
         dta.DtaLogger.info("The cube table has the following fields: %s" % ",".join(record.keys()))
           
         dta.DtaLogger.info("Read %10.2f %-16s from %s" % (totTrips, "%s TRIPS" % vehicleClassName, fileName))
         if numIntrazonalTrips > 0:
-            dta.DtaLogger.error("Disregarded intrazonal Trips %f" % numIntrazonalTrips)
-        if totTrips - demand.getTotalNumTrips() - numIntrazonalTrips > 1:
-            dta.DtaLogger.error("The total number of trips in the Cube table transfered to Dynameq is not the same.")
+            dta.DtaLogger.error("Reassigned intrazonal Trips %f" % numIntrazonalTrips)
+        if totTrips - demand.getTotalNumTrips() > 1:
+            dta.DtaLogger.error("The total number of trips in the Cube table = %d not equal to the number of trips transfered to Dynameq = %d." % (totTrips,demand.getTotalNumTrips()))
                     
         return demand
-
+       
     @classmethod
     def readDynameqTable(cls, net, fileName):
         """
