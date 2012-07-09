@@ -238,14 +238,13 @@ class SignalData(object):
             cPhase = {} # the current Phase
 
             activeMovs = [gMov for gMov in  groupMovements if
-                          phasingData[gMov, timeIndex1] == "G"]    
+                          phasingData[gMov, timeIndex1] == "G"]
             if any2(statePairs, lambda pair: pair == ("G", "R")):
                 #collect all the green movements
                 cPhase["Movs"] = activeMovs
                 cPhase["green"] = dur1
                 cPhase["yellow"] = 0
-                cPhase["allRed"] = 0                
-
+                cPhase["allRed"] = 0
                 if pPhase:
                     if pPhase["Movs"] == activeMovs:
                         cPhase["green"] += pPhase["green"]
@@ -260,8 +259,7 @@ class SignalData(object):
                 cPhase["Movs"] = activeMovs
                 cPhase["green"] = dur1
                 cPhase["yellow"] = dur2
-                cPhase["allRed"] = 0                
-
+                cPhase["allRed"] = 0
                 if pPhase:
                     if pPhase["Movs"] == activeMovs:
                         cPhase["green"] += pPhase["green"]
@@ -272,6 +270,19 @@ class SignalData(object):
                     pPhase = {}
                 else:
                     phases.append(cPhase)
+            elif any2 (statePairs, lambda pair: pair == ("R", "G")) and any2 (statePairs, lambda pair: pair == ("G", "G")):
+                if pPhase:
+                    cPhase["Movs"] = activeMovs
+                    cPhase["green"] = pPhase["green"]+dur1
+                    cPhase["yellow"] = 0
+                    cPhase["allRed"] = 0
+                else:
+                    cPhase["Movs"] = activeMovs
+                    cPhase["green"] = dur1
+                    cPhase["yellow"] = 0
+                    cPhase["allRed"] = 0
+                phases.append(cPhase)
+                pPhase = {}
             elif all2(states1, lambda state: state == "R"):
                 #allRed += dur1
                 #phases[-1]['yellow'] += dur1
@@ -288,9 +299,12 @@ class SignalData(object):
                     pPhase["yellow"] = 0
                     pPhase["allRed"] = 0
                     #allRed = 0
-                else:
+                elif pPhase["Movs"] == activeMovs:
                     pPhase["green"] += dur1
-
+                else:
+                    pPhase["Movs"] = activeMovs
+                    pPhase["green"] = dur1
+                    
         lastIndex = list(timeIndices)[-1]
         lastStates = list(iter(phasingData[:, lastIndex]))    
         #if all2(lastStates, lambda state: state == 'R'):
@@ -833,9 +847,9 @@ def getPhasingData(sheet, signalData):
     intervalStateGreen = ["G", "G+G", "G*", "G G", "FY", "F", "G+F", "U", "T", "G + G", "G + F"]
     intervalStateYellow = ["Y", "SY"]
     intervalStateRed = ["R", "RH", "OFF", "FR"]
-    intervalStateBlanck = [""]
+    intervalStateBlank = [""]
     intervalStateValid = intervalStateGreen + intervalStateYellow + \
-        intervalStateRed + intervalStateBlanck
+        intervalStateRed + intervalStateBlank
 
     for i in range(startX + 1, endX):
         groupMovement = str(sheet.cell_value(rowx=i, colx=startY)).upper()
@@ -871,7 +885,7 @@ def getPhasingData(sheet, signalData):
         movementIndex += 1
         movementNames.append(groupMovement)
 
-        phasingData.append(singleMovementData)
+        phasingData.append(singleMovementData)        
     
     if phasingData == []:
         raise ParsingCardError("I cannot parse its phasing data")
@@ -910,8 +924,7 @@ def getPhasingData(sheet, signalData):
                 ma[movName, j] = "R" #RED
             else:
                 raise ParsingCardError("Group movement \t%s\t. I cannot interpret "
-                                       "the phase status \t%s" % (movName, 
-                                                                intervalState))
+                                       "the phase status \t%s" % (movName, intervalState))
                 
     signalData.phasingData = ma
 
