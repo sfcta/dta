@@ -941,33 +941,151 @@ class Network(object):
         
         """
         #print "Trying to find: %s" % (", ".join(road_label_list) )
-
+        #CutoffBase = CUTOFF
+        CutoffBase = 0.8
         road_label_list_u = [label.upper() for label in road_label_list]
         for roadnode in self.iterRoadNodes():
-            streetmatch = 0
-            streetnames = [label.upper() for label in roadnode.getStreetNames(incoming=True, outgoing=True)]
-##            if len(road_label_list) != len(streetnames):
-##                continue
+            matches = 0
+            streetnames = roadnode.getStreetNames(incoming=True, outgoing=True)
+            #if len(road_label_list) != len(streetnames):
+            #    continue
+            baseStreetNames = [self.getCleanStreetName(bs) for bs in streetnames]
 
-##            road_label_list_u = set(road_label_list_u)
-##            road_label_list_u = sorted(road_label_list_u)
-
-##            for idx in range(len(road_label_list_u)):
-##                if not difflib.get_close_matches(streetnames[idx], [road_label_list_u[idx]], 1, CUTOFF):
-##                    break
-##            else:
-##               return roadnode
-            for idx in range(len(streetnames)):
-                for label_street in road_label_list_u:
-                    if label_street in str(streetnames[idx]):
-                        streetmatch += 1
-
-            if streetmatch >= len(road_label_list_u):
-                return roadnode
+            matched = []
+            for idx2 in range(len(baseStreetNames)):
+                for idx in range(len(road_label_list_u)):
+                    if len(baseStreetNames[idx2]) != len(road_label_list_u[idx]):
+                        continue
+                    
+                    street = str(road_label_list_u[idx])
+                    street = street[:1]
+                    try:
+                        street = int(street)
+                    except:
+                        CUTOFF = CutoffBase
+                    if isinstance(street,int) or road_label_list_u[idx]=="GREAT" or road_label_list_u=="GRANT":
+                        CUTOFF=0.9
+                    if not difflib.get_close_matches(road_label_list_u[idx], [baseStreetNames[idx2]], 1, CUTOFF):
+                        continue
+                    else:
+                        if not difflib.get_close_matches(baseStreetNames[idx2], [road_label_list_u[idx]], 1, CUTOFF):
+                            continue
+                        elif road_label_list_u[idx] in matched:
+                            continue
+                        else:
+                            matched.append(road_label_list_u[idx])
+                            matches +=1
+                            if matches >= len(road_label_list_u):
+                                dta.DtaLogger.info("Matched %d names in intersection %s to street names %s" % (matches,baseStreetNames,road_label_list_u))
+                                return roadnode
 
         dta.DtaLogger.error("Couldn't find intersection with %s in the Network" % road_label_list_u)            
         raise DtaError("findNodeForRoadLabels: Couldn't find intersection with %s in the Network" % 
-                           (", ".join(road_label_list)  )  )
+                        (", ".join(road_label_list)  )  )
+            
+##            for idx in range(len(streetnames)):
+##                for label_street in road_label_list_u:
+##                    if label_street in str(streetnames[idx]):
+##                        streetmatch += 1
+##
+##            if streetmatch >= len(road_label_list_u):
+##                return roadnode
+
+    def getCleanStreetName(self,streetName):
+
+        corrections = {"TWELFTH":"12TH", 
+                       "ELEVENTH":"11TH",
+                       "TENTH":"10TH",
+                       "NINTH":"9TH",
+                       "EIGHTH":"8TH",
+                       "SEVENTH":"7TH",
+                       "SIXTH":"6TH",
+                       "FIFTH":"5TH",
+                       "FOURTH":"4TH",
+                       "THIRD":"3RD",
+                       "SECOND":"2ND",
+                       "FIRST":"1ST",
+                       "O'FARRELL":"O FARRELL",
+                       "3RDREET":"3RD",
+                       "EMBARCADERO/KING":"THE EMBARCADERO",
+                       "VAN NESSNUE":"VAN NESS",
+                       "3RD #3":"3RD",
+                       "BAYSHORE #3":"BAYSHORE",
+                       "09TH":"9TH",
+                       "08TH":"8TH",
+                       "07TH":"7TH",
+                       "06TH":"6TH",
+                       "05TH":"5TH",
+                       "04TH":"4TH",
+                       "03RD":"3RD",
+                       "02ND":"2ND",
+                       "01ST":"1ST"}
+
+
+        itemsToRemove = [" STREETS",
+                         " STREET",
+                         " STS.",
+                         " STS",
+                         " ST.",
+                         " ST",
+                         " ROAD",
+                         " RD.",
+                         " RD",
+                         " AVENUE",
+                         " AVE.",
+                         " AVES",
+                         " AVE",
+                         " BLVD.",
+                         " BLVD",
+                         " BOULEVARD",
+                         "MASTER:",
+                         " DRIVE",
+                         " DR.",
+                         " WAY",
+                         " WY",
+                         " CT",
+                         " TERR",
+                         " HWY",
+                         " PL",
+                         " AL",
+                         " LN",
+                         " NORTHBOUND",
+                         " SOUTHBOUND",
+                         " Ave",
+                         " St"]
+
+        newStreetName = streetName.strip()
+        for wrongName, rightName in corrections.items():
+            if wrongName in streetName:
+                newStreetName = streetName.replace(wrongName, rightName)
+            if newStreetName == 'EMBARCADERO':
+                newStreetName = "THE EMBARCADERO"
+            if newStreetName.endswith(" DR"):
+                newStreetName = newStreetName[:-3]
+            if newStreetName.endswith(" AV"):
+                newStreetName = newStreetName[:-3]
+            if newStreetName.endswith(" AVE"):
+                newStreetName = newStreetName[:-4]
+            if newStreetName.endswith(" ST"):
+                newStreetName = newStreetName[:-3]
+        streetName = newStreetName.strip()
+        for item in itemsToRemove:
+            if item in streetName:
+                newStreetName = streetName.replace(item,"")
+
+        return newStreetName.strip()
+
+    
+
+    def cleanStreetNames(self,streetNames):
+        """Accept street names as a list and return a list 
+        with the cleaned street names"""
+    
+        newStreetNames = map(self.cleanStreetName, streetNames)
+        if len(newStreetNames) > 1 and newStreetNames[0] == "":
+            newStreetNames.pop(0)
+        return newStreetNames
+
                            
     def findLinksForRoadLabels(self, on_street_label, on_direction,
                                        from_street_label, to_street_label,
