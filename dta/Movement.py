@@ -145,19 +145,7 @@ class Movement(object):
         """
         Returns the node at which the movement is happening
         """        
-        return self._node  
-    
-    def getOriginNode(self):
-        """
-        Returns the start node of incomingLink, a :py:class:`Link` instance
-        """
-        return self._incomingLink.getStartNode()
-    
-    def getDestinationNode(self):
-        """
-        Returns the end node of outgoingLink, a :py:class:`Link` instance
-        """
-        return self._outgoingLink.getEndNode()
+        return self._node
     
     def getStartNode(self):
         """

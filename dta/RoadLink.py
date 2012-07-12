@@ -444,7 +444,7 @@ class RoadLink(Link):
         If None found, returns None.
         """
         for mov in self.iterOutgoingMovements():
-            if mov.getDestinationNode().getId() == nodeId:
+            if mov.getEndNode().getId() == nodeId:
                 return mov
         return None        
 
@@ -474,7 +474,7 @@ class RoadLink(Link):
         if movement.getIncomingLink() != self:
             raise DtaError("RoadLink addOutgoingMovement() called with inconsistent movement" % str(movement))
 
-        if self.hasOutgoingMovement(movement.getDestinationNode().getId()):
+        if self.hasOutgoingMovement(movement.getEndNode().getId()):
             raise DtaError("RoadLink %s addOutgoingMovement() called to add already "
                            "existing movement" % str(movement))
 
@@ -711,7 +711,7 @@ class RoadLink(Link):
         Return True if the link has an outgoing movement towards nodeId
         """
         for mov in self.iterOutgoingMovements():
-            if mov.getDestinationNode().getId() == nodeId:
+            if mov.getEndNode().getId() == nodeId:
                 return mov
         raise DtaError("RoadLink from %d to %d does not have a movement to node %d" % (self._startNode.getId(),
                                                                                        self._endNode.getId(),

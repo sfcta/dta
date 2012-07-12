@@ -641,8 +641,8 @@ class DynameqNetwork(Network):
                     
                     
                     atNode = movement.getAtNode().getId()
-                    fromNode = movement.getOriginNode().getId()
-                    toNode = movement.getDestinationNode().getId()
+                    fromNode = movement.getStartNode().getId()
+                    toNode = movement.getEndNode().getId()
                     
                     movementcountsList = movement.getCountList()
                     
