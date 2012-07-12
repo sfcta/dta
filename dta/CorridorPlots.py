@@ -24,6 +24,7 @@ import numpy as np
 import pylab as plt 
 
 import dta
+from dta.Logger import DtaLogger
 from dta.Utils import Time
 from dta.DtaError import DtaError 
 
@@ -47,10 +48,10 @@ class CountsVsVolumes(object):
         intLocationsAlongRoute = [0,]
         intNamesAlongRoute = [self._path.getCrossStreetName(self._path.getFirstNode()),] 
         length = 0
-        for node, link in izip(self._path.iterNodes(), self._path.iterLinks()):        
+        for node, link in izip(self._path.iterNodes(), self._path.iterLinks()):
             length += (link.getLength() * 5280)
             intLocationsAlongRoute.append(length)
-            intNamesAlongRoute.append(self._path.getCrossStreetName(node))        
+            intNamesAlongRoute.append(self._path.getCrossStreetName(node))
         return [intNamesAlongRoute, intLocationsAlongRoute]
 
     def _getIntersectionNamesAndLocationsInReverse(self):
@@ -270,6 +271,7 @@ class CountsVsVolumes(object):
         #par2.spines["right"].set_visible(True)
 
         names = self.getIntersectionNames()
+        del names[0]
         locations = np.array(self.getIntersectionLocations())
         linkOutVolumes, linkInVolumes, ltVolumes, rtVolumes, thruCapacities = self.getVolumesAlongCorridor(startTimeInMin, endTimeInMin)
         linkCounts, ltCounts, rtCounts = self.getCountsAlongCorridor(startTimeInMin, endTimeInMin)
@@ -313,7 +315,8 @@ class CountsVsVolumes(object):
         
         ax.set_xticks(locations)
         ax.set_xticklabels(names, rotation=90)
-        ax.set_ylim(0, int(max(valuesToPlot)) + 1)
+        ax.set_xlim(newLocations[0], newLocations[len(newLocations)-1])
+        ax.set_ylim(0, int(max(valuesToPlot)) + 100)
 
         #ax.plot(newLocations[1:9], [400, 400, 500, 500, 400, 400, 500, 500], c="r", label="Capacities")
         #ax.plot(newLocations[1:3], [400, 400], c="r", label="Capacities")        
@@ -324,7 +327,7 @@ class CountsVsVolumes(object):
         ax.grid(True)
 
         p2, = speedAxis.plot(newLocations, speedValuesToPlot, "g-", label="Link Speed")
-        speedAxis.set_ylim(0, int(max(speedsAlongCorridor) + 1))
+        speedAxis.set_ylim(0, int(max(speedsAlongCorridor)) + 10)
 
         #ax.legend(loc=1)
         speedAxis.set_ylabel('Link Speeds (mph)')        
@@ -356,11 +359,16 @@ class CountsVsVolumes(object):
         
         ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, width=BAR_WIDTH,bottom=0, color='r', label="LT Volumes Off")
         ax.bar(locations[1:], rtVolumes, width=BAR_WIDTH, bottom=0, color='y', label="RT Volumes Off")
-                
-        ax.set_xticks(locations[1:])
-        ax.set_xticklabels(["" for i in range(len(locations) - 1)])
 
+        ax.set_xticks(locations)
+        ax.set_xticklabels(["" for i in range(len(names))])
+        ax.set_xlim(newLocations[0], newLocations[len(newLocations)-1])
+        
         ax.legend(loc=2)
+        y_upper1 = max(ltVolumes)
+        y_upper2 = max(rtVolumes)
+        y_upper = max(y_upper1,y_upper2)
+        ax.set_ylim(0, int(y_upper)+10)
         ax.set_ylabel('Vehicles Per Hour')        
 
         #############################
@@ -370,10 +378,17 @@ class CountsVsVolumes(object):
         ltVolumes, rtVolumes = self.getMovementVolumesCrossingCorridor(startTimeInMin, endTimeInMin)       
         ax.bar(locations[1:] - BAR_WIDTH, ltVolumes, BAR_WIDTH, color='r', label="LT Volumes On")
         ax.bar(locations[1:], rtVolumes, BAR_WIDTH, color='y', label="RT Volumes On") 
+
         ax.set_xticks(locations)
-        ax.set_xticklabels(["" for i in range(len(locations))])
+        ax.set_xticklabels(["" for i in range(len(names))])
+        ax.set_xlim(newLocations[0], newLocations[len(newLocations)-1])
+
 
         ax.legend(loc=2)
+        y_upper1 = max(ltVolumes)
+        y_upper2 = max(rtVolumes)
+        y_upper = max(y_upper1,y_upper2)
+        ax.set_ylim(0, int(y_upper)+10)
         ax.set_ylabel('Vehicles Per Hour')
 
         if not svg:

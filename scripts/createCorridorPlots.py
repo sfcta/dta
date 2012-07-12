@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
     routeTTOuput = open(REPORTS_ROUTE_TRAVEL_TIME_FILE, "w") 
 
-    routeTTOuput.write("%s,%s,%s,%s\n" % ("RouteName", "SimTravelTimeInMin", "ObsTravelTimeInMin", "RouteLengthInMiles"))
+    routeTTOuput.write("%s,%s,%s,%s,%s\n" % ("RouteName", "SimTravelTimeInMin", "ObsTravelTimeInMin", "SimRouteLengthInMiles", "ObsRouteLengthInMiles"))
 
     allRoutes = []
     for record in csv.DictReader(open(ROUTE_DEFINITION_FILE, "r")):
@@ -126,6 +126,7 @@ if __name__ == "__main__":
         #    continue
 
         avgTTInMin = float(record["totalAvgTT"]) / 60.0
+        lengthInMiles = float(record["LengthFt"]) / 5280.0
         
         end = record["End"].strip()
         start = record["Start"].strip()
@@ -148,8 +149,8 @@ if __name__ == "__main__":
 
         if error == 0:
             allRoutes.append(path)
-            print "%s,%f,%f,%f\n" % ("%s from %s to %s" % (name, start, end), path.getSimTTInMin(reportStartTime, reportEndTime), avgTTInMin, path.getLengthInMiles())
-            routeTTOuput.write("%s,%f,%f,%f\n" % ("%s from %s to %s" % (name, start, end), path.getSimTTInMin(17*60, 18*60), avgTTInMin, path.getLengthInMiles()))
+            print "%s,%f,%f,%f,%f\n" % ("%s from %s to %s" % (name, start, end), path.getSimTTInMin(reportStartTime, reportEndTime), avgTTInMin, path.getLengthInMiles(), lengthInMiles)
+            routeTTOuput.write("%s,%f,%f,%f,%f\n" % ("%s from %s to %s" % (name, start, end), path.getSimTTInMin(17*60, 18*60), avgTTInMin, path.getLengthInMiles(), lengthInMiles))
 
             outfileStreets = []
             outfileStreets.append(name)
