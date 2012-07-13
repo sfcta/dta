@@ -211,18 +211,6 @@ if __name__ == '__main__':
         'FT12 AT0':30, 'FT12 AT1':30, 'FT12 AT2':35, 'FT12 AT3':35, 'FT12 AT4':40, 'FT12 AT5':40, 
         'FT15 AT0':30, 'FT15 AT1':30, 'FT15 AT2':35, 'FT15 AT3':35, 'FT15 AT4':50, 'FT15 AT5':50, 
     }
-    # Derived in Y:\dta\TrafficFlowParameters.xlsx
-    responseTimeLookup = { \
-        'FT1 AT0':1.3747, 'FT1 AT1':1.4146, 'FT1 AT2':1.3973, 'FT1 AT3':1.3973, 'FT1 AT4':1.3967, 'FT1 AT5':1.3967, 
-        'FT2 AT0':1.3332, 'FT2 AT1':1.3535, 'FT2 AT2':1.3295, 'FT2 AT3':1.3438, 'FT2 AT4':1.3172, 'FT2 AT5':1.3172, 
-        'FT3 AT0':1.9918, 'FT3 AT1':1.9918, 'FT3 AT2':1.7999, 'FT3 AT3':1.8142, 'FT3 AT4':1.7480, 'FT3 AT5':1.7480, 
-        'FT4 AT0':4.7892, 'FT4 AT1':4.4273, 'FT4 AT2':4.1113, 'FT4 AT3':3.7949, 'FT4 AT4':3.2806, 'FT4 AT5':3.0688, 
-        'FT5 AT0':1.8427, 'FT5 AT1':1.8427, 'FT5 AT2':1.7377, 'FT5 AT3':1.7377, 'FT5 AT4':1.7776, 'FT5 AT5':1.7776, 
-        'FT7 AT0':3.0156, 'FT7 AT1':2.8806, 'FT7 AT2':2.7521, 'FT7 AT3':2.7521, 'FT7 AT4':2.7521, 'FT7 AT5':2.7521, 
-        'FT11 AT0':9.1528, 'FT11 AT1':9.2273, 'FT11 AT2':9.2806, 'FT11 AT3':7.9091, 'FT11 AT4':7.9091, 'FT11 AT5':7.9091, 
-        'FT12 AT0':4.0581, 'FT12 AT1':3.7416, 'FT12 AT2':3.5605, 'FT12 AT3':3.3205, 'FT12 AT4':3.3205, 'FT12 AT5':3.3205, 
-        'FT15 AT0':3.0688, 'FT15 AT1':2.9205, 'FT15 AT2':2.7831, 'FT15 AT3':2.8080, 'FT15 AT4':2.8080, 'FT15 AT5':2.8080, 
-    }
     # see http://code.google.com/p/dta/wiki/NetworkDescriptionForSF
     ftToDTALookup = {"2":1,
                      "3":2,
@@ -274,7 +262,6 @@ if __name__ == '__main__':
        linkSkipEvalStr                  = "FT=='13'", # skip bike-only
        additionalLocals                 = {'ftToDTALookup':ftToDTALookup,
                                            'speedLookup':speedLookup,
-                                           'responseTimeLookup':responseTimeLookup
                                            })
 
     # Apply the transit lanes
