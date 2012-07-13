@@ -391,6 +391,15 @@ If <em>distance</em> is longer than the euclidean distance of the link, and not 
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Connector.disallowSplitForConnector">
+<tt class="descname">disallowSplitForConnector</tt><big>(</big><em>disallowConnectorEvalStr</em><big>)</big><a class="headerlink" href="#dta.Connector.disallowSplitForConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if this road link should <em>not</em> be split for a <a class="reference internal" href="#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</p>
+<p>Used by <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode.getCandidateLinksForSplitting" title="dta.RoadNode.getCandidateLinksForSplitting"><tt class="xref py py-meth docutils literal"><span class="pre">RoadNode.getCandidateLinksForSplitting()</span></tt></a>, which is used by
+<a class="reference internal" href="dta.Network.html#dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks" title="dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks"><tt class="xref py py-meth docutils literal"><span class="pre">Network.moveCentroidConnectorsFromIntersectionsToMidblocks()</span></tt></a>.</p>
+<p>Basically this DTA Anyway user defines this functionality by passing in <em>disallowConnectorEvalStr</em>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Connector.endIsRoadNode">
 <tt class="descname">endIsRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.endIsRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a boolean indicating wither the end node is the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</p>
@@ -770,6 +779,12 @@ Please note that the movement may be prohibited.</p>
 <dt id="dta.Connector.hasThruTurn">
 <tt class="descname">hasThruTurn</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.hasThruTurn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the link has a through turn</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.isBoundaryConnector">
+<tt class="descname">isBoundaryConnector</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.isBoundaryConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the connector&#8217;s centroid is in the list of exteral centroids</p>
 </dd></dl>
 
 <dl class="method">

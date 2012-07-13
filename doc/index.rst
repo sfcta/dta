@@ -133,6 +133,7 @@ Scripts
 .. toctree::
    :maxdepth: 1
    
+   script_importFullSanFranciscoNetworkDataset
    script_createSFNetworkFromCubeNetwork
    script_importTPPlusTransitRoutes
    script_importExcelSignals

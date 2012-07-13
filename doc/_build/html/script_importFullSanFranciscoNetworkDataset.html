@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Batch File for Entire Import Process &mdash; DTA Anyway v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/dta.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="DTA Anyway v1.0 documentation" href="index.html" />
+    <link rel="next" title="Creating the SF DTA Network from Cube Network and Defining the Scenario" href="script_createSFNetworkFromCubeNetwork.html" />
+    <link rel="prev" title="dta.Utils" href="_generated/dta.Utils.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="script_createSFNetworkFromCubeNetwork.html" title="Creating the SF DTA Network from Cube Network and Defining the Scenario"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_generated/dta.Utils.html" title="dta.Utils"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="batch-file-for-entire-import-process">
+<h1>Batch File for Entire Import Process<a class="headerlink" href="#batch-file-for-entire-import-process" title="Permalink to this headline">¶</a></h1>
+<p>Scripts names are links; click to see their documentation.</p>
+<div class="highlight-bat"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
+
+<span class="c">:: DTA Anyway code location is required</span>
+<span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_CODE_DIR (
+  <span class="k">echo</span> Please <span class="k">set</span> <span class="nv">the</span> DTA_CODE_DIR environment variable to the directory where DTA Anyway is installed.
+  <span class="k">echo</span> e.g. <span class="k">set</span> <span class="nv">DTA_CODE_DIR</span><span class="o">=</span>Y:\Users\neema\dta
+  <span class="k">goto</span> <span class="nl">done</span>
+)
+
+<span class="c">:: let PYTHON know where to find it</span>
+<span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>
+
+<span class="c">::</span>
+<span class="c">:: 1) create the network from the Cube network</span>
+<span class="c">::</span>
+<span class="nl">:convertStaticNetwork</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_createSFNetworkFromCubeNetwork.html">createSFNetworkFromCubeNetwork.py</a> -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\<span class="m">2010</span>\SanFranciscoSubArea_<span class="m">2010</span>.net Y:\dta\SanFrancisco\<span class="m">2010</span>\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+<span class="c">:: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt</span>
+<span class="c">:: log     output: createSFNetworkFromCubeNetwork.{DEBUG,INFO}.log</span>
+<span class="c">:: debug   output: sf_{links,nodes}.shp</span>
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+
+<span class="c">::</span>
+<span class="c">:: 2) attach the transit lines to the DTA network</span>
+<span class="c">:: </span>
+<span class="nl">:importTransit</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importTPPlusTransitRoutes.html">importTPPlusTransitRoutes.py</a> . sf Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\sfmuni.lin Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\bus.lin
+<span class="c">:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt</span>
+<span class="c">:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log</span>
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+
+
+<span class="c">::</span>
+<span class="c">:: 3) attach the signal data to the DTA network</span>
+<span class="c">:: </span>
+<span class="c">:: This step needs to go after the transit step because the transit step enables all movements for transit (so if there is a transit line</span>
+<span class="c">:: turning left at an intersection and the left was prohibited, it will become transit-only.)  That way, the signal validation will make</span>
+<span class="c">:: sure that transit gets green time.</span>
+<span class="c">::</span>
+<span class="nl">:importSignals</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importExcelSignals.html">importExcelSignals.py</a> . sf_trn Y:\dta\SanFrancisco\<span class="m">2010</span>\network\excelSignalCards <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\network\movement_override.csv Y:\dta\SanFrancisco\<span class="m">2010</span>\network\uturnPros.csv
+<span class="c">:: primary output: Dynameq files sf_signals_{scen,base,advn,ctrl}.dqt</span>
+<span class="c">:: log     output: importExcelSignals.{DEBUG,INFO}.log</span>
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+
+<span class="c">::</span>
+<span class="c">:: 4) attach the stop sign data to the DTA network</span>
+<span class="c">::</span>
+<span class="c">:: This step needs to go after import signals because signals win over stop signs; if a node has a signal, we&#39;ll leave it alone.</span>
+<span class="c">::</span>
+<span class="nl">:importStopSigns</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importUnsignalizedIntersections.html">importUnsignalizedIntersections.py</a> . sf_signals Q:\GIS\CityGIS\TrafficControl\StopSigns\stops_signs.shp 
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+<span class="c">:: primary output: Dynameq files sf_stops_{scen,base,advn,??}.dqt</span>
+<span class="c">:: log     output: importUnsignalizedIntersections.{DEBUG,INFO}.log</span>
+
+<span class="c">::</span>
+<span class="c">:: 4) create the demand</span>
+<span class="c">::</span>
+<span class="nl">:createDemand</span>
+<span class="k">FOR</span> <span class="nv">%%V</span> IN (Car_NoToll Truck_NoToll) <span class="k">DO</span> (
+  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> . sf_trn Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>.csv <span class="nv">%%V</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">00</span><span class="nl">:15</span> demand_<span class="nv">%%V</span>.dat
+  <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+)
+<span class="c">:: primary output: demand_{Car,Truck}_NoToll.dat</span>
+<span class="c">:: log     output: importCubeDemand.{DEBUG,INFO}.log</span>
+
+<span class="nl">:copyFinal</span>
+<span class="c">:: THESE are the files to import into dynameq</span>
+copy sf_stops_scen.dqt sf_final_scen.dqt
+copy sf_stops_base.dqt sf_final_base.dqt
+copy sf_stops_advn.dqt sf_final_advn.dqt
+copy sf_stops_ctrl.dqt sf_final_ctrl.dqt
+copy sf_trn_ptrn.dqt   sf_final_ptrn.dqt
+
+<span class="c">:: This is here because countdracula is not typically setup.  Unless you&#39;re Lisa. ;)</span>
+<span class="k">IF</span> <span class="nv">%USERNAME%</span> <span class="o">NEQ</span> Lisa (
+  <span class="k">goto</span> <span class="nl">done</span>
+)
+<span class="c">::</span>
+<span class="c">:: 5) import the counts into userdata files for Dynameq to read</span>
+<span class="c">::</span>
+<span class="nl">:importCounts</span>
+<span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>;Y:\lmz\CountDracula
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_attachCountsFromCountDracula.html">attachCountsFromCountDracula.py</a> -l sf_final_links.shp -m sf_final_movements.shp -n sf_final_nodes.shp . sf_final
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+
+<span class="nl">:done</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_generated/dta.Utils.html"
+                        title="previous chapter">dta.Utils</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="script_createSFNetworkFromCubeNetwork.html"
+                        title="next chapter">Creating the SF DTA Network from Cube Network and Defining the Scenario</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/script_importFullSanFranciscoNetworkDataset.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="script_createSFNetworkFromCubeNetwork.html" title="Creating the SF DTA Network from Cube Network and Defining the Scenario"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_generated/dta.Utils.html" title="dta.Utils"
+             >previous</a> |</li>
+        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SFCTA Modeling Crew.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

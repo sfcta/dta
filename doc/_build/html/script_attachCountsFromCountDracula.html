@@ -55,7 +55,7 @@
 <span id="importing-validation-counts"></span><h1>Importing Validation Counts<a class="headerlink" href="#module-attachCountsFromCountDracula" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile">
-<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">exportMainlineCountsToDynameUserDataFile</tt><big>(</big><em>cd_reader</em>, <em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix=None</em>, <em>from_date=None</em>, <em>to_date=None</em>, <em>weekdays=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportMainlineCountsToDynameUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">exportMainlineCountsToDynameUserDataFile</tt><big>(</big><em>cd_reader</em>, <em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix=None</em>, <em>from_date=None</em>, <em>to_date=None</em>, <em>weekdays=None</em>, <em>all_count_workbook=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportMainlineCountsToDynameUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.</p>
 <ul class="simple">
 <li><em>cd_reader</em> is a CountDraculaReader instance where the counts are stored</li>
@@ -68,6 +68,8 @@
 <li><em>to_date</em> is a datetime.date instance defining the end date (inclusive) of acceptable count dates</li>
 <li>If <em>weekdays</em> is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
 only include the given weekdays.</li>
+<li>If <em>all_count_workbook</em> is passed (it should be an xlwt.Workbook) then the raw data will be added
+to a sheet there as well.</li>
 </ul>
 <p>Writes to a file called <tt class="docutils literal"><span class="pre">counts_links_Xmin_Y_Z.dat</span></tt> where X is the number of minutes in the period, Y is the starttime and Z is
 the endtime; e.g. counts_links_15min_1600_1830.dat</p>
@@ -75,7 +77,7 @@ the endtime; e.g. counts_links_15min_1600_1830.dat</p>
 
 <dl class="function">
 <dt id="attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile">
-<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">exportTurnCountsToDynameqUserDataFile</tt><big>(</big><em>cd_reader</em>, <em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix=None</em>, <em>from_date=None</em>, <em>to_date=None</em>, <em>weekdays=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportTurnCountsToDynameqUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">exportTurnCountsToDynameqUserDataFile</tt><big>(</big><em>cd_reader</em>, <em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix=None</em>, <em>from_date=None</em>, <em>to_date=None</em>, <em>weekdays=None</em>, <em>all_count_workbook=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportTurnCountsToDynameqUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.</p>
 <ul class="simple">
 <li><em>cd_reader</em> is a CountDraculaReader instance where the counts are stored</li>
@@ -88,6 +90,8 @@ the endtime; e.g. counts_links_15min_1600_1830.dat</p>
 <li><em>to_date</em> is a datetime.date instance defining the end date (inclusive) of acceptable count dates</li>
 <li>If <em>weekdays</em> is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
 only include the given weekdays.</li>
+<li>If <em>all_count_workbook</em> is passed (it should be an xlwt.Workbook) then the raw data will be added
+to a sheet there as well.</li>
 </ul>
 <p>Writes to a file called <tt class="docutils literal"><span class="pre">counts_movements_Xmin_Y_Z_suffix.dat</span></tt> where X is the number of minutes in the period, Y is the starttime and Z is
 the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</p>
@@ -151,16 +155,55 @@ the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</p>
 54
 55
 56
-57</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
 
     <span class="kn">import</span> <span class="nn">countdracula</span>
+
+    <span class="n">optlist</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;l:m:n:&quot;</span><span class="p">)</span>
     
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">print</span> <span class="n">USAGE</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     
-    <span class="n">SF_DYNAMEQ_NET_DIR</span>          <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> 
-    <span class="n">SF_DYNAMEQ_NET_PREFIX</span>       <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">SF_DYNAMEQ_NET_DIR</span>          <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+    <span class="n">SF_DYNAMEQ_NET_PREFIX</span>       <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">OUTPUT_LINK_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">OUTPUT_MOVE_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">OUTPUT_NODE_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="n">opt</span><span class="p">,</span><span class="n">arg</span><span class="p">)</span> <span class="ow">in</span> <span class="n">optlist</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-m&quot;</span><span class="p">:</span>
+            <span class="n">OUTPUT_MOVE_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">elif</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-l&quot;</span><span class="p">:</span>
+            <span class="n">OUTPUT_LINK_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">elif</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-n&quot;</span><span class="p">:</span>
+            <span class="n">OUTPUT_NODE_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
                 
     <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;attachCountsFromCountDracula.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;attachCountsFromCountDracula.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     
@@ -175,6 +218,7 @@ the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</p>
     <span class="n">sanfranciscoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
     
+    <span class="n">counts_wb</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Workbook</span><span class="p">()</span>
     
     <span class="c"># Instantiate the count dracula reader and do the exports</span>
     <span class="c"># Time slices here are based on what we have available (according to CountDracula&#39;s querySanFranciscoCounts.py)</span>
@@ -197,16 +241,26 @@ the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</p>
         <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processing </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span><span class="p">)</span>
         <span class="n">exportTurnCountsToDynameqUserDataFile</span>   <span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span> 
                                                  <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
-                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
         <span class="n">exportTurnCountsToDynameqUserDataFile</span>   <span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
                                                  <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span> <span class="mi">5</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
-                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
+        <span class="n">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
         <span class="n">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">cd_reader</span><span class="p">,</span> <span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
                                                  <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">)</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_date</span><span class="o">=</span><span class="n">from_date</span><span class="p">,</span> <span class="n">to_date</span><span class="o">=</span><span class="n">to_date</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
 
+    <span class="n">counts_wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;counts_generated_</span><span class="si">%s</span><span class="s">.xls&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()))</span>
     
-    
+    <span class="k">if</span> <span class="n">OUTPUT_LINK_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeLinksToShp</span><span class="p">(</span><span class="n">OUTPUT_LINK_SHAPEFILE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">OUTPUT_MOVE_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeMovementsToShp</span><span class="p">(</span><span class="n">OUTPUT_MOVE_SHAPEFILE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">OUTPUT_NODE_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeNodesToShp</span><span class="p">(</span><span class="n">OUTPUT_NODE_SHAPEFILE</span><span class="p">)</span>
     
 </pre></div>
 </td></tr></table></div>

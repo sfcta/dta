@@ -272,6 +272,7 @@
     <span class="n">count_moreincoming</span>  <span class="o">=</span> <span class="mi">0</span>
     <span class="n">count_allway</span>        <span class="o">=</span> <span class="mi">0</span>
     <span class="n">count_twoway</span>        <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_allway_fromtwo</span><span class="o">=</span> <span class="mi">0</span>
     <span class="c"># the cnn is unique per intersection so loop through each intersection with stop signs</span>
     <span class="k">for</span> <span class="n">cnn</span><span class="p">,</span> <span class="n">stopsignlist</span> <span class="ow">in</span> <span class="n">cnn_to_recordlist</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
         
@@ -318,13 +319,42 @@
         
         <span class="c"># two way stop</span>
         <span class="c"># todo: look at the matching facility type issue and set up custom priorities</span>
-        <span class="n">roadnode</span><span class="o">.</span><span class="n">setTwoWayStopControl</span><span class="p">()</span>
-        <span class="n">count_twoway</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c"># collect the through movements</span>
+        <span class="n">through_movements</span> <span class="o">=</span> <span class="p">[]</span>        
+        <span class="k">for</span> <span class="n">inlink</span> <span class="ow">in</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">iterIncomingLinks</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">through_movements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inlink</span><span class="o">.</span><span class="n">getThruTurn</span><span class="p">())</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        
+        <span class="c"># for now: set to all way stops if multiple incoming through movements conflict and </span>
+        <span class="c"># their incoming links have the same facility type</span>
+        <span class="n">allway</span>   <span class="o">=</span> <span class="bp">False</span>        
+        <span class="k">for</span> <span class="n">mov1</span> <span class="ow">in</span> <span class="n">through_movements</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mov2</span> <span class="ow">in</span> <span class="n">through_movements</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mov1</span> <span class="o">==</span> <span class="n">mov2</span><span class="p">:</span> <span class="k">continue</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mov1</span><span class="o">.</span><span class="n">isInConflict</span><span class="p">(</span><span class="n">mov2</span><span class="p">):</span> <span class="k">continue</span>
+                <span class="c"># now they&#39;re in conflict</span>
+                
+                <span class="k">if</span> <span class="n">mov1</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">()</span> <span class="o">==</span> <span class="n">mov2</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">():</span>
+                    <span class="c"># and equivalent priority</span>
+                    <span class="n">roadnode</span><span class="o">.</span><span class="n">setAllWayStopControl</span><span class="p">()</span>
+                    <span class="n">allway</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">count_allway_fromtwo</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+            <span class="c"># alway - done already</span>
+            <span class="k">if</span> <span class="n">allway</span><span class="p">:</span> <span class="k">break</span> 
+            
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allway</span><span class="p">:</span> 
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">setTwoWayStopControl</span><span class="p">()</span>
+            <span class="n">count_twoway</span> <span class="o">+=</span> <span class="mi">1</span>
         
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Read </span><span class="si">%d</span><span class="s"> stop-sign intersections&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cnn_to_recordlist</span><span class="p">))</span>
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Failed to map&quot;</span> <span class="o">%</span> <span class="n">count_notmapped</span><span class="p">)</span>
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Ignored because they&#39;re signalized&quot;</span> <span class="o">%</span> <span class="n">count_hassignal</span><span class="p">)</span>
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as allway-stop (including </span><span class="si">%d</span><span class="s"> questionable, with more stop signs than incoming links)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">count_allway</span><span class="p">,</span> <span class="n">count_moreincoming</span><span class="p">))</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as allway-stop in lieu of custom priorities&quot;</span> <span class="o">%</span> <span class="n">count_allway_fromtwo</span><span class="p">)</span>
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as twoway-stop&quot;</span> <span class="o">%</span> <span class="n">count_twoway</span><span class="p">)</span>
     
     <span class="n">net</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="s">&quot;sf_stops&quot;</span><span class="p">)</span>

@@ -321,11 +321,13 @@ If <em>raiseValidateError</em>, any errors will be raised; otherwise they will j
 
 <dl class="method">
 <dt id="dta.RoadNode.getCandidateLinksForSplitting">
-<tt class="descname">getCandidateLinksForSplitting</tt><big>(</big><em>connector</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getCandidateLinksForSplitting" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getCandidateLinksForSplitting</tt><big>(</big><em>connector</em>, <em>disallowConnectorEvalStr</em><big>)</big><a class="headerlink" href="#dta.RoadNode.getCandidateLinksForSplitting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instance whose start node or end node is the calling instance,
 returns a list of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances where:</p>
 <ul class="simple">
 <li>The link is at least 0.009 miles long (why?)</li>
+<li>If <em>disallowConnectorEvalStr</em>, then it evaluates as False for a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> 
+(using <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.disallowSplitForConnector" title="dta.RoadLink.disallowSplitForConnector"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.disallowSplitForConnector()</span></tt></a></li>
 <li>If one were to create a new link between the <em>connector</em>&#8216;s <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> and
 the midpoint of the link, none of the other <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to the calling node
 would cross it.</li>

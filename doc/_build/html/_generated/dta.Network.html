@@ -338,6 +338,13 @@ description: a string that gives more infromation about the plan collection</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Network.cleanStreetNames">
+<tt class="descname">cleanStreetNames</tt><big>(</big><em>streetNames</em><big>)</big><a class="headerlink" href="#dta.Network.cleanStreetNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accept street names as a list and return a list 
+with the cleaned street names</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Network.deepcopy">
 <tt class="descname">deepcopy</tt><big>(</big><em>originNetwork</em><big>)</big><a class="headerlink" href="#dta.Network.deepcopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the contents of the originNetwork by creating copies of all its 
@@ -404,6 +411,11 @@ greater than <em>quick_dist</em> difference in either coordinate.</p>
 <p>So the return is a tuple: (distance, RoadNode)</p>
 <p><em>x</em>,*y* and <em>quick_dist</em> are  in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
 </dd></dl>
+
+<dl class="method">
+<dt id="dta.Network.getCleanStreetName">
+<tt class="descname">getCleanStreetName</tt><big>(</big><em>streetName</em><big>)</big><a class="headerlink" href="#dta.Network.getCleanStreetName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="dta.Network.getLinkForId">
@@ -701,11 +713,15 @@ coppied.</p>
 
 <dl class="method">
 <dt id="dta.Network.moveCentroidConnectorFromIntersectionToMidblock">
-<tt class="descname">moveCentroidConnectorFromIntersectionToMidblock</tt><big>(</big><em>roadNode</em>, <em>connector</em>, <em>splitReverseLink=False</em>, <em>moveVirtualNodeDist=None</em><big>)</big><a class="headerlink" href="#dta.Network.moveCentroidConnectorFromIntersectionToMidblock" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">moveCentroidConnectorFromIntersectionToMidblock</tt><big>(</big><em>roadNode</em>, <em>connector</em>, <em>splitReverseLink=False</em>, <em>moveVirtualNodeDist=None</em>, <em>disallowConnectorEvalStr=None</em><big>)</big><a class="headerlink" href="#dta.Network.moveCentroidConnectorFromIntersectionToMidblock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the input connector for an intersection and attach it to a midblock 
 location. If a midblock location does does not exist a RoadLink close
 to the connector is split in half and the connector is attached to the new 
 midblock location.</p>
+<p>Pass <em>disallowConnectorEvalStr</em> for a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> to evaluate
+whether or not it should be available for splitting for a Connector.  For example,
+<em>disallowConnectorEvalStr</em> could be <tt class="docutils literal"><span class="pre">True</span> <span class="pre">if</span> <span class="pre">self._facilitype</span> <span class="pre">in</span> <span class="pre">[1,8]</span></tt> if links with
+facility types 1 and 8 are not splittable, say if they are freeways or ramps.</p>
 <p>If <em>moveVirtualNodeDist</em> is not None, if no candidate links are found, the method will 
 try moving the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instance around to find a candidate link. 
 <em>moveVirtualNodeDist</em> is in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
@@ -717,7 +733,7 @@ try moving the <a class="reference internal" href="dta.VirtualNode.html#dta.Virt
 
 <dl class="method">
 <dt id="dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks">
-<tt class="descname">moveCentroidConnectorsFromIntersectionsToMidblocks</tt><big>(</big><em>splitReverseLinks=False</em>, <em>moveVirtualNodeDist=None</em>, <em>externalNodeIds=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">moveCentroidConnectorsFromIntersectionsToMidblocks</tt><big>(</big><em>splitReverseLinks=False</em>, <em>moveVirtualNodeDist=None</em>, <em>externalNodeIds=</em><span class="optional">[</span><span class="optional">]</span>, <em>disallowConnectorEvalStr=None</em><big>)</big><a class="headerlink" href="#dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove centroid connectors from intersections and attach them to midblock locations.
 If there is not a node defining a midblock location the algorithm will split the 
 relevant links (in both directions) and attach the connector to the newly 
@@ -725,6 +741,10 @@ created node.</p>
 <p>If <em>moveVirtualNodeDist</em> is not None, if no candidate links are found, the method will 
 try moving the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instance around to find a candidate link. 
 <em>moveVirtualNodeDist</em> is in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
+<p>Pass <em>disallowConnectorEvalStr</em> for a <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> to evaluate
+whether or not it should be available for splitting for a Connector.  For example,
+<em>disallowConnectorEvalStr</em> could be <tt class="docutils literal"><span class="pre">True</span> <span class="pre">if</span> <span class="pre">self.getFacilityType()</span> <span class="pre">in</span> <span class="pre">[1,8]</span> <span class="pre">else</span> <span class="pre">False</span></tt> if links with
+facility types 1 and 8 are not splittable, say if they are freeways or ramps.</p>
 <p>Before:</p>
 <img alt="../_images/removeCentroidConnectors1.png" src="../_images/removeCentroidConnectors1.png" style="height: 300px;" />
 <p>After:</p>

@@ -42,6 +42,7 @@ if "%1" == "clean" (
 
 if "%1" == "html" (
 	%SPHINXBUILD% -a -b html %ALLSPHINXOPTS% %BUILDDIR%/html
+	python make_links.py
 	echo.
 	echo.Build finished. The HTML pages are in %BUILDDIR%/html.
 	goto end

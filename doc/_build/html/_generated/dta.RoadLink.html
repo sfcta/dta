@@ -421,6 +421,15 @@ If <em>distance</em> is longer than the euclidean distance of the link, and not 
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.disallowSplitForConnector">
+<tt class="descname">disallowSplitForConnector</tt><big>(</big><em>disallowConnectorEvalStr</em><big>)</big><a class="headerlink" href="#dta.RoadLink.disallowSplitForConnector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if this road link should <em>not</em> be split for a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</p>
+<p>Used by <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode.getCandidateLinksForSplitting" title="dta.RoadNode.getCandidateLinksForSplitting"><tt class="xref py py-meth docutils literal"><span class="pre">RoadNode.getCandidateLinksForSplitting()</span></tt></a>, which is used by
+<a class="reference internal" href="dta.Network.html#dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks" title="dta.Network.moveCentroidConnectorsFromIntersectionsToMidblocks"><tt class="xref py py-meth docutils literal"><span class="pre">Network.moveCentroidConnectorsFromIntersectionsToMidblocks()</span></tt></a>.</p>
+<p>Basically this DTA Anyway user defines this functionality by passing in <em>disallowConnectorEvalStr</em>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.euclideanLength">
 <tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.RoadLink.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>

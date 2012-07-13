@@ -286,14 +286,13 @@
             <span class="n">cPhase</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># the current Phase</span>
 
             <span class="n">activeMovs</span> <span class="o">=</span> <span class="p">[</span><span class="n">gMov</span> <span class="k">for</span> <span class="n">gMov</span> <span class="ow">in</span>  <span class="n">groupMovements</span> <span class="k">if</span>
-                          <span class="n">phasingData</span><span class="p">[</span><span class="n">gMov</span><span class="p">,</span> <span class="n">timeIndex1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;G&quot;</span><span class="p">]</span>    
+                          <span class="n">phasingData</span><span class="p">[</span><span class="n">gMov</span><span class="p">,</span> <span class="n">timeIndex1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;G&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">any2</span><span class="p">(</span><span class="n">statePairs</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span> <span class="o">==</span> <span class="p">(</span><span class="s">&quot;G&quot;</span><span class="p">,</span> <span class="s">&quot;R&quot;</span><span class="p">)):</span>
                 <span class="c">#collect all the green movements</span>
                 <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">activeMovs</span>
                 <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur1</span>
                 <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;yellow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>                
-
+                <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">if</span> <span class="n">pPhase</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">activeMovs</span><span class="p">:</span>
                         <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span>
@@ -308,8 +307,7 @@
                 <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">activeMovs</span>
                 <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur1</span>
                 <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;yellow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur2</span>
-                <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>                
-
+                <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">if</span> <span class="n">pPhase</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">activeMovs</span><span class="p">:</span>
                         <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span>
@@ -320,6 +318,19 @@
                     <span class="n">pPhase</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cPhase</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">any2</span> <span class="p">(</span><span class="n">statePairs</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span> <span class="o">==</span> <span class="p">(</span><span class="s">&quot;R&quot;</span><span class="p">,</span> <span class="s">&quot;G&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">any2</span> <span class="p">(</span><span class="n">statePairs</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span> <span class="o">==</span> <span class="p">(</span><span class="s">&quot;G&quot;</span><span class="p">,</span> <span class="s">&quot;G&quot;</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">pPhase</span><span class="p">:</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">activeMovs</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span><span class="o">+</span><span class="n">dur1</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;yellow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">activeMovs</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur1</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;yellow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">cPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cPhase</span><span class="p">)</span>
+                <span class="n">pPhase</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">elif</span> <span class="n">all2</span><span class="p">(</span><span class="n">states1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;R&quot;</span><span class="p">):</span>
                 <span class="c">#allRed += dur1</span>
                 <span class="c">#phases[-1][&#39;yellow&#39;] += dur1</span>
@@ -336,9 +347,12 @@
                     <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;yellow&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;allRed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="c">#allRed = 0</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">activeMovs</span><span class="p">:</span>
                     <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dur1</span>
-
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;Movs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">activeMovs</span>
+                    <span class="n">pPhase</span><span class="p">[</span><span class="s">&quot;green&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur1</span>
+                    
         <span class="n">lastIndex</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">timeIndices</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">lastStates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">phasingData</span><span class="p">[:,</span> <span class="n">lastIndex</span><span class="p">]))</span>    
         <span class="c">#if all2(lastStates, lambda state: state == &#39;R&#39;):</span>
@@ -881,9 +895,9 @@
     <span class="n">intervalStateGreen</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;G&quot;</span><span class="p">,</span> <span class="s">&quot;G+G&quot;</span><span class="p">,</span> <span class="s">&quot;G*&quot;</span><span class="p">,</span> <span class="s">&quot;G G&quot;</span><span class="p">,</span> <span class="s">&quot;FY&quot;</span><span class="p">,</span> <span class="s">&quot;F&quot;</span><span class="p">,</span> <span class="s">&quot;G+F&quot;</span><span class="p">,</span> <span class="s">&quot;U&quot;</span><span class="p">,</span> <span class="s">&quot;T&quot;</span><span class="p">,</span> <span class="s">&quot;G + G&quot;</span><span class="p">,</span> <span class="s">&quot;G + F&quot;</span><span class="p">]</span>
     <span class="n">intervalStateYellow</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Y&quot;</span><span class="p">,</span> <span class="s">&quot;SY&quot;</span><span class="p">]</span>
     <span class="n">intervalStateRed</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;R&quot;</span><span class="p">,</span> <span class="s">&quot;RH&quot;</span><span class="p">,</span> <span class="s">&quot;OFF&quot;</span><span class="p">,</span> <span class="s">&quot;FR&quot;</span><span class="p">]</span>
-    <span class="n">intervalStateBlanck</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;&quot;</span><span class="p">]</span>
+    <span class="n">intervalStateBlank</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;&quot;</span><span class="p">]</span>
     <span class="n">intervalStateValid</span> <span class="o">=</span> <span class="n">intervalStateGreen</span> <span class="o">+</span> <span class="n">intervalStateYellow</span> <span class="o">+</span> \
-        <span class="n">intervalStateRed</span> <span class="o">+</span> <span class="n">intervalStateBlanck</span>
+        <span class="n">intervalStateRed</span> <span class="o">+</span> <span class="n">intervalStateBlank</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">startX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">endX</span><span class="p">):</span>
         <span class="n">groupMovement</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sheet</span><span class="o">.</span><span class="n">cell_value</span><span class="p">(</span><span class="n">rowx</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">colx</span><span class="o">=</span><span class="n">startY</span><span class="p">))</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
@@ -919,7 +933,7 @@
         <span class="n">movementIndex</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">movementNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">groupMovement</span><span class="p">)</span>
 
-        <span class="n">phasingData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singleMovementData</span><span class="p">)</span>
+        <span class="n">phasingData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singleMovementData</span><span class="p">)</span>        
     
     <span class="k">if</span> <span class="n">phasingData</span> <span class="o">==</span> <span class="p">[]:</span>
         <span class="k">raise</span> <span class="n">ParsingCardError</span><span class="p">(</span><span class="s">&quot;I cannot parse its phasing data&quot;</span><span class="p">)</span>
@@ -958,8 +972,7 @@
                 <span class="n">ma</span><span class="p">[</span><span class="n">movName</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;R&quot;</span> <span class="c">#RED</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ParsingCardError</span><span class="p">(</span><span class="s">&quot;Group movement </span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="s">. I cannot interpret &quot;</span>
-                                       <span class="s">&quot;the phase status </span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movName</span><span class="p">,</span> 
-                                                                <span class="n">intervalState</span><span class="p">))</span>
+                                       <span class="s">&quot;the phase status </span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movName</span><span class="p">,</span> <span class="n">intervalState</span><span class="p">))</span>
                 
     <span class="n">signalData</span><span class="o">.</span><span class="n">phasingData</span> <span class="o">=</span> <span class="n">ma</span>
 </div>

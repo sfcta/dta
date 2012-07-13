@@ -7,7 +7,7 @@
    :alt: SFCTA usage of DTA Anyway
    
    SFCTA uses DTA Anyway to generate a DTA network using this series of scripts, each one
-   adding a new layer of data onto the network.
+   adding a new layer of data onto the network.  See :doc:`script_importFullSanFranciscoNetworkDataset`
 
 
 DTA Anyway is a python module that facilitates network coding, analysis and visualization for

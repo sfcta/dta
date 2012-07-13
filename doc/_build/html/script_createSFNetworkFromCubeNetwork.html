@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="DTA Anyway v1.0 documentation" href="index.html" />
     <link rel="next" title="Importing Transit Routes" href="script_importTPPlusTransitRoutes.html" />
-    <link rel="prev" title="dta.Utils" href="_generated/dta.Utils.html" /> 
+    <link rel="prev" title="Batch File for Entire Import Process" href="script_importFullSanFranciscoNetworkDataset.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,7 +40,7 @@
           <a href="script_importTPPlusTransitRoutes.html" title="Importing Transit Routes"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="_generated/dta.Utils.html" title="dta.Utils"
+          <a href="script_importFullSanFranciscoNetworkDataset.html" title="Batch File for Entire Import Process"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -289,7 +289,8 @@ Find these and remove them</p>
 212
 213
 214
-215</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+215
+216</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
     
     <span class="n">optlist</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;n:l:&quot;</span><span class="p">)</span>
 
@@ -301,7 +302,7 @@ Find these and remove them</p>
     <span class="n">SF_CUBE_TURN_PROHIBITIONS</span>   <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     
     <span class="n">SF_CUBE_SHAPEFILE</span>           <span class="o">=</span> <span class="bp">None</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">SF_CUBE_SHAPEFILE</span>       <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="n">OUTPUT_NODE_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
@@ -375,14 +376,14 @@ Find these and remove them</p>
     <span class="c"># Updated for locals/collectors and arterials based on MTA speed data</span>
     <span class="n">speedLookup</span> <span class="o">=</span> <span class="p">{</span> \
         <span class="s">&#39;FT1 AT0&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT1 AT1&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT1 AT2&#39;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span> <span class="s">&#39;FT1 AT3&#39;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span> <span class="s">&#39;FT1 AT4&#39;</span><span class="p">:</span><span class="mi">55</span><span class="p">,</span> <span class="s">&#39;FT1 AT5&#39;</span><span class="p">:</span><span class="mi">55</span><span class="p">,</span> 
-        <span class="s">&#39;FT2 AT0&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s">&#39;FT2 AT1&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT2&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT3&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT4&#39;</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;FT2 AT5&#39;</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span> 
-        <span class="s">&#39;FT3 AT0&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s">&#39;FT3 AT1&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT2&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT3&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT4&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT5&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> 
-        <span class="s">&#39;FT4 AT0&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="s">&#39;FT4 AT1&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT4 AT2&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT4 AT3&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT4 AT4&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT4 AT5&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> 
+        <span class="s">&#39;FT2 AT0&#39;</span><span class="p">:</span><span class="mi">60</span><span class="p">,</span> <span class="s">&#39;FT2 AT1&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT2&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT3&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT4&#39;</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;FT2 AT5&#39;</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span> 
+        <span class="s">&#39;FT3 AT0&#39;</span><span class="p">:</span><span class="mi">60</span><span class="p">,</span> <span class="s">&#39;FT3 AT1&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT2&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT3&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT4&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT5&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> 
+        <span class="s">&#39;FT4 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT4 AT1&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT4 AT2&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT4 AT3&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT4 AT4&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT4 AT5&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> 
         <span class="s">&#39;FT5 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT5 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT5 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT5 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT5 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT5 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
-        <span class="s">&#39;FT7 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT7 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT7 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT7 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT7 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT7 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
-        <span class="s">&#39;FT11 AT0&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="s">&#39;FT11 AT1&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT11 AT2&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT11 AT3&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT11 AT4&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT11 AT5&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> 
-        <span class="s">&#39;FT12 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT12 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT12 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT12 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT12 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT12 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
-        <span class="s">&#39;FT15 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT15 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT15 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT15 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT15 AT4&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s">&#39;FT15 AT5&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> 
+        <span class="s">&#39;FT7 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT7 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT7 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT7 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT7 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT7 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
+        <span class="s">&#39;FT11 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT11 AT1&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT11 AT2&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT11 AT3&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT11 AT4&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT11 AT5&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> 
+        <span class="s">&#39;FT12 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT12 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT12 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT12 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT12 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT12 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
+        <span class="s">&#39;FT15 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT15 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT15 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT15 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT15 AT4&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s">&#39;FT15 AT5&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> 
     <span class="p">}</span>
     <span class="c"># Derived in Y:\dta\TrafficFlowParameters.xlsx</span>
     <span class="n">responseTimeLookup</span> <span class="o">=</span> <span class="p">{</span> \
@@ -437,8 +438,8 @@ Find these and remove them</p>
        <span class="n">linkFacilityTypeEvalStr</span>          <span class="o">=</span> <span class="s">&quot;ftToDTALookup[FT]&quot;</span><span class="p">,</span>
        <span class="n">linkLengthEvalStr</span>                <span class="o">=</span> <span class="s">&quot;float(DISTANCE)&quot;</span><span class="p">,</span>
        <span class="n">linkFreeflowSpeedEvalStr</span>         <span class="o">=</span> <span class="s">&quot;45.0 if FT==&#39;6&#39; else float(speedLookup[&#39;FT&#39;+FT+&#39; AT&#39;+AT])&quot;</span><span class="p">,</span>
-       <span class="n">linkEffectiveLengthFactorEvalStr</span> <span class="o">=</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
-       <span class="n">linkResponseTimeFactorEvalStr</span>    <span class="o">=</span> <span class="s">&quot;1.15&quot;</span><span class="p">,</span>  <span class="c"># estimated based on Caltrans sensors for freeways in SF, applied to all network until further analysis</span>
+       <span class="n">linkEffectiveLengthFactorEvalStr</span> <span class="o">=</span> <span class="s">&quot;1.17&quot;</span><span class="p">,</span> <span class="c"># estimated based on queue length survey data</span>
+       <span class="n">linkResponseTimeFactorEvalStr</span>    <span class="o">=</span> <span class="s">&quot;1.1 if FT==&#39;2&#39; else 1.2&quot;</span><span class="p">,</span>  <span class="c"># estimated based on saturation flow analysis on survey data and PeMS freeway sensors</span>
        <span class="n">linkNumLanesEvalStr</span>              <span class="o">=</span> <span class="s">&quot;2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)&gt;0 else 0))&quot;</span><span class="p">,</span>
        <span class="n">linkRoundAboutEvalStr</span>            <span class="o">=</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
        <span class="n">linkLevelEvalStr</span>                 <span class="o">=</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
@@ -483,7 +484,8 @@ Find these and remove them</p>
     
     <span class="c"># Move the centroid connectors from intersection nodes to midblock locations</span>
     <span class="c"># TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        </span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">moveCentroidConnectorsFromIntersectionsToMidblocks</span><span class="p">(</span><span class="n">splitReverseLinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">externalNodeIds</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">moveCentroidConnectorsFromIntersectionsToMidblocks</span><span class="p">(</span><span class="n">splitReverseLinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">externalNodeIds</span><span class="o">=</span><span class="p">[],</span> 
+                                                                              <span class="n">disallowConnectorEvalStr</span><span class="o">=</span><span class="s">&quot;True if self.getFacilityType() in [1,8] else False&quot;</span><span class="p">)</span>
 
     <span class="c"># Warn on overlapping links, and move virtual nodes up to 100 feet if that helps</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleOverlappingLinks</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -524,8 +526,8 @@ Find these and remove them</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="_generated/dta.Utils.html"
-                        title="previous chapter">dta.Utils</a></p>
+  <p class="topless"><a href="script_importFullSanFranciscoNetworkDataset.html"
+                        title="previous chapter">Batch File for Entire Import Process</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="script_importTPPlusTransitRoutes.html"
                         title="next chapter">Importing Transit Routes</a></p>
@@ -564,7 +566,7 @@ Find these and remove them</p>
           <a href="script_importTPPlusTransitRoutes.html" title="Importing Transit Routes"
              >next</a> |</li>
         <li class="right" >
-          <a href="_generated/dta.Utils.html" title="dta.Utils"
+          <a href="script_importFullSanFranciscoNetworkDataset.html" title="Batch File for Entire Import Process"
              >previous</a> |</li>
         <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
       </ul>
