@@ -2000,6 +2000,7 @@ class Network(object):
         w.field("ID",       "N", 10)
         w.field("Start",    "N", 10)
         w.field("End",      "N", 10)
+        w.field("Start_End","C", 20) # for joins
 
         w.field("Type",     "C", 10) 
         w.field("Label",    "C", 60)
@@ -2035,7 +2036,8 @@ class Network(object):
                     type    = "VirtualLink"
                 direction   = link.getDirection()
                 
-            w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(),                     
+            w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(), 
+                     "%d %d" % (link.getStartNode().getId(), link.getEndNode().getId()),
                      type, label, facType, numLanes, direction)
 
         w.save(name)
@@ -2046,9 +2048,11 @@ class Network(object):
         Export all the movements to a shapefile with the given name
         """
         w = shapefile.Writer(shapefile.POLYLINE)
-        w.field("Start", "N", 10)
-        w.field("Middle", "N", 10)
-        w.field("End", "N", 10)
+        w.field("Start",    "N", 10)
+        w.field("Middle",   "N", 10)
+        w.field("End",      "N", 10)
+        w.field("StaMidEnd","C", 30)
+        
         w.field("NumLanes", "N", 10)
         w.field("Capacity", "N", 10)
         w.field("TurnType", "C", 10)
@@ -2061,10 +2065,18 @@ class Network(object):
                 continue
             for mov in link.iterOutgoingMovements():
                 w.line(parts=[mov.getCenterLine()])
+                
+                try:
+                    protected_capacity = mov.getProtectedCapacity(planInfo)
+                except:
+                    protected_capacity = -1
+                    
                 w.record(mov.getStartNodeId(), mov.getAtNode().getId(), mov.getEndNodeId(),
-                         mov.getNumLanes(), mov.getProtectedCapacity(planInfo),
+                         "%d %d %d" % (mov.getStartNodeId(), mov.getAtNode().getId(), mov.getEndNodeId()),
+                         mov.getNumLanes(), protected_capacity,
                          mov.getTurnType())
         w.save(name)
+        DtaLogger.info("Wrote movements to shapefile %s" % name)                
                 
     def mergeLinks(self, link1, link2):
         """

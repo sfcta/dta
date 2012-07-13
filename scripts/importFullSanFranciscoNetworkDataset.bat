@@ -73,13 +73,16 @@ copy sf_stops_advn.dqt sf_final_advn.dqt
 copy sf_stops_ctrl.dqt sf_final_ctrl.dqt
 copy sf_trn_ptrn.dqt   sf_final_ptrn.dqt
 
-goto done
+:: This is here because countdracula is not typically setup.  Unless you're Lisa. ;)
+IF %USERNAME% NEQ Lisa (
+  goto done
+)
 ::
 :: 5) import the counts into userdata files for Dynameq to read
 ::
 :importCounts
 set PYTHONPATH=%DTA_CODE_DIR%;Y:\lmz\CountDracula
-python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py . sf_final
+python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py -l sf_final_links.shp -m sf_final_movements.shp -n sf_final_nodes.shp . sf_final
 IF ERRORLEVEL 1 goto done
 
 :done
