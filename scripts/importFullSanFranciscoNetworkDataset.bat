@@ -9,6 +9,7 @@ IF NOT DEFINED DTA_CODE_DIR (
 
 :: let PYTHON know where to find it
 set PYTHONPATH=%DTA_CODE_DIR%
+set TRANSIT_IMPORT=CUBE
 
 ::
 :: 1) create the network from the Cube network
@@ -24,10 +25,19 @@ IF ERRORLEVEL 1 goto done
 :: 2) attach the transit lines to the DTA network
 :: 
 :importTransit
-python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
-:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt
-:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
-IF ERRORLEVEL 1 goto done
+if %TRANSIT_IMPORT% == CUBE (
+  python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
+  :: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt
+  :: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
+  IF ERRORLEVEL 1 goto done
+)
+else (
+  set PYTHONPATH=%DTA_CODE_DIR%;Y:\lmz\googletransitdatafeed-read-only\python
+  python %DTA_CODE_DIR%\scripts\importGTFS.py . sf Y:\dta\SanFrancisco\2010\transit\google_transit_sfmta_20120609_20120914.zip
+  :: primary output: Dynameq files sf_trn_{scen,base,adv,ptrn}.dqt
+  :: log     output: importGTFS.{DEBUG,INFO}.log
+  IF ERRORLEVEL 1 goto done
+)
 
 
 ::

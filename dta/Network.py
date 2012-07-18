@@ -19,8 +19,9 @@ import pdb
 import copy
 import random
 import difflib
-
-import shapefile 
+import operator
+import shapefile
+import sys 
 
 from .Centroid import Centroid
 from .Connector import Connector
@@ -1086,7 +1087,60 @@ class Network(object):
             newStreetNames.pop(0)
         return newStreetNames
 
-                           
+    def findNRoadLinksNearestCoords(self, x, y, n=1, quick_dist = None):
+        """
+        Iterates though :py:class:`RoadLink` instances and returns the *n* closest
+        road links to the given (*x*, *y*) coordinates.
+        
+        If *n* = 1, returns a 3-tuple (*roadlink*, *distance*, *t*).  
+        The *roadlink* is the closest :py:class:`RoadLink` instance to (*x*, *y*),
+        the *distance* is the distance between (*x*, *y*) and the *roadlink*, and 
+        *t* is in [0,1] and indicates how far along from the start point and end point
+        of the *roadlink* lies the closest point to (*x*, *y*).
+        
+        If *n* > 1: returns a list of 3-tuples as described above, sorted by the *distance*
+        values.
+        
+        Uses *quick_dist* (if passed) to skip skip distance calcs and ignore anything
+        greater than *quick_dist* difference in either coordinate.
+        Returns (None, None, None) if none found and *n* = 1, or an empty list for *n* > 1
+                
+        *x*,*y* and *quick_dist* are  in :py:attr:`Node.COORDINATE_UNITS`
+        """
+        min_dist            = sys.float_info.max
+        return_tuples       = []
+        
+        for roadlink in self.iterRoadLinks():
+            # quickly rule out if a quick_dist is specified
+            if quick_dist:
+                # real dist threshhold - it could be a long link and the (x,y) is in the center
+                dthres = max(quick_dist, 0.75*roadlink.getLengthInCoordinateUnits())
+                     
+                if x + dthres < min(roadlink.getStartNode().getX(), roadlink.getEndNode().getX()): continue
+                if x - dthres > max(roadlink.getStartNode().getX(), roadlink.getEndNode().getX()): continue
+                if y + dthres < min(roadlink.getStartNode().getY(), roadlink.getEndNode().getY()): continue
+                if y - dthres > max(roadlink.getStartNode().getY(), roadlink.getEndNode().getY()): continue
+
+            (dist, t) = roadlink.getDistanceFromPoint(x,y)
+            if dist < min_dist:
+                return_tuples.append( (roadlink, dist, t))
+                
+                # sort
+                return_tuples = sorted(return_tuples, key=operator.itemgetter(1))
+                
+                # kick out extras
+                if len(return_tuples) > n:
+                    return_tuples.pop()
+                    
+                min_dist            = return_tuples[-1][1]
+        
+        if n==1:
+            if len(return_tuples) == 0: 
+                return (None, None, None)
+            return return_tuples[0]
+
+        return return_tuples
+                            
     def findLinksForRoadLabels(self, on_street_label, on_direction,
                                        from_street_label, to_street_label,
                                        remove_label_spaces=False):
@@ -2018,13 +2072,9 @@ class Network(object):
                 facType     = -1
                 numLanes    = -1
                 direction   = ""
-            else:
-                centerline  = link.getCenterLine()
-                shapepoints = copy.deepcopy(link._shapePoints)
-                shapepoints.insert(0,centerline[0])
-                shapepoints.append(centerline[1])
-                    
-                w.line(parts=[shapepoints])
+            else:                    
+                w.line(parts=[link.getCenterLine(wholeLineShapePoints = True)])
+                
                 label       = link.getLabel()
                 facType     = link.getFacilityType()
                 numLanes    = link.getNumLanes()

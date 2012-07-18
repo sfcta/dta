@@ -164,12 +164,12 @@ class TransitLine(object):
         """
         Returns the Dynameq-formatted string representation of the transit line.
         """
-        line_comment = "LINE\n*%8s %15s %8s %15s %8s %5s %6s\n" % ("id","label", "litype", "vtype", "stime", "level", "active")        
-        line_str = '%9d %15s %8d %15s %8s %5d %6d\n' % (self._id, '"' + self.label + '"', self.litype, self.vtype, self.stime.strftime("%H:%M:%S"), self.level, self.active)
+        line_comment = "LINE\n*%8s %42s %8s %15s %8s %5s %6s\n" % ("id","label", "litype", "vtype", "stime", "level", "active")        
+        line_str = '%9d %42s %8d %15s %8s %5d %6d\n' % (self._id, '"' + self.label + '"', self.litype, self.vtype, self.stime.strftime("%H:%M:%S"), self.level, self.active)
 
         headway_comment = "*hway    dep\n"
         headway_hours = self.hway // 60
-        headway_mins  = int(self.hway - headway_hours)
+        headway_mins  = int(self.hway - 60*headway_hours)
         headway_secs  = float(self.hway - 60*headway_hours - headway_mins)/60.0
         
         headway = '%02d:%02d:%02d %3d\n' % (headway_hours, headway_mins, headway_secs, self.dep)

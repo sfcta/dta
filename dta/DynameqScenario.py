@@ -232,10 +232,10 @@ class DynameqScenario(Scenario):
         ready for writing.
         """
         scenariofile_object.write("VEH_TYPES\n")
-        scenariofile_object.write("*class_name  type_name   length res_time max_speed speed_ratio\n")
+        scenariofile_object.write("*class_name       type_name   length res_time max_speed speed_ratio\n")
         count = 0
         for vehicleType in self.vehicleTypes:
-            scenariofile_object.write("%13s %9s %8.2f %8.2f %8.2f %8.2f\n" % (vehicleType.className,
+            scenariofile_object.write("%13s %13s %8.2f %8.2f %8.2f %8.2f\n" % (vehicleType.className,
                                                                               vehicleType.name,
                                                                               vehicleType.length,
                                                                               vehicleType.responseTime,

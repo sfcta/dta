@@ -15,9 +15,10 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import copy
 import pdb 
 import math
+import sys
 from collections import defaultdict 
 
 from .DtaError import DtaError
@@ -610,7 +611,7 @@ class RoadLink(Link):
         self._length = newLength 
         
 
-    def getCenterLine(self, atStart=False, atEnd=False):
+    def getCenterLine(self, atStart=False, atEnd=False, wholeLineShapePoints=False):
         """
         Offset the link to the right 0.5*numLanes*:py:attr:`RoadLink.DEFAULT_LANE_WIDTH` and 
         return a tuple of two points (each one being a tuple of two floats) representing the centerline
@@ -618,7 +619,8 @@ class RoadLink(Link):
         If *atStart* is True, then shapepoints are included and the first section of the line is used.
         If *atEnd* is True, then shapepoints are included and the last section of the line is used.
         
-        If neither is True, then shapepoints are not included. 
+        If neither is True, then shapepoints are included iff *wholeLineShapePoints* (and a list is
+        returned rather than a tuple of two points). 
         """
 
         start_point = [ self._startNode.getX(), self._startNode.getY() ]
@@ -648,10 +650,67 @@ class RoadLink(Link):
         if length == 0:
             length = 1
 
-        self._centerline = ((start_point[0] + dy*(start_shift/length), start_point[1] - dx*(start_shift/length)),
-                            (end_point[0]   + dy*(end_shift  /length), end_point[1]   - dx*(end_shift  /length)))
+        centerline = ((start_point[0] + dy*(start_shift/length), start_point[1] - dx*(start_shift/length)),
+                      (end_point[0]   + dy*(end_shift  /length), end_point[1]   - dx*(end_shift  /length)))
+        
+        if not atStart and not atEnd:
+            if wholeLineShapePoints:
+                centerline_with_shape = copy.deepcopy(self._shapePoints)
+                centerline_with_shape.insert(0, centerline[0])
+                centerline_with_shape.append(centerline[1])
+                return centerline_with_shape
+                
+            # only cache to local var for atStart=False, atEnd=False, wholeLineShapePoints=False            
+            if not wholeLineShapePoints:
+                self._centerline = centerline
+            
+        return centerline
 
-        return self._centerline
+    def getDistanceFromPoint(self, x, y):
+        """
+        Projects (*x*, *y*) onto the road link center line (including the shape points).
+        Returns (distance, t) where t is in [0,1] and indicates how far between the
+        road links start point and end point lies the closest point to (*x*, *y*).
+                
+        *x*,*y* are in :py:attr:`Node.COORDINATE_UNITS`
+        """
+        centerline = self.getCenterLine(wholeLineShapePoints = True)
+       
+        # do it for real
+        min_dist_sq = sys.float_info.max
+        dist_along_segments = 0.0
+        
+        total_dist = 0.0
+        for segment_num in range(len(centerline)-1):
+            pointA              = centerline[segment_num]
+            pointB              = centerline[segment_num+1]
+            segment_length_sq   = (pointA[0]-pointB[0])**2 + (pointA[1]-pointB[1])**2
+            segment_length      = math.sqrt(segment_length_sq)
+            
+            # looking at the line segment as parameterized: pointA + t(pointB-pointA)
+            # t = dot( point - pointA, pointB - pointA)
+            t = ((x - pointA[0])*(pointB[0]-pointA[0]) + (y - pointA[1])*(pointB[1]-pointA[1]))/segment_length_sq
+                
+            if t < 0.0: 
+                projection = pointA
+            elif t > 1.0:
+                projection = pointB
+            else:
+                projection = (pointA[0] + t*(pointB[0]-pointA[0]),
+                              pointA[1] + t*(pointB[1]-pointA[1]))
+            dist_from_seg_sq =(projection[0]-x)**2 + (projection[1]-y)**2
+
+            # if it's a minimum, keep
+            if dist_from_seg_sq < min_dist_sq:
+                min_dist_sq = dist_from_seg_sq
+                dist_along_segments = total_dist + (t*segment_length)
+                
+            total_dist         += segment_length
+        
+        return_t = dist_along_segments/total_dist
+        if return_t > 1.0: return_t = 1.0
+        if return_t < 0.0: return_t = 0.0
+        return (math.sqrt(min_dist_sq), dist_along_segments/total_dist)
 
     def getOutline(self, scale=1):
         """

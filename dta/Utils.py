@@ -450,6 +450,21 @@ class Time(datetime.time):
         minutes = minutes % 60
         return Time(hours, minutes) 
     
+    @classmethod
+    def fromSeconds(cls, seconds):
+        """
+        Return a Time object that assuming *seconds* represents seconds after midnight.
+        """
+        seconds = seconds % (60*60*24)
+        
+        hours = int( seconds / (60*60))
+        seconds -= hours*(60*60)
+        
+        minutes = int(seconds/60)
+        seconds -= minutes*60
+        
+        return Time(hours, minutes, seconds)
+    
     def __init__(self, hours, minutes, seconds=0):
 
         datetime.time.__init__(hours, minutes, seconds)
