@@ -5,3 +5,13 @@ div#module-dta div.figure {
   background-color:white;
   padding: 1em;
 }
+
+div.body h1 {
+  font-size: 150%;
+  page-break-after: avoid;
+}
+
+p.graphviz {
+  page-break-before: avoid;
+  page-break-after: avoid;
+}

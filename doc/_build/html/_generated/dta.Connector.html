@@ -439,12 +439,13 @@ start node to end node.</p>
 
 <dl class="method">
 <dt id="dta.Connector.getCenterLine">
-<tt class="descname">getCenterLine</tt><big>(</big><em>atStart=False</em>, <em>atEnd=False</em><big>)</big><a class="headerlink" href="#dta.Connector.getCenterLine" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">getCenterLine</tt><big>(</big><em>atStart=False</em>, <em>atEnd=False</em>, <em>wholeLineShapePoints=False</em><big>)</big><a class="headerlink" href="#dta.Connector.getCenterLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Offset the link to the right 0.5*numLanes*:py:attr:<cite>RoadLink.DEFAULT_LANE_WIDTH</cite> and 
 return a tuple of two points (each one being a tuple of two floats) representing the centerline</p>
 <p>If <em>atStart</em> is True, then shapepoints are included and the first section of the line is used.
 If <em>atEnd</em> is True, then shapepoints are included and the last section of the line is used.</p>
-<p>If neither is True, then shapepoints are not included.</p>
+<p>If neither is True, then shapepoints are included iff <em>wholeLineShapePoints</em> (and a list is
+returned rather than a tuple of two points).</p>
 </dd></dl>
 
 <dl class="method">
@@ -459,6 +460,15 @@ If <em>atEnd</em> is True, then shapepoints are included and the last section of
 <dd><p>Returns the direction of the link as one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>,  <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,
 <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_WB" title="dta.RoadLink.DIR_WB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_WB</span></tt></a> or <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" title="dta.RoadLink.DIR_SB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_SB</span></tt></a>.  Uses <a class="reference internal" href="#dta.Connector.getOrientation" title="dta.Connector.getOrientation"><tt class="xref py py-meth docutils literal"><span class="pre">getOrientation()</span></tt></a> so the
 shape points are used with the <em>atEnd</em> argument.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getDistanceFromPoint">
+<tt class="descname">getDistanceFromPoint</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#dta.Connector.getDistanceFromPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Projects (<em>x</em>, <em>y</em>) onto the road link center line (including the shape points).
+Returns (distance, t) where t is in [0,1] and indicates how far between the
+road links start point and end point lies the closest point to (<em>x</em>, <em>y</em>).</p>
+<p><em>x</em>,*y* are in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">

@@ -141,7 +141,17 @@
 85
 86
 87
-88</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
 
 <span class="c">:: DTA Anyway code location is required</span>
 <span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_CODE_DIR (
@@ -152,6 +162,7 @@
 
 <span class="c">:: let PYTHON know where to find it</span>
 <span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>
+<span class="k">set</span> <span class="nv">TRANSIT_IMPORT</span><span class="o">=</span>CUBE
 
 <span class="c">::</span>
 <span class="c">:: 1) create the network from the Cube network</span>
@@ -167,10 +178,19 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_createSFNe
 <span class="c">:: 2) attach the transit lines to the DTA network</span>
 <span class="c">:: </span>
 <span class="nl">:importTransit</span>
-python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importTPPlusTransitRoutes.html">importTPPlusTransitRoutes.py</a> . sf Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\sfmuni.lin Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\bus.lin
-<span class="c">:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt</span>
-<span class="c">:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log</span>
-<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+<span class="k">if</span> <span class="nv">%TRANSIT_IMPORT%</span> <span class="o">==</span> CUBE (
+  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importTPPlusTransitRoutes.html">importTPPlusTransitRoutes.py</a> . sf Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\sfmuni.lin Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\bus.lin
+  <span class="c">:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt</span>
+  <span class="c">:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log</span>
+  <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+)
+<span class="k">else</span> (
+  <span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>;Y:\lmz\googletransitdatafeed-read-only\python
+  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importGTFS.html">importGTFS.py</a> . sf Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\google_transit_sfmta_<span class="m">20120609</span>_<span class="m">20120914</span>.zip
+  <span class="c">:: primary output: Dynameq files sf_trn_{scen,base,adv,ptrn}.dqt</span>
+  <span class="c">:: log     output: importGTFS.{DEBUG,INFO}.log</span>
+  <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+)
 
 
 <span class="c">::</span>

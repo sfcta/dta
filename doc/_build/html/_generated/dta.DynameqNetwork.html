@@ -434,6 +434,24 @@ south east and so <a class="reference internal" href="dta.RoadLink.html#dta.Road
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.findNRoadLinksNearestCoords">
+<tt class="descname">findNRoadLinksNearestCoords</tt><big>(</big><em>x</em>, <em>y</em>, <em>n=1</em>, <em>quick_dist=None</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.findNRoadLinksNearestCoords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates though <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances and returns the <em>n</em> closest
+road links to the given (<em>x</em>, <em>y</em>) coordinates.</p>
+<p>If <em>n</em> = 1, returns a 3-tuple (<em>roadlink</em>, <em>distance</em>, <em>t</em>).  
+The <em>roadlink</em> is the closest <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instance to (<em>x</em>, <em>y</em>),
+the <em>distance</em> is the distance between (<em>x</em>, <em>y</em>) and the <em>roadlink</em>, and 
+<em>t</em> is in [0,1] and indicates how far along from the start point and end point
+of the <em>roadlink</em> lies the closest point to (<em>x</em>, <em>y</em>).</p>
+<p>If <em>n</em> &gt; 1: returns a list of 3-tuples as described above, sorted by the <em>distance</em>
+values.</p>
+<p>Uses <em>quick_dist</em> (if passed) to skip skip distance calcs and ignore anything
+greater than <em>quick_dist</em> difference in either coordinate.
+Returns (None, None, None) if none found and <em>n</em> = 1, or an empty list for <em>n</em> &gt; 1</p>
+<p><em>x</em>,*y* and <em>quick_dist</em> are  in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.findNodeForRoadLabels">
 <tt class="descname">findNodeForRoadLabels</tt><big>(</big><em>road_label_list</em>, <em>CUTOFF</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.findNodeForRoadLabels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds matching node for a set of road labels and returns a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</p>

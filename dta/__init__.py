@@ -1,7 +1,6 @@
 """
 
-.. figure:: /images/DtaAnywayFlow.png
-   :width: 470px
+.. figure:: /images/DtaAnywayFlow_470w.png
    :figwidth: 470px
    :align: right
    :alt: SFCTA usage of DTA Anyway

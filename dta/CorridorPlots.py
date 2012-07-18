@@ -29,6 +29,9 @@ from dta.Utils import Time
 from dta.DtaError import DtaError 
 
 class CountsVsVolumes(object):
+    """
+    Generates corridor plots.
+    """
     
     def __init__(self, net, path, reverse):
         
