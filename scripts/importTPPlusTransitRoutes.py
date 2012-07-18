@@ -30,7 +30,7 @@ USAGE = r"""
  
  This script reads the dynameq network in the given directory, as well as the given Cube TPPlus transit line file,
  and converts the transit lines into DTA transit lines, outputting them in Dynameq format as 
- [dynameq_net_dir]\[dynameq_net_prefix]_ptrn.dqt
+ [dynameq_net_dir]\sf_trn_ptrn.dqt
  
  """
  
@@ -65,7 +65,7 @@ if __name__ == "__main__":
                      '12':"Motor_Std",
                      '13':"Motor_Std",
                      '14':"CableCar",
-                     '15':"LRT1"
+                     '15':"LRT2"
                      }
     # others are buses
     for modenum in range(1,30):
