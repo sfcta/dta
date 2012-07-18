@@ -239,7 +239,124 @@ class SignalData(object):
 
             activeMovs = [gMov for gMov in  groupMovements if
                           phasingData[gMov, timeIndex1] == "G"]
-            if any2(statePairs, lambda pair: pair == ("G", "R")):
+            yellowMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "Y"]
+            if not activeMovs:
+                if all2(states1, lambda state: state == "R"):
+                    #allRed += dur1
+                    #phases[-1]['yellow'] += dur1
+                    if phases:
+                        phases[-1]['allRed'] += dur1
+                #   This all-red phase shouldn't be a problem in Dynameq.  If it turns out to be a problem, un-comment this section.
+##                  else:
+##                      raise dta.DtaError("Signal starts with all red")
+
+            elif any2(statePairs, lambda pair: pair == ("G", "Y")) and not any2(statePairs, lambda pair: pair == ("G", "G")):
+                cPhase["Movs"] = activeMovs
+                cPhase["green"] = dur1
+                cPhase["yellow"] = dur2
+                cPhase["allRed"] = 0
+                if pPhase:
+                    if pPhase["Movs"] == activeMovs:
+                        cPhase["green"] += pPhase["green"]
+                        #dta.DtaLogger.info("Phase %d for %s set at 1." % (timeIndex1, cPhase["Movs"]))
+                        phases.append(cPhase)
+                    else:
+                        phases.append(pPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 2." % (timeIndex1, pPhase["Movs"]))
+                        phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 3." % (timeIndex1, cPhase["Movs"]))
+                    pPhase = {}
+                else:
+                    phases.append(cPhase)
+                    #dta.DtaLogger.info("Phase %d for %s set at 4." % (timeIndex1, cPhase["Movs"]))
+                    
+
+            elif any2(statePairs, lambda pair: pair == ("G", "Y")) and any2(statePairs, lambda pair: pair == ("G", "G")):
+                #dta.DtaLogger.info("Active movements at phase %d are %s" % (timeIndex1, activeMovs))
+                if pPhase:
+                    if pPhase["Movs"] == activeMovs:
+                        pPhase["green"] += dur1
+                    else:
+                        phases.append(pPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 5." % (timeIndex1, pPhase["Movs"]))
+                        pPhase["Movs"] = activeMovs
+                        pPhase["green"] = dur1
+                        pPhase["yellow"] = 0
+                        pPhase["allRed"] = 0
+                else:
+                    pPhase["Movs"] = activeMovs
+                    pPhase["green"] = dur1
+                    pPhase["yellow"] = 0
+                    pPhase["allRed"] = 0
+            elif any2(statePairs, lambda pair: pair == ("Y", "R")) and any2 (statePairs, lambda pair: pair == ("R", "G")) and any2 (statePairs, lambda pair: pair == ("G", "G")):
+                for yMov in yellowMovs:
+                    activeMovs.append(yMov)
+                #dta.DtaLogger.info("Active movements (including yellow) at phase %d are: %s" % (timeIndex1, activeMovs))
+                if pPhase:
+                    cPhase["Movs"] = activeMovs
+                    cPhase["green"] = pPhase["green"]+dur1
+                    cPhase["yellow"] = 0
+                    cPhase["allRed"] = 0
+                else:
+                    cPhase["Movs"] = activeMovs
+                    cPhase["green"] = dur1
+                    cPhase["yellow"] = 0
+                    cPhase["allRed"] = 0
+                phases.append(cPhase)
+                #dta.DtaLogger.info("Phase %d for %s set at 6." % (timeIndex1, cPhase["Movs"]))
+                pPhase = {}
+
+
+            elif any2(statePairs, lambda pair: pair == ("Y", "R")) and any2(statePairs, lambda pair: pair == ("G", "G")):
+                for yMov in yellowMovs:
+                    activeMovs.append(yMov)
+                cPhase["Movs"] = activeMovs
+                cPhase["green"] = dur1
+                cPhase["yellow"] = 0
+                cPhase["allRed"] = 0
+                if pPhase:
+                    if pPhase["Movs"] == activeMovs:
+                        cPhase["green"] += pPhase["green"]
+                        phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 7." % (timeIndex1, cPhase["Movs"]))
+                    else:
+                        phases.append(pPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 8." % (timeIndex1, pPhase["Movs"]))
+                        phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 9." % (timeIndex1, cPhase["Movs"]))
+                    pPhase = {}
+                else:
+                    phases.append(cPhase)
+                    #dta.DtaLogger.info("Phase %d for %s set at 10." % (timeIndex1, cPhase["Movs"]))
+
+
+
+            elif any2(statePairs, lambda pair: pair == ("Y", "R")) and any2(statePairs, lambda pair: pair == ("G", "Y")):
+                for yMov in yellowMovs:
+                    activeMovs.append(yMov)
+
+                #dta.DtaLogger.info("Adding green time yellow movements so actives are: %s" % activeMovs)
+                    
+                cPhase["Movs"] = activeMovs
+                cPhase["green"] = dur1
+                cPhase["yellow"] = dur2
+                cPhase["allRed"] = 0
+                if pPhase:
+                    if pPhase["Movs"] == activeMovs:
+                        cPhase["green"] += pPhase["green"]
+                        phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 11." % (timeIndex1, cPhase["Movs"]))
+                    else:
+                        phases.append(pPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 12." % (timeIndex1, pPhase["Movs"]))
+                        phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 13." % (timeIndex1, cPhase["Movs"]))
+                    pPhase = {}
+                else:
+                    phases.append(cPhase)
+                    #dta.DtaLogger.info("Phase %d for %s set at 14." % (timeIndex1, cPhase["Movs"]))
+                    
+            elif any2(statePairs, lambda pair: pair == ("G", "R")):
                 #collect all the green movements
                 cPhase["Movs"] = activeMovs
                 cPhase["green"] = dur1
@@ -249,27 +366,18 @@ class SignalData(object):
                     if pPhase["Movs"] == activeMovs:
                         cPhase["green"] += pPhase["green"]
                         phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 15." % (timeIndex1, cPhase["Movs"]))
                     else:
                         phases.append(pPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 16." % (timeIndex1, pPhase["Movs"]))
                         phases.append(cPhase)
+                        #dta.DtaLogger.info("Phase %d for %s set at 17." % (timeIndex1, cPhase["Movs"]))
                     pPhase = {}
                 else:
                     phases.append(cPhase)
-            elif any2(statePairs, lambda pair: pair == ("G", "Y")):
-                cPhase["Movs"] = activeMovs
-                cPhase["green"] = dur1
-                cPhase["yellow"] = dur2
-                cPhase["allRed"] = 0
-                if pPhase:
-                    if pPhase["Movs"] == activeMovs:
-                        cPhase["green"] += pPhase["green"]
-                        phases.append(cPhase)
-                    else:
-                        phases.append(pPhase)
-                        phases.append(cPhase)
-                    pPhase = {}
-                else:
-                    phases.append(cPhase)
+                    #dta.DtaLogger.info("Phase %d for %s set at 18." % (timeIndex1, cPhase["Movs"]))
+
+
             elif any2 (statePairs, lambda pair: pair == ("R", "G")) and any2 (statePairs, lambda pair: pair == ("G", "G")):
                 if pPhase:
                     cPhase["Movs"] = activeMovs
@@ -282,15 +390,9 @@ class SignalData(object):
                     cPhase["yellow"] = 0
                     cPhase["allRed"] = 0
                 phases.append(cPhase)
+                #dta.DtaLogger.info("Phase %d for %s set at 19." % (timeIndex1, cPhase["Movs"]))
+
                 pPhase = {}
-            elif all2(states1, lambda state: state == "R"):
-                #allRed += dur1
-                #phases[-1]['yellow'] += dur1
-                if phases:
-                    phases[-1]['allRed'] += dur1
-                # This all-red phase shouldn't be a problem in Dynameq.  If it turns out to be a problem, un-comment this section.
-##                else:
-##                    raise dta.DtaError("Signal starts with all red")
                 
             elif any2(statePairs, lambda pair: pair == ("G", "G")):
                 if not pPhase:
@@ -309,6 +411,10 @@ class SignalData(object):
         lastStates = list(iter(phasingData[:, lastIndex]))    
         #if all2(lastStates, lambda state: state == 'R'):
         #    phases[-1]['yellow'] += timeIntervals[-1]
+
+        #for phase in phases:
+        #    dta.DtaLogger.info("Added phase with movements %s, green time %d and yellow time %d" % (phase["Movs"], phase["green"], phase["yellow"]))
+        
         return phases
 
     def selectCSO(self, startTime, endTime):
@@ -1225,23 +1331,22 @@ def mapMovements(mec, baseNetwork):
 
         #todo ends with LT
         leftTurnIndicators = ["LT'S","-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
-        rightTurnIndicators = ["RIGHT TURN"]
+        rightTurnIndicators = ["RIGHT TURN", "BRT", " RT"]
         thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
 
         indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators, TURN_RIGHT:rightTurnIndicators}
         result = []
         thruadded=0
+        movadded=0
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
                 if indicator in gMovName:
                     result.extend(dir)
+                    movadded = 1
                     if dir==TURN_THRU:
                         thruadded=1
                 if dir==TURN_RIGHT and thruadded==1:
                     result.extend(dir)
-##        if "RT" not in result and thruadded==1:
-##            result.extend(TURN_RIGHT)
-
         return result
 
     def mapGroupMovements(mec, groupMovementNames, bNode):
@@ -1687,6 +1792,7 @@ def convertSignalToDynameq(net, node, card, planInfo):
                                                                                         "14TH AVE",      dta.RoadLink.DIR_WB,
                                                                                         "PORTOLA DR",
                                                                                         use_dir_for_movement=False), PhaseMovement.PERMITTED))
+
         dPlan.addPhase(dPhase)
 
     return dPlan
@@ -1776,7 +1882,7 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
     # todo: remove these.  node.addTimePlan() set the control variable        
     assert(node._control == 1)
     node._control=1
-        
+    
     return dPlan
 
 def verifySingleSignal(net, fileName, mappedNodes):
