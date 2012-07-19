@@ -172,6 +172,7 @@ if __name__ == '__main__':
     sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Std",    "Transit",  40,     1.6,        70.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Artic",  "Transit",  60,     1.6,        70.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("CableCar",     "Transit",  27.5,   1.6,         9.5,       90.0))    
+    dta.DtaLogger.info("Maximum vehicle length = %f" % sanfranciscoScenario.maxVehicleLength())
     # Generic is an implicit type
 
     # VehicleClassGroups
@@ -225,6 +226,8 @@ if __name__ == '__main__':
                      "6":9,
                      }
     
+    linkEffectiveLengthFactor = 1.17 # estimated based on queue length survey data
+    
     sanfranciscoCubeNet.readNetfile \
       (netFile=SF_CUBE_NET_FILE,
        nodeVariableNames=["N","X","Y","OLD_NODE"],
@@ -252,7 +255,7 @@ if __name__ == '__main__':
        linkFacilityTypeEvalStr          = "ftToDTALookup[FT]",
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
-       linkEffectiveLengthFactorEvalStr = "1.17", # estimated based on queue length survey data
+       linkEffectiveLengthFactorEvalStr = str(linkEffectiveLengthFactor), 
        linkResponseTimeFactorEvalStr    = "1.1 if FT=='2' else 1.2",  # estimated based on saturation flow analysis on survey data and PeMS freeway sensors
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
@@ -303,8 +306,9 @@ if __name__ == '__main__':
     # Warn on overlapping links, and move virtual nodes up to 100 feet if that helps
     sanfranciscoDynameqNet.handleOverlappingLinks(warn=True, moveVirtualNodeDist=100)
     
-    # finally -- Dynameq requires links to be longer than the longest vehicle
-    sanfranciscoDynameqNet.handleShortLinks(1.05*sanfranciscoScenario.maxVehicleLength()/5280.0,
+    # finally -- Dynameq requires links to be longer than the longest vehicle x the linkEffectiveLengthFactor
+    # rounding up because the lengths are specified with 3 decimals in the file, so if they happen to round down they're too short
+    sanfranciscoDynameqNet.handleShortLinks(round(linkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3),
                                             warn=True,
                                             setLength=True)
 
