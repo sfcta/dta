@@ -7,9 +7,13 @@ IF NOT DEFINED DTA_CODE_DIR (
   goto done
 )
 
+:: Default to Cube transit networks if not defined
+IF NOT DEFINED TRANSIT_IMPORT (
+  set TRANSIT_IMPORT=CUBE
+)
+
 :: let PYTHON know where to find it
 set PYTHONPATH=%DTA_CODE_DIR%
-set TRANSIT_IMPORT=CUBE
 
 ::
 :: 1) create the network from the Cube network

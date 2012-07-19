@@ -17,6 +17,7 @@ __license__     = """
 """
 import datetime
 import dta
+import getopt
 import itertools
 import os
 import sys
@@ -27,7 +28,7 @@ import sys
 
 USAGE = r"""
 
- python importGTFS.py dynameq_net_dir dynameq_net_prefix gtfs_file.zip
+ python importGTFS.py [-s gtfs_stops.shp] dynameq_net_dir dynameq_net_prefix gtfs_file.zip
  
  e.g.
  
@@ -67,13 +68,22 @@ def convertLongitudeLatitudeToXY(longitude,latitude):
 
     return (x_meters/FEET_TO_METERS,y_meters/FEET_TO_METERS)
 
+def stopOnWrongSide(roadlink, x, y):
+    """
+    Returns True if the stop at (*x*, *y*) is on the left side of the street.
+    """
+    s = (((roadlink.getEndNode().getX() - roadlink.getStartNode().getX())*(y-roadlink.getStartNode().getY())) -
+         ((roadlink.getEndNode().getY() - roadlink.getStartNode().getY())*(x-roadlink.getStartNode().getX())))
+    return (True if s>0 else False)
+    
+
 def addStopIdToLinkToDict(stop, network, stopid_to_link):
     """
     Maps the given *stop* (a :py:class:`transitfeed.stop` instance) to a link in 
     the given *network* (a :py:class:`Network` instance).
     
-    Sets the 5-tuple: ``(x, y, roadlink, distance, portion_along_link)`` into the *stopid_to_link* dictionary
-    for the stop id key.  If something is already there, then this does nothing.
+    Sets the 6-tuple: ``(x, y, stopname, roadlink, distance, portion_along_link)`` into the 
+    *stopid_to_link* dictionary for the stop id key.  If something is already there, then this does nothing.
     
     The last three values will be None if no roadlink is found.
     """
@@ -87,25 +97,46 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
     
     # none found - bummer!
     if len(closest_tuples) == 0:
-        stopid_to_link[stop['stop_id']] = (x, y, None, None, None)
+        stopid_to_link[stop['stop_id']] = (x, y, stop['stop_name'], None, None, None)
     else:
         # check if the stop name changes things
         stop_name_parts = stop['stop_name'].split(" ")
         stop_str = stop_name_parts[0].upper()
         
-        # if the closest tuple doesn't have a matching name, let's check the other two
-        if not closest_tuples[0][0].getLabel().startswith(stop_str):
-            
-            for close_tuple in closest_tuples[1:]:
-                if close_tuple[0].getLabel().startswith(stop_str):
-                    # use this because the name matches!
-                    dta.DtaLogger.debug("Falling back to secondary close matched link %s for stop %s based on stop_name.  (Was %s)" %
-                                        (close_tuple[0].getLabel(), stop['stop_name'], closest_tuples[0][0].getLabel()))
-                    stopid_to_link[stop['stop_id']] = (x,y,close_tuple[0],close_tuple[1],close_tuple[2])
+        # score best matches
+        scores = []
         
-        # if we didn't fall back, use the first one
-        if stop['stop_id'] not in stopid_to_link:
-            stopid_to_link[stop['stop_id']] = (x,y,closest_tuples[0][0],closest_tuples[0][1],closest_tuples[0][2])
+        for close_tuple in closest_tuples:
+            # 1 point for right side of the street
+            alt_wrong_side = stopOnWrongSide(close_tuple[0], x, y)
+            score = (1 if not alt_wrong_side else 0)
+            
+            # 2 points for matching name
+            score += (2 if close_tuple[0].getLabel().startswith(stop_str) else 0)
+    
+            # points for distance?
+            # score += 0.5 if close_tuple[1] < 50 else 0.0
+            
+            scores.append(score)
+        
+        # select best score
+        max_score = max(scores)
+        max_score_idx = scores.index(max_score)
+        
+        # debug if not the first one
+        if max_score_idx > 0:
+            dta.DtaLogger.debug("Falling back to secondary link %d for stop %s %s" %
+                                (closest_tuples[max_score_idx][0].getId(), stop['stop_id'], stop['stop_name']))
+            # this is noisy
+            for idx in range(len(scores)):
+                dta.DtaLogger.debug("link %7d (-30%s) score=%d" % (closest_tuples[idx][0].getId(),
+                                                                closest_tuples[idx][0].getLabel(),
+                                                                scores[idx]))
+
+        stopid_to_link[stop['stop_id']] = (x,y,stop['stop_name'],
+                                           closest_tuples[max_score_idx][0],
+                                           closest_tuples[max_score_idx][1],
+                                           closest_tuples[max_score_idx][2])
         
     if len(stopid_to_link) % 500 == 0:
         dta.DtaLogger.info("%5d stop ids mapped" % len(stopid_to_link))
@@ -121,13 +152,13 @@ def mapStopIdsToLinks(stoplist, network):
     for stop in stoplist:
         
         addStopIdToLinkToDict(stop, network, stopid_to_link)
-        if stopid_to_link[stop['stop_id']][2]: roadlinks_found += 1
+        if stopid_to_link[stop['stop_id']][3]: roadlinks_found += 1
         
     dta.DtaLogger.info("%d of %d stop ids mapped successfully to road links using quick_dist=%f" %
                        (roadlinks_found, len(stopid_to_link), quick_dist))
     return stopid_to_link
 
-def writeStopsShpFile(stoplist, stopid_to_link, shapefilename):
+def writeStopsShpFile(stopid_to_link, shapefilename):
     """
     Write stops to *shapefilename* for debugging.
     
@@ -144,14 +175,14 @@ def writeStopsShpFile(stoplist, stopid_to_link, shapefilename):
     shp.field("linkdist",    "N", 15, 4)
     shp.field("linkt",       "N", 12, 8)
     
-    for stop in stoplist:
+    for stopid in stopid_to_link.keys():
         
-        stopid = stop['stop_id']
+        # (x, y, stopname, roadlink, distance, portion_along_link)
         shp.point(stopid_to_link[stopid][0], stopid_to_link[stopid][1])
-        shp.record(stopid, stop['stop_name'],
-                   stopid_to_link[stopid][2].getId() if stopid_to_link[stopid][2] else -1,
-                   "%15.4f" % stopid_to_link[stopid][3] if stopid_to_link[stopid][2] else 0,
-                   "%12.8f" % stopid_to_link[stopid][4] if stopid_to_link[stopid][2] else 0)
+        shp.record(stopid, stopid_to_link[stopid][2],
+                   stopid_to_link[stopid][3].getId() if stopid_to_link[stopid][3] else -1,
+                   "%15.4f" % stopid_to_link[stopid][4] if stopid_to_link[stopid][3] else 0,
+                   "%12.8f" % stopid_to_link[stopid][5] if stopid_to_link[stopid][3] else 0)
         
     shp.save(shapefilename)
     dta.DtaLogger.info("Wrote GTFS stops to shapefile %s" % shapefilename)
@@ -163,6 +194,7 @@ def defineLinesShpFile():
     import shapefile
     shp = shapefile.Writer(shapefile.POLYLINE)
     shp.field("route", "C", 50) # label + headsign
+    shp.field("lineid","N", 10)
     return shp
 
 def writeLineToShapefile(shp, transitline):
@@ -179,16 +211,26 @@ def writeLineToShapefile(shp, transitline):
     label_parts = transitline.label.split("_")
     label_parts.pop() # forget the route id, trip id
     label_parts.pop()
-    shp.record("_".join(label_parts))
+    shp.record("_".join(label_parts), transitline.id)
     
     
 if __name__ == "__main__":
+    optlist, args = getopt.getopt(sys.argv[1:], "s:")
+
+    if len(args) != 3:
+        print USAGE
+        sys.exit(2)
 
     import transitfeed
 
-    INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
-    INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
-    GTFS_ZIP                      = sys.argv[3]
+    INPUT_DYNAMEQ_NET_DIR         = args[0]
+    INPUT_DYNAMEQ_NET_PREFIX      = args[1]
+    GTFS_ZIP                      = args[2]
+
+    OUTPUT_STOP_SHAPEFILE       = None
+    for (opt,arg) in optlist:
+        if opt=="-s":
+            OUTPUT_STOP_SHAPEFILE  = arg
 
     GTFS_ROUTE_TYPE_TO_LINE_TYPE = \
     {"Bus":         dta.TransitLine.LINE_TYPE_BUS,
@@ -216,12 +258,7 @@ if __name__ == "__main__":
     tfl = transitfeed.Loader(feed_path=GTFS_ZIP)
     schedule = tfl.Load()
     dta.DtaLogger.info("Read %s" % GTFS_ZIP)
-    
-    stopid_to_link = {}
-    # stopid_to_link = mapStopIdsToLinks(schedule.GetStopList(), net)
-    # writeStopsShpFile(schedule.GetStopList(), stopid_to_link, "sf_gtfs_stops.shp")
-    line_shp = defineLinesShpFile()
-        
+            
     # Get the ServicePeriod we're interested in - we want weekday service
     service_period_tuples = schedule.GetServicePeriodsActiveEachDate(datetime.date(2012,7,10), datetime.date(2012,7,12))
     service_period = service_period_tuples[0][1][0]
@@ -244,6 +281,8 @@ if __name__ == "__main__":
         route_labels.append(route_label)
     
     # now iterate through the routes
+    stopid_to_link = {}
+    line_shp = defineLinesShpFile()
     transit_line_id = 1 # we're making these up, start at 1
     line_shp_done = set() # (route_label, trip_headsign)
     for route_label in sorted(route_labels):
@@ -270,7 +309,10 @@ if __name__ == "__main__":
             if line_departure > scenario.endTime: continue
             if line_departure < scenario.startTime: continue
             
-            route_type_str = transitfeed.Route._ROUTE_TYPES[int(route['route_type'])]['name']            
+            route_type_str = transitfeed.Route._ROUTE_TYPES[int(route['route_type'])]['name']
+            # for now, skip LRT because they run off-street and we don't handle that yet
+            if route_type_str == "Tram": continue
+                                    
             dta.DtaLogger.debug("Processing %s (%s)" % (label, route_type_str))
             
             dta_transit_line = dta.TransitLine(net, id=transit_line_id,
@@ -289,7 +331,7 @@ if __name__ == "__main__":
                 
                 stopid = stoptime.stop['stop_id']
                 addStopIdToLinkToDict(stoptime.stop, net, stopid_to_link) # lazy updating
-                stop_roadlink = stopid_to_link[stopid][2]
+                stop_roadlink = stopid_to_link[stopid][3]
                 
                 if stop_roadlink == None:
                     # todo handle this better
@@ -300,7 +342,8 @@ if __name__ == "__main__":
                     
                     if prev_roadlink == stop_roadlink:
                         # todo: split the link?
-                        prev_segment.label += ",%s,%5.4f" % (stopid, stopid_to_link[stopid][4])
+                        prev_segment.label += ",%s,%5.4f" % (stopid, stopid_to_link[stopid][5])
+                        prev_segment.dwell += 30
                         dta.DtaLogger.debug("Two stops on one link! route=%s  label=%s" % (route_label, prev_segment.label))
                         continue
                         
@@ -325,7 +368,7 @@ if __name__ == "__main__":
     
                 # add this link
                 prev_segment = dta_transit_line.addSegment(stop_roadlink,
-                                                           label="%s,%5.4f" % (stopid, stopid_to_link[stopid][4]),
+                                                           label="%s,%5.4f" % (stopid, stopid_to_link[stopid][5]),
                                                            lane=dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED,
                                                            dwell=30, # todo: put in a better default
                                                            stopside=dta.TransitSegment.STOP_OUTSIDE)
@@ -352,3 +395,6 @@ if __name__ == "__main__":
     # write the lines shapefile
     line_shp.save("sf_gtfs_lines")
     dta.DtaLogger.info("Wrote GTFS lines to shapefile sf_gtfs_lines.shp")
+    
+    if OUTPUT_STOP_SHAPEFILE:
+        writeStopsShpFile(stopid_to_link, OUTPUT_STOP_SHAPEFILE)
