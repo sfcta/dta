@@ -17,7 +17,6 @@ __license__     = """
 """
 import shapefile
 import pdb
-
 import math
 from itertools import izip, imap
 import os
@@ -885,41 +884,54 @@ class DynameqNetwork(Network):
         startTimeInMin = 0
         endTimeInMin = 0
         timeStepInMin = 0
-        lineNum = 0
+        #lineNum = 0
         for line in open(countFileNameInDynameqDatFormat, "r"):
-            if lineNum == 0:
-                times = line.strip().split()[3:]
-                startTimeInMin = Time.readFromStringWithoutColon(times[0]).getMinutes()
-                endTimeInMin = Time.readFromStringWithoutColon(times[-1]).getMinutes()
-                timeStepInMin = Time.readFromStringWithoutColon(times[1]).getMinutes() - \
-                                startTimeInMin
-                lineNum += 1
-                continue
-                
-            fields = map(int, map(float, line.strip().split()))
+            if "*" in line:
+                if " at " in line:
+            #if lineNum == 0:
+                    times = line.strip().split()[4:]
+                    #startTimeInMin = Time.readFromStringWithoutColon(times[0]).getMinutes()
+                    #endTimeInMin = Time.readFromStringWithoutColon(times[-1]).getMinutes()
+                    #timeStepInMin = Time.readFromStringWithoutColon(times[1]).getMinutes() - \
+                    #                startTimeInMin
+                    startTimeInMin = Time.readFromString(times[0]).getMinutes()
+                    endTimeInMin = Time.readFromString(times[-1]).getMinutes()
+                    timeStepInMin = Time.readFromString(times[1]).getMinutes() - \
+                                    startTimeInMin
+                    #lineNum += 1
+                    continue
+
+                else:
+                    continue
+
+            else:
+                fields = map(int, map(float, line.strip().split()))
             
-            link1 = self.getLinkForId(fields[0])
-            link2 = self.getLinkForId(fields[1]) 
-            mov = link1.getOutgoingMovement(link2.getEndNodeId())
+                #link1 = self.getLinkForId(fields[0])
+                #link2 = self.getLinkForId(fields[1]) 
+                link1 = self.getLinkForNodeIdPair(fields[1],fields[0])
+                link2 = self.getLinkForNodeIdPair(fields[0],fields[2])
+
+                mov = link1.getOutgoingMovement(link2.getEndNodeId())
             
 
-            for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
-                if count < 0:
-                    continue
-                mov.setObsCount(s,s+timeStepInMin, count) 
+                for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[3:]):
+                    if count < 0:
+                        continue
+                    mov.setObsCount(s,s+timeStepInMin, count) 
                 
-            # next, aggregate to 15-minute and 60-minute bins if needed
-            for aggregateTimeStep in [15, 60]: 
-            	if timeStepInMin<aggregateTimeStep: 
-            		for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
-            			if s == startTimeInMin: 
+                # next, aggregate to 15-minute and 60-minute bins if needed
+                for aggregateTimeStep in [15, 60]: 
+                    if timeStepInMin<aggregateTimeStep: 
+                        for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[3:]):
+                            if s == startTimeInMin: 
             				aggregateCount = 0            		
-            			elif s % aggregateTimeStep == 0: 
+                            elif s % aggregateTimeStep == 0: 
             				mov.setObsCount(s-aggregateTimeStep, s, aggregateCount)
             				aggregateCount = 0
-            			if count<0: 
+                            if count<0: 
             				continue
-            			aggregateCount = aggregateCount + count
+                            aggregateCount = aggregateCount + count
             
                         
 
@@ -931,36 +943,47 @@ class DynameqNetwork(Network):
         startTimeInMin = 0
         endTimeInMin = 0
         timeStepInMin = 0
-        lineNum = 0
+        #lineNum = 0
         for line in open(countFileNameInDynameqDatFormat, "r"):
-            if lineNum == 0:
-                times = line.strip().split()[2:]
-                startTimeInMin = Time.readFromStringWithoutColon(times[0]).getMinutes()
-                endTimeInMin = Time.readFromStringWithoutColon(times[-1]).getMinutes()
-                timeStepInMin = Time.readFromStringWithoutColon(times[1]).getMinutes() - \
+            #lineNum += 1
+            #if lineNum == 0:
+            if "*" in line:                    
+                if "from" in line:
+                    times = line.strip().split()[3:]
+                    #startTimeInMin = Time.readFromStringWithoutColon(times[0]).getMinutes()
+                    #endTimeInMin = Time.readFromStringWithoutColon(times[-1]).getMinutes()
+                    #timeStepInMin = Time.readFromStringWithoutColon(times[1]).getMinutes() - \
+                    #                startTimeInMin
+                    startTimeInMin = Time.readFromString(times[0]).getMinutes()
+                    endTimeInMin = Time.readFromString(times[-1]).getMinutes()
+                    timeStepInMin = Time.readFromString(times[1]).getMinutes() - \
                                 startTimeInMin
-                lineNum += 1
-                continue
-                
-            fields = map(int, map(float, line.strip().split()))
-            
-            link = self.getLinkForId(fields[0])
-
-            for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[1:]):
-                if count < 0:
+                    #lineNum += 1
                     continue
-                link.setObsCount(s,s+timeStepInMin, count) 
+                else:
+                    continue
+                
+            else:
+                fields = map(int, map(float, line.strip().split()))
+                
+                #link = self.getLinkForId(fields[0])
+                link = self.getLinkForNodeIdPair(fields[0],fields[1])
             
-            # next, aggregate to 15-minute and 60-minute bins if needed
-            for aggregateTimeStep in [15, 60]: 
-            	if timeStepInMin<aggregateTimeStep: 
-            		for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
-            			if s == startTimeInMin: 
+                for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[2:]):
+                    if count < 0:
+                        continue
+                    link.setObsCount(s,s+timeStepInMin, count) 
+            
+                # next, aggregate to 15-minute and 60-minute bins if needed
+                for aggregateTimeStep in [15, 60]: 
+                    if timeStepInMin<aggregateTimeStep: 
+                        for s, count in izip(range(startTimeInMin, endTimeInMin + 1, timeStepInMin), fields[3:]):
+                            if s == startTimeInMin: 
             				aggregateCount = 0            		
-            			elif s % aggregateTimeStep == 0: 
-            				link.setObsCount(s-aggregateTimeStep, s, aggregateCount)
-            				aggregateCount = 0
-            			if count<0: 
+                            elif s % aggregateTimeStep == 0: 
+                                link.setObsCount(s-aggregateTimeStep, s, aggregateCount)
+                                aggregateCount = 0
+                            if count<0: 
             				continue
-            			aggregateCount = aggregateCount + count
+                            aggregateCount = aggregateCount + count
             		
