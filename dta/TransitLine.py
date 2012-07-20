@@ -164,8 +164,8 @@ class TransitLine(object):
         """
         Returns the Dynameq-formatted string representation of the transit line.
         """
-        line_comment = "LINE\n*%8s %42s %8s %15s %8s %5s %6s\n" % ("id","label", "litype", "vtype", "stime", "level", "active")        
-        line_str = '%9d %42s %8d %15s %8s %5d %6d\n' % (self._id, '"' + self.label + '"', self.litype, self.vtype, self.stime.strftime("%H:%M:%S"), self.level, self.active)
+        line_comment = "LINE\n*%8s %60s %8s %15s %8s %5s %6s\n" % ("id","label", "litype", "vtype", "stime", "level", "active")        
+        line_str = '%9d %60s %8d %15s %8s %5d %6d\n' % (self._id, '"' + self.label + '"', self.litype, self.vtype, self.stime.strftime("%H:%M:%S"), self.level, self.active)
 
         headway_comment = "*hway    dep\n"
         headway_hours = self.hway // 60
@@ -304,6 +304,12 @@ class TransitLine(object):
             return True
         except dta.DtaError:
             return False
+    
+    def lastSegment(self):
+        """
+        Returns the last segment.
+        """
+        return self._segments[-1]
 
     def iterSegments(self):
         

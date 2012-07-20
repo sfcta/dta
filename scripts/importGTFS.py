@@ -141,23 +141,6 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
     if len(stopid_to_link) % 500 == 0:
         dta.DtaLogger.info("%5d stop ids mapped" % len(stopid_to_link))
 
-def mapStopIdsToLinks(stoplist, network):
-    """
-    Pro-actively (non-lazily) fills in a stopid_to_link dictionary (see :py:func:`addStopIdToLinkDict`)
-    and returns it. 
-    """
-    stopid_to_link = {}
-    roadlinks_found = 0
-    
-    for stop in stoplist:
-        
-        addStopIdToLinkToDict(stop, network, stopid_to_link)
-        if stopid_to_link[stop['stop_id']][3]: roadlinks_found += 1
-        
-    dta.DtaLogger.info("%d of %d stop ids mapped successfully to road links using quick_dist=%f" %
-                       (roadlinks_found, len(stopid_to_link), quick_dist))
-    return stopid_to_link
-
 def writeStopsShpFile(stopid_to_link, shapefilename):
     """
     Write stops to *shapefilename* for debugging.
@@ -283,7 +266,6 @@ if __name__ == "__main__":
     # now iterate through the routes
     stopid_to_link = {}
     line_shp = defineLinesShpFile()
-    transit_line_id = 1 # we're making these up, start at 1
     line_shp_done = set() # (route_label, trip_headsign)
     for route_label in sorted(route_labels):
         
@@ -302,6 +284,7 @@ if __name__ == "__main__":
     
             # create the transit line
             label = "%s_%s_route%s_trip%s" % (route_label, trip['trip_headsign'], route_id, trip['trip_id'])
+            transit_line_id = int(trip['trip_id']) # try this even though they're not sequential
             stoptimes = trip.GetStopTimes()
             line_departure = dta.Time.fromSeconds(stoptimes[0].GetTimeSecs())
             
@@ -326,10 +309,14 @@ if __name__ == "__main__":
                                                dep=1)
                                                            
             prev_roadlink = None
-            prev_segment  = None
+            prev_stopid   = None
             for stoptime in stoptimes:
                 
                 stopid = stoptime.stop['stop_id']
+                
+                # curious - not sure why this should happen but it does with Trip 5141123 Stop 5245
+                if stopid == prev_stopid: continue
+                
                 addStopIdToLinkToDict(stoptime.stop, net, stopid_to_link) # lazy updating
                 stop_roadlink = stopid_to_link[stopid][3]
                 
@@ -341,11 +328,27 @@ if __name__ == "__main__":
                 if prev_roadlink:
                     
                     if prev_roadlink == stop_roadlink:
-                        # todo: split the link?
-                        prev_segment.label += ",%s,%5.4f" % (stopid, stopid_to_link[stopid][5])
-                        prev_segment.dwell += 30
-                        dta.DtaLogger.debug("Two stops on one link! route=%s  label=%s" % (route_label, prev_segment.label))
-                        continue
+                        dta.DtaLogger.debug("Two stops (%s %s) on one link %d! route=%s splitting." % 
+                                            (prev_stopid, stopid, prev_roadlink.getId(), route_label))
+                        # split the link
+                        start_node  = stop_roadlink.getStartNode()
+                        end_node    = stop_roadlink.getEndNode()
+                        midnode     = net.splitLink(linkToSplit=stop_roadlink,splitReverseLink=True)
+                        # the prev_roadlink is now the first half - update that one
+                        prev_roadlink = net.getLinkForNodeIdPair(start_node.getId(), midnode.getId())
+                        prev_segment  = dta_transit_line.lastSegment()
+                        old_tuple     = stopid_to_link[prev_stopid]
+                        new_distinfo  = prev_roadlink.getDistanceFromPoint(old_tuple[0], old_tuple[1])
+                        # update (x, y, stopname, roadlink, distance, portion_along_link)
+                        stopid_to_link[prev_stopid] = (old_tuple[0], old_tuple[1], old_tuple[2],
+                                                       prev_roadlink, new_distinfo[0], new_distinfo[1])
+                        
+                        # associate this one to the second half
+                        stop_roadlink = net.getLinkForNodeIdPair(midnode.getId(), end_node.getId())
+                        old_tuple     = stopid_to_link[stopid]
+                        new_distinfo  = stop_roadlink.getDistanceFromPoint(old_tuple[0], old_tuple[1])
+                        stopid_to_link[stopid] = (old_tuple[0], old_tuple[1], old_tuple[2],
+                                                  stop_roadlink, new_distinfo[0], new_distinfo[1])
                         
                     try:
                         dta.ShortestPaths.labelSettingWithLabelsOnNodes(net, 
@@ -367,13 +370,13 @@ if __name__ == "__main__":
                         newseg  = dta_transit_line.addSegment(newlink, 0, label="")
     
                 # add this link
-                prev_segment = dta_transit_line.addSegment(stop_roadlink,
-                                                           label="%s,%5.4f" % (stopid, stopid_to_link[stopid][5]),
-                                                           lane=dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED,
-                                                           dwell=30, # todo: put in a better default
-                                                           stopside=dta.TransitSegment.STOP_OUTSIDE)
+                dta_transit_line.addSegment(stop_roadlink,
+                                            label="%s,%5.4f" % (stopid, stopid_to_link[stopid][5]),
+                                            lane=dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED,
+                                            dwell=30, # todo: put in a better default
+                                            stopside=dta.TransitSegment.STOP_OUTSIDE)
                 prev_roadlink = stop_roadlink
-                prev_segment 
+                prev_stopid   = stopid
     
             # check if the movements are allowed
             dta_transit_line.checkMovementsAreAllowed(enableMovement=True)
