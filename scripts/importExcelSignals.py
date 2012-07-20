@@ -217,6 +217,7 @@ class SignalData(object):
         """
 
         pPhase = {}
+        cPhase = {}
         phases = []
         allRed = 0
         
@@ -224,197 +225,93 @@ class SignalData(object):
         groupMovements = phasingData.getElementsOfDimention(0)
         timeIndices = phasingData.getElementsOfDimention(1)
         timeIntervals = selectCSO(self, startHour, endHour).times
+        lastIndex = list(timeIndices)[-1]
 
-
-        for (timeIndex1, timeIndex2), (dur1, dur2) in izip(pairwise(timeIndices), pairwise(timeIntervals)):
+        for timeIndex1, dur1 in izip(timeIndices, timeIntervals):
             try:
-                states1 = list(iter(phasingData[:, timeIndex1]))
-                states2 = list(iter(phasingData[:, timeIndex2]))
+                states = list(iter(phasingData[:, timeIndex1]))
             except ValueError, e:
                 print e
                 raise SignalConversionError(str(e))
-            statePairs = list(izip(states1, states2))
-
-            cPhase = {} # the current Phase
-
-            activeMovs = [gMov for gMov in  groupMovements if
-                          phasingData[gMov, timeIndex1] == "G"]
-            yellowMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "Y"]
-            if not activeMovs:
-                if all2(states1, lambda state: state == "R"):
-                    #allRed += dur1
-                    #phases[-1]['yellow'] += dur1
-                    if phases:
-                        phases[-1]['allRed'] += dur1
-                #   This all-red phase shouldn't be a problem in Dynameq.  If it turns out to be a problem, un-comment this section.
-##                  else:
-##                      raise dta.DtaError("Signal starts with all red")
-
-            elif any2(statePairs, lambda pair: pair == ("G", "Y")) and not any2(statePairs, lambda pair: pair == ("G", "G")):
-                cPhase["Movs"] = activeMovs
-                cPhase["green"] = dur1
-                cPhase["yellow"] = dur2
-                cPhase["allRed"] = 0
-                if pPhase:
-                    if pPhase["Movs"] == activeMovs:
-                        cPhase["green"] += pPhase["green"]
-                        #dta.DtaLogger.info("Phase %d for %s set at 1." % (timeIndex1, cPhase["Movs"]))
-                        phases.append(cPhase)
-                    else:
-                        phases.append(pPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 2." % (timeIndex1, pPhase["Movs"]))
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 3." % (timeIndex1, cPhase["Movs"]))
-                    pPhase = {}
-                else:
-                    phases.append(cPhase)
-                    #dta.DtaLogger.info("Phase %d for %s set at 4." % (timeIndex1, cPhase["Movs"]))
-                    
-
-            elif any2(statePairs, lambda pair: pair == ("G", "Y")) and any2(statePairs, lambda pair: pair == ("G", "G")):
-                #dta.DtaLogger.info("Active movements at phase %d are %s" % (timeIndex1, activeMovs))
-                if pPhase:
-                    if pPhase["Movs"] == activeMovs:
-                        pPhase["green"] += dur1
-                    else:
-                        phases.append(pPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 5." % (timeIndex1, pPhase["Movs"]))
-                        pPhase["Movs"] = activeMovs
-                        pPhase["green"] = dur1
-                        pPhase["yellow"] = 0
-                        pPhase["allRed"] = 0
-                else:
-                    pPhase["Movs"] = activeMovs
-                    pPhase["green"] = dur1
-                    pPhase["yellow"] = 0
-                    pPhase["allRed"] = 0
-            elif any2(statePairs, lambda pair: pair == ("Y", "R")) and any2 (statePairs, lambda pair: pair == ("R", "G")) and any2 (statePairs, lambda pair: pair == ("G", "G")):
-                for yMov in yellowMovs:
-                    activeMovs.append(yMov)
-                #dta.DtaLogger.info("Active movements (including yellow) at phase %d are: %s" % (timeIndex1, activeMovs))
-                if pPhase:
-                    cPhase["Movs"] = activeMovs
-                    cPhase["green"] = pPhase["green"]+dur1
-                    cPhase["yellow"] = 0
-                    cPhase["allRed"] = 0
-                else:
-                    cPhase["Movs"] = activeMovs
-                    cPhase["green"] = dur1
-                    cPhase["yellow"] = 0
-                    cPhase["allRed"] = 0
-                phases.append(cPhase)
-                #dta.DtaLogger.info("Phase %d for %s set at 6." % (timeIndex1, cPhase["Movs"]))
-                pPhase = {}
-
-
-            elif any2(statePairs, lambda pair: pair == ("Y", "R")) and any2(statePairs, lambda pair: pair == ("G", "G")):
-                for yMov in yellowMovs:
-                    activeMovs.append(yMov)
-                cPhase["Movs"] = activeMovs
-                cPhase["green"] = dur1
-                cPhase["yellow"] = 0
-                cPhase["allRed"] = 0
-                if pPhase:
-                    if pPhase["Movs"] == activeMovs:
-                        cPhase["green"] += pPhase["green"]
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 7." % (timeIndex1, cPhase["Movs"]))
-                    else:
-                        phases.append(pPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 8." % (timeIndex1, pPhase["Movs"]))
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 9." % (timeIndex1, cPhase["Movs"]))
-                    pPhase = {}
-                else:
-                    phases.append(cPhase)
-                    #dta.DtaLogger.info("Phase %d for %s set at 10." % (timeIndex1, cPhase["Movs"]))
-
-
-
-            elif any2(statePairs, lambda pair: pair == ("Y", "R")) and any2(statePairs, lambda pair: pair == ("G", "Y")):
-                for yMov in yellowMovs:
-                    activeMovs.append(yMov)
-
-                #dta.DtaLogger.info("Adding green time yellow movements so actives are: %s" % activeMovs)
-                    
-                cPhase["Movs"] = activeMovs
-                cPhase["green"] = dur1
-                cPhase["yellow"] = dur2
-                cPhase["allRed"] = 0
-                if pPhase:
-                    if pPhase["Movs"] == activeMovs:
-                        cPhase["green"] += pPhase["green"]
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 11." % (timeIndex1, cPhase["Movs"]))
-                    else:
-                        phases.append(pPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 12." % (timeIndex1, pPhase["Movs"]))
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 13." % (timeIndex1, cPhase["Movs"]))
-                    pPhase = {}
-                else:
-                    phases.append(cPhase)
-                    #dta.DtaLogger.info("Phase %d for %s set at 14." % (timeIndex1, cPhase["Movs"]))
-                    
-            elif any2(statePairs, lambda pair: pair == ("G", "R")):
-                #collect all the green movements
-                cPhase["Movs"] = activeMovs
-                cPhase["green"] = dur1
-                cPhase["yellow"] = 0
-                cPhase["allRed"] = 0
-                if pPhase:
-                    if pPhase["Movs"] == activeMovs:
-                        cPhase["green"] += pPhase["green"]
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 15." % (timeIndex1, cPhase["Movs"]))
-                    else:
-                        phases.append(pPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 16." % (timeIndex1, pPhase["Movs"]))
-                        phases.append(cPhase)
-                        #dta.DtaLogger.info("Phase %d for %s set at 17." % (timeIndex1, cPhase["Movs"]))
-                    pPhase = {}
-                else:
-                    phases.append(cPhase)
-                    #dta.DtaLogger.info("Phase %d for %s set at 18." % (timeIndex1, cPhase["Movs"]))
-
-
-            elif any2 (statePairs, lambda pair: pair == ("R", "G")) and any2 (statePairs, lambda pair: pair == ("G", "G")):
-                if pPhase:
-                    cPhase["Movs"] = activeMovs
-                    cPhase["green"] = pPhase["green"]+dur1
-                    cPhase["yellow"] = 0
-                    cPhase["allRed"] = 0
-                else:
-                    cPhase["Movs"] = activeMovs
-                    cPhase["green"] = dur1
-                    cPhase["yellow"] = 0
-                    cPhase["allRed"] = 0
-                phases.append(cPhase)
-                #dta.DtaLogger.info("Phase %d for %s set at 19." % (timeIndex1, cPhase["Movs"]))
-
-                pPhase = {}
+            
+            cGreenMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "G"] 
+            cYellowMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "Y"]
+            cRedMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "R"]
+            gMatches = 0
+            if pPhase:
+                for gMovs in cGreenMovs:
+                    if gMovs in pGreenMovs:
+                        gMatches += 1
                 
-            elif any2(statePairs, lambda pair: pair == ("G", "G")):
-                if not pPhase:
-                    pPhase["Movs"] = activeMovs
-                    pPhase["green"] = dur1
-                    pPhase["yellow"] = 0
-                    pPhase["allRed"] = 0
-                    #allRed = 0
-                elif pPhase["Movs"] == activeMovs:
-                    pPhase["green"] += dur1
+                if gMatches !=0:
+                    cActiveMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "Y" or phasingData[gMov, timeIndex1] == "G" ]
                 else:
-                    pPhase["Movs"] = activeMovs
-                    pPhase["green"] = dur1
-                    
-        lastIndex = list(timeIndices)[-1]
-        lastStates = list(iter(phasingData[:, lastIndex]))    
-        #if all2(lastStates, lambda state: state == 'R'):
-        #    phases[-1]['yellow'] += timeIntervals[-1]
+                    cActiveMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "G"]
+            else:
+                cActiveMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "G"]
 
-        #for phase in phases:
-        #    dta.DtaLogger.info("Added phase with movements %s, green time %d and yellow time %d" % (phase["Movs"], phase["green"], phase["yellow"]))
-        
+            cPhase["Movs"] = cActiveMovs
+            if cGreenMovs:
+                cPhase["green"] = dur1
+                cPhase["yellow"] = 0
+                cPhase["allRed"] = 0
+            elif cYellowMovs and not cGreenMovs:
+                cPhase["green"] = 0
+                cPhase["yellow"] = dur1
+                cPhase["allRed"] = 0
+            elif cRedMovs and not cYellowMovs and not cGreenMovs:
+                cPhase["green"] = 0
+                cPhase["yellow"] = 0
+                cPhase["allRed"] = dur1
+
+            if pPhase:
+                if cGreenMovs:
+                    if pActiveMovs:
+                        if pActiveMovs == cActiveMovs:
+                            pPhase["green"] += cPhase["green"]
+                        else:
+                            phases.append(pPhase)
+                            #dta.DtaLogger.info("Card %s, movements %s, green time %f, yellow time %f, red time %f, phase %d" % (self.fileName, pPhase["Movs"], pPhase["green"], pPhase["yellow"], pPhase["allRed"], timeIndex1))
+                            pPhase = {}
+                            pPhase["Movs"] = cPhase["Movs"]
+                            pPhase["green"] = cPhase["green"]
+                            pPhase["yellow"] = cPhase["yellow"]
+                            pPhase["allRed"] = cPhase["allRed"]
+
+                    else:
+                        phases.append(pPhase)
+                        #dta.DtaLogger.info("Card %s, movements %s, green time %f, yellow time %f, red time %f, phase %d" % (self.fileName, pPhase["Movs"], pPhase["green"], pPhase["yellow"], pPhase["allRed"], timeIndex1))
+                        pPhase = {}
+                        pPhase["Movs"] = cPhase["Movs"]
+                        pPhase["green"] = cPhase["green"]
+                        pPhase["yellow"] = cPhase["yellow"]
+                        pPhase["allRed"] = cPhase["allRed"]
+                elif cPhase["yellow"] == dur1:
+                    if pYellowMovs == cYellowMovs:
+                        pPhase["yellow"] += cPhase["yellow"]
+                    else:
+                        pPhase["yellow"] = cPhase["yellow"]
+                elif cPhase["allRed"] == dur1:
+                    pPhase["allRed"] += cPhase["allRed"]
+            else:
+                pPhase["Movs"] = cPhase["Movs"]
+                pPhase["green"] = cPhase["green"]
+                pPhase["yellow"] = cPhase["yellow"]
+                pPhase["allRed"] = cPhase["allRed"]
+            pActiveMovs = []
+            pGreenMovs = []
+            pYellowMovs = []
+            pRedMovs = []
+            
+            pActiveMovs = cActiveMovs
+            pGreenMovs = cGreenMovs
+            pYellowMovs = cYellowMovs
+            pRedMovs = cRedMovs
+
+            if timeIndex1 == lastIndex:
+                phases.append(pPhase)
+                #dta.DtaLogger.info("Card %s, movements %s, green time %f, yellow time %f, red time %f, phase %d" % (self.fileName, pPhase["Movs"], pPhase["green"], pPhase["yellow"], pPhase["allRed"], timeIndex1))
+            
         return phases
 
     def selectCSO(self, startTime, endTime):
@@ -950,7 +847,7 @@ def getPhasingData(sheet, signalData):
     phasingData = []
     movementNames = []
 
-    intervalStateGreen = ["G", "G+G", "G*", "G G", "FY", "F", "G+F", "U", "T", "G + G", "G + F"]
+    intervalStateGreen = ["G", "G+G", "G*", "G G", "FY", "F", "G+F", "U", "T", "G + G", "G + F", "ON"]
     intervalStateYellow = ["Y", "SY"]
     intervalStateRed = ["R", "RH", "OFF", "FR"]
     intervalStateBlank = [""]
@@ -1360,7 +1257,7 @@ def mapMovements(mec, baseNetwork):
         for gMovName in groupMovementNames:
             if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
                "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
-               "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
+               "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or "BLIND " in gMovName or "STREETCAR" in gMovName or \
                "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName or "XING" in gMovName or "PEDS " in gMovName:
                 continue
 
@@ -1518,7 +1415,7 @@ def mapMovements(mec, baseNetwork):
     for gMovName in groupMovements:
         if "DRIVEWAY" in gMovName or "FIRE HOUSE" in gMovName or ("BRIDGE " in gMovName and "CAMBRIDGE" not in gMovName) or "RESTRICTION" in gMovName or \
            "PIER 39" in gMovName or " PEDS" in gMovName or "SERVICE ROAD" in gMovName or ("PARKING" in gMovName and "CHURCH" not in gMovName) or \
-           "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or \
+           "GARAGE" in gMovName or "(EMS" in gMovName or "LRV PREEMPT" in gMovName or "AT BRIDGE" in gMovName or "BLIND " in gMovName or "STREETCAR" in gMovName or \
            "(FAR" in gMovName or "SHRADER PATH" in gMovName or " WBRT" in gMovName or " RT. TURN" in gMovName or "XING" in gMovName or "PEDS " in gMovName:
             MovementNames = list(groupMovements)
             MovementNames.remove(gMovName)
