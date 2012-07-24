@@ -101,7 +101,7 @@ class RoadLink(Link):
         else:
             self._level                 = RoadLink.DEFAULT_LEVEL
 
-        #TODO:you should give a warnign when the input link length is weird
+        #TODO: warn when the input link length is weird
         if length is None or length is -1:
             self._length = self.euclideanLengthInLengthUnits()
         else:
@@ -114,7 +114,6 @@ class RoadLink(Link):
         self._startShift                = None
         self._endShift                  = None
         self._shapePoints               = []  #: sequenceNum -> (x,y)
-        self._centerline                = self.getCenterLine()
 
         self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
@@ -399,13 +398,34 @@ class RoadLink(Link):
         Return the number of shape points this link has
         """
         return len(self._shapePoints)
+    
+    def getShapePoints(self):
+        """
+        Accessor for the shape points.
+        """
+        return self._shapePoints
 
     def coordinatesAlongLink(self, fromStart, distance, goPastEnd=False):
         """
-        Returns the coordinates (a 2-tuple) along this link given by *distance*, which is 
-        in :py:attr:`Node.COORDINATE_UNITS`.  If *fromStart*, starts at start, otherwise at end.
-        Takes shape points into account.  
-        If *distance* is longer than the euclidean distance of the link, and not *goPastEnd* raises an exception.
+        Like :py:meth:`RoadLink.coordinatesAndShapePointIdxAlongLink` but only returns the
+        coordinates 2-tuple (*x*,*y*).  For backwards compatibility.
+        """
+        (x,y,idx) = self.coordinatesAndShapePointIdxAlongLink(fromStart, distance, goPastEnd)
+        return (x,y)
+
+    def coordinatesAndShapePointIdxAlongLink(self, fromStart, distance, goPastEnd=False):
+        """
+        Returns the 3-tuple (*x*,*y*,*idx*) where (*x*,*y*) is the point along this link given by
+        *distance*, which is in :py:attr:`Node.COORDINATE_UNITS`.  *idx* is the index into the
+        point array (including the start point, intermediate shape points, and end point) where
+        the (*x*,*y*) was ultimately found (useful for splitting links and allocating the shape points).  
+        
+        If *fromStart*, starts at start, otherwise at end.
+        
+        Takes shape points into account.
+        
+        If *distance* is longer than the euclidean distance of the link, and not *goPastEnd* raises
+        a :py:class:`DtaError`.
         """
         points = [[self._startNode.getX(),self._startNode.getY()]]
         points.extend(self._shapePoints)
@@ -415,7 +435,7 @@ class RoadLink(Link):
             points.reverse()
         
         if distance == 0:
-            return (points[0][0], points[0][1])
+            return (points[0][0], points[0][1], 0)
         
         distance_left = distance
         idx           = 0
@@ -428,7 +448,8 @@ class RoadLink(Link):
             # this is the right sublink, or goPastEnd and it's the last one
             if (distance_left <= shape_dist) or (goPastEnd and (idx+1)==(len(points)-1)):
                 return (points[idx][0] + (distance_left/shape_dist)*(points[idx+1][0]-points[idx][0]),
-                        points[idx][1] + (distance_left/shape_dist)*(points[idx+1][1]-points[idx][1]))
+                        points[idx][1] + (distance_left/shape_dist)*(points[idx+1][1]-points[idx][1]),
+                        idx)
             
             # next sublink
             distance_left -= shape_dist
@@ -557,17 +578,39 @@ class RoadLink(Link):
         """
         return self._numLanes
 
+    def euclideanLength(self, includeShape=False):
+        """
+        Calculates the length based on simple Euclidean distance.
+        
+        If this link has shape points and *includeShape* is True, then the shape is taken into account.
+        
+        This will be in the units specified by :py:attr:`Node.COORDINATE_UNITS`.
+        """
+        if not includeShape or self.getNumShapePoints() == 0:
+            return Link.euclideanLength(self)
+        
+        points = [[self._startNode.getX(),self._startNode.getY()]]
+        points.extend(self._shapePoints)
+        points.append([self._endNode.getX(), self._endNode.getY()])
 
-    def euclideanLengthInLengthUnits(self):
+        distance = 0.0
+        for point_idx in range(len(points)-1):
+            pointA = points[point_idx]
+            pointB = points[point_idx+1]
+            distance += math.sqrt( (pointA[0]-pointB[0])*(pointA[0]-pointB[0]) + 
+                                   (pointA[1]-pointB[1])*(pointA[1]-pointB[1]))
+        return distance
+    
+    def euclideanLengthInLengthUnits(self, includeShape=False):
         """
         Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.
         
         """
         if RoadLink.LENGTH_UNITS == "miles" and Node.COORDINATE_UNITS == "feet":
-            return (self.euclideanLength() / 5280.0)
+            return (self.euclideanLength(includeShape) / 5280.0)
         
         if RoadLink.LENGTH_UNITS == "kilometers" and Node.COORDINATE_UNITS == "meters": 
-            return (self.euclideanLength() / 1000.0)
+            return (self.euclideanLength(includeShape) / 1000.0)
         
         raise DtaError("RoadLink.getLength() doesn't support RoadLink.LENGTH_UNITS %s and Node.COORDINATE_UNITS %s" % 
                        (str(RoadLink.LENGTH_UNITS), str(Node.COORDINATE_UNITS)))
@@ -577,12 +620,12 @@ class RoadLink(Link):
         """
         Return the length of the link in :py:attr:`RoadLink.LENGTH_UNITS` units.
         
-        Uses the user input length, if there is one; otherwise calculates the euclidean length.        
+        Uses the user input length, if there is one; otherwise calculates the euclidean length including the shape.        
         """
         if self._length != -1:
             return self._length
         else:
-            return self.euclideanLengthInLengthUnits()
+            return self.euclideanLengthInLengthUnits(includeShape=True)
         
         
     def getLengthInCoordinateUnits(self):
@@ -659,10 +702,6 @@ class RoadLink(Link):
                 centerline_with_shape.insert(0, centerline[0])
                 centerline_with_shape.append(centerline[1])
                 return centerline_with_shape
-                
-            # only cache to local var for atStart=False, atEnd=False, wholeLineShapePoints=False            
-            if not wholeLineShapePoints:
-                self._centerline = centerline
             
         return centerline
 
@@ -710,7 +749,7 @@ class RoadLink(Link):
         return_t = dist_along_segments/total_dist
         if return_t > 1.0: return_t = 1.0
         if return_t < 0.0: return_t = 0.0
-        return (math.sqrt(min_dist_sq), dist_along_segments/total_dist)
+        return (math.sqrt(min_dist_sq), return_t)
 
     def getOutline(self, scale=1):
         """
@@ -742,10 +781,11 @@ class RoadLink(Link):
     def getMidPoint(self):
         """
         Return the midpoint of the link's centerline as a tuple of two floats
-        .. todo:: What if the link has Shapepoints and we can do better (e.g. reflect curvature)
+        
+        This uses :py:meth:`RoadLink.coordinatesAlongLink` and includes shapepoints.
         """
-        return ((self._centerline[0][0] + self._centerline[1][0]) / 2.0,
-                (self._centerline[0][1] + self._centerline[1][1]) / 2.0)
+        return self.coordinatesAlongLink(fromStart = True, 
+                                         distance = 0.5*self.euclideanLength(includeShape=True), goPastEnd=False)
                 
     def isRoadLink(self):
         """

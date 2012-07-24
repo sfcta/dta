@@ -125,11 +125,8 @@ class Network(object):
 
     def addPlanCollectionInfo(self, startTime, endTime, name, description):
         """
-        startTime :py:class:`Utils.Time` instance 
-        endTime :py:class:`Utils.Time` instance 
-
-        name: a string that identifies the plan collection
-        description: a string that gives more infromation about the plan collection        
+        Instantiates a new :py:class:`PlanCollectionInfo` for this network with the given attributes and returns it.
+        See :py:meth:`PlanCollectionInfo.__init__` for arguments.
         """
         if not (isinstance(startTime, Time) and isinstance(startTime, Time)):
             raise DtaError("Start time and End Time should be instances of `Utils.Time` objects") 
@@ -1453,11 +1450,117 @@ class Network(object):
         
         #TODO: do you want to update the maxIds? 
 
-    def splitLink(self, linkToSplit, splitReverseLink=False):
+    def _split(self, linkToSplit, midNode, length1, length2, shapelen1): 
         """
-        Split the input link in half. The two new links have the 
+        Helper function for splitting links. 
+         
+        * *linkToSplit* is the link to be split
+        * *midNode* is the new node
+        * *length1* and *length2* are the lengths of the new facilities, respectively, in :py:attr:`RoadLink.LENGTH_UNITS`
+        * *shapelen1* is indicates how many shape points will go to link1 (the rest will go to link 2)
+
+        """
+        
+        newLink1 = RoadLink(self._maxLinkId + 1,
+                            linkToSplit.getStartNode(), 
+                            midNode, 
+                            None,
+                            linkToSplit._facilityType,
+                            length1,
+                            linkToSplit._freeflowSpeed,
+                            linkToSplit._effectiveLengthFactor,
+                            linkToSplit._responseTimeFactor,
+                            linkToSplit._numLanes,
+                            linkToSplit._roundAbout,
+                            linkToSplit._level, 
+                            linkToSplit.getLabel(),
+                            self._maxLinkId + 1)
+        newLink1._lanePermissions = copy.copy(linkToSplit._lanePermissions)
+        newLink1._shapePoints = linkToSplit._shapePoints[:shapelen1]
+        self.addLink(newLink1)
+
+        newLink2 = RoadLink(self._maxLinkId + 1,
+                            midNode, 
+                            linkToSplit.getEndNode(), 
+                            None,
+                            linkToSplit._facilityType,
+                            length2,
+                            linkToSplit._freeflowSpeed,
+                            linkToSplit._effectiveLengthFactor,
+                            linkToSplit._responseTimeFactor,
+                            linkToSplit._numLanes,
+                            linkToSplit._roundAbout,
+                            linkToSplit._level,
+                            linkToSplit.getLabel(),
+                            self._maxLinkId + 1)
+        newLink2._lanePermissions = copy.copy(linkToSplit._lanePermissions)
+        shapelen2 = len(linkToSplit._shapePoints) - shapelen1
+        if shapelen2 > 0:
+            newLink2._shapePoints = linkToSplit._shapePoints[-shapelen2:]
+        self.addLink(newLink2) 
+
+        for inMov in linkToSplit.iterIncomingMovements():
+
+            newMovement = Movement(linkToSplit.getStartNode(),
+                                   inMov.getIncomingLink(),
+                                   newLink1,
+                                   inMov._freeflowSpeed,
+                                   inMov._permission,
+                                   inMov._numLanes,
+                                   inMov._incomingLane,
+                                   inMov._outgoingLane,
+                                   inMov._followupTime)
+
+
+            inMov.getIncomingLink().addOutgoingMovement(newMovement)
+
+        for outMov in linkToSplit.iterOutgoingMovements():
+
+            newMovement = Movement(linkToSplit.getEndNode(),
+                                   newLink2,
+                                   outMov.getOutgoingLink(),
+                                   outMov._freeflowSpeed,
+                                   outMov._permission,
+                                   outMov._numLanes,
+                                   outMov._incomingLane,
+                                   outMov._outgoingLane,
+                                   outMov._followupTime)
+
+            newLink2.addOutgoingMovement(newMovement)
+
+        # if one of incoming or outgoing link doesn't allow all
+        vcg = self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL)
+        if not newLink1.allowsAll():
+            DtaLogger.warn("splitLink: incoming link %d-%d %s %s does not allow all" % 
+                           (newLink1.getStartNode().getId(), newLink1.getEndNode().getId(),
+                            newLink1.getLabel(), newLink1.getDirection()))
+            vcg = newLink1._lanePermissions[0]
+            
+        if not newLink2.allowsAll():
+            DtaLogger.warn("splitLink: outgoing link %d-%d %s %s does not allow all" % 
+                           (newLink2.getStartNode().getId(), newLink2.getEndNode().getId(),
+                            newLink2.getLabel(), newLink2.getDirection()))
+            # this should really be more like an intersection between the incoming vcg and the outgoing
+            vcg = newLink2._lanePermissions[0]
+
+        newMovement = Movement(midNode,
+                               newLink1,
+                               newLink2,
+                               newLink1._freeflowSpeed,
+                               vcg,
+                               newLink1._numLanes,
+                               0,
+                               newLink1._numLanes,
+                               1.0)
+        newLink1.addOutgoingMovement(newMovement)
+
+    def splitLink(self, linkToSplit, splitReverseLink=False, fraction=0.5):
+        """
+        Split the input link at *fraction* of the way along the link. The two new links have the 
         attributes of the input link. If there is a link in the 
         opposing direction then split that too.
+        
+        Takes the shape into account when splitting.
         
         .. todo:: Document the how the movements are handled, especially regarding VehicleClassGroups.
                   Currently it looks like an ALL and a PROHIBITED are required?
@@ -1466,9 +1569,16 @@ class Network(object):
             raise DtaError("Virtual link %s cannot be split" % linkToSplit.getId())
         if isinstance(linkToSplit, Connector):
             raise DtaError("Connector %s cannot be split" % linkToSplit.getId())
+        if fraction < 0.01 or fraction > 0.99:
+            raise DtaError("Network.splitLink() fraction must be in (0.01,0.99): %f" % fraction)
 
-        midX = (linkToSplit.getStartNode().getX() + linkToSplit.getEndNode().getX()) / 2.0
-        midY = (linkToSplit.getStartNode().getY() + linkToSplit.getEndNode().getY()) / 2.0
+        total_length = linkToSplit.getLength()
+        length1      = total_length*fraction
+        length2      = total_length*(1.0-fraction)
+        
+        (midX, midY, shpidx) = linkToSplit.coordinatesAndShapePointIdxAlongLink(fromStart=True, 
+                                                                                distance=fraction*linkToSplit.getLengthInCoordinateUnits(),
+                                                                                goPastEnd=False)
 
         midNode = RoadNode(self._maxNodeId + 1, midX, midY, 
                            RoadNode.GEOMETRY_TYPE_JUNCTION,
@@ -1477,119 +1587,31 @@ class Network(object):
 
         self.addNode(midNode)
 
-        def _split(linkToSplit, midNode): 
+        self._split(linkToSplit, midNode, length1, length2, shpidx) 
 
-            newLink1 = RoadLink(self._maxLinkId + 1,
-                                linkToSplit.getStartNode(), 
-                                midNode, 
-                                None,
-                                linkToSplit._facilityType,
-                                linkToSplit.getLength() / 2.0,
-                                linkToSplit._freeflowSpeed,
-                                linkToSplit._effectiveLengthFactor,
-                                linkToSplit._responseTimeFactor,
-                                linkToSplit._numLanes,
-                                linkToSplit._roundAbout,
-                                linkToSplit._level, 
-                                linkToSplit.getLabel(),
-                                self._maxLinkId + 1)
-            newLink1._lanePermissions = copy.copy(linkToSplit._lanePermissions)
-            self.addLink(newLink1)
-
-            newLink2 = RoadLink(self._maxLinkId + 1,
-                                midNode, 
-                                linkToSplit.getEndNode(), 
-                                None,
-                                linkToSplit._facilityType,
-                                linkToSplit.getLength() / 2.0,
-                                linkToSplit._freeflowSpeed,
-                                linkToSplit._effectiveLengthFactor,
-                                linkToSplit._responseTimeFactor,
-                                linkToSplit._numLanes,
-                                linkToSplit._roundAbout,
-                                linkToSplit._level,
-                                linkToSplit.getLabel(),
-                                self._maxLinkId + 1)
-            newLink2._lanePermissions = copy.copy(linkToSplit._lanePermissions)
-            self.addLink(newLink2) 
-
-            for inMov in linkToSplit.iterIncomingMovements():
-
-                newMovement = Movement(linkToSplit.getStartNode(),
-                                       inMov.getIncomingLink(),
-                                       newLink1,
-                                       inMov._freeflowSpeed,
-                                       inMov._permission,
-                                       inMov._numLanes,
-                                       inMov._incomingLane,
-                                       inMov._outgoingLane,
-                                       inMov._followupTime)
-
-
-                inMov.getIncomingLink().addOutgoingMovement(newMovement)
-
-            for outMov in linkToSplit.iterOutgoingMovements():
-
-                newMovement = Movement(linkToSplit.getEndNode(),
-                                       newLink2,
-                                       outMov.getOutgoingLink(),
-                                       outMov._freeflowSpeed,
-                                       outMov._permission,
-                                       outMov._numLanes,
-                                       outMov._incomingLane,
-                                       outMov._outgoingLane,
-                                       outMov._followupTime)
-
-                newLink2.addOutgoingMovement(newMovement)
-
-            # if one of incoming or outgoing link doesn't allow all
-            vcg = self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL)
-            if not newLink1.allowsAll():
-                DtaLogger.warn("splitLink: incoming link %d-%d %s %s does not allow all" % 
-                               (newLink1.getStartNode().getId(), newLink1.getEndNode().getId(),
-                                newLink1.getLabel(), newLink1.getDirection()))
-                vcg = newLink1._lanePermissions[0]
+        # split the reverse link if it exists
+        if splitReverseLink and self.hasLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
+                                                          linkToSplit.getStartNode().getId()):
+            
+                linkToSplit2 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(),
+                                                         linkToSplit.getStartNode().getId())
                 
-            if not newLink2.allowsAll():
-                DtaLogger.warn("splitLink: outgoing link %d-%d %s %s does not allow all" % 
-                               (newLink2.getStartNode().getId(), newLink2.getEndNode().getId(),
-                                newLink2.getLabel(), newLink2.getDirection()))
-                # this should really be more like an intersection between the incoming vcg and the outgoing
-                vcg = newLink2._lanePermissions[0]
-
-            newMovement = Movement(midNode, 
-                                   newLink1,
-                                   newLink2,                               
-                                   newLink1._freeflowSpeed,
-                                   vcg, 
-                                   newLink1._numLanes,
-                                   0,
-                                   newLink1._numLanes,
-                                   1.0
-                                   )                              
-            newLink1.addOutgoingMovement(newMovement)
-
-        _split(linkToSplit, midNode) 
-
-        if splitReverseLink == True:
-            if self.hasLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId()):
-                linkToSplit2 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), linkToSplit.getStartNode().getId())
-                _split(linkToSplit2, midNode)
+                # assume the reverse link has the same number of shape points
+                self._split(linkToSplit2, midNode, length2, length1, linkToSplit2.getNumShapePoints()-shpidx)
                 self.removeLink(linkToSplit2)
 
-                link1 = self.getLinkForNodeIdPair(linkToSplit.getStartNode().getId(), 
-                                                 midNode.getId())
+                link1 = self.getLinkForNodeIdPair(linkToSplit.getStartNode().getId(), midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
+                
                 prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
                      self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
                 link1.addOutgoingMovement(prohibitedMovement)
 
-                link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), 
-                                                 midNode.getId())
+                link1 = self.getLinkForNodeIdPair(linkToSplit.getEndNode().getId(), midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getEndNode().getId())
+                
                 prohibitedMovement = Movement.simpleMovementFactory(link1, link2,
                      self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
-
                 link1.addOutgoingMovement(prohibitedMovement)
 
         self.removeLink(linkToSplit)
@@ -2027,7 +2049,7 @@ class Network(object):
             
     def writeNodesToShp(self, name):
         """
-        Export all the nodes to a shapefile with the given name (without the shp extension)"
+        Export all the nodes to a shapefile with the given name
         """
         w = shapefile.Writer(shapefile.POINT)
         w.field("ID",           "N", 10)
@@ -2048,7 +2070,7 @@ class Network(object):
 
     def writeLinksToShp(self, name):
         """
-        Export all the links to a shapefile with the given name (without the shp extension)
+        Export all the links to a shapefile with the given name
         """
         w = shapefile.Writer(shapefile.POLYLINE) 
         w.field("ID",       "N", 10)
@@ -2061,6 +2083,7 @@ class Network(object):
         w.field("facType",  "N", 10)
         w.field("numLanes", "N", 10)
         w.field("Direction","C", 2 )
+        w.field("Length",   "N", 12, 4)
         
         for link in self.iterLinks():
             if link.isVirtualLink():
@@ -2072,6 +2095,7 @@ class Network(object):
                 facType     = -1
                 numLanes    = -1
                 direction   = ""
+                length      = "-1"
             else:                    
                 w.line(parts=[link.getCenterLine(wholeLineShapePoints = True)])
                 
@@ -2085,10 +2109,11 @@ class Network(object):
                 elif link.isVirtualLink():
                     type    = "VirtualLink"
                 direction   = link.getDirection()
+                length      = "%10.4f" % link.getLength()
                 
             w.record(link.getId(), link.getStartNode().getId(), link.getEndNode().getId(), 
                      "%d %d" % (link.getStartNode().getId(), link.getEndNode().getId()),
-                     type, label, facType, numLanes, direction)
+                     type, label, facType, numLanes, direction, length)
 
         w.save(name)
         DtaLogger.info("Wrote links to shapefile %s" % name)        

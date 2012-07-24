@@ -28,7 +28,7 @@ import sys
 
 USAGE = r"""
 
- python importGTFS.py [-s gtfs_stops.shp] dynameq_net_dir dynameq_net_prefix gtfs_file.zip
+ python importGTFS.py [-s sf_gtfs_stops.shp] [-l sf_gtfs_links.shp] dynameq_net_dir dynameq_net_prefix gtfs_file.zip
  
  e.g.
  
@@ -41,7 +41,7 @@ USAGE = r"""
  Each trip is input as a separate line with a large headway, so it runs once.  This is because
  future development will modify dwell times based on the ridership of that particular trip.
  
- The script also outputs sf_gtfs_lines.shp for debugging.
+ The script also optionally outputs a stops shapefile and a links shapefile for debugging.
 """
  
 def convertLongitudeLatitudeToXY(longitude,latitude):
@@ -68,13 +68,38 @@ def convertLongitudeLatitudeToXY(longitude,latitude):
 
     return (x_meters/FEET_TO_METERS,y_meters/FEET_TO_METERS)
 
-def stopOnWrongSide(roadlink, x, y):
+def stopOnWrongSide(roadlink, x, y, portion_along_link):
     """
     Returns True if the stop at (*x*, *y*) is on the left side of the street.
+    
+    Uses *portion_along_link* if there are shape points.
     """
-    s = (((roadlink.getEndNode().getX() - roadlink.getStartNode().getX())*(y-roadlink.getStartNode().getY())) -
-         ((roadlink.getEndNode().getY() - roadlink.getStartNode().getY())*(x-roadlink.getStartNode().getX())))
+    # for no shape points, this is simple
+    if roadlink.getNumShapePoints() == 0:
+        s = (((roadlink.getEndNode().getX() - roadlink.getStartNode().getX())*(y-roadlink.getStartNode().getY())) -
+             ((roadlink.getEndNode().getY() - roadlink.getStartNode().getY())*(x-roadlink.getStartNode().getX())))
+
+    else:
+        # find relevant sub-segment
+        (close_x, close_y, close_idx) = roadlink.coordinatesAndShapePointIdxAlongLink(fromStart=True, 
+                                        distance=portion_along_link*roadlink.getLengthInCoordinateUnits(), goPastEnd=True)
+        
+        shapepoints = roadlink.getShapePoints()
+        
+        if close_idx == 0:
+            start_point = (roadlink.getStartNode().getX(), roadlink.getStartNode().getY())
+        else:
+            start_point = (shapepoints[close_idx-1][0], shapepoints[close_idx-1][1])
+        if close_idx == len(shapepoints):
+            end_point   = (roadlink.getEndNode().getX(), roadlink.getEndNode().getY())
+        else:
+            end_point   = (shapepoints[close_idx][0], shapepoints[close_idx][1])
+            
+        s = (((end_point[0] - start_point[0])*(y-start_point[1])) -
+             ((end_point[1] - start_point[1])*(x-start_point[0])))
+            
     return (True if s>0 else False)
+    
     
 
 def addStopIdToLinkToDict(stop, network, stopid_to_link):
@@ -93,7 +118,7 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
             
     (x,y) = convertLongitudeLatitudeToXY(stop['stop_lon'], stop['stop_lat'])
 
-    closest_tuples = network.findNRoadLinksNearestCoords(x,y, n=3, quick_dist=QUICK_DIST)
+    closest_tuples = network.findNRoadLinksNearestCoords(x,y, n=4, quick_dist=QUICK_DIST)
     
     # none found - bummer!
     if len(closest_tuples) == 0:
@@ -108,7 +133,7 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
         
         for close_tuple in closest_tuples:
             # 1 point for right side of the street
-            alt_wrong_side = stopOnWrongSide(close_tuple[0], x, y)
+            alt_wrong_side = stopOnWrongSide(close_tuple[0], x, y, close_tuple[2])
             score = (1 if not alt_wrong_side else 0)
             
             # 2 points for matching name
@@ -116,6 +141,15 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
     
             # points for distance?
             # score += 0.5 if close_tuple[1] < 50 else 0.0
+            
+            # todo: make this cleaner
+            # score -10 for geary tunnel
+            start_end_ids = (close_tuple[0].getStartNode().getId(), close_tuple[0].getEndNode().getId())
+            score += (-10 if start_end_ids==(26811,26908) else 0)
+            score += (-10 if start_end_ids==(26908,26811) else 0)
+            # hack: stop 7334 goes to the wrong side of the street.  it appears to have coords slightly off?
+            score += (-10 if start_end_ids==(20299,20298) else 0)
+            score += (-10 if start_end_ids==(20296,20299) else 0)
             
             scores.append(score)
         
@@ -198,7 +232,7 @@ def writeLineToShapefile(shp, transitline):
     
     
 if __name__ == "__main__":
-    optlist, args = getopt.getopt(sys.argv[1:], "s:")
+    optlist, args = getopt.getopt(sys.argv[1:], "l:s:")
 
     if len(args) != 3:
         print USAGE
@@ -211,9 +245,12 @@ if __name__ == "__main__":
     GTFS_ZIP                      = args[2]
 
     OUTPUT_STOP_SHAPEFILE       = None
+    OUTPUT_LINK_SHAPEFILE       = None    
     for (opt,arg) in optlist:
         if opt=="-s":
             OUTPUT_STOP_SHAPEFILE  = arg
+        if opt=="-l":
+            OUTPUT_LINK_SHAPEFILE  = arg
 
     GTFS_ROUTE_TYPE_TO_LINE_TYPE = \
     {"Bus":         dta.TransitLine.LINE_TYPE_BUS,
@@ -263,80 +300,97 @@ if __name__ == "__main__":
         route_label = route['route_short_name'].strip() + " " + route['route_long_name'].strip()
         route_labels.append(route_label)
     
-    # now iterate through the routes
-    stopid_to_link = {}
-    line_shp = defineLinesShpFile()
-    line_shp_done = set() # (route_label, trip_headsign)
-    for route_label in sorted(route_labels):
-        
-        # iterate through the trips and find those for this route
-        trip_list = schedule.GetTripList()
-        for trip in trip_list:
-                        
-            # skip if irrelevant service period
-            if trip['service_id'] != service_period.service_id: continue
-            route_id = trip['route_id']
-            route = schedule.GetRoute(route_id)
-            
-            # only do the trips for the given route_label
-            trip_route_label = route['route_short_name'].strip() + " " + route['route_long_name'].strip()
-            if trip_route_label != route_label: continue
+
     
-            # create the transit line
-            label = "%s_%s_route%s_trip%s" % (route_label, trip['trip_headsign'], route_id, trip['trip_id'])
-            transit_line_id = int(trip['trip_id']) # try this even though they're not sequential
-            stoptimes = trip.GetStopTimes()
-            line_departure = dta.Time.fromSeconds(stoptimes[0].GetTimeSecs())
+    # Do this in a two-phase way -- first, we have to do all of our split links
+    # Then, we actually create the transit lines
+    # If we create the transit lines as we go along, a line that causes a split link later in the
+    # list will invalidate the transit lines that traversed that link already
+    for phase in ["splitlink", "createtransit"]:
+        
+        # iterate through the routes
+        stopid_to_link = {}  # we'll fill this twice. it feels wasteful but splitting links could invalidate some
+
+        if phase == "createtransit":
+            line_shp = defineLinesShpFile()  # do the shapefile during the createtransit phase
+            line_shp_done = set()            # (route_label, trip_headsign)        
+
+        for route_label in sorted(route_labels):
             
-            # Skip if it's not running during simulation time
-            if line_departure > scenario.endTime: continue
-            if line_departure < scenario.startTime: continue
-            
-            route_type_str = transitfeed.Route._ROUTE_TYPES[int(route['route_type'])]['name']
-            # for now, skip LRT because they run off-street and we don't handle that yet
-            if route_type_str == "Tram": continue
-                                    
-            dta.DtaLogger.debug("Processing %s (%s)" % (label, route_type_str))
-            
-            dta_transit_line = dta.TransitLine(net, id=transit_line_id,
-                                               label=label,
-                                               litype=GTFS_ROUTE_TYPE_TO_LINE_TYPE[route_type_str],
-                                               vtype=GTFS_ROUTE_TYPE_TO_VTYPE[route_type_str],
-                                               stime=line_departure,
-                                               level=0,
-                                               active=dta.TransitLine.LINE_ACTIVE,
-                                               hway=60*6, #run once -- make this cleaner
-                                               dep=1)
-                                                           
-            prev_roadlink = None
-            prev_stopid   = None
-            for stoptime in stoptimes:
+            # iterate through the trips and find those for this route
+            trip_list = schedule.GetTripList()
+            for trip in trip_list:
+                            
+                # skip if irrelevant service period
+                if trip['service_id'] != service_period.service_id: continue
+                route_id = trip['route_id']
+                route = schedule.GetRoute(route_id)
                 
-                stopid = stoptime.stop['stop_id']
+                # only do the trips for the given route_label
+                trip_route_label = route['route_short_name'].strip() + " " + route['route_long_name'].strip()
+                if trip_route_label != route_label: continue
+        
+                # create the transit line
+                label = "%s_%s_route%s_trip%s" % (route_label, trip['trip_headsign'], route_id, trip['trip_id'])
+                transit_line_id = int(trip['trip_id']) # try this even though they're not sequential
+                stoptimes = trip.GetStopTimes()
+                line_departure = dta.Time.fromSeconds(stoptimes[0].GetTimeSecs())
                 
-                # curious - not sure why this should happen but it does with Trip 5141123 Stop 5245
-                if stopid == prev_stopid: continue
+                # Skip if it's not running during simulation time
+                if line_departure > scenario.endTime: continue
+                if line_departure < scenario.startTime: continue
                 
-                addStopIdToLinkToDict(stoptime.stop, net, stopid_to_link) # lazy updating
-                stop_roadlink = stopid_to_link[stopid][3]
+                route_type_str = transitfeed.Route._ROUTE_TYPES[int(route['route_type'])]['name']
+                # for now, skip LRT because they run off-street and we don't handle that yet
+                if route_type_str == "Tram": continue
+                                        
+                dta.DtaLogger.debug("Processing %s (%s)" % (label, route_type_str))
                 
-                if stop_roadlink == None:
-                    # todo handle this better
-                    continue
-                
-                # subsequent link - connect from previous link
-                if prev_roadlink:
+                if phase == "createtransit":
+                    dta_transit_line = dta.TransitLine(net, id=transit_line_id,
+                                                       label=label,
+                                                       litype=GTFS_ROUTE_TYPE_TO_LINE_TYPE[route_type_str],
+                                                       vtype=GTFS_ROUTE_TYPE_TO_VTYPE[route_type_str],
+                                                       stime=line_departure,
+                                                       level=0,
+                                                       active=dta.TransitLine.LINE_ACTIVE,
+                                                       hway=60*6, #run once -- make this cleaner
+                                                       dep=1)
+                                                               
+                prev_roadlink = None
+                prev_stopid   = None
+                for stoptime in stoptimes:
                     
-                    if prev_roadlink == stop_roadlink:
-                        dta.DtaLogger.debug("Two stops (%s %s) on one link %d! route=%s splitting." % 
-                                            (prev_stopid, stopid, prev_roadlink.getId(), route_label))
+                    stopid = stoptime.stop['stop_id']
+                    
+                    # curious - not sure why this should happen but it does with Trip 5141123 Stop 5245
+                    if stopid == prev_stopid: continue
+                    
+                    addStopIdToLinkToDict(stoptime.stop, net, stopid_to_link) # lazy updating
+                    stop_roadlink = stopid_to_link[stopid][3]
+                    
+                    if stop_roadlink == None:
+                        # todo handle this better
+                        continue
+                    
+                    # split link phase: split if the previous stop's roadlink is the same as
+                    # this stop's road link
+                    if phase == "splitlink" and prev_roadlink == stop_roadlink:
+                        fraction = 0.5*(stopid_to_link[prev_stopid][5] + stopid_to_link[stopid][5])
+                        dta.DtaLogger.debug("Two stops (%s %s) on trip %s on link %d (%d-%d)! splitting @ %f  shapepoints=%d" % 
+                                            (prev_stopid, stopid, label,
+                                             prev_roadlink.getId(), 
+                                             prev_roadlink.getStartNode().getId(), 
+                                             prev_roadlink.getEndNode().getId(),
+                                             fraction, prev_roadlink.getNumShapePoints()))
+                        dta.DtaLogger.debug("Old link centerline = %s" % str(stop_roadlink.getCenterLine(wholeLineShapePoints = True)))
+                        
                         # split the link
                         start_node  = stop_roadlink.getStartNode()
                         end_node    = stop_roadlink.getEndNode()
-                        midnode     = net.splitLink(linkToSplit=stop_roadlink,splitReverseLink=True)
+                        midnode     = net.splitLink(linkToSplit=stop_roadlink,splitReverseLink=True, fraction=fraction)
                         # the prev_roadlink is now the first half - update that one
                         prev_roadlink = net.getLinkForNodeIdPair(start_node.getId(), midnode.getId())
-                        prev_segment  = dta_transit_line.lastSegment()
                         old_tuple     = stopid_to_link[prev_stopid]
                         new_distinfo  = prev_roadlink.getDistanceFromPoint(old_tuple[0], old_tuple[1])
                         # update (x, y, stopname, roadlink, distance, portion_along_link)
@@ -350,45 +404,68 @@ if __name__ == "__main__":
                         stopid_to_link[stopid] = (old_tuple[0], old_tuple[1], old_tuple[2],
                                                   stop_roadlink, new_distinfo[0], new_distinfo[1])
                         
-                    try:
-                        dta.ShortestPaths.labelSettingWithLabelsOnNodes(net, 
-                                                                        prev_roadlink.getEndNode(), 
-                                                                        stop_roadlink.getStartNode())
-                        path_nodes = dta.ShortestPaths.getShortestPathBetweenNodes(prev_roadlink.getEndNode(), 
-                                                                                   stop_roadlink.getStartNode())
-        
-                    except:
-                        dta.DtaLogger.error("Error: %s" % str(sys.exc_info()))
-                        dta.DtaLogger.error("route %-25s No shortest path found from %d to %d" %
-                                           (label, prev_roadlink.getEndNode(), stop_roadlink.getStartNode()))
-                        continue
-                    
-                    node_num_list = [ prev_roadlink.getEndNode().getId() ]
-                    for path_node_A, path_node_B in itertools.izip(path_nodes, path_nodes[1:]):
-                        node_num_list.append(path_node_B.getId())
-                        newlink = net.getLinkForNodeIdPair(path_node_A.getId(), path_node_B.getId())
-                        newseg  = dta_transit_line.addSegment(newlink, 0, label="")
-    
-                # add this link
-                dta_transit_line.addSegment(stop_roadlink,
-                                            label="%s,%5.4f" % (stopid, stopid_to_link[stopid][5]),
-                                            lane=dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED,
-                                            dwell=30, # todo: put in a better default
-                                            stopside=dta.TransitSegment.STOP_OUTSIDE)
-                prev_roadlink = stop_roadlink
-                prev_stopid   = stopid
-    
-            # check if the movements are allowed
-            dta_transit_line.checkMovementsAreAllowed(enableMovement=True)
-                
-            output_file.write(dta_transit_line.getDynameqStr())
-            transit_line_id += 1
+                        dta.DtaLogger.debug("New links are %d and %d" % (prev_roadlink.getId(), stop_roadlink.getId()))
+                        dta.DtaLogger.debug("  centerline for %d (%d): %s" %
+                                            (prev_roadlink.getId(), prev_roadlink.getNumShapePoints(),
+                                             str(prev_roadlink.getCenterLine(wholeLineShapePoints = True))))
+                        dta.DtaLogger.debug("  centerline for %d (%d): %s" %
+                                            (stop_roadlink.getId(), stop_roadlink.getNumShapePoints(),
+                                             str(stop_roadlink.getCenterLine(wholeLineShapePoints = True))))
+                        
+                    # createtransit phase: connect this stoplink from previous stoplink
+                    if phase == "createtransit" and prev_roadlink:
+                        
+                        if prev_roadlink == stop_roadlink:
+                            error = "create transit but two stops (%s %s) on trip %s are still on the same link %d (%d-%d)" % \
+                                    (prev_stopid, stopid, label,
+                                     prev_roadlink.getId(), prev_roadlink.getStartNode().getId(), prev_roadlink.getEndNode().getId())
+                            dta.DtaLogger.fatal(error)
+                            raise dta.DtaError(error)
+                        
+                        # shortest path connecting stop links
+                        try:
+                            dta.ShortestPaths.labelSettingWithLabelsOnNodes(net, 
+                                                                            prev_roadlink.getEndNode(), 
+                                                                            stop_roadlink.getStartNode())
+                            path_nodes = dta.ShortestPaths.getShortestPathBetweenNodes(prev_roadlink.getEndNode(), 
+                                                                                       stop_roadlink.getStartNode())
             
-            # only once per (route_label, trip_headsign)
-            if (route_label, trip['trip_headsign']) not in line_shp_done:
-                writeLineToShapefile(line_shp, dta_transit_line)
-                line_shp_done.add( (route_label, trip['trip_headsign']) )
+                        except:
+                            dta.DtaLogger.error("Error: %s" % str(sys.exc_info()))
+                            dta.DtaLogger.error("route %-25s No shortest path found from %d to %d" %
+                                               (label, prev_roadlink.getEndNode(), stop_roadlink.getStartNode()))
+                            continue
+                        
+                        node_num_list = [ prev_roadlink.getEndNode().getId() ]
+                        for path_node_A, path_node_B in itertools.izip(path_nodes, path_nodes[1:]):
+                            node_num_list.append(path_node_B.getId())
+                            newlink = net.getLinkForNodeIdPair(path_node_A.getId(), path_node_B.getId())
+                            newseg  = dta_transit_line.addSegment(newlink, 0, label="")
+        
+                    # add this link
+                    if phase == 'createtransit':
+                        dta_transit_line.addSegment(stop_roadlink,
+                                                    label="%s,%5.4f" % (stopid, stopid_to_link[stopid][5]),
+                                                    lane=dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED,
+                                                    dwell=30, # todo: put in a better default
+                                                    stopside=dta.TransitSegment.STOP_OUTSIDE)
+                    prev_roadlink = stop_roadlink
+                    prev_stopid   = stopid
+        
+                # check if the movements are allowed
+                if phase=="createtransit":
+                    dta_transit_line.checkMovementsAreAllowed(enableMovement=True)
+                    
+                    output_file.write(dta_transit_line.getDynameqStr())
+                
+                    # only once per (route_label, trip_headsign)
+                    if (route_label, trip['trip_headsign']) not in line_shp_done:
+                        writeLineToShapefile(line_shp, dta_transit_line)
+                        line_shp_done.add( (route_label, trip['trip_headsign']) )
 
+        if phase=="splitlink" and OUTPUT_LINK_SHAPEFILE:
+            net.writeLinksToShp(OUTPUT_LINK_SHAPEFILE)
+            
     output_file.close()
 
     net.write(".", "sf_trn")

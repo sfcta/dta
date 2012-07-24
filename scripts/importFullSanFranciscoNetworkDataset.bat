@@ -37,7 +37,7 @@ if %TRANSIT_IMPORT% == CUBE (
 )
 if %TRANSIT_IMPORT% == GTFS (
   set PYTHONPATH=%DTA_CODE_DIR%;Y:\lmz\googletransitdatafeed-read-only\python
-  python %DTA_CODE_DIR%\scripts\importGTFS.py -s sf_gtfs_stops.shp . sf Y:\dta\SanFrancisco\2010\transit\google_transit_sfmta_20120609_20120914.zip
+  python %DTA_CODE_DIR%\scripts\importGTFS.py -s sf_gtfs_stops.shp -l sf_gtfs_links.shp . sf Y:\dta\SanFrancisco\2010\transit\google_transit_sfmta_20120609_20120914.zip
   :: primary output: Dynameq files sf_trn_{scen,base,adv,ptrn}.dqt
   :: log     output: importGTFS.{DEBUG,INFO}.log
   IF ERRORLEVEL 1 goto done
