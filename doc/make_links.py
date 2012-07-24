@@ -13,7 +13,16 @@ if __name__ == '__main__':
                     [(re.compile(r'(<span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">)(\w+)(</span>)'),
                       '<a href="_generated/dta.DynameqScenario.html#dta.DynameqScenario.\g<2>">\g<1>\g<2>\g<3></a>'),
                      (re.compile(r'(<span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">)(\w+)(</span>)'),
-                      '<a href="_generated/dta.Network.html#dta.Network.\g<2>">\g<1>\g<2>\g<3></a>')]}     
+                      '<a href="_generated/dta.Network.html#dta.Network.\g<2>">\g<1>\g<2>\g<3></a>')],
+                    r"_build\html\index.html":
+                    [(re.compile(r'<img alt="SFCTA usage of DTA Anyway" src="_images/DtaAnywayFlow_470w\d+.png" />'),
+                      '<a id="link1" href="script_importFullSanFranciscoNetworkDataset.html"></a>\n' +
+                      '<a id="link2" href="script_importTPPlusTransitRoutes.html"></a>\n' +
+                      '<a id="link3" href="script_importExcelSignals.html"></a>\n' +
+                      '<a id="link4" href="script_importUnsignalizedIntersections.html"></a>\n' +
+                      '<a id="link5" href="script_importCubeDemand.html"></a>\n' +
+                      '<a id="link6" href="script_attachCountsFromCountDracula.html"></a>\n')]
+                    }     
     
     for infilename in subsitutions.keys():
         

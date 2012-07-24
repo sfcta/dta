@@ -4,6 +4,7 @@
    :figwidth: 470px
    :align: right
    :alt: SFCTA usage of DTA Anyway
+   :figclass: DtaAnywayFlow
    
    SFCTA uses DTA Anyway to generate a DTA network using this series of scripts, each one
    adding a new layer of data onto the network.  See :doc:`script_importFullSanFranciscoNetworkDataset`
