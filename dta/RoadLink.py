@@ -868,9 +868,9 @@ class RoadLink(Link):
         See :py:meth:`RoadLink.getAngle()` for explanation of *usingShapePoints*.
         """
         # oriented the same way -- small angle
-        if abs(self.getAngle(other, usingShapepoints)) <= 0.80:
+        if abs(self.getAngle(other, usingShapepoints)) <= 0.86:
             return True
-        
+
         return False
 
     def getOrientation(self, atEnd=True, usingShapepoints=True):
