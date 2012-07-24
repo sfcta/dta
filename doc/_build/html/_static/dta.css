@@ -19,7 +19,7 @@ p.graphviz {
 /* Image map for flow diagram */
 div.dtaanywayflow {
   height: 757px;
-  background:url("../_images/DtaAnywayFlow_470w7.png") no-repeat;
+  background:url("../../../images/DtaAnywayFlow_470w.png") no-repeat;
   position:relative;
 }
 
