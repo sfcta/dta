@@ -6,18 +6,29 @@ import re, shutil
 
 if __name__ == '__main__':
 
-    infilename = r"_build\html\script_importFullSanFranciscoNetworkDataset.html"
-    script_re = re.compile(r"[\\]scripts[\\](\w+).py")
+    # filenames -> [ (regex1, substr1), (regex2, substr2), ...]
+    subsitutions = {r"_build\html\script_importFullSanFranciscoNetworkDataset.html":
+                    [(re.compile(r"[\\]scripts[\\](\w+).py"), '\scripts\<a href="script_\g<1>.html">\g<1>.py</a>')],
+                    r"_build\html\script_createSFNetworkFromCubeNetwork.html":
+                    [(re.compile(r'(<span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">)(\w+)(</span>)'),
+                      '<a href="_generated/dta.DynameqScenario.html#dta.DynameqScenario.\g<2>">\g<1>\g<2>\g<3></a>'),
+                     (re.compile(r'(<span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">)(\w+)(</span>)'),
+                      '<a href="_generated/dta.Network.html#dta.Network.\g<2>">\g<1>\g<2>\g<3></a>')]}     
     
-    
-    outfile = open("output.html", "w")
-    for line in open(infilename, "r"):
-
-        (line, count) = script_re.subn('\scripts\<a href="script_\g<1>.html">\g<1>.py</a>', line)
-        if count>0: 
-            print "make_links: subbed [%s]" % line
+    for infilename in subsitutions.keys():
         
-        outfile.write(line)
-    outfile.close()
+        outfile = open("output.html", "w")
+        for line in open(infilename, "r"):
+
+            for (regex, substr) in subsitutions[infilename]:
+                oldline = line
+                (line, count) = regex.subn(substr, line)
+                if count>0:
+                    print "make_links: %s" % infilename
+                    print "  was: ", oldline
+                    print "  new: ", line
+        
+            outfile.write(line)
+        outfile.close()
     
-    shutil.copyfile("output.html", infilename)
+        shutil.move("output.html", infilename)

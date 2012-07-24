@@ -220,6 +220,7 @@
     <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Motor_Std&quot;</span><span class="p">,</span>    <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mi">40</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
     <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Motor_Artic&quot;</span><span class="p">,</span>  <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mi">60</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
     <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;CableCar&quot;</span><span class="p">,</span>     <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mf">27.5</span><span class="p">,</span>   <span class="mf">1.6</span><span class="p">,</span>         <span class="mf">9.5</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>    
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Maximum vehicle length = </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">())</span>
     <span class="c"># Generic is an implicit type</span>
 
     <span class="c"># VehicleClassGroups</span>
@@ -273,6 +274,8 @@
                      <span class="s">&quot;6&quot;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>
                      <span class="p">}</span>
     
+    <span class="n">linkEffectiveLengthFactor</span> <span class="o">=</span> <span class="mf">1.17</span> <span class="c"># estimated based on queue length survey data</span>
+    
     <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">readNetfile</span> \
       <span class="p">(</span><span class="n">netFile</span><span class="o">=</span><span class="n">SF_CUBE_NET_FILE</span><span class="p">,</span>
        <span class="n">nodeVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;N&quot;</span><span class="p">,</span><span class="s">&quot;X&quot;</span><span class="p">,</span><span class="s">&quot;Y&quot;</span><span class="p">,</span><span class="s">&quot;OLD_NODE&quot;</span><span class="p">],</span>
@@ -300,7 +303,7 @@
        <span class="n">linkFacilityTypeEvalStr</span>          <span class="o">=</span> <span class="s">&quot;ftToDTALookup[FT]&quot;</span><span class="p">,</span>
        <span class="n">linkLengthEvalStr</span>                <span class="o">=</span> <span class="s">&quot;float(DISTANCE)&quot;</span><span class="p">,</span>
        <span class="n">linkFreeflowSpeedEvalStr</span>         <span class="o">=</span> <span class="s">&quot;45.0 if FT==&#39;6&#39; else float(speedLookup[&#39;FT&#39;+FT+&#39; AT&#39;+AT])&quot;</span><span class="p">,</span>
-       <span class="n">linkEffectiveLengthFactorEvalStr</span> <span class="o">=</span> <span class="s">&quot;1.17&quot;</span><span class="p">,</span> <span class="c"># estimated based on queue length survey data</span>
+       <span class="n">linkEffectiveLengthFactorEvalStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">linkEffectiveLengthFactor</span><span class="p">),</span> 
        <span class="n">linkResponseTimeFactorEvalStr</span>    <span class="o">=</span> <span class="s">&quot;1.1 if FT==&#39;2&#39; else 1.2&quot;</span><span class="p">,</span>  <span class="c"># estimated based on saturation flow analysis on survey data and PeMS freeway sensors</span>
        <span class="n">linkNumLanesEvalStr</span>              <span class="o">=</span> <span class="s">&quot;2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)&gt;0 else 0))&quot;</span><span class="p">,</span>
        <span class="n">linkRoundAboutEvalStr</span>            <span class="o">=</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
@@ -351,8 +354,9 @@
     <span class="c"># Warn on overlapping links, and move virtual nodes up to 100 feet if that helps</span>
     <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleOverlappingLinks</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     
-    <span class="c"># finally -- Dynameq requires links to be longer than the longest vehicle</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleShortLinks</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">()</span><span class="o">/</span><span class="mf">5280.0</span><span class="p">,</span>
+    <span class="c"># finally -- Dynameq requires links to be longer than the longest vehicle x the linkEffectiveLengthFactor</span>
+    <span class="c"># rounding up because the lengths are specified with 3 decimals in the file, so if they happen to round down they&#39;re too short</span>
+    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleShortLinks</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">linkEffectiveLengthFactor</span><span class="o">*</span><span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">()</span><span class="o">/</span><span class="mf">5280.0</span> <span class="o">+</span> <span class="mf">0.0005</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
                                             <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                                             <span class="n">setLength</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 

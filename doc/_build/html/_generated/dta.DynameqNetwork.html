@@ -370,10 +370,8 @@ and that the id is not already used; stores it.</p>
 <dl class="method">
 <dt id="dta.DynameqNetwork.addPlanCollectionInfo">
 <tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>startTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance 
-endTime <tt class="xref py py-class docutils literal"><span class="pre">Utils.Time</span></tt> instance</p>
-<p>name: a string that identifies the plan collection
-description: a string that gives more infromation about the plan collection</p>
+<dd><p>Instantiates a new <a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo" title="dta.PlanCollectionInfo"><tt class="xref py py-class docutils literal"><span class="pre">PlanCollectionInfo</span></tt></a> for this network with the given attributes and returns it.
+See <a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo.__init__" title="dta.PlanCollectionInfo.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">PlanCollectionInfo.__init__()</span></tt></a> for arguments.</p>
 </dd></dl>
 
 <dl class="method">
@@ -932,10 +930,11 @@ and <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_SB" t
 
 <dl class="method">
 <dt id="dta.DynameqNetwork.splitLink">
-<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em>, <em>splitReverseLink=False</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.splitLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Split the input link in half. The two new links have the 
+<tt class="descname">splitLink</tt><big>(</big><em>linkToSplit</em>, <em>splitReverseLink=False</em>, <em>fraction=0.5</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.splitLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the input link at <em>fraction</em> of the way along the link. The two new links have the 
 attributes of the input link. If there is a link in the 
 opposing direction then split that too.</p>
+<p>Takes the shape into account when splitting.</p>
 <div class="admonition-todo admonition " id="index-7">
 <p class="first admonition-title">Todo</p>
 <p class="last">Document the how the movements are handled, especially regarding VehicleClassGroups.
@@ -962,7 +961,7 @@ tolerance = tolerance for matching nodes in two databases in feet (5 ft is appro
 <dl class="method">
 <dt id="dta.DynameqNetwork.writeLinksToShp">
 <tt class="descname">writeLinksToShp</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.writeLinksToShp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Export all the links to a shapefile with the given name (without the shp extension)</p>
+<dd><p>Export all the links to a shapefile with the given name</p>
 </dd></dl>
 
 <dl class="method">
@@ -974,7 +973,7 @@ tolerance = tolerance for matching nodes in two databases in feet (5 ft is appro
 <dl class="method">
 <dt id="dta.DynameqNetwork.writeNodesToShp">
 <tt class="descname">writeNodesToShp</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.writeNodesToShp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Export all the nodes to a shapefile with the given name (without the shp extension)&#8221;</p>
+<dd><p>Export all the nodes to a shapefile with the given name</p>
 </dd></dl>
 
 </dd></dl>

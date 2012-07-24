@@ -384,10 +384,21 @@ Thus, this method will also add the required shape points, if they&#8217;re lack
 <dl class="method">
 <dt id="dta.Connector.coordinatesAlongLink">
 <tt class="descname">coordinatesAlongLink</tt><big>(</big><em>fromStart</em>, <em>distance</em>, <em>goPastEnd=False</em><big>)</big><a class="headerlink" href="#dta.Connector.coordinatesAlongLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the coordinates (a 2-tuple) along this link given by <em>distance</em>, which is 
-in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.  If <em>fromStart</em>, starts at start, otherwise at end.
-Takes shape points into account.  
-If <em>distance</em> is longer than the euclidean distance of the link, and not <em>goPastEnd</em> raises an exception.</p>
+<dd><p>Like <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.coordinatesAndShapePointIdxAlongLink" title="dta.RoadLink.coordinatesAndShapePointIdxAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAndShapePointIdxAlongLink()</span></tt></a> but only returns the
+coordinates 2-tuple (<em>x</em>,*y*).  For backwards compatibility.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.coordinatesAndShapePointIdxAlongLink">
+<tt class="descname">coordinatesAndShapePointIdxAlongLink</tt><big>(</big><em>fromStart</em>, <em>distance</em>, <em>goPastEnd=False</em><big>)</big><a class="headerlink" href="#dta.Connector.coordinatesAndShapePointIdxAlongLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the 3-tuple (<em>x</em>,*y*,*idx*) where (<em>x</em>,*y*) is the point along this link given by
+<em>distance</em>, which is in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.  <em>idx</em> is the index into the
+point array (including the start point, intermediate shape points, and end point) where
+the (<em>x</em>,*y*) was ultimately found (useful for splitting links and allocating the shape points).</p>
+<p>If <em>fromStart</em>, starts at start, otherwise at end.</p>
+<p>Takes shape points into account.</p>
+<p>If <em>distance</em> is longer than the euclidean distance of the link, and not <em>goPastEnd</em> raises
+a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -407,14 +418,15 @@ If <em>distance</em> is longer than the euclidean distance of the link, and not 
 
 <dl class="method">
 <dt id="dta.Connector.euclideanLength">
-<tt class="descname">euclideanLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLength" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">euclideanLength</tt><big>(</big><em>includeShape=False</em><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the length based on simple Euclidean distance.</p>
+<p>If this link has shape points and <em>includeShape</em> is True, then the shape is taken into account.</p>
 <p>This will be in the units specified by <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.Connector.euclideanLengthInLengthUnits">
-<tt class="descname">euclideanLengthInLengthUnits</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLengthInLengthUnits" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">euclideanLengthInLengthUnits</tt><big>(</big><em>includeShape=False</em><big>)</big><a class="headerlink" href="#dta.Connector.euclideanLengthInLengthUnits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the length of the link in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</p>
 </dd></dl>
 
@@ -535,7 +547,7 @@ road links start point and end point lies the closest point to (<em>x</em>, <em>
 <dt id="dta.Connector.getLength">
 <tt class="descname">getLength</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getLength" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the length of the link in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</p>
-<p>Uses the user input length, if there is one; otherwise calculates the euclidean length.</p>
+<p>Uses the user input length, if there is one; otherwise calculates the euclidean length including the shape.</p>
 </dd></dl>
 
 <dl class="method">
@@ -548,8 +560,8 @@ road links start point and end point lies the closest point to (<em>x</em>, <em>
 <dl class="method">
 <dt id="dta.Connector.getMidPoint">
 <tt class="descname">getMidPoint</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getMidPoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the midpoint of the link&#8217;s centerline as a tuple of two floats
-.. todo:: What if the link has Shapepoints and we can do better (e.g. reflect curvature)</p>
+<dd><p>Return the midpoint of the link&#8217;s centerline as a tuple of two floats</p>
+<p>This uses <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAlongLink()</span></tt></a> and includes shapepoints.</p>
 </dd></dl>
 
 <dl class="method">
@@ -652,6 +664,12 @@ returns 0.</p>
 <dt id="dta.Connector.getRoadNode">
 <tt class="descname">getRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the RoadNode of the Connector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getShapePoints">
+<tt class="descname">getShapePoints</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getShapePoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the shape points.</p>
 </dd></dl>
 
 <dl class="method">
