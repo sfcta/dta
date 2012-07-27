@@ -291,7 +291,7 @@ class Network(object):
     def setMovementTurnTypeOverrides(self, overrides):
         """
         Sets movement turn type overrides.  *overrides* is specified as a list of overrides, where each override
-        is a tuple containing ( *from_dir*, *from_street*, *cross_street*, *to_dir*, *to_street*, *turn_type*, [*perm_type*] ).
+        is a tuple containing ( *from_dir*, *from_street*, *cross_street*, *to_dir*, *to_street*, *turn_type*, [*perm_type*], [*lanes*] ).
         
         *from_dir* and *to_dir* should be one of :py:attr:`RoadLink.DIR_EB`, :py:attr:`RoadLink.DIR_WB`, :py:attr:`RoadLink.DIR_NB`, 
         and :py:attr:`RoadLink.DIR_SB`.
@@ -303,6 +303,7 @@ class Network(object):
         """
         overrides_applied = 0
         permissions_applied = 0
+        lanes_applied = 0
         
         for override in overrides:
             if len(override) < 6:
@@ -352,9 +353,20 @@ class Network(object):
                                                                                   movement.getOutgoingLink().getLabel(),
                                                                                   movement.getOutgoingLink().getDirection()))
                 permissions_applied += 1
-        
+                
+            # handle lanes
+            if movement and len(override) >= 8:
+                movement.setNumLanes(int(override[7]))
+                DtaLogger.debug("Set override lanes: %d for %s-%s (@%d) %s-%s" % (movement.getNumLanes(),
+                                                                                  movement.getIncomingLink().getLabel(),
+                                                                                  movement.getIncomingLink().getDirection(),
+                                                                                  movement.getAtNode().getId(), 
+                                                                                  movement.getOutgoingLink().getLabel(),
+                                                                                  movement.getOutgoingLink().getDirection()))
+                lanes_applied += 1        
         DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d out of %d turn type overrides" % (overrides_applied, len(overrides)))
         DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d vehicle class group permissions" % permissions_applied)
+        DtaLogger.info("Network.setMovementTurnTypeOverrides successfully applied %d lane overrides" % lanes_applied)
 
     def addLink(self, newLink):
         """
@@ -2129,7 +2141,7 @@ class Network(object):
         w.field("StaMidEnd","C", 30)
         
         w.field("NumLanes", "N", 10)
-        w.field("Capacity", "N", 10)
+        w.field("Capacity", "N", 10, 3)
         w.field("TurnType", "C", 10)
 
         if not planInfo and self._planInfo.values():
@@ -2148,7 +2160,7 @@ class Network(object):
                     
                 w.record(mov.getStartNodeId(), mov.getAtNode().getId(), mov.getEndNodeId(),
                          "%d %d %d" % (mov.getStartNodeId(), mov.getAtNode().getId(), mov.getEndNodeId()),
-                         mov.getNumLanes(), protected_capacity,
+                         mov.getNumLanes(), "%10.2f" % protected_capacity,
                          mov.getTurnType())
         w.save(name)
         DtaLogger.info("Wrote movements to shapefile %s" % name)                

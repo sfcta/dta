@@ -327,6 +327,12 @@ class Movement(object):
         """
         return self._numLanes
 
+    def setNumLanes(self, numlanes):
+        """
+        Mutator for the number of lanes of the movement
+        """
+        self._numLanes = numlanes
+
     def getProtectedCapacity(self, planInfo):
         """
         Return the capacity of the movement in vehicles per hour
