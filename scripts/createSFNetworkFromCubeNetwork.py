@@ -191,6 +191,13 @@ if __name__ == '__main__':
                                             "0",            # link_expr
                                             ""              # descr
                                             )
+
+    sanfranciscoScenario.addGeneralizedCost("Expression_1", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "fac_type_pen*(3600*length/fspeed)",            # link_expr
+                                            ""              # descr
+                                            )
     
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
@@ -268,7 +275,7 @@ if __name__ == '__main__':
                                            })
 
     # Apply the transit lanes
-    createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
+    #createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
         
     # create the movements for the network for all vehicles
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
