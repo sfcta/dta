@@ -21,6 +21,12 @@ IF NOT DEFINED DYNAMEQ_NET_PREFIX (
   goto done
 )
 
+:: Counts location
+IF NOT DEFINED COUNT_LOCATION (
+  echo Please set the COUNT_LOCATION environment variable to the location of the counts corresponding to this network.
+  goto done
+)
+
 :: let PYTHON know where to find it
 set PYTHONPATH=%DTA_CODE_DIR%
 
@@ -28,7 +34,7 @@ set PYTHONPATH=%DTA_CODE_DIR%
 :: 1) export the 15-minute a CSV file
 ::
 :export15MinCounts
-python %DTA_CODE_DIR%\scripts\visualizeDTAResults.py . %DYNAMEQ_NET_PREFIX% 15 link15min.csv movement15min.csv X:\lmz\dta\clean counts_links_15min_1600_1830_recent_midweek.dat counts_movements_15min_1600_1830_recent_midweek.dat counts_movements_5min_1600_1800_recent_midweek.dat
+python %DTA_CODE_DIR%\scripts\visualizeDTAResults.py . %DYNAMEQ_NET_PREFIX% 15 link15min.csv movement15min.csv %COUNT_LOCATION% counts_links_15min_1600_1830_recent_midweek.dat counts_movements_15min_1600_1830_recent_midweek.dat counts_movements_5min_1600_1800_recent_midweek.dat
 :: primary output: link15min.csv movement15min.csv
 :: log     output: visualizeDTAResults.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
@@ -37,7 +43,7 @@ IF ERRORLEVEL 1 goto done
 :: 2) export the 60-minute a CSV file
 ::
 :export15MinCounts
-python %DTA_CODE_DIR%\scripts\visualizeDTAResults.py . %DYNAMEQ_NET_PREFIX% 60 link60min.csv movement60min.csv X:\lmz\dta\clean counts_links_15min_1600_1830_recent_midweek.dat counts_movements_15min_1600_1830_recent_midweek.dat counts_movements_5min_1600_1800_recent_midweek.dat
+python %DTA_CODE_DIR%\scripts\visualizeDTAResults.py . %DYNAMEQ_NET_PREFIX% 60 link60min.csv movement60min.csv %COUNT_LOCATION% counts_links_15min_1600_1830_recent_midweek.dat counts_movements_15min_1600_1830_recent_midweek.dat counts_movements_5min_1600_1800_recent_midweek.dat
 :: primary output: link60min.csv movement60min.csv
 :: log     output: visualizeDTAResults.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
