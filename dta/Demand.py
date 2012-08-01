@@ -36,7 +36,7 @@ class Demand(object):
 
     @classmethod
     def readCubeODTable(cls, fileName, net, vehicleClassName, 
-                        startTime, endTime):
+                        startTime, endTime, timeStep, demandPortion):
         """
         Reads the demand (linear format) from the input csv file and returns a demand instance.
         * *fileName* is a csv file with the fields: "Origin, Destination, <vehicle class name>[demand]"
@@ -44,9 +44,10 @@ class Demand(object):
         * *vehicleClassName* is the vehicle class that you want to read from the input csv and should correspond to the names of the vehicle classes 
         * *startTime* and *endTime* are dta.Utils.Time instances 
         """
-
-        timeSpan = endTime - startTime 
-        demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
+        timeSpan = endTime - startTime
+        demand = Demand(net, vehicleClassName, startTime, endTime, timeStep)
+        #demand = Demand(net, vehicleClassName, startTime, endTime, timeSpan)
+        dta.DtaLogger.info("Writing demand for startTime %s, endTime %s, and timeStep %s" % (startTime.strftime("%H:%M"), endTime.strftime("%H:%M"), timeStep.strftime("%H:%M")))    
         totTrips = 0
         numIntrazonalTrips = 0
         inputStream = open(fileName, "r")
@@ -55,7 +56,7 @@ class Demand(object):
             
             origin = int(record["O"])
             destination = int(record["D"])
-            trips = float(record[vehicleClassName])
+            trips = demandPortion*float(record[vehicleClassName])
             totTrips += trips
             tripsInHourlyFlows = trips * (60.0 / timeSpan.getMinutes())
             
@@ -66,16 +67,15 @@ class Demand(object):
                 destCent, dist = getClosestCentroid(net, origCent)
                 tripsIntrazonal = tripsInHourlyFlows/2
                 tripsBefore = demand.getTotalNumTrips()
-                tripsOD = demand.getValue(endTime, origCent.getId(), destCent.getId())
-                tripsDO = demand.getValue(endTime, destCent.getId(), origCent.getId())
-                tripsOD += tripsIntrazonal
-                tripsDO += tripsIntrazonal
-                demand.setValue(endTime, origCent.getId(), destCent.getId(), tripsOD)
-                demand.setValue(endTime, destCent.getId(), origCent.getId(), tripsDO)
-                if abs(demand.getTotalNumTrips() - trips - tripsBefore)>0.05:
-                    dta.DtaLogger.error("Trips before intrazonal = %f, trips added = %f, trips after intrazonal = %f" % (tripsBefore,trips, demand.getTotalNumTrips()))
-                dist = dist/5280
-                dta.DtaLogger.debug("Assigning %f intrazonal trips from zone %s to zone %s, %8.4f miles away." % (tripsInHourlyFlows,origCent.getId(),destCent.getId(),dist))
+                for i,timeSlice in enumerate(demand._timePeriods):
+                    tripsOD = demand.getValue(timeSlice, origCent.getId(), destCent.getId())
+                    tripsDO = demand.getValue(timeSlice, destCent.getId(), origCent.getId())
+                    tripsOD += tripsIntrazonal
+                    tripsDO += tripsIntrazonal
+                    demand.setValue(timeSlice, origCent.getId(), destCent.getId(), tripsOD)
+                    demand.setValue(timeSlice, destCent.getId(), origCent.getId(), tripsDO)
+                #dist = dist/5280
+                #dta.DtaLogger.debug("Assigning %f intrazonal trips from zone %s to zone %s, %8.4f miles away." % (tripsInHourlyFlows,origCent.getId(),destCent.getId(),dist))
                 numIntrazonalTrips += trips
                 continue
             if not net.hasCentroidForId(origin):
@@ -84,15 +84,16 @@ class Demand(object):
             if not net.hasCentroidForId(destination):
                 dta.DtaLogger.error("Destination zone %s does not exist" % destination)
                 continue
-            tripsOD = demand.getValue(endTime, origin, destination)
-            tripsOD += tripsInHourlyFlows
-            demand.setValue(endTime, origin, destination, tripsOD)
+            for i,timeSlice in enumerate(demand._timePeriods):
+                tripsOD = demand.getValue(timeSlice, origin, destination)
+                tripsOD += tripsInHourlyFlows
+                demand.setValue(timeSlice, origin, destination, tripsOD)
 
         dta.DtaLogger.info("The cube table has the following fields: %s" % ",".join(record.keys()))
           
         dta.DtaLogger.info("Read %10.2f %-16s from %s" % (totTrips, "%s TRIPS" % vehicleClassName, fileName))
         if numIntrazonalTrips > 0:
-            dta.DtaLogger.error("Reassigned intrazonal Trips %f" % numIntrazonalTrips)
+            dta.DtaLogger.info("Reassigned intrazonal Trips %f" % numIntrazonalTrips)
         if totTrips - demand.getTotalNumTrips() > 1:
             dta.DtaLogger.error("The total number of trips in the Cube table = %d not equal to the number of trips transfered to Dynameq = %d." % (totTrips,demand.getTotalNumTrips()))
                     
@@ -242,7 +243,7 @@ class Demand(object):
         """
         return self._demandTable[timeLabel, origin, destination]
 
-    def writeDynameqTable(self, fileName, format='full'):
+    def writeDynameqTable(self, outputStream, format='full'):
         """
         Write the demand in the dynameq format
         .. todo:: implement linear writing
@@ -251,32 +252,32 @@ class Demand(object):
         if format != 'full':
             raise DtaError("Unimplemented Matrix Format specified: %s" % (format))
             
-        FORMAT_LINEAR    = 'FORMAT:linear'
-        FORMAT_FULL      = 'FORMAT:full'    
-        HEADER_LINE1     = '*DEMAND MATRIX ASCII FILE [FULL FORMAT]- GENERATED'
-        VEHCLASS_SECTION = 'VEH_CLASS'
-        DEFAULT_VEHCLASS = 'Default'
-        DATA_SECTION     = 'DATA'
+##        FORMAT_LINEAR    = 'FORMAT:linear'
+##        FORMAT_FULL      = 'FORMAT:full'    
+##        HEADER_LINE1     = '*DEMAND MATRIX ASCII FILE [FULL FORMAT]- GENERATED'
+##        VEHCLASS_SECTION = 'VEH_CLASS'
+##        DEFAULT_VEHCLASS = 'Default'
+##        DATA_SECTION     = 'DATA'
         SLICE_SECTION    = 'SLICE'
-        
-        outputStream = open(fileName, "w") 
-
-        outputStream.write("<DYNAMEQ>\n<VERSION_1.7>\n<MATRIX_FILE>\n")
-        outputStream.write('%s %s %s\n' % ("Created by python DTA by SFCTA", 
-                                           datetime.datetime.now().strftime("%x"), 
-                                           datetime.datetime.now().strftime("%X")))
-        if format == 'full':
-            outputStream.write('%s\n' % FORMAT_FULL)
-        elif format == 'linear':
-            outputStream.write('%s\n' % FORMAT_LINEAR)
-        else:
-             raise DtaError("Don't understand Dynameq Output Matrix Format: %s" % (format))
-             
-        outputStream.write('%s\n' % VEHCLASS_SECTION)
-        outputStream.write('%s\n' % self.vehClassName)
-        outputStream.write('%s\n' % DATA_SECTION)
-        outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
-                                         self.endTime.strftime("%H:%M")))
+##        
+##        outputStream = open(fileName, "w") 
+##
+##        outputStream.write("<DYNAMEQ>\n<VERSION_1.7>\n<MATRIX_FILE>\n")
+##        outputStream.write('%s %s %s\n' % ("Created by python DTA by SFCTA", 
+##                                           datetime.datetime.now().strftime("%x"), 
+##                                           datetime.datetime.now().strftime("%X")))
+##        if format == 'full':
+##            outputStream.write('%s\n' % FORMAT_FULL)
+##        elif format == 'linear':
+##            outputStream.write('%s\n' % FORMAT_LINEAR)
+##        else:
+##             raise DtaError("Don't understand Dynameq Output Matrix Format: %s" % (format))
+##             
+##        outputStream.write('%s\n' % VEHCLASS_SECTION)
+##        outputStream.write('%s\n' % self.vehClassName)
+##        outputStream.write('%s\n' % DATA_SECTION)
+##        outputStream.write("%s\n%s\n" % (self.startTime.strftime("%H:%M"),
+##                                         self.endTime.strftime("%H:%M")))
 
         timeStepInMin = self.timeStep.getMinutes()
 
@@ -291,7 +292,7 @@ class Demand(object):
                 outputStream.write("%d\t%s\n" % (cent, "\t".join("%.2f" % elem for elem in _npyArray[i, j, :])))                
                 
 
-        outputStream.close()
+##        outputStream.close()
 
     def __eq__(self, other):
         """
