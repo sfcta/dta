@@ -440,14 +440,14 @@ if __name__ == "__main__":
                         for path_node_A, path_node_B in itertools.izip(path_nodes, path_nodes[1:]):
                             node_num_list.append(path_node_B.getId())
                             newlink = net.getLinkForNodeIdPair(path_node_A.getId(), path_node_B.getId())
-                            newseg  = dta_transit_line.addSegment(newlink, 0, label="")
+                            newseg  = dta_transit_line.addSegment(newlink, 0, label="nostop")
         
                     # add this link
                     if phase == 'createtransit':
                         dta_transit_line.addSegment(stop_roadlink,
                                                     label="%s,%5.4f" % (stopid, stopid_to_link[stopid][5]),
                                                     lane=dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED,
-                                                    dwell=30, # todo: put in a better default
+                                                    dwell=15, # todo: put in a better default
                                                     stopside=dta.TransitSegment.STOP_OUTSIDE)
                     prev_roadlink = stop_roadlink
                     prev_stopid   = stopid
