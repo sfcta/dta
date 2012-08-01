@@ -57,7 +57,7 @@ def readFastTripsOutput(filename):
         if len(colname_to_colidx) == 0:
             for colidx in range(len(line_parts)):
                 colname_to_colidx[line_parts[colidx]] = colidx
-            print colname_to_colidx
+            # print colname_to_colidx
             continue
         
         # store the mapping
@@ -111,7 +111,10 @@ if __name__ == "__main__":
         
         for transit_seg in transitline.iterSegments():
             # no stop
-            if transit_seg.label == "nostop" or transit_seg.label.startswith("label"): continue
+            if transit_seg.label == "nostop": continue
+            if transit_seg.label.startswith("label"): 
+                transit_seg.label = "nostop"
+                continue
             
             # get stopid
             label_parts = transit_seg.label.split(",")
@@ -122,8 +125,9 @@ if __name__ == "__main__":
             stopid = label_parts[0]
 
             if (tripid,stopid) not in tripstop_to_dwell:
-                dta.DtaLogger.error("trip/stop (%10s, %10s) not found in FastTrips lookup for dwell; skipping." %
+                dta.DtaLogger.error("trip/stop (%10s, %10s) not found in FastTrips lookup for dwell; zeroing." %
                                     (tripid, stopid))
+                transit_seg.dwell = 0
                 dwell_notupdated += 1
                 continue
             
