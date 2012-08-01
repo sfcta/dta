@@ -28,6 +28,8 @@ class TransitSegment(object):
     """
     #: If the transit lane is unspecified use this for the *lane* arg to :py:meth:`TransitSegment.__init__`
     TRANSIT_LANE_UNSPECIFIED = 0
+    #: Outside lane
+    TRANSIT_LANE_OUTSIDE = 1
     
     #: What do these mean?
     STOP_EXIT_LANE  = 0
@@ -88,33 +90,63 @@ class TransitLine(object):
 
     @classmethod
     def read(cls, net, fileName):
-        """Generator function that yields TransitLine objects 
-        read from the input fileName"""
+        """
+        Generator function that yields TransitLine objects 
+        read from the input fileName
+        """
+        # non-whitespace/quote string OR
+        # quoted string
+        token_re = re.compile('([^" ]+)|"([^"]*)"')
+        
         inputStream = open(fileName, 'r')
+        # skip metadata - lines starting with "<"
+        while True:
+            pos = inputStream.tell()
+            line = inputStream.readline()
+            
+            # done with metadata; go back
+            if line[0] != "<":
+                inputStream.seek(pos)
+                break
 
-        for trLine in iterRecords(inputStream, is_separator=re.compile(r'^LINE.*'),
-                                     is_comment = re.compile(r'^ *\*'),
-                                     joiner = lambda line:line):
-            transitLineId, lineLabel, litype, vtype, stime = trLine[1].strip().split()
-            hwy, dep = trLine[2].strip().split('\t')
+        for trLine in dta.Utils.parseTextRecord(inputStream, is_separator=re.compile(r'^LINE.*'),
+                                                is_comment = re.compile(r'^ *\*'),
+                                                joiner = lambda line:line):
+            # skip trLine[0] = "LINE"
+            line_tokens         = token_re.findall(trLine[1])
+            hway_tokens         = token_re.findall(trLine[2])
+            headway_time        = dta.Time.readFromString(hway_tokens[0][0])
 
-            transitLine = TransitLine(net, transitLineId, lineLabel, litype, vtype, stime, hwy, int(dep))
+            transit_line_id     = int(line_tokens[0][0])
+            transit_line_label  = line_tokens[1][1]
+            transitLine = TransitLine(net, id=transit_line_id, label=transit_line_label,
+                                      litype=int(line_tokens[2][0]),
+                                      vtype=line_tokens[3][0],
+                                      stime=dta.Time.readFromString(line_tokens[4][0]),
+                                      level=int(line_tokens[5][0]),
+                                      active=int(line_tokens[6][0]),
+                                      hway=headway_time.getMinutes(),
+                                      dep=int(hway_tokens[1][0]))
 
             for line in trLine[4:]:
-                id_, start, end, label, lane, dwell, stopside = line.strip().split()
+                seg_tokens = token_re.findall(line)
+                
                 try:
-                    link = net.getLink(start, end)
+                    link = net.getLinkForNodeIdPair(int(seg_tokens[1][0]), int(seg_tokens[2][0]))
                 except dta.DtaError, e:
-                    logging.error('Transit line %s with id: %s. %s' % (lineLabel, transitLineId, str(e)))
+                    logging.error('Transit line %s with id: %s. %s' % (seg_tokens[3][0], transit_line_id, str(e)))
                     continue
-                lane = int(lane)
-                stopside = int(stopside)
-                if lane > link.lanes:
-                    raise dta.DtaError("Transit Line %s. The the lane the bus stops %d"
-                                           "cannot be greater than the number of lanes %d on "
-                                           "the link" % (lineLabel, lane, link.lanes))
+                seg_label   = seg_tokens[3][1]
+                lane        = int(seg_tokens[4][0])
+                dwell       = float(seg_tokens[5][0])
+                stopside    = int(seg_tokens[6][0])
+                
+                if lane > link.getNumLanes():
+                    raise dta.DtaError("Transit Line %s: The the lane the bus stops %d"
+                                       "cannot be greater than the number of lanes %d on "
+                                       "the link" % (transit_line_label, lane, link.getNumLanes()))
 
-                transitLine.addSegment(link, float(dwell), lane=lane, stopside=stopside)
+                transitLine.addSegment(link, dwell=dwell, label=seg_label, lane=lane, stopside=stopside)
             yield transitLine
 
         inputStream.close()
@@ -181,7 +213,8 @@ class TransitLine(object):
         return line_comment + line_str + headway_comment + headway + seg_str
     
 
-    def addSegment(self, link, dwell, label=None, lane=1, stopside=TransitSegment.STOP_EXIT_LANE, position=-1):
+    def addSegment(self, link, dwell, label=None, lane=TransitSegment.TRANSIT_LANE_UNSPECIFIED, 
+                   stopside=TransitSegment.STOP_EXIT_LANE, position=-1):
         """
         Create a :py:class:`TransitSegment` instance with the given information and add it to this
         line.

@@ -25,41 +25,6 @@ import sys
 from collections import defaultdict
 from pyparsing import *
 
-def iterRecords(iterable, is_separator=re.compile(r"^a"), 
-                is_comment = re.compile(r"^#"), 
-                joiner=lambda tokens: " ".join(tokens)): 
-
-
-    """Read a text file record by record where a record is defined
-    in multiple sequential lines and return a string concatenating 
-    all the lines of a record into one line.The provided function 
-    is_separator identifies the lines which separate records. The 
-    provided is_comment function identies comment lines that ought to 
-    be bypased. The provided joiner function is used to combine
-    all the lines of a record into one string"""
-
-    record = []
-    for line in iterable:
-        line = line.strip()
-        if is_comment.match(line):
-            continue
-        if is_separator.match(line):
-            if record:
-                if isinstance(joiner(record), str):
-                    if is_separator.match(joiner(record)):
-                        yield joiner(record)
-                    record = []
-                else:
-                    yield record
-                    record = [] # remove if record headers do
-                            # not serve as record separators
-            record.append(line)
-        else:
-            record.append(line)
-    if record:
-        yield joiner(record)
-
-
 
 def createTPPlusTransitRouteParser():
     """Create two parsers on the the header and one for the body containing hte nodes
@@ -209,7 +174,7 @@ class TPPlusTransitRoute(object):
     def read(cls, net, fileName, includeOnlyNetNodes=False):
 
         inputStream = open(fileName, 'r')
-        for record in iterRecords(inputStream, is_separator=re.compile(r'^LINE NAME')):
+        for record in dta.Utils.parseTextRecord(inputStream, is_separator=re.compile(r'^LINE NAME')):
 
             transitRoute = parseRoute(net, record, includeOnlyNetNodes=includeOnlyNetNodes)
 

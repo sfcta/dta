@@ -31,7 +31,8 @@ __license__     = """
     You should have received a copy of the GNU General Public License
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
-import copy  
+import copy
+import re
 import sys
 import datetime
 
@@ -42,6 +43,46 @@ from itertools import izip
 from collections import defaultdict
 import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
+
+def parseTextRecord(iterable, is_separator=re.compile(r"^a"), 
+                is_comment = re.compile(r"^#"), 
+                joiner=lambda tokens: " ".join(tokens)): 
+
+
+    """
+    Read a text file record by record where a record is defined
+    in multiple sequential lines and return a string concatenating 
+    all the lines of a record into one line. 
+    
+    * *is_separator* is a regex instance that identifies the lines which separate records. 
+    * *is_comment* is a regex instance that identifies comment lines that ought to 
+      be bypassed. 
+    * *joiner*  is a function used on the list of strings
+    
+    Yields the result of *joiner* on the list of strings.
+    """
+
+    record = []
+    for line in iterable:
+        line = line.strip()
+        if is_comment.match(line):
+            continue
+        if is_separator.match(line):
+            if record:
+                if isinstance(joiner(record), str):
+                    if is_separator.match(joiner(record)):
+                        yield joiner(record)
+                    record = []
+                else:
+                    yield record
+                    record = [] # remove if record headers do
+                            # not serve as record separators
+            record.append(line)
+        else:
+            record.append(line)
+    if record:
+        yield joiner(record)
+
 
 def militaryTimeToDateTime(militaryTime):
     """
@@ -435,11 +476,16 @@ class Time(datetime.time):
     @classmethod
     def readFromString(cls, timeAsString):
         """
-        Read a string representing time in the format %H:%M e.g. 16:30
+        Read a string representing time in the format %H:%M or %H:%M:%S e.g. 16:30
         and return a time object
-        """
-        startTimeDT = datetime.datetime.strptime(timeAsString, "%H:%M")  
-        return Time(startTimeDT.hour, startTimeDT.minute)
+        """        
+        if timeAsString.count(":") == 1:
+            startTimeDT = datetime.datetime.strptime(timeAsString, "%H:%M")
+            return Time(startTimeDT.hour, startTimeDT.minute)
+        
+        startTimeDT = datetime.datetime.strptime(timeAsString, "%H:%M:%S")
+        return Time(startTimeDT.hour, startTimeDT.minute, startTimeDT.second)
+        
 
     @classmethod
     def fromMinutes(cls, minutes):
