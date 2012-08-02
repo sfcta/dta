@@ -205,20 +205,52 @@ if __name__ == '__main__':
     centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
                         7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
                         8339,8832])     # externals
-    # Derived in Y:\dta\TrafficFlowParameters.xlsx
-    # Updated for freeways and expressways based on Caltrans sensors for freeways in SF
-    # Updated for locals/collectors and arterials based on MTA speed data
+   
+    # Calculated for freeways and expressways based on Caltrans sensors for freeways in SF
+    # Updated for locals/collectors and arterials based on second round MTA speed data
+    # Decreased locals/collectors' FFS (especially in residential areas)to account for FF Sapce-Mean-Speed along acc/dec segments before and after stop signs
+    # Not to be used with generelized cost function : Expression_1
     speedLookup = { \
         'FT1 AT0':35, 'FT1 AT1':40, 'FT1 AT2':45, 'FT1 AT3':45, 'FT1 AT4':55, 'FT1 AT5':55, 
         'FT2 AT0':60, 'FT2 AT1':65, 'FT2 AT2':65, 'FT2 AT3':65, 'FT2 AT4':70, 'FT2 AT5':70, 
         'FT3 AT0':60, 'FT3 AT1':65, 'FT3 AT2':65, 'FT3 AT3':65, 'FT3 AT4':65, 'FT3 AT5':65, 
-        'FT4 AT0':25, 'FT4 AT1':25, 'FT4 AT2':30, 'FT4 AT3':30, 'FT4 AT4':35, 'FT4 AT5':35, 
+        'FT4 AT0':23, 'FT4 AT1':23, 'FT4 AT2':20, 'FT4 AT3':20, 'FT4 AT4':35, 'FT4 AT5':35, 
         'FT5 AT0':30, 'FT5 AT1':30, 'FT5 AT2':35, 'FT5 AT3':35, 'FT5 AT4':40, 'FT5 AT5':40, 
-        'FT7 AT0':30, 'FT7 AT1':30, 'FT7 AT2':35, 'FT7 AT3':35, 'FT7 AT4':40, 'FT7 AT5':40, 
-        'FT11 AT0':25, 'FT11 AT1':25, 'FT11 AT2':30, 'FT11 AT3':30, 'FT11 AT4':35, 'FT11 AT5':35, 
-        'FT12 AT0':30, 'FT12 AT1':30, 'FT12 AT2':35, 'FT12 AT3':35, 'FT12 AT4':40, 'FT12 AT5':40, 
-        'FT15 AT0':30, 'FT15 AT1':30, 'FT15 AT2':35, 'FT15 AT3':35, 'FT15 AT4':50, 'FT15 AT5':50, 
+        'FT7 AT0':28, 'FT7 AT1':28, 'FT7 AT2':30, 'FT7 AT3':32, 'FT7 AT4':40, 'FT7 AT5':40, 
+        'FT11 AT0':18, 'FT11 AT1':18, 'FT11 AT2':18, 'FT11 AT3':15, 'FT11 AT4':35, 'FT11 AT5':35, 
+        'FT12 AT0':26, 'FT12 AT1':26, 'FT12 AT2':28, 'FT12 AT3':30, 'FT12 AT4':40, 'FT12 AT5':40, 
+        'FT15 AT0':30, 'FT15 AT1':30, 'FT15 AT2':33, 'FT15 AT3':36, 'FT15 AT4':50, 'FT15 AT5':50, 
     }
+    # Rise dependent response times from traffic flow study
+    responseTimeLookup = { \
+     	'FT1 AT0 FLAT' : 1.2,	'FT1 AT1 FLAT' : 1.2,	'FT1 AT2 FLAT' : 1.2,	'FT1 AT3 FLAT' : 1.2,	'FT1 AT4 FLAT' : 1.2,	'FT1 AT5 FLAT' : 1.2,
+     	'FT2 AT0 FLAT' : 1.1,	'FT2 AT1 FLAT' : 1.1,	'FT2 AT2 FLAT' : 1.1,	'FT2 AT3 FLAT' : 1.1,	'FT2 AT4 FLAT' : 1.1,	'FT2 AT5 FLAT' : 1.1,
+    	'FT3 AT0 FLAT' : 1.1,	'FT3 AT1 FLAT' : 1.1,	'FT3 AT2 FLAT' : 1.1,	'FT3 AT3 FLAT' : 1.1,	'FT3 AT4 FLAT' : 1.1,	'FT3 AT5 FLAT' : 1.1,
+    	'FT4 AT0 FLAT' : 1.2,	'FT4 AT1 FLAT' : 1.2,	'FT4 AT2 FLAT' : 1.2,	'FT4 AT3 FLAT' : 1.2,	'FT4 AT4 FLAT' : 1.2,	'FT4 AT5 FLAT' : 1.2,
+    	'FT5 AT0 FLAT' : 1.2,	'FT5 AT1 FLAT' : 1.2,	'FT5 AT2 FLAT' : 1.2,	'FT5 AT3 FLAT' : 1.2,	'FT5 AT4 FLAT' : 1.2,	'FT5 AT5 FLAT' : 1.2,
+    	'FT7 AT0 FLAT' : 1.2,	'FT7 AT1 FLAT' : 1.2,	'FT7 AT2 FLAT' : 1.2,	'FT7 AT3 FLAT' : 1.2,	'FT7 AT4 FLAT' : 1.2,	'FT7 AT5 FLAT' : 1.2,
+    	'FT11 AT0 FLAT' : 1.2,	'FT11 AT1 FLAT' : 1.2,	'FT11 AT2 FLAT' : 1.2,	'FT11 AT3 FLAT' : 1.2,	'FT11 AT4 FLAT' : 1.2,	'FT11 AT5 FLAT' : 1.2,
+	'FT12 AT0 FLAT' : 1.2,	'FT12 AT1 FLAT' : 1.2,	'FT12 AT2 FLAT' : 1.2,	'FT12 AT3 FLAT' : 1.2,	'FT12 AT4 FLAT' : 1.2,	'FT12 AT5 FLAT' : 1.2,
+    	'FT15 AT0 FLAT' : 1.2,	'FT15 AT1 FLAT' : 1.2,	'FT15 AT2 FLAT' : 1.2,	'FT15 AT3 FLAT' : 1.2,	'FT15 AT4 FLAT' : 1.2,	'FT15 AT5 FLAT' : 1.2,
+    	'FT1 AT0 UP' : 1.32,	'FT1 AT1 UP' : 1.32,	'FT1 AT2 UP' : 1.32,	'FT1 AT3 UP' : 1.32,	'FT1 AT4 UP' : 1.32,	'FT1 AT5 UP' : 1.32,
+    	'FT2 AT0 UP' : 1.1,	'FT2 AT1 UP' : 1.1,	'FT2 AT2 UP' : 1.1,	'FT2 AT3 UP' : 1.1,	'FT2 AT4 UP' : 1.1,	'FT2 AT5 UP' : 1.1,
+    	'FT3 AT0 UP' : 1.1,	'FT3 AT1 UP' : 1.1,	'FT3 AT2 UP' : 1.1,	'FT3 AT3 UP' : 1.1,	'FT3 AT4 UP' : 1.1,	'FT3 AT5 UP' : 1.1,
+    	'FT4 AT0 UP' : 1.32,	'FT4 AT1 UP' : 1.32,	'FT4 AT2 UP' : 1.32,	'FT4 AT3 UP' : 1.32,	'FT4 AT4 UP' : 1.32,	'FT4 AT5 UP' : 1.32,
+    	'FT5 AT0 UP' : 1.32,	'FT5 AT1 UP' : 1.32,	'FT5 AT2 UP' : 1.32,	'FT5 AT3 UP' : 1.32,	'FT5 AT4 UP' : 1.32,	'FT5 AT5 UP' : 1.32,
+    	'FT7 AT0 UP' : 1.32,	'FT7 AT1 UP' : 1.32,	'FT7 AT2 UP' : 1.32,	'FT7 AT3 UP' : 1.32,	'FT7 AT4 UP' : 1.32,	'FT7 AT5 UP' : 1.32,
+    	'FT11 AT0 UP' : 1.32,	'FT11 AT1 UP' : 1.32,	'FT11 AT2 UP' : 1.32,	'FT11 AT3 UP' : 1.32,	'FT11 AT4 UP' : 1.32,	'FT11 AT5 UP' : 1.32,
+    	'FT12 AT0 UP' : 1.32,	'FT12 AT1 UP' : 1.32,	'FT12 AT2 UP' : 1.32,	'FT12 AT3 UP' : 1.32,	'FT12 AT4 UP' : 1.32,	'FT12 AT5 UP' : 1.32,
+    	'FT15 AT0 UP' : 1.32,	'FT15 AT1 UP' : 1.32,	'FT15 AT2 UP' : 1.32,	'FT15 AT3 UP' : 1.32,	'FT15 AT4 UP' : 1.32,	'FT15 AT5 UP' : 1.32,
+    	'FT1 AT0 DOWN' : 1.08,	'FT1 AT1 DOWN' : 1.08,	'FT1 AT2 DOWN' : 1.08,	'FT1 AT3 DOWN' : 1.08,	'FT1 AT4 DOWN' : 1.08,	'FT1 AT5 DOWN' : 1.08,
+    	'FT2 AT0 DOWN' : 1.1,	'FT2 AT1 DOWN' : 1.1,	'FT2 AT2 DOWN' : 1.1,	'FT2 AT3 DOWN' : 1.1,	'FT2 AT4 DOWN' : 1.1,	'FT2 AT5 DOWN' : 1.1,
+    	'FT3 AT0 DOWN' : 1.1,	'FT3 AT1 DOWN' : 1.1,	'FT3 AT2 DOWN' : 1.1,	'FT3 AT3 DOWN' : 1.1,	'FT3 AT4 DOWN' : 1.1,	'FT3 AT5 DOWN' : 1.1,
+    	'FT4 AT0 DOWN' : 1.08,	'FT4 AT1 DOWN' : 1.08,	'FT4 AT2 DOWN' : 1.08,	'FT4 AT3 DOWN' : 1.08,	'FT4 AT4 DOWN' : 1.08,	'FT4 AT5 DOWN' : 1.08,
+    	'FT5 AT0 DOWN' : 1.08,	'FT5 AT1 DOWN' : 1.08,	'FT5 AT2 DOWN' : 1.08,	'FT5 AT3 DOWN' : 1.08,	'FT5 AT4 DOWN' : 1.08,	'FT5 AT5 DOWN' : 1.08,
+    	'FT7 AT0 DOWN' : 1.08,	'FT7 AT1 DOWN' : 1.08,	'FT7 AT2 DOWN' : 1.08,	'FT7 AT3 DOWN' : 1.08,	'FT7 AT4 DOWN' : 1.08,	'FT7 AT5 DOWN' : 1.08,
+    	'FT11 AT0 DOWN' : 1.08,	'FT11 AT1 DOWN' : 1.08,	'FT11 AT2 DOWN' : 1.08,	'FT11 AT3 DOWN' : 1.08,	'FT11 AT4 DOWN' : 1.08,	'FT11 AT5 DOWN' : 1.08,
+    	'FT12 AT0 DOWN' : 1.08,	'FT12 AT1 DOWN' : 1.08,	'FT12 AT2 DOWN' : 1.08,	'FT12 AT3 DOWN' : 1.08,	'FT12 AT4 DOWN' : 1.08,	'FT12 AT5 DOWN' : 1.08,
+    	'FT15 AT0 DOWN' : 1.08,	'FT15 AT1 DOWN' : 1.08,	'FT15 AT2 DOWN' : 1.08,	'FT15 AT3 DOWN' : 1.08,	'FT15 AT4 DOWN' : 1.08,	'FT15 AT5 DOWN' : 1.08,
+  }    
     # see http://code.google.com/p/dta/wiki/NetworkDescriptionForSF
     ftToDTALookup = {"2":1,
                      "3":2,
@@ -250,6 +282,8 @@ if __name__ == '__main__':
                           "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3 ",
                           "VALUETOLL_FLAG","PASSTHRU",
                           "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
+                          "TSVA","TSIN","BIKE_CLASS","PER_RISE",
+     #                    "ONEWAY","PROJ","DTA_EDIT_FL","TOLLTIME",
                           ],
        centroidIds                      = centroidIds,
        useOldNodeForId                  = True,
@@ -263,7 +297,7 @@ if __name__ == '__main__':
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
        linkEffectiveLengthFactorEvalStr = str(linkEffectiveLengthFactor), 
-       linkResponseTimeFactorEvalStr    = "1.1 if FT=='2' else 1.2",  # estimated based on saturation flow analysis on survey data and PeMS freeway sensors
+       linkResponseTimeFactorEvalStr    = "1 if FT=='6' else float(responseTimeLookup['FT'+FT+' AT'+AT + (' UP' if (float(PER_RISE) > 0.05) else (' FLAT' if (float(PER_RISE) > -0.05) else ' DOWN'))])",
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
@@ -272,10 +306,10 @@ if __name__ == '__main__':
        linkSkipEvalStr                  = "FT=='13'", # skip bike-only
        additionalLocals                 = {'ftToDTALookup':ftToDTALookup,
                                            'speedLookup':speedLookup,
+                                           'responseTimeLookup':responseTimeLookup,
                                            })
-
     # Apply the transit lanes
-    #createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
+    # createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
         
     # create the movements for the network for all vehicles
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
