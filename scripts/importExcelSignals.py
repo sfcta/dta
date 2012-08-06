@@ -237,80 +237,76 @@ class SignalData(object):
             cGreenMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "G"] 
             cYellowMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "Y"]
             cRedMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "R"]
+
             gMatches = 0
+            yMatches = 0
+            rMatches = 0
             if pPhase:
                 for gMovs in cGreenMovs:
-                    if gMovs in pGreenMovs:
+                    if gMovs in pPhase["Movs"]:
                         gMatches += 1
-                
-                if gMatches !=0:
-                    cActiveMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "Y" or phasingData[gMov, timeIndex1] == "G" ]
+                for yMovs in cYellowMovs:
+                    if yMovs in pPhase["Movs"]:
+                        yMatches += 1
+                for rMovs in cRedMovs:
+                    if rMovs in pPhase["Movs"]:
+                        rMatches += 1
+                            
+            else:
+                pPhase["Movs"] = cGreenMovs
+                pPhase["green"] = dur1
+                pPhase["yellow"] = 0
+                pPhase["allRed"] = 0
+                continue
+
+            if len(cGreenMovs) + len(cYellowMovs) > (gMatches + yMatches):
+                phases.append(pPhase)
+                pPhase = {}
+                pPhase["Movs"] = cGreenMovs
+                pPhase["green"] = dur1
+                pPhase["yellow"] = 0
+                pPhase["allRed"] = 0
+
+            elif gMatches + yMatches == len(pPhase["Movs"]):
+                if yMatches > 0:
+                    pPhase["yellow"] += dur1
+                elif rMatches > 0:
+                    pPhase["allRed"] += dur1
                 else:
-                    cActiveMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "G"]
+                    pPhase["green"] += dur1
+            elif gMatches + yMatches < len(pPhase["Movs"]) and gMatches + yMatches > 0:
+                phases.append(pPhase)
+                pPhase = {}
+                if yMatches == 0:
+                    pPhase["Movs"] = cGreenMovs
+                    pPhase["green"] = dur1
+                    pPhase["yellow"] = 0
+                    pPhase["allRed"] = 0
+                else:
+                    pPhase["Movs"] = cYellowMovs
+                    pPhase["green"] = 0
+                    pPhase["yellow"] = dur1
+                    pPhase["allRed"] = 0
+            elif rMatches == len(pPhase["Movs"]) and not cGreenMovs:
+                pPhase["allRed"] += dur1
+            elif rMatches == len(pPhase["Movs"]) and cGreenMovs:
+                phases.append(pPhase)
+                pPhase = {}
+                pPhase["Movs"] = cGreenMovs
+                pPhase["green"] = dur1
+                pPhase["yellow"] = 0
+                pPhase["allRed"] = 0
+                
             else:
-                cActiveMovs = [gMov for gMov in groupMovements if phasingData[gMov, timeIndex1] == "G"]
-
-            cPhase["Movs"] = cActiveMovs
-            if cGreenMovs:
-                cPhase["green"] = dur1
-                cPhase["yellow"] = 0
-                cPhase["allRed"] = 0
-            elif cYellowMovs and not cGreenMovs:
-                cPhase["green"] = 0
-                cPhase["yellow"] = dur1
-                cPhase["allRed"] = 0
-            elif cRedMovs and not cYellowMovs and not cGreenMovs:
-                cPhase["green"] = 0
-                cPhase["yellow"] = 0
-                cPhase["allRed"] = dur1
-
-            if pPhase:
-                if cGreenMovs:
-                    if pActiveMovs:
-                        if pActiveMovs == cActiveMovs:
-                            pPhase["green"] += cPhase["green"]
-                        else:
-                            phases.append(pPhase)
-                            #dta.DtaLogger.info("Card %s, movements %s, green time %f, yellow time %f, red time %f, phase %d" % (self.fileName, pPhase["Movs"], pPhase["green"], pPhase["yellow"], pPhase["allRed"], timeIndex1))
-                            pPhase = {}
-                            pPhase["Movs"] = cPhase["Movs"]
-                            pPhase["green"] = cPhase["green"]
-                            pPhase["yellow"] = cPhase["yellow"]
-                            pPhase["allRed"] = cPhase["allRed"]
-
-                    else:
-                        phases.append(pPhase)
-                        #dta.DtaLogger.info("Card %s, movements %s, green time %f, yellow time %f, red time %f, phase %d" % (self.fileName, pPhase["Movs"], pPhase["green"], pPhase["yellow"], pPhase["allRed"], timeIndex1))
-                        pPhase = {}
-                        pPhase["Movs"] = cPhase["Movs"]
-                        pPhase["green"] = cPhase["green"]
-                        pPhase["yellow"] = cPhase["yellow"]
-                        pPhase["allRed"] = cPhase["allRed"]
-                elif cPhase["yellow"] == dur1:
-                    if pYellowMovs == cYellowMovs:
-                        pPhase["yellow"] += cPhase["yellow"]
-                    else:
-                        pPhase["yellow"] = cPhase["yellow"]
-                elif cPhase["allRed"] == dur1:
-                    pPhase["allRed"] += cPhase["allRed"]
-            else:
-                pPhase["Movs"] = cPhase["Movs"]
-                pPhase["green"] = cPhase["green"]
-                pPhase["yellow"] = cPhase["yellow"]
-                pPhase["allRed"] = cPhase["allRed"]
-            pActiveMovs = []
-            pGreenMovs = []
-            pYellowMovs = []
-            pRedMovs = []
-            
-            pActiveMovs = cActiveMovs
-            pGreenMovs = cGreenMovs
-            pYellowMovs = cYellowMovs
-            pRedMovs = cRedMovs
+                phases.append(pPhase)
+                pPhase = {}
+                pPhase["Movs"] = cActiveMovs
+                pPhase["green"] = dur1
+                pPhase["yellow"] = 0
+                pPhase["allRed"] = 0
 
             if timeIndex1 == lastIndex:
                 phases.append(pPhase)
-                #dta.DtaLogger.info("Card %s, movements %s, green time %f, yellow time %f, red time %f, phase %d" % (self.fileName, pPhase["Movs"], pPhase["green"], pPhase["yellow"], pPhase["allRed"], timeIndex1))
             
         return phases
 
@@ -320,7 +316,7 @@ class SignalData(object):
         input hours. Otherwise it returns none
         """
         for cso, signalTiming in self.signalTiming.iteritems(): 
-            if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime:
+            if startTime >= signalTiming.startTime and startTime <= signalTiming.endTime:
                 return cso
 
         for cso, signalTiming in self.signalTiming.iteritems(): 
@@ -1009,6 +1005,10 @@ def cleanStreetName(streetName):
             newStreetName = streetName[:-3]
         if streetName.endswith(" AV"):
             newStreetName = streetName[:-3]
+        if " TO " in streetName:
+            cutOff = streetName.find(" TO ")
+            newStreetName = streetName[:cutOff]
+            
 
     for item in itemsToRemove:
         if item in newStreetName:
@@ -1090,11 +1090,11 @@ def mapStreetNamesForManuallyMappedNodes(network, cards):
         streetNames = card.streetNames        
         node = net.getNodeForId(card.mappedNodeId)
 
-        if len(node.getStreetNames()) != len(streetNames):
+        if len(node.getStreetNames(incoming=True, outgoing=False)) != len(streetNames):
             print card.fileName, "\t", card.mappedNodeId, "\t", node.getStreetNames(), "\t", streetNames
             continue
             
-        baseStreetNames = node.getStreetNames()
+        baseStreetNames = node.getStreetNames(incoming=True, outgoing=False)
         for bName, mName in izip(baseStreetNames, streetNames):
             if not difflib.get_close_matches(bName, [mName], 1, CUTOFF):
                 print card.fileName, "\t", card.mappedNodeId, "\t", node.getStreetNames(), "\t", streetNames, "\t", bName, "\t", mName
@@ -1126,7 +1126,7 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
         if node.getId() in mappedNodes.values():
             continue
         
-        baseStreetNames = node.getStreetNames()
+        baseStreetNames = node.getStreetNames(incoming=True, outgoing=False)
         baseStreetNames_cleaned = [cleanStreetName(bs) for bs in baseStreetNames]
         baseStreetNames_cleaned = set(baseStreetNames_cleaned)
         baseStreetNames_cleaned = sorted(baseStreetNames_cleaned)
@@ -1209,7 +1209,7 @@ def mapMovements(mec, baseNetwork):
         result = []
         for dir, dirIndicators in indicators.items():
             for indicator in dirIndicators:
-                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL" and gMovName != "NORTH POINT" and gMovName != "I-80 E OFF-RAMP":
+                if indicator in gMovName and gMovName != "SOUTH VAN NESS" and gMovName != "WEST PORTAL" and gMovName != "NORTH POINT" and gMovName != "I-80 E OFF-RAMP" and gMovName != "HWY 101 SOUTHBOUND RAMP":
                    result.append(dir)
                    break
        
@@ -1364,7 +1364,6 @@ def mapMovements(mec, baseNetwork):
             for mov in gMovements:
                 mec.mappedMovements[gMovName].append(mov.getId())
 
-
     index = defaultdict(int)
     ## Commented lines are from format change.  Original code parsed all of the signal cards, then mapped them, then created time phases.
     ## New code performs all processes on one excel card before moving to the next card.
@@ -1482,7 +1481,7 @@ def selectCSO(excelCard, startTime, endTime):
 ##        dta.DtaLogger.error("start time is %s, end time is %s" % (signalTiming.startTime,signalTiming.endTime))
     
     for signalTiming in excelCard.iterSignalTiming():
-        if startTime >= signalTiming.startTime and endTime <= signalTiming.endTime and signalTiming.endTime>signalTiming.startTime:
+        if startTime >= signalTiming.startTime and startTime <= signalTiming.endTime and signalTiming.endTime>signalTiming.startTime:
             return signalTiming
     for signalTiming in excelCard.iterSignalTiming():
         if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(0,0):
@@ -1490,7 +1489,6 @@ def selectCSO(excelCard, startTime, endTime):
     for signalTiming in excelCard.iterSignalTiming():
         if signalTiming.startTime == dta.Time(0,0) and signalTiming.endTime == dta.Time(23,59):
             return signalTiming
-
     return None
 
     ## Assocated with pickle testing not used   
@@ -1623,13 +1621,14 @@ def getPossibleLinkDirections(link):
 
     return tuple(result)                                                                                        
 
-def convertSignalToDynameq(net, node, card, planInfo):
+def convertSignalToDynameq(net, node, card, planInfo, startTime, endTime):
     """
     Convert the excel signal described by the card object to
     a Dynameq time plan and return it. The input planInfo
     object determines the time period of operation
     """
-    startTime, endTime = planInfo.getTimePeriod()
+## Commented this out so that start and end time can be specified based on type of signal while plan start and end are matched to scenario start and end
+    #startTime, endTime = planInfo.getTimePeriod()
     signalTiming = selectCSO(card,startTime, endTime)
     if signalTiming:
         cso = signalTiming.cso
@@ -1654,7 +1653,7 @@ def convertSignalToDynameq(net, node, card, planInfo):
     if startTime==dta.Time(0,0) and endTime == dta.Time(0,0):
         excelPhases = card.getPhases(startTime,endTime)
     else:
-        startTime, endTime= planInfo.getTimePeriod() 
+        #startTime, endTime= planInfo.getTimePeriod()
         excelPhases = card.getPhases(startTime, endTime)
     
     for excelPhase in excelPhases:
@@ -1760,7 +1759,7 @@ def createDynameqSignals(net, card, planInfo,startTime, endTime):
     nodeId = card.mappedNodeId
     node = net.getNodeForId(nodeId)
     try:
-        dPlan = convertSignalToDynameq(net, node, card, planInfo)
+        dPlan = convertSignalToDynameq(net, node, card, planInfo, startTime, endTime)
         dPlan.setPermittedMovements()            
         dPlan.validate()
                         
@@ -1868,7 +1867,7 @@ if __name__ == "__main__":
     allPlansSet=[]
     allMoreMatchesSet=[]
     nummatches = 0
-    planInfo = net.addPlanCollectionInfo(dta.Time.readFromString(START_TIME), dta.Time.readFromString(END_TIME), "excelSignalsToDynameq", "excel_signal_cards_imported_automatically")
+    planInfo = net.addPlanCollectionInfo(dta.Time.readFromString(scenario.startTime.strftime("%H:%M")), dta.Time.readFromString(scenario.endTime.strftime("%H:%M")), "excelSignalsToDynameq", "excel_signal_cards_imported_automatically")
 
     for fileName in os.listdir(EXCEL_DIR):
         excelCards = parseExcelCardsToSignalObjects(EXCEL_DIR,fileName)
@@ -1905,7 +1904,7 @@ if __name__ == "__main__":
     dta.DtaLogger.info("Number of cards are %d; Number of cards with movements are %d" % (len(cardsDone),len(cardsWithMove)))
     dta.DtaLogger.info("Number of time plans = %d" % len(allPlansSet))
     dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
-    
+
     net.write(".", "sf_signals")
 
     #net.writeLinksToShp("sf_signals_link")
