@@ -65,11 +65,13 @@ class Link(object):
         """
         return self._endNode
     
-    def euclideanLength(self):
+    def euclideanLength(self, includeShape=False):
         """
         Calculates the length based on simple Euclidean distance.
         
         This will be in the units specified by :py:attr:`Node.COORDINATE_UNITS`.
+        
+        *includeShape* is ignored in the generic case; the :py:class:`RoadLink` will use that arg.
         """
         return math.sqrt( ((self._startNode.getX()-self._endNode.getX())*(self._startNode.getX()-self._endNode.getX())) +
                           ((self._startNode.getY()-self._endNode.getY())*(self._startNode.getY()-self._endNode.getY())) )

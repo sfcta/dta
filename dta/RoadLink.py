@@ -118,6 +118,16 @@ class RoadLink(Link):
         self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
         self._obsCount = {}
+        
+    def createReverseLink(self, newid):
+        """
+        Instantiate and return a new link that is the reverse of this one.
+        """
+        return RoadLink(id=newid, startNode=self._endNode, endNode=self._startNode, reverseAttachedLinkId=self._id, 
+                        facilityType=self._facilityType, length=self._length,
+                        freeflowSpeed=self._freeflowSpeed, effectiveLengthFactor=self._effectiveLengthFactor,
+                        responseTimeFactor=self._responseTimeFactor, numLanes=self._numLanes,
+                        roundAbout=self._roundAbout, level=self._level, label=self._label, group=self._group)
 
     def _validateInputTimes(self, startTimeInMin, endTimeInMin):
         """Checks that the input times belong to the simulation window"""

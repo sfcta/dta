@@ -545,9 +545,13 @@ class ShortestPaths(object):
                         verticesToExamine.append(downstreamVertex)
 
 
+
     @classmethod
-    def labelSettingWithLabelsOnNodes(cls, graph, sourceVertex, endVertex):
+    def labelSettingWithLabelsOnNodes(cls, graph, sourceVertex, endVertex, includeVirtual=False, maxLabel=sys.float_info.max, 
+                                          filterRoadLinkEvalStr=None):
         """
+        .. TODO:: document new args
+        
         Implementation of Pape's shortest path
         using a deque. Vertices are inserted to the 
         left of the deque if they have been already 
@@ -568,40 +572,57 @@ class ShortestPaths(object):
         """
 
         for vertex in graph.iterNodes():
-            vertex.label        = sys.maxint
+            vertex.label        = sys.float_info.max
             vertex.alreadySet   = False
             vertex.predVertex   = None
             mincostVertex       = sourceVertex
 
         sourceVertex.label      = 0
+        
         verticesToExamine       = deque()
-        verticesSet             = deque()
-        verticesSet.appendleft(sourceVertex)
-        pivotVertex             = sourceVertex
-                
-        while pivotVertex != endVertex :
-            mincost = 0
-            pivotVertex = verticesSet.popleft()
+        nextPivotVertex         = sourceVertex
+        
+        # these are permanently labeled
+        labeledVertices           = set()
+        
+        while True:
+            
+            pivotVertex = nextPivotVertex
             pivotVertex.alreadySet = True
-
+            labeledVertices.add(pivotVertex)
+                        
+            # end condition if endVertex is passed
+            if endVertex and (pivotVertex == endVertex): break
+            # end condition if maxLabel is real
+            if pivotVertex.label > maxLabel: break
+            
             for edge in pivotVertex.iterOutgoingLinks():
                 
-                # VirtualLink instances are not included in the shortest path.  
-                if edge.isVirtualLink(): continue
+                # don't include VirtualLink instances unless specified
+                if not includeVirtual and edge.isVirtualLink(): continue
+                
+                # don't include the RoadLink instance if specified
+                localsdict = {}
+                localsdict['roadlink'] = edge
+                if edge.isRoadLink() and eval(filterRoadLinkEvalStr, globals(), localsdict): 
+                    dta.DtaLogger.debug("Skipping edge %10s with ft=%d" % (edge.getId(), edge.getFacilityType()))
+                    continue
+                
                 downstreamVertex = edge.getEndNode()
 
-                # VirtualNode instances are not included in the shortest path.
-                if downstreamVertex.isVirtualNode(): continue
+                # don't include VirtualNode instances unless specified
+                if not includeVirtual and downstreamVertex.isVirtualNode(): continue
                 
                 # The edge cost used is given by :py:meth:`Link.euclideanLength`.
-                newLabel = pivotVertex.label + edge.euclideanLength()
+                newLabel = pivotVertex.label + edge.euclideanLength(includeShape=True)
                 
                 if newLabel < downstreamVertex.label:
                     downstreamVertex.label = newLabel
                     downstreamVertex.predVertex = pivotVertex
                     if not downstreamVertex.alreadySet:
                         verticesToExamine.appendleft(downstreamVertex)
-                        
+
+            mincost = 0                        
             for updateVertex in verticesToExamine:
                 if mincost==0:
                     mincost = updateVertex.label
@@ -611,9 +632,9 @@ class ShortestPaths(object):
                         mincost = updateVertex.label
                         mincostVertex = updateVertex
             verticesToExamine.remove(mincostVertex)
-            verticesSet.appendleft(mincostVertex)
+            nextPivotVertex = mincostVertex
                 
-
+        return labeledVertices
 
     @classmethod
     def getShortestPathBetweenLinks(cls, graph, sourceLink, destinationLink, runSP=False):
