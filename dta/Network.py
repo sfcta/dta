@@ -1123,7 +1123,7 @@ class Network(object):
             # quickly rule out if a quick_dist is specified
             if quick_dist:
                 # real dist threshhold - it could be a long link and the (x,y) is in the center
-                dthres = max(quick_dist, 0.75*roadlink.getLengthInCoordinateUnits())
+                dthres = max(quick_dist, 1.25*roadlink.getLengthInCoordinateUnits())
                      
                 if x + dthres < min(roadlink.getStartNode().getX(), roadlink.getEndNode().getX()): continue
                 if x - dthres > max(roadlink.getStartNode().getX(), roadlink.getEndNode().getX()): continue
