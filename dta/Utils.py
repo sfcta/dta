@@ -2,14 +2,6 @@
 
 Utility functions for use throughout DTA Anyway.
 
-.. autofunction:: dta.crossProduct
-
-.. autofunction:: dta.direction
-
-.. autofunction:: dta.lineSegmentsCross
-
-.. autofunction:: dta.onSegment
-
 """
 import pylab as plt
 import pdb

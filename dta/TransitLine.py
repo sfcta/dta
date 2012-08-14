@@ -31,26 +31,26 @@ class TransitSegment(object):
     #: Outside lane
     TRANSIT_LANE_OUTSIDE = 1
     
-    #: What do these mean?
+    #: No other traffic lanes are blocked during dwell time
     STOP_EXIT_LANE  = 0
-    #: What do these mean?    
+    #: Stops are made on the outside edge of the roadway
     STOP_OUTSIDE    = 1
-    #: What do these mean?    
+    #: Stops are made on the inside edge of the roadway
     STOP_INSIDE     = 2
     
     def __init__(self, id, link,  label, lane, dwell, stopside):
         """
-        A link in a :py:class:`TransitLine`.  The arguments are:
+        A link in a :py:class:`TransitLine`.  The public instance variables of this class have the same names as the parameters.
         
-        * *id* segment identifier
-        * *link* is the :py:class:`RoadLink` instance on which the transit segment runs
-        * *label* user-defined label for the segment or stop, a string
-        * *tlane* is the lane used by the transit line. Use :py:attr:`TransitSegment.TRANSIT_LANE_UNSPECIFIED`, 1 for the outside lane, 2 for the next in, etc
-        * *dwell* is the average dwell time in seconds, a float
-        * *stopside* is one of :py:attr:`TransitSegment.STOP_EXIT_LANE`, :py:attr:`TransitSegment.STOP_OUTSIDE`, or :py:attr:`TransitSegment.STOP_INSIDE`
+        :ivar id: segment identifier
+        :ivar link:  the :py:class:`RoadLink` instance on which the transit segment runs
+        :ivar label: user-defined label for the segment or stop, a string
+        :ivar tlane: the lane used by the transit line. Use :py:attr:`TransitSegment.TRANSIT_LANE_UNSPECIFIED`, 1 for the outside lane, 2 for the next in, etc
+        :ivar dwell: is the average dwell time in seconds, a float
+        :ivar stopside: one of :py:attr:`TransitSegment.STOP_EXIT_LANE`, :py:attr:`TransitSegment.STOP_OUTSIDE`, or :py:attr:`TransitSegment.STOP_INSIDE`
 
         """
-        self._id        = id
+        self.id         = id
         self.link       = link
         self.label      = label
         self.lane       = lane
@@ -68,7 +68,7 @@ class TransitSegment(object):
         """
         Returns the Dynameq-formatted string representation of the transit segments.
         """
-        return ' %8d %9d %9d %15s %6d %9.4f %9d\n' % (self._id, self.link.getStartNode().getId(), self.link.getEndNode().getId(),
+        return ' %8d %9d %9d %15s %6d %9.4f %9d\n' % (self.id, self.link.getStartNode().getId(), self.link.getEndNode().getId(),
                                                      '"' + self.label + '"', self.lane, self.dwell, self.stopside)
         
 class TransitLine(object):
@@ -82,17 +82,21 @@ class TransitLine(object):
     #: If the transit line is a tram or an LRT, pass this as the *litype* arg of :py:meth:`TransitLine.__init__`    
     LINE_TYPE_TRAM  = 1
     
-    #: If the transit line is active in the simulation, pass this as the *active* arg of :py:meth:`TransitLine.__init__
+    #: If the transit line is active in the simulation, pass this as the *active* arg of :py:meth:`TransitLine.__init__`
     LINE_ACTIVE     = 1
-    #: If the transit line is not active in the simulation, pass this as the *active* arg of :py:meth:`TransitLine.__init__    
+    #: If the transit line is not active in the simulation, pass this as the *active* arg of :py:meth:`TransitLine.__init__` 
     LINE_INACTIVE   = 0
 
 
     @classmethod
     def read(cls, net, fileName):
         """
-        Generator function that yields TransitLine objects 
-        read from the input fileName
+        Generator function that yields :py:class:`TransitLine` instances 
+        read from file specified by *fileName*.  For example::
+
+          for transitline in dta.TransitLine.read(network, input_transit_filename):
+              print transitline
+              
         """
         # non-whitespace/quote string OR
         # quoted string
@@ -229,10 +233,22 @@ class TransitLine(object):
                                         lane, # outside lane
                                         dwell, stopside)
 
+        prev_segment = None
         if position == -1:
+            if len(self._segments) > 0: prev_segment = self._segments[-1]
             self._segments.append(transitSegment)
         else:
+            if position >= 1: prev_segment = self._segments[position-1]
             self._segments.insert(position, transitSegment)
+            
+        # Warn for if this is a U-Turn?
+        if prev_segment:
+            movement = prev_segment.link.findOutgoingMovement(link.getEndNode().getId())
+            if movement and movement.isUTurn():
+                dta.DtaLogger.warn("Transit line %d %s adding segment %d (%d-%d) %s after %d (%d-%d) %s, which is a U-Turn" %
+                                   (self._id, self.label, 
+                                    prev_segment.link.getId(), prev_segment.link.getStartNode().getId(), prev_segment.link.getEndNode().getId(), prev_segment.link.getLabel(),
+                                    link.getId(), link.getStartNode().getId(), link.getEndNode().getId(), link.getLabel()))
         return transitSegment
 
     def checkMovementsAreAllowed(self, enableMovement):
@@ -350,6 +366,9 @@ class TransitLine(object):
 
     @property
     def id(self):
+        """
+        Integer identifier for the transit line.
+        """
         return self._id
 
     def isPathValid(self):
