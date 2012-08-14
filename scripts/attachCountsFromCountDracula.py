@@ -486,7 +486,7 @@ if __name__ == '__main__':
     dta.RoadLink.LENGTH_UNITS   = "miles"
         
     # Read the SF scenario and DTA network
-    sanfranciscoScenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
+    sanfranciscoScenario = dta.DynameqScenario()
     sanfranciscoScenario.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
     
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
