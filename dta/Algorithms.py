@@ -547,7 +547,7 @@ class ShortestPaths(object):
 
 
     @classmethod
-    def labelSettingWithLabelsOnNodes(cls, graph, sourceVertex, endVertex, includeVirtual=False, maxLabel=sys.float_info.max, 
+    def labelSettingWithLabelsOnNodes(cls, graph, sourceVertex, endVertex, includeVirtual=False, sourceLabel=0.0, maxLabel=sys.float_info.max, 
                                           filterRoadLinkEvalStr=None):
         """
         .. TODO:: document new args
@@ -577,7 +577,7 @@ class ShortestPaths(object):
             vertex.predVertex   = None
             mincostVertex       = sourceVertex
 
-        sourceVertex.label      = 0
+        sourceVertex.label      = sourceLabel
         
         verticesToExamine       = deque()
         nextPivotVertex         = sourceVertex
@@ -622,7 +622,9 @@ class ShortestPaths(object):
                     if not downstreamVertex.alreadySet:
                         verticesToExamine.appendleft(downstreamVertex)
 
-            mincost = 0                        
+            mincost = 0
+            if len(verticesToExamine)==0:
+                return labeledVertices
             for updateVertex in verticesToExamine:
                 if mincost==0:
                     mincost = updateVertex.label
