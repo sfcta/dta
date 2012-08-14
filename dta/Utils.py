@@ -503,9 +503,9 @@ class Time(datetime.time):
         
         return Time(hours, minutes, seconds)
     
-    def __init__(self, hours, minutes, seconds=0):
+    def __init__(self, hour, minute, second=0):
 
-        datetime.time.__init__(hours, minutes, seconds)
+        datetime.time.__init__(hour, minute, second)
 
     def __lt__(self, other):
         """
