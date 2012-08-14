@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>createSFNetworkFromCubeNetwork &mdash; DTA Anyway v1.0 documentation</title>
+    <title>createSFNetworkFromCubeNetwork &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -35,7 +38,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -45,333 +48,374 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for createSFNetworkFromCubeNetwork</h1><div class="highlight"><pre>
-<span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
-<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
-<span class="s">    This file is part of DTA.</span>
+  <h1>Source code for createSFNetworkFromCubeNetwork</h1><pre>
+__copyright__   = "Copyright 2011 SFCTA"
+__license__     = """
+    This file is part of DTA.
 
-<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
-<span class="s">    it under the terms of the GNU General Public License as published by</span>
-<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
-<span class="s">    (at your option) any later version.</span>
+    DTA is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-<span class="s">    DTA is distributed in the hope that it will be useful,</span>
-<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="s">    GNU General Public License for more details.</span>
+    DTA is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-<span class="s">    You should have received a copy of the GNU General Public License</span>
-<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="s">&quot;&quot;&quot;</span>
+    You should have received a copy of the GNU General Public License
+    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+"""
 
-<span class="kn">import</span> <span class="nn">dta</span>
-<span class="kn">import</span> <span class="nn">getopt</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pdb</span>
+import dta
+import getopt
+import os
+import sys
+import pdb
 
-<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
+USAGE = r"""
 
-<span class="s"> python createSFNetworkFromCubeNetwork.py  [-n output_nodes.shp] [-l output_links.shp]  sf_cube_net_file sf_cube_turnpen_file [cube_attach_shapefile]</span>
-<span class="s"> </span>
-<span class="s"> e.g.</span>
-<span class="s"> </span>
-<span class="s"> python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp</span>
-<span class="s"> </span>
-<span class="s"> This script reads the San Francisco Cube network and optionally the *cube_attach_shapefile*</span>
-<span class="s"> and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.</span>
-<span class="s"> </span>
-<span class="s">  * The first arg is the San Francisco Cube network for conversion to a Dynameq DTA network</span>
-<span class="s">  * The second arg is the turn penalty file to use</span>
-<span class="s">  * An optional third argument is the shapefile to use to add shape points to the roadway network (to show road curvature, etc)</span>
-<span class="s">  * Optional shapefile outputs: -n to specify a node shapefile output, -l to specify a link shapefile output</span>
-<span class="s"> </span>
-<span class="s"> &quot;&quot;&quot;</span>
+ python createSFNetworkFromCubeNetwork.py  [-n output_nodes.shp] [-l output_links.shp]  sf_cube_net_file sf_cube_turnpen_file [cube_attach_shapefile]
+ 
+ e.g.
+ 
+ python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+ 
+ This script reads the San Francisco Cube network and optionally the *cube_attach_shapefile*
+ and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.
+ 
+  * The first arg is the San Francisco Cube network for conversion to a Dynameq DTA network
+  * The second arg is the turn penalty file to use
+  * An optional third argument is the shapefile to use to add shape points to the roadway network (to show road curvature, etc)
+  * Optional shapefile outputs: -n to specify a node shapefile output, -l to specify a link shapefile output
+ 
+ """
 
-<div class="viewcode-block" id="addShifts"><a class="viewcode-back" href="../script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.addShifts">[docs]</a><span class="k">def</span> <span class="nf">addShifts</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The San Francisco network has a few places where the roadway geometries need clarification via &quot;shifts&quot; --</span>
-<span class="sd">    e.g. some local lanes need to be shifted to be outside the through lanes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># geary local</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">26594</span><span class="p">,</span><span class="mi">26590</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># Steiner to Fillmore</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">26590</span><span class="p">,</span><span class="mi">26587</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># Fillmore to Webster</span>
+<div class="viewcode-block" id="addShifts"><a class="viewcode-back" href="../script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.addShifts">[docs]</a>def addShifts(sanfranciscoCubeNet):
+    """
+    The San Francisco network has a few places where the roadway geometries need clarification via "shifts" --
+    e.g. some local lanes need to be shifted to be outside the through lanes.
+    """
+    # geary local
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3, addShapepoints=True)  # Steiner to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3, addShapepoints=True)  # Fillmore to Webster
     
-    <span class="c"># geary - lyon 2 baker</span>
-    <span class="n">geary_lyon2baker</span> <span class="o">=</span> <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">26835</span><span class="p">,</span><span class="mi">26811</span><span class="p">)</span>
-    <span class="n">geary_lyon2baker</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># shift access lane  </span>
-    <span class="n">geary_lyon2baker</span><span class="o">.</span><span class="n">findOutgoingMovement</span><span class="p">(</span><span class="mi">26762</span><span class="p">)</span><span class="o">.</span><span class="n">_outgoingLane</span> <span class="o">=</span> <span class="mi">1</span>
+    # geary - lyon 2 baker
+    geary_lyon2baker = sanfranciscoCubeNet.getLinkForNodeIdPair(26835,26811)
+    geary_lyon2baker.addShifts(0,1, addShapepoints=True) # shift access lane  
+    geary_lyon2baker.findOutgoingMovement(26762)._outgoingLane = 1
     
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">26587</span><span class="p">,</span><span class="mi">26590</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># Webster to Fillmore</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">26590</span><span class="p">,</span><span class="mi">26596</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># Fillmore to Avery</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">26596</span><span class="p">,</span><span class="mi">26594</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># Avery to Steiner</span>
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3, addShapepoints=True)  # Webster to Fillmore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3, addShapepoints=True)  # Fillmore to Avery
+    sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3, addShapepoints=True)  # Avery to Steiner
     
-    <span class="c"># broadway tunnel - access links</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">25117</span><span class="p">,</span><span class="mi">25111</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># Mason to Powell</span>
+    # broadway tunnel - access links
+    sanfranciscoCubeNet.getLinkForNodeIdPair(25117,25111).addShifts(0,2, addShapepoints=True)  # Mason to Powell
     
-    <span class="c"># HWY 101 N On-Ramp at Marin / Bayshore</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">getLinkForNodeIdPair</span><span class="p">(</span><span class="mi">33751</span><span class="p">,</span><span class="mi">33083</span><span class="p">)</span><span class="o">.</span><span class="n">addShifts</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">addShapepoints</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    # HWY 101 N On-Ramp at Marin / Bayshore
+    sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0, addShapepoints=True)
 </div>
-<div class="viewcode-block" id="createTransitOnlyLanes"><a class="viewcode-back" href="../script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.createTransitOnlyLanes">[docs]</a><span class="k">def</span> <span class="nf">createTransitOnlyLanes</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">,</span> <span class="n">allVCG</span><span class="p">,</span> <span class="n">transitVCG</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates transit-only lanes based on the BUSLANE_PM field.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">iterRoadLinks</span><span class="p">():</span>
-        <span class="n">ab_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">link</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">ab_tuple</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">additionalLinkVariables</span><span class="p">:</span> <span class="k">continue</span>
+<div class="viewcode-block" id="createTransitOnlyLanes"><a class="viewcode-back" href="../script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.createTransitOnlyLanes">[docs]</a>def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
+    """
+    Creates transit-only lanes based on the BUSLANE_PM field.
+    """
+    for link in sanfranciscoCubeNet.iterRoadLinks():
+        ab_tuple = (link.getStartNode().getId(), link.getEndNode().getId())
+        if ab_tuple not in sanfranciscoCubeNet.additionalLinkVariables: continue
         
-        <span class="n">buslane_pm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">additionalLinkVariables</span><span class="p">[</span><span class="n">ab_tuple</span><span class="p">][</span><span class="s">&quot;BUSLANE_PM&quot;</span><span class="p">])</span>
+        buslane_pm = int(sanfranciscoCubeNet.additionalLinkVariables[ab_tuple]["BUSLANE_PM"])
         
-        <span class="c"># no transit lanes, don&#39;t worry about it</span>
-        <span class="k">if</span> <span class="n">buslane_pm</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        # no transit lanes, don't worry about it
+        if buslane_pm == 0: continue
         
-        <span class="k">for</span> <span class="n">lane_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">getNumLanes</span><span class="p">()):</span>
-            <span class="c"># diamond lane or side BRT lane</span>
-            <span class="k">if</span> <span class="n">lane_id</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">buslane_pm</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">buslane_pm</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
-                <span class="n">link</span><span class="o">.</span><span class="n">addLanePermission</span><span class="p">(</span><span class="n">lane_id</span><span class="p">,</span> <span class="n">transitVCG</span><span class="p">)</span>
-            <span class="c"># center BRT lane</span>
-            <span class="k">elif</span> <span class="n">lane_id</span> <span class="o">==</span> <span class="n">link</span><span class="o">.</span><span class="n">getNumLanes</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">buslane_pm</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="n">link</span><span class="o">.</span><span class="n">addLanePermission</span><span class="p">(</span><span class="n">lane_id</span><span class="p">,</span> <span class="n">transitVCG</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">link</span><span class="o">.</span><span class="n">addLanePermission</span><span class="p">(</span><span class="n">lane_id</span><span class="p">,</span> <span class="n">allVCG</span><span class="p">)</span>
+        for lane_id in range(link.getNumLanes()):
+            # diamond lane or side BRT lane
+            if lane_id == 0 and (buslane_pm == 1 or buslane_pm == 2):
+                link.addLanePermission(lane_id, transitVCG)
+            # center BRT lane
+            elif lane_id == link.getNumLanes()-1 and buslane_pm == 3:
+                link.addLanePermission(lane_id, transitVCG)
+            else:
+                link.addLanePermission(lane_id, allVCG)
         </div>
-<div class="viewcode-block" id="removeHOVStubs"><a class="viewcode-back" href="../script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.removeHOVStubs">[docs]</a><span class="k">def</span> <span class="nf">removeHOVStubs</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The San Francisco network has a few &quot;HOV stubs&quot; -- links intended to facilitate future coding of HOV lanes</span>
-<span class="sd">    Find these and remove them</span>
-<span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="n">nodesToRemove</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">iterNodes</span><span class="p">():</span>
-        <span class="c"># one incomine link, one outgoing link</span>
-        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">getNumIncomingLinks</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">continue</span>
-        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">getNumOutgoingLinks</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">continue</span>
+<div class="viewcode-block" id="removeHOVStubs"><a class="viewcode-back" href="../script_createSFNetworkFromCubeNetwork.html#createSFNetworkFromCubeNetwork.removeHOVStubs">[docs]</a>def removeHOVStubs(sanfranciscoDynameqNet):
+    """
+    The San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    Find these and remove them
+    """    
+    nodesToRemove = []
+    for node in sanfranciscoDynameqNet.iterNodes():
+        # one incomine link, one outgoing link
+        if node.getNumIncomingLinks() != 1: continue
+        if node.getNumOutgoingLinks() != 1: continue
         
-        <span class="n">removalCandidate</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="c"># the incoming/outgoing links must each be a road link of facility type 6</span>
-        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">iterAdjacentLinks</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">link</span><span class="o">.</span><span class="n">isRoadLink</span><span class="p">():</span> 
-                <span class="n">removalCandidate</span> <span class="o">=</span> <span class="bp">False</span>
-                <span class="k">break</span>
-            <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">:</span>
-                <span class="n">removalCandidate</span> <span class="o">=</span> <span class="bp">False</span>
-                <span class="k">break</span>
+        removalCandidate = True
+        # the incoming/outgoing links must each be a road link of facility type 6
+        for link in node.iterAdjacentLinks():
+            if not link.isRoadLink(): 
+                removalCandidate = False
+                break
+            if link.getFacilityType() != 9:
+                removalCandidate = False
+                break
         
-        <span class="k">if</span> <span class="n">removalCandidate</span><span class="p">:</span>
-            <span class="n">nodesToRemove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        if removalCandidate:
+            nodesToRemove.append(node)
     
-    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodesToRemove</span><span class="p">:</span>
-        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Removing HOV Stub node </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
-        <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">removeNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    for node in nodesToRemove:
+        dta.DtaLogger.info("Removing HOV Stub node %d" % node.getId())
+        sanfranciscoDynameqNet.removeNode(node)
 
-<span class="c">#: this_is_main</span></div>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+#: this_is_main</div>
+if __name__ == '__main__':
     
-    <span class="n">optlist</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;n:l:&quot;</span><span class="p">)</span>
+    optlist, args = getopt.getopt(sys.argv[1:], "n:l:")
 
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">print</span> <span class="n">USAGE</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    if len(args) &lt;= 2:
+        print USAGE
+        sys.exit(2)
     
-    <span class="n">SF_CUBE_NET_FILE</span>            <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">SF_CUBE_TURN_PROHIBITIONS</span>   <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    SF_CUBE_NET_FILE            = args[0]
+    SF_CUBE_TURN_PROHIBITIONS   = args[1]
     
-    <span class="n">SF_CUBE_SHAPEFILE</span>           <span class="o">=</span> <span class="bp">None</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">SF_CUBE_SHAPEFILE</span>       <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    SF_CUBE_SHAPEFILE           = None
+    if len(args) &gt; 2:
+        SF_CUBE_SHAPEFILE       = args[2]
 
-    <span class="n">OUTPUT_NODE_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">OUTPUT_LINK_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">opt</span><span class="p">,</span><span class="n">arg</span><span class="p">)</span> <span class="ow">in</span> <span class="n">optlist</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-n&quot;</span><span class="p">:</span>
-            <span class="n">OUTPUT_NODE_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
-        <span class="k">elif</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-l&quot;</span><span class="p">:</span>
-            <span class="n">OUTPUT_LINK_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
+    OUTPUT_NODE_SHAPEFILE       = None
+    OUTPUT_LINK_SHAPEFILE       = None
+    for (opt,arg) in optlist:
+        if opt=="-n":
+            OUTPUT_NODE_SHAPEFILE  = arg
+        elif opt=="-l":
+            OUTPUT_LINK_SHAPEFILE  = arg
             
-    <span class="c"># The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths</span>
-    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
-    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
-    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
+    # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
+    dta.VehicleType.LENGTH_UNITS= "feet"
+    dta.Node.COORDINATE_UNITS   = "feet"
+    dta.RoadLink.LENGTH_UNITS   = "miles"
 
-    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;createSFNetworkFromCubeNetwork.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;createSFNetworkFromCubeNetwork.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    dta.setupLogging("createSFNetworkFromCubeNetwork.INFO.log", "createSFNetworkFromCubeNetwork.DEBUG.log", logToConsole=True)
         
-    <span class="c"># The rest of San Francisco currently exists as a Cube network.  Initialize it from</span>
-    <span class="c"># the Cube network files (which have been exported to dbfs.)</span>
-    <span class="c"># This is where we define the :py:class:`dta.Scenario`</span>
-    <span class="n">sanfranciscoScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span>
+    # The rest of San Francisco currently exists as a Cube network.  Initialize it from
+    # the Cube network files (which have been exported to dbfs.)
+    # This is where we define the :py:class:`dta.Scenario`
+    sanfranciscoScenario = dta.DynameqScenario(dta.Time(15,30), dta.Time(21,30))
 
-    <span class="c"># We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll </span>
-    <span class="c"># We will provide demand matrices for each of these classes</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClass</span><span class="p">(</span><span class="s">&quot;Car_NoToll&quot;</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClass</span><span class="p">(</span><span class="s">&quot;Car_Toll&quot;</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClass</span><span class="p">(</span><span class="s">&quot;Truck_NoToll&quot;</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClass</span><span class="p">(</span><span class="s">&quot;Truck_Toll&quot;</span><span class="p">)</span>
-    <span class="c"># Transit is an implicit type</span>
+    # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll 
+    # We will provide demand matrices for each of these classes
+    sanfranciscoScenario.addVehicleClass("Car_NoToll")
+    sanfranciscoScenario.addVehicleClass("Car_Toll")
+    sanfranciscoScenario.addVehicleClass("Truck_NoToll")
+    sanfranciscoScenario.addVehicleClass("Truck_Toll")
+    # Transit is an implicit type
     
-    <span class="c"># length is in feet (from above), response time is in seconds, maxSpeed is in mi/hour</span>
-    <span class="c"># We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Car&quot;</span><span class="p">,</span>      <span class="s">&quot;Car_NoToll&quot;</span><span class="p">,</span>   <span class="mi">14</span><span class="p">,</span>     <span class="mi">1</span><span class="p">,</span>          <span class="mf">100.0</span><span class="p">,</span>      <span class="mf">100.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Car&quot;</span><span class="p">,</span>      <span class="s">&quot;Car_Toll&quot;</span><span class="p">,</span>     <span class="mi">14</span><span class="p">,</span>     <span class="mi">1</span><span class="p">,</span>          <span class="mf">100.0</span><span class="p">,</span>      <span class="mf">100.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Truck&quot;</span><span class="p">,</span>    <span class="s">&quot;Truck_NoToll&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Truck&quot;</span><span class="p">,</span>    <span class="s">&quot;Truck_Toll&quot;</span><span class="p">,</span>   <span class="mi">30</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;LRT1&quot;</span><span class="p">,</span>     <span class="s">&quot;Transit&quot;</span><span class="p">,</span>      <span class="mi">75</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">35.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;LRT2&quot;</span><span class="p">,</span>     <span class="s">&quot;Transit&quot;</span><span class="p">,</span>     <span class="mi">150</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">35.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Trolley_Std&quot;</span><span class="p">,</span>  <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mi">40</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Trolley_Artic&quot;</span><span class="p">,</span><span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mi">60</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Motor_Std&quot;</span><span class="p">,</span>    <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mi">40</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;Motor_Artic&quot;</span><span class="p">,</span>  <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mi">60</span><span class="p">,</span>     <span class="mf">1.6</span><span class="p">,</span>        <span class="mf">70.0</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleType</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="p">(</span><span class="s">&quot;CableCar&quot;</span><span class="p">,</span>     <span class="s">&quot;Transit&quot;</span><span class="p">,</span>  <span class="mf">27.5</span><span class="p">,</span>   <span class="mf">1.6</span><span class="p">,</span>         <span class="mf">9.5</span><span class="p">,</span>       <span class="mf">90.0</span><span class="p">))</span>    
-    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Maximum vehicle length = </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">())</span>
-    <span class="c"># Generic is an implicit type</span>
+    # length is in feet (from above), response time is in seconds, maxSpeed is in mi/hour
+    # We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1,          100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1,          100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT1",     "Transit",      75,     1.6,        35.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT2",     "Transit",     150,     1.6,        35.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Std",  "Transit",  40,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Artic","Transit",  60,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Std",    "Transit",  40,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Artic",  "Transit",  60,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("CableCar",     "Transit",  27.5,   1.6,         9.5,       90.0))    
+    dta.DtaLogger.info("Maximum vehicle length = %f" % sanfranciscoScenario.maxVehicleLength())
+    # Generic is an implicit type
 
-    <span class="c"># VehicleClassGroups</span>
-    <span class="n">allVCG</span>     <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="o">.</span><span class="n">CLASSDEFINITION_ALL</span><span class="p">,</span>        <span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="o">.</span><span class="n">CLASSDEFINITION_ALL</span><span class="p">,</span>          <span class="s">&quot;#bebebe&quot;</span><span class="p">)</span>
-    <span class="n">transitVCG</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="o">.</span><span class="n">CLASSDEFINITION_TRANSIT</span><span class="p">,</span>    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="o">.</span><span class="n">CLASSDEFINITION_TRANSIT</span><span class="p">,</span>      <span class="s">&quot;#55ff00&quot;</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClassGroup</span><span class="p">(</span><span class="n">allVCG</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClassGroup</span><span class="p">(</span><span class="n">transitVCG</span><span class="p">)</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClassGroup</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="o">.</span><span class="n">CLASSDEFINITION_PROHIBITED</span><span class="p">,</span> <span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="o">.</span><span class="n">CLASSDEFINITION_PROHIBITED</span><span class="p">,</span>   <span class="s">&quot;#ffff00&quot;</span><span class="p">))</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addVehicleClassGroup</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">VehicleClassGroup</span><span class="p">(</span><span class="s">&quot;Toll&quot;</span><span class="p">,</span>                           <span class="s">&quot;Car_Toll|Truck_Toll&quot;</span><span class="p">,</span>                              <span class="s">&quot;#0055ff&quot;</span><span class="p">))</span>
+    # VehicleClassGroups
+    allVCG     = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_ALL,        dta.VehicleClassGroup.CLASSDEFINITION_ALL,          "#bebebe")
+    transitVCG = dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_TRANSIT,    dta.VehicleClassGroup.CLASSDEFINITION_TRANSIT,      "#55ff00")
+    sanfranciscoScenario.addVehicleClassGroup(allVCG)
+    sanfranciscoScenario.addVehicleClassGroup(transitVCG)
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
     
-    <span class="c"># Generalized cost</span>
-    <span class="c"># TODO: Make this better!?!</span>
-    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">addGeneralizedCost</span><span class="p">(</span><span class="s">&quot;Expression_0&quot;</span><span class="p">,</span> <span class="c"># name</span>
-                                            <span class="s">&quot;Seconds&quot;</span><span class="p">,</span>      <span class="c"># units</span>
-                                            <span class="s">&quot;ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)&quot;</span><span class="p">,</span> <span class="c"># turn_expr</span>
-                                            <span class="s">&quot;0&quot;</span><span class="p">,</span>            <span class="c"># link_expr</span>
-                                            <span class="s">&quot;&quot;</span>              <span class="c"># descr</span>
-                                            <span class="p">)</span>
-    
-    <span class="c"># Read the Cube network</span>
-    <span class="n">sanfranciscoCubeNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">CubeNetwork</span><span class="p">(</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
-    <span class="n">centroidIds</span>         <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">982</span><span class="p">)</span>  <span class="c"># centroids 1-981 are internal to SF</span>
-    <span class="n">centroidIds</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1204</span><span class="p">,</span><span class="mi">1205</span><span class="p">,</span><span class="mi">1207</span><span class="p">,</span><span class="mi">1191</span><span class="p">,</span><span class="mi">1192</span><span class="p">,</span><span class="mi">1206</span><span class="p">,</span><span class="mi">6987</span><span class="p">,</span><span class="mi">6994</span><span class="p">,</span><span class="mi">7144</span><span class="p">,</span><span class="mi">7177</span><span class="p">,</span>
-                        <span class="mi">7654</span><span class="p">,</span><span class="mi">7677</span><span class="p">,</span><span class="mi">7678</span><span class="p">,</span><span class="mi">7705</span><span class="p">,</span><span class="mi">7706</span><span class="p">,</span><span class="mi">7709</span><span class="p">,</span><span class="mi">7721</span><span class="p">,</span><span class="mi">7972</span><span class="p">,</span><span class="mi">7973</span><span class="p">,</span><span class="mi">8338</span><span class="p">,</span>
-                        <span class="mi">8339</span><span class="p">,</span><span class="mi">8832</span><span class="p">])</span>     <span class="c"># externals</span>
-    <span class="c"># Derived in Y:\dta\TrafficFlowParameters.xlsx</span>
-    <span class="c"># Updated for freeways and expressways based on Caltrans sensors for freeways in SF</span>
-    <span class="c"># Updated for locals/collectors and arterials based on MTA speed data</span>
-    <span class="n">speedLookup</span> <span class="o">=</span> <span class="p">{</span> \
-        <span class="s">&#39;FT1 AT0&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT1 AT1&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT1 AT2&#39;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span> <span class="s">&#39;FT1 AT3&#39;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span> <span class="s">&#39;FT1 AT4&#39;</span><span class="p">:</span><span class="mi">55</span><span class="p">,</span> <span class="s">&#39;FT1 AT5&#39;</span><span class="p">:</span><span class="mi">55</span><span class="p">,</span> 
-        <span class="s">&#39;FT2 AT0&#39;</span><span class="p">:</span><span class="mi">60</span><span class="p">,</span> <span class="s">&#39;FT2 AT1&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT2&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT3&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT2 AT4&#39;</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;FT2 AT5&#39;</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span> 
-        <span class="s">&#39;FT3 AT0&#39;</span><span class="p">:</span><span class="mi">60</span><span class="p">,</span> <span class="s">&#39;FT3 AT1&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT2&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT3&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT4&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="s">&#39;FT3 AT5&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> 
-        <span class="s">&#39;FT4 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT4 AT1&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT4 AT2&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT4 AT3&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT4 AT4&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT4 AT5&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> 
-        <span class="s">&#39;FT5 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT5 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT5 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT5 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT5 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT5 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
-        <span class="s">&#39;FT7 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT7 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT7 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT7 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT7 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT7 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
-        <span class="s">&#39;FT11 AT0&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT11 AT1&#39;</span><span class="p">:</span><span class="mi">25</span><span class="p">,</span> <span class="s">&#39;FT11 AT2&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT11 AT3&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT11 AT4&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT11 AT5&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> 
-        <span class="s">&#39;FT12 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT12 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT12 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT12 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT12 AT4&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s">&#39;FT12 AT5&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> 
-        <span class="s">&#39;FT15 AT0&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT15 AT1&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span> <span class="s">&#39;FT15 AT2&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT15 AT3&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span> <span class="s">&#39;FT15 AT4&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s">&#39;FT15 AT5&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> 
-    <span class="p">}</span>
-    <span class="c"># see http://code.google.com/p/dta/wiki/NetworkDescriptionForSF</span>
-    <span class="n">ftToDTALookup</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;2&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
-                     <span class="s">&quot;3&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span>
-                     <span class="s">&quot;1&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
-                     <span class="s">&quot;7&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
-                     <span class="s">&quot;15&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
-                     <span class="s">&quot;12&quot;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span>
-                     <span class="s">&quot;4&quot;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span>
-                     <span class="s">&quot;11&quot;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
-                     <span class="s">&quot;5&quot;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
-                     <span class="c"># centroid connectors should be what?</span>
-                     <span class="s">&quot;6&quot;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>
-                     <span class="p">}</span>
-    
-    <span class="n">linkEffectiveLengthFactor</span> <span class="o">=</span> <span class="mf">1.17</span> <span class="c"># estimated based on queue length survey data</span>
-    
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">readNetfile</span> \
-      <span class="p">(</span><span class="n">netFile</span><span class="o">=</span><span class="n">SF_CUBE_NET_FILE</span><span class="p">,</span>
-       <span class="n">nodeVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;N&quot;</span><span class="p">,</span><span class="s">&quot;X&quot;</span><span class="p">,</span><span class="s">&quot;Y&quot;</span><span class="p">,</span><span class="s">&quot;OLD_NODE&quot;</span><span class="p">],</span>
-       <span class="n">linkVariableNames</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;TOLL&quot;</span><span class="p">,</span><span class="s">&quot;USE&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;CAP&quot;</span><span class="p">,</span><span class="s">&quot;AT&quot;</span><span class="p">,</span><span class="s">&quot;FT&quot;</span><span class="p">,</span><span class="s">&quot;STREETNAME&quot;</span><span class="p">,</span><span class="s">&quot;TYPE&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;MTYPE&quot;</span><span class="p">,</span><span class="s">&quot;SPEED&quot;</span><span class="p">,</span><span class="s">&quot;DISTANCE&quot;</span><span class="p">,</span><span class="s">&quot;TIME&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;LANE_AM&quot;</span><span class="p">,</span><span class="s">&quot;LANE_OP&quot;</span><span class="p">,</span><span class="s">&quot;LANE_PM&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;BUSLANE_AM&quot;</span><span class="p">,</span><span class="s">&quot;BUSLANE_OP&quot;</span><span class="p">,</span><span class="s">&quot;BUSLANE_PM&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;TOLLAM_DA&quot;</span><span class="p">,</span><span class="s">&quot;TOLLAM_SR2&quot;</span><span class="p">,</span><span class="s">&quot;TOLLAM_SR3&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;TOLLPM_DA&quot;</span><span class="p">,</span><span class="s">&quot;TOLLPM_SR2&quot;</span><span class="p">,</span><span class="s">&quot;TOLLPM_SR3&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;TOLLEA_DA&quot;</span><span class="p">,</span><span class="s">&quot;TOLLEA_SR2&quot;</span><span class="p">,</span><span class="s">&quot;TOLLEA_SR3&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;TOLLMD_DA&quot;</span><span class="p">,</span><span class="s">&quot;TOLLMD_SR2&quot;</span><span class="p">,</span><span class="s">&quot;TOLLMD_SR3&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;TOLLEV_DA&quot;</span><span class="p">,</span><span class="s">&quot;TOLLEV_SR2&quot;</span><span class="p">,</span><span class="s">&quot;TOLLEV_SR3 &quot;</span><span class="p">,</span>
-                          <span class="s">&quot;VALUETOLL_FLAG&quot;</span><span class="p">,</span><span class="s">&quot;PASSTHRU&quot;</span><span class="p">,</span>
-                          <span class="s">&quot;BUSTPS_AM&quot;</span><span class="p">,</span><span class="s">&quot;BUSTPS_OP&quot;</span><span class="p">,</span><span class="s">&quot;BUSTPS_PM&quot;</span><span class="p">,</span>
-                          <span class="p">],</span>
-       <span class="n">centroidIds</span>                      <span class="o">=</span> <span class="n">centroidIds</span><span class="p">,</span>
-       <span class="n">useOldNodeForId</span>                  <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
-       <span class="n">nodeGeometryTypeEvalStr</span>          <span class="o">=</span> <span class="s">&quot;Node.GEOMETRY_TYPE_INTERSECTION&quot;</span><span class="p">,</span>
-       <span class="n">nodeControlEvalStr</span>               <span class="o">=</span> <span class="s">&quot;RoadNode.CONTROL_TYPE_SIGNALIZED&quot;</span><span class="p">,</span>
-       <span class="n">nodePriorityEvalStr</span>              <span class="o">=</span> <span class="s">&quot;RoadNode.PRIORITY_TEMPLATE_NONE&quot;</span><span class="p">,</span>
-       <span class="n">nodeLabelEvalStr</span>                 <span class="o">=</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
-       <span class="n">nodeLevelEvalStr</span>                 <span class="o">=</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
-       <span class="n">linkReverseAttachedIdEvalStr</span>     <span class="o">=</span> <span class="s">&quot;None&quot;</span><span class="p">,</span> <span class="c">#TODO: fix?</span>
-       <span class="n">linkFacilityTypeEvalStr</span>          <span class="o">=</span> <span class="s">&quot;ftToDTALookup[FT]&quot;</span><span class="p">,</span>
-       <span class="n">linkLengthEvalStr</span>                <span class="o">=</span> <span class="s">&quot;float(DISTANCE)&quot;</span><span class="p">,</span>
-       <span class="n">linkFreeflowSpeedEvalStr</span>         <span class="o">=</span> <span class="s">&quot;45.0 if FT==&#39;6&#39; else float(speedLookup[&#39;FT&#39;+FT+&#39; AT&#39;+AT])&quot;</span><span class="p">,</span>
-       <span class="n">linkEffectiveLengthFactorEvalStr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">linkEffectiveLengthFactor</span><span class="p">),</span> 
-       <span class="n">linkResponseTimeFactorEvalStr</span>    <span class="o">=</span> <span class="s">&quot;1.1 if FT==&#39;2&#39; else 1.2&quot;</span><span class="p">,</span>  <span class="c"># estimated based on saturation flow analysis on survey data and PeMS freeway sensors</span>
-       <span class="n">linkNumLanesEvalStr</span>              <span class="o">=</span> <span class="s">&quot;2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)&gt;0 else 0))&quot;</span><span class="p">,</span>
-       <span class="n">linkRoundAboutEvalStr</span>            <span class="o">=</span> <span class="s">&quot;False&quot;</span><span class="p">,</span>
-       <span class="n">linkLevelEvalStr</span>                 <span class="o">=</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
-       <span class="n">linkLabelEvalStr</span>                 <span class="o">=</span> <span class="s">&#39;(STREETNAME if STREETNAME else &quot;&quot;) + (&quot; &quot; if TYPE and STREETNAME else &quot;&quot;) + (TYPE if TYPE else &quot;&quot;)&#39;</span><span class="p">,</span>
-       <span class="n">linkGroupEvalStr</span>                 <span class="o">=</span> <span class="s">&quot;-1&quot;</span><span class="p">,</span>
-       <span class="n">linkSkipEvalStr</span>                  <span class="o">=</span> <span class="s">&quot;FT==&#39;13&#39;&quot;</span><span class="p">,</span> <span class="c"># skip bike-only</span>
-       <span class="n">additionalLocals</span>                 <span class="o">=</span> <span class="p">{</span><span class="s">&#39;ftToDTALookup&#39;</span><span class="p">:</span><span class="n">ftToDTALookup</span><span class="p">,</span>
-                                           <span class="s">&#39;speedLookup&#39;</span><span class="p">:</span><span class="n">speedLookup</span><span class="p">,</span>
-                                           <span class="p">})</span>
+    # Generalized cost
+    # TODO: Make this better!?!
+    sanfranciscoScenario.addGeneralizedCost("Expression_0", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "0",            # link_expr
+                                            ""              # descr
+                                            )
 
-    <span class="c"># Apply the transit lanes</span>
-    <span class="n">createTransitOnlyLanes</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">,</span> <span class="n">allVCG</span><span class="p">,</span> <span class="n">transitVCG</span><span class="p">)</span>
+    sanfranciscoScenario.addGeneralizedCost("Expression_1", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "fac_type_pen*(3600*length/fspeed)",            # link_expr
+                                            ""              # descr
+                                            )
+    
+    # Read the Cube network
+    sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
+    centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
+    centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
+                        7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
+                        8339,8832])     # externals
+   
+    # Calculated for freeways and expressways based on Caltrans sensors for freeways in SF
+    # Updated for locals/collectors and arterials based on second round MTA speed data
+    # Decreased locals/collectors' FFS (especially in residential areas)to account for FF Sapce-Mean-Speed along acc/dec segments before and after stop signs
+    # Not to be used with generelized cost function : Expression_1
+    speedLookup = { \
+        'FT1 AT0':35, 'FT1 AT1':40, 'FT1 AT2':45, 'FT1 AT3':45, 'FT1 AT4':55, 'FT1 AT5':55, 
+        'FT2 AT0':60, 'FT2 AT1':65, 'FT2 AT2':65, 'FT2 AT3':65, 'FT2 AT4':70, 'FT2 AT5':70, 
+        'FT3 AT0':60, 'FT3 AT1':65, 'FT3 AT2':65, 'FT3 AT3':65, 'FT3 AT4':65, 'FT3 AT5':65, 
+        'FT4 AT0':23, 'FT4 AT1':23, 'FT4 AT2':20, 'FT4 AT3':20, 'FT4 AT4':35, 'FT4 AT5':35, 
+        'FT5 AT0':30, 'FT5 AT1':30, 'FT5 AT2':35, 'FT5 AT3':35, 'FT5 AT4':40, 'FT5 AT5':40, 
+        'FT7 AT0':28, 'FT7 AT1':28, 'FT7 AT2':30, 'FT7 AT3':32, 'FT7 AT4':40, 'FT7 AT5':40, 
+        'FT11 AT0':18, 'FT11 AT1':18, 'FT11 AT2':18, 'FT11 AT3':15, 'FT11 AT4':35, 'FT11 AT5':35, 
+        'FT12 AT0':26, 'FT12 AT1':26, 'FT12 AT2':28, 'FT12 AT3':30, 'FT12 AT4':40, 'FT12 AT5':40, 
+        'FT15 AT0':30, 'FT15 AT1':30, 'FT15 AT2':33, 'FT15 AT3':36, 'FT15 AT4':50, 'FT15 AT5':50, 
+    }
+    # Rise dependent response times from traffic flow study
+    responseTimeLookup = { \
+     	'FT1 AT0 FLAT' : 1.2,	'FT1 AT1 FLAT' : 1.2,	'FT1 AT2 FLAT' : 1.2,	'FT1 AT3 FLAT' : 1.2,	'FT1 AT4 FLAT' : 1.2,	'FT1 AT5 FLAT' : 1.2,
+     	'FT2 AT0 FLAT' : 1.1,	'FT2 AT1 FLAT' : 1.1,	'FT2 AT2 FLAT' : 1.1,	'FT2 AT3 FLAT' : 1.1,	'FT2 AT4 FLAT' : 1.1,	'FT2 AT5 FLAT' : 1.1,
+    	'FT3 AT0 FLAT' : 1.1,	'FT3 AT1 FLAT' : 1.1,	'FT3 AT2 FLAT' : 1.1,	'FT3 AT3 FLAT' : 1.1,	'FT3 AT4 FLAT' : 1.1,	'FT3 AT5 FLAT' : 1.1,
+    	'FT4 AT0 FLAT' : 1.2,	'FT4 AT1 FLAT' : 1.2,	'FT4 AT2 FLAT' : 1.2,	'FT4 AT3 FLAT' : 1.2,	'FT4 AT4 FLAT' : 1.2,	'FT4 AT5 FLAT' : 1.2,
+    	'FT5 AT0 FLAT' : 1.2,	'FT5 AT1 FLAT' : 1.2,	'FT5 AT2 FLAT' : 1.2,	'FT5 AT3 FLAT' : 1.2,	'FT5 AT4 FLAT' : 1.2,	'FT5 AT5 FLAT' : 1.2,
+    	'FT7 AT0 FLAT' : 1.2,	'FT7 AT1 FLAT' : 1.2,	'FT7 AT2 FLAT' : 1.2,	'FT7 AT3 FLAT' : 1.2,	'FT7 AT4 FLAT' : 1.2,	'FT7 AT5 FLAT' : 1.2,
+    	'FT11 AT0 FLAT' : 1.2,	'FT11 AT1 FLAT' : 1.2,	'FT11 AT2 FLAT' : 1.2,	'FT11 AT3 FLAT' : 1.2,	'FT11 AT4 FLAT' : 1.2,	'FT11 AT5 FLAT' : 1.2,
+        'FT12 AT0 FLAT' : 1.2,	'FT12 AT1 FLAT' : 1.2,	'FT12 AT2 FLAT' : 1.2,	'FT12 AT3 FLAT' : 1.2,	'FT12 AT4 FLAT' : 1.2,	'FT12 AT5 FLAT' : 1.2,
+    	'FT15 AT0 FLAT' : 1.2,	'FT15 AT1 FLAT' : 1.2,	'FT15 AT2 FLAT' : 1.2,	'FT15 AT3 FLAT' : 1.2,	'FT15 AT4 FLAT' : 1.2,	'FT15 AT5 FLAT' : 1.2,
+    	'FT1 AT0 UP' : 1.32,	'FT1 AT1 UP' : 1.32,	'FT1 AT2 UP' : 1.32,	'FT1 AT3 UP' : 1.32,	'FT1 AT4 UP' : 1.32,	'FT1 AT5 UP' : 1.32,
+    	'FT2 AT0 UP' : 1.1,	    'FT2 AT1 UP' : 1.1,	    'FT2 AT2 UP' : 1.1,	    'FT2 AT3 UP' : 1.1,	    'FT2 AT4 UP' : 1.1,	    'FT2 AT5 UP' : 1.1,
+    	'FT3 AT0 UP' : 1.1,	    'FT3 AT1 UP' : 1.1,	    'FT3 AT2 UP' : 1.1,	    'FT3 AT3 UP' : 1.1,	    'FT3 AT4 UP' : 1.1,     'FT3 AT5 UP' : 1.1,
+    	'FT4 AT0 UP' : 1.32,	'FT4 AT1 UP' : 1.32,	'FT4 AT2 UP' : 1.32,	'FT4 AT3 UP' : 1.32,	'FT4 AT4 UP' : 1.32,	'FT4 AT5 UP' : 1.32,
+    	'FT5 AT0 UP' : 1.32,	'FT5 AT1 UP' : 1.32,	'FT5 AT2 UP' : 1.32,	'FT5 AT3 UP' : 1.32,	'FT5 AT4 UP' : 1.32,	'FT5 AT5 UP' : 1.32,
+    	'FT7 AT0 UP' : 1.32,	'FT7 AT1 UP' : 1.32,	'FT7 AT2 UP' : 1.32,	'FT7 AT3 UP' : 1.32,	'FT7 AT4 UP' : 1.32,	'FT7 AT5 UP' : 1.32,
+    	'FT11 AT0 UP' : 1.32,	'FT11 AT1 UP' : 1.32,	'FT11 AT2 UP' : 1.32,	'FT11 AT3 UP' : 1.32,	'FT11 AT4 UP' : 1.32,	'FT11 AT5 UP' : 1.32,
+    	'FT12 AT0 UP' : 1.32,	'FT12 AT1 UP' : 1.32,	'FT12 AT2 UP' : 1.32,	'FT12 AT3 UP' : 1.32,	'FT12 AT4 UP' : 1.32,	'FT12 AT5 UP' : 1.32,
+    	'FT15 AT0 UP' : 1.32,	'FT15 AT1 UP' : 1.32,	'FT15 AT2 UP' : 1.32,	'FT15 AT3 UP' : 1.32,	'FT15 AT4 UP' : 1.32,	'FT15 AT5 UP' : 1.32,
+    	'FT1 AT0 DOWN' : 1.08,	'FT1 AT1 DOWN' : 1.08,	'FT1 AT2 DOWN' : 1.08,	'FT1 AT3 DOWN' : 1.08,	'FT1 AT4 DOWN' : 1.08,	'FT1 AT5 DOWN' : 1.08,
+    	'FT2 AT0 DOWN' : 1.1,	'FT2 AT1 DOWN' : 1.1,	'FT2 AT2 DOWN' : 1.1,	'FT2 AT3 DOWN' : 1.1,	'FT2 AT4 DOWN' : 1.1,	'FT2 AT5 DOWN' : 1.1,
+    	'FT3 AT0 DOWN' : 1.1,	'FT3 AT1 DOWN' : 1.1,	'FT3 AT2 DOWN' : 1.1,	'FT3 AT3 DOWN' : 1.1,	'FT3 AT4 DOWN' : 1.1,	'FT3 AT5 DOWN' : 1.1,
+    	'FT4 AT0 DOWN' : 1.08,	'FT4 AT1 DOWN' : 1.08,	'FT4 AT2 DOWN' : 1.08,	'FT4 AT3 DOWN' : 1.08,	'FT4 AT4 DOWN' : 1.08,	'FT4 AT5 DOWN' : 1.08,
+    	'FT5 AT0 DOWN' : 1.08,	'FT5 AT1 DOWN' : 1.08,	'FT5 AT2 DOWN' : 1.08,	'FT5 AT3 DOWN' : 1.08,	'FT5 AT4 DOWN' : 1.08,	'FT5 AT5 DOWN' : 1.08,
+    	'FT7 AT0 DOWN' : 1.08,	'FT7 AT1 DOWN' : 1.08,	'FT7 AT2 DOWN' : 1.08,	'FT7 AT3 DOWN' : 1.08,	'FT7 AT4 DOWN' : 1.08,	'FT7 AT5 DOWN' : 1.08,
+    	'FT11 AT0 DOWN' : 1.08,	'FT11 AT1 DOWN' : 1.08,	'FT11 AT2 DOWN' : 1.08,	'FT11 AT3 DOWN' : 1.08,	'FT11 AT4 DOWN' : 1.08,	'FT11 AT5 DOWN' : 1.08,
+    	'FT12 AT0 DOWN' : 1.08,	'FT12 AT1 DOWN' : 1.08,	'FT12 AT2 DOWN' : 1.08,	'FT12 AT3 DOWN' : 1.08,	'FT12 AT4 DOWN' : 1.08,	'FT12 AT5 DOWN' : 1.08,
+    	'FT15 AT0 DOWN' : 1.08,	'FT15 AT1 DOWN' : 1.08,	'FT15 AT2 DOWN' : 1.08,	'FT15 AT3 DOWN' : 1.08,	'FT15 AT4 DOWN' : 1.08,	'FT15 AT5 DOWN' : 1.08,
+  }    
+    # see http://code.google.com/p/dta/wiki/NetworkDescriptionForSF
+    ftToDTALookup = {"2":1,
+                     "3":2,
+                     "1":3,
+                     "7":4,
+                     "15":4,
+                     "12":5,
+                     "4":6,
+                     "11":7,
+                     "5":8,
+                     # centroid connectors should be what?
+                     "6":9,
+                     }
+    
+    linkEffectiveLengthFactor = 1.17 # estimated based on queue length survey data
+    
+    sanfranciscoCubeNet.readNetfile \
+      (netFile=SF_CUBE_NET_FILE,
+       nodeVariableNames=["N","X","Y","OLD_NODE"],
+       linkVariableNames=["A","B","TOLL","USE",
+                          "CAP","AT","FT","STREETNAME","TYPE",
+                          "MTYPE","SPEED","DISTANCE","TIME",
+                          "LANE_AM","LANE_OP","LANE_PM",
+                          "BUSLANE_AM","BUSLANE_OP","BUSLANE_PM",
+                          "TOLLAM_DA","TOLLAM_SR2","TOLLAM_SR3",
+                          "TOLLPM_DA","TOLLPM_SR2","TOLLPM_SR3",
+                          "TOLLEA_DA","TOLLEA_SR2","TOLLEA_SR3",
+                          "TOLLMD_DA","TOLLMD_SR2","TOLLMD_SR3",
+                          "TOLLEV_DA","TOLLEV_SR2","TOLLEV_SR3 ",
+                          "VALUETOLL_FLAG","PASSTHRU",
+                          "BUSTPS_AM","BUSTPS_OP","BUSTPS_PM",
+                          "TSVA","TSIN","BIKE_CLASS","PER_RISE",
+     #                    "ONEWAY","PROJ","DTA_EDIT_FL","TOLLTIME",
+                          ],
+       centroidIds                      = centroidIds,
+       useOldNodeForId                  = True,
+       nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
+       nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
+       nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
+       nodeLabelEvalStr                 = "None",
+       nodeLevelEvalStr                 = "None",
+       linkReverseAttachedIdEvalStr     = "None", #TODO: fix?
+       linkFacilityTypeEvalStr          = "ftToDTALookup[FT]",
+       linkLengthEvalStr                = "float(DISTANCE)",
+       linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
+       linkEffectiveLengthFactorEvalStr = str(linkEffectiveLengthFactor), 
+       linkResponseTimeFactorEvalStr    = "1 if FT=='6' else float(responseTimeLookup['FT'+FT+' AT'+AT + (' UP' if (float(PER_RISE) &gt; 0.05) else (' FLAT' if (float(PER_RISE) &gt; -0.05) else ' DOWN'))])",
+       linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)&gt;0 else 0))",
+       linkRoundAboutEvalStr            = "False",
+       linkLevelEvalStr                 = "None",
+       linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")',
+       linkGroupEvalStr                 = "-1",
+       linkSkipEvalStr                  = "FT=='13'", # skip bike-only
+       additionalLocals                 = {'ftToDTALookup':ftToDTALookup,
+                                           'speedLookup':speedLookup,
+                                           'responseTimeLookup':responseTimeLookup,
+                                           })
+    # Apply the transit lanes
+    # createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
         
-    <span class="c"># create the movements for the network for all vehicles</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">addAllMovements</span><span class="p">(</span><span class="n">allVCG</span><span class="p">,</span> <span class="n">includeUTurns</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    # create the movements for the network for all vehicles
+    sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
     
-    <span class="c"># Apply the turn prohibitions</span>
-    <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">applyTurnProhibitions</span><span class="p">(</span><span class="n">SF_CUBE_TURN_PROHIBITIONS</span><span class="p">)</span>
+    # Apply the turn prohibitions
+    sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     
-    <span class="c"># Read the shape points so curvy streets look curvy</span>
-    <span class="c"># 3, 4 are the Broadway Tunnel, being routed too far south in GIS file</span>
-    <span class="c"># 5234 # Skip this one link at Woodside/Portola because it overlaps</span>
-    <span class="c"># 2798, # Skip this Central Freeway link because Dynameq hates it but I DON&#39;T KNOW WHY</span>
-    <span class="k">if</span> <span class="n">SF_CUBE_SHAPEFILE</span><span class="p">:</span>
-        <span class="n">sanfranciscoCubeNet</span><span class="o">.</span><span class="n">readLinkShape</span><span class="p">(</span><span class="n">SF_CUBE_SHAPEFILE</span><span class="p">,</span> <span class="s">&quot;A&quot;</span><span class="p">,</span> <span class="s">&quot;B&quot;</span><span class="p">,</span>
-                                          <span class="n">skipEvalStr</span><span class="o">=</span><span class="s">&quot;(OBJECTID in [3,4,5234,2798]) or (MEDIANDIV==1)&quot;</span><span class="p">)</span>
+    # Read the shape points so curvy streets look curvy
+    # 3, 4 are the Broadway Tunnel, being routed too far south in GIS file
+    # 5234 # Skip this one link at Woodside/Portola because it overlaps
+    # 2798, # Skip this Central Freeway link because Dynameq hates it but I DON'T KNOW WHY
+    if SF_CUBE_SHAPEFILE:
+        sanfranciscoCubeNet.readLinkShape(SF_CUBE_SHAPEFILE, "A", "B",
+                                          skipEvalStr="(OBJECTID in [3,4,5234,2798]) or (MEDIANDIV==1)")
      
-    <span class="c"># Some special links needing shifts</span>
-    <span class="n">addShifts</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
+    # Some special links needing shifts
+    addShifts(sanfranciscoCubeNet)
     
-    <span class="c"># Convert the network to a Dynameq DTA network</span>
-    <span class="n">sanfranciscoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sanfranciscoCubeNet</span><span class="p">)</span>
+    # Convert the network to a Dynameq DTA network
+    sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
+    sanfranciscoDynameqNet.deepcopy(sanfranciscoCubeNet)
     
-    <span class="c"># the San Francisco network has a few &quot;HOV stubs&quot; -- links intended to facilitate future coding of HOV lanes</span>
-    <span class="n">removeHOVStubs</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">)</span>
+    # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
+    removeHOVStubs(sanfranciscoDynameqNet)
     
-    <span class="c"># Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">insertVirtualNodeBetweenCentroidsAndRoadNodes</span><span class="p">(</span><span class="n">startVirtualNodeId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">,</span> <span class="n">startVirtualLinkId</span><span class="o">=</span><span class="mi">9000000</span><span class="p">,</span>
-                                                                         <span class="n">distanceFromCentroid</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq
+    sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000,
+                                                                         distanceFromCentroid=50)
     
-    <span class="c"># Move the centroid connectors from intersection nodes to midblock locations</span>
-    <span class="c"># TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        </span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">moveCentroidConnectorsFromIntersectionsToMidblocks</span><span class="p">(</span><span class="n">splitReverseLinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">externalNodeIds</span><span class="o">=</span><span class="p">[],</span> 
-                                                                              <span class="n">disallowConnectorEvalStr</span><span class="o">=</span><span class="s">&quot;True if self.getFacilityType() in [1,8] else False&quot;</span><span class="p">)</span>
+    # Move the centroid connectors from intersection nodes to midblock locations
+    # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        
+    sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=[], 
+                                                                              disallowConnectorEvalStr="True if self.getFacilityType() in [1,8] else False")
 
-    <span class="c"># Warn on overlapping links, and move virtual nodes up to 100 feet if that helps</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleOverlappingLinks</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">moveVirtualNodeDist</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    # Warn on overlapping links, and move virtual nodes up to 100 feet if that helps
+    sanfranciscoDynameqNet.handleOverlappingLinks(warn=True, moveVirtualNodeDist=100)
     
-    <span class="c"># finally -- Dynameq requires links to be longer than the longest vehicle x the linkEffectiveLengthFactor</span>
-    <span class="c"># rounding up because the lengths are specified with 3 decimals in the file, so if they happen to round down they&#39;re too short</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">handleShortLinks</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">linkEffectiveLengthFactor</span><span class="o">*</span><span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">maxVehicleLength</span><span class="p">()</span><span class="o">/</span><span class="mf">5280.0</span> <span class="o">+</span> <span class="mf">0.0005</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
-                                            <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                                            <span class="n">setLength</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    # finally -- Dynameq requires links to be longer than the longest vehicle x the linkEffectiveLengthFactor
+    # rounding up because the lengths are specified with 3 decimals in the file, so if they happen to round down they're too short
+    sanfranciscoDynameqNet.handleShortLinks(round(linkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3),
+                                            warn=True,
+                                            setLength=True)
 
-    <span class="c"># if we have too many nodes for the license 10</span>
-    <span class="k">if</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">getNumRoadNodes</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">12500</span><span class="p">:</span>
-        <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">removeUnconnectedNodes</span><span class="p">()</span>
-    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s">r&quot;.&quot;</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="s">&quot;sf&quot;</span><span class="p">)</span>
+    # if we have too many nodes for the license 10
+    if sanfranciscoDynameqNet.getNumRoadNodes() &gt; 12500:
+        sanfranciscoDynameqNet.removeUnconnectedNodes()
+    sanfranciscoDynameqNet.write(dir=r".", file_prefix="sf")
  
-    <span class="c"># export the network as shapefiles if requested </span>
-    <span class="k">if</span> <span class="n">OUTPUT_NODE_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeNodesToShp</span><span class="p">(</span><span class="n">OUTPUT_NODE_SHAPEFILE</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">OUTPUT_LINK_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeLinksToShp</span><span class="p">(</span><span class="n">OUTPUT_LINK_SHAPEFILE</span><span class="p">)</span> 
+    # export the network as shapefiles if requested 
+    if OUTPUT_NODE_SHAPEFILE: sanfranciscoDynameqNet.writeNodesToShp(OUTPUT_NODE_SHAPEFILE)
+    if OUTPUT_LINK_SHAPEFILE: sanfranciscoDynameqNet.writeLinksToShp(OUTPUT_LINK_SHAPEFILE) 
  
     
     
-</pre></div>
+</pre>
 
           </div>
         </div>
@@ -381,7 +425,7 @@
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -404,13 +448,13 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

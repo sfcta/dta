@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     dta.setupLogging("importUnsignalizedIntersections.INFO.log", "importUnsignalizedIntersections.DEBUG.log", logToConsole=True)
 
-    scenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
+    scenario = dta.DynameqScenario()
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)

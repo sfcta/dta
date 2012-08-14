@@ -32,4 +32,11 @@ dta.Phase
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Phase.TYPE_CUSTOM
+      ~Phase.TYPE_STANDARD
+   
    

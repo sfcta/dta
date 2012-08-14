@@ -14,10 +14,17 @@ dta.Time
    .. autosummary::
    
       ~Time.__init__
+      ~Time.dst
       ~Time.fromMinutes
+      ~Time.fromSeconds
       ~Time.getMinutes
+      ~Time.isoformat
       ~Time.readFromString
       ~Time.readFromStringWithoutColon
+      ~Time.replace
+      ~Time.strftime
+      ~Time.tzname
+      ~Time.utcoffset
    
    
 
@@ -27,16 +34,13 @@ dta.Time
 
    .. autosummary::
    
-      ~Time.dst
       ~Time.hour
-      ~Time.isoformat
+      ~Time.max
       ~Time.microsecond
+      ~Time.min
       ~Time.minute
-      ~Time.replace
+      ~Time.resolution
       ~Time.second
-      ~Time.strftime
       ~Time.tzinfo
-      ~Time.tzname
-      ~Time.utcoffset
    
    

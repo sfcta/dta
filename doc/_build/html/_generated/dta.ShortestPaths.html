@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.ShortestPaths &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.ShortestPaths &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.CountsVsVolumes" href="dta.CountsVsVolumes.html" />
     <link rel="prev" title="dta.Path" href="dta.Path.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.Path.html" title="dta.Path"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -65,38 +68,38 @@
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.getShortestPathBetweenLinks" title="dta.ShortestPaths.getShortestPathBetweenLinks"><tt class="xref py py-obj docutils literal"><span class="pre">getShortestPathBetweenLinks</span></tt></a>(graph,&nbsp;...[,&nbsp;runSP])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.ShortestPaths.getShortestPathBetweenLinks" title="dta.ShortestPaths.getShortestPathBetweenLinks"><tt class="xref py py-obj docutils literal"><span class="pre">getShortestPathBetweenLinks</span></tt></a>(graph,&nbsp;...[,&nbsp;runSP])</td>
 <td>Return the path from the sourceLink to the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.getShortestPathBetweenNodes" title="dta.ShortestPaths.getShortestPathBetweenNodes"><tt class="xref py py-obj docutils literal"><span class="pre">getShortestPathBetweenNodes</span></tt></a>(sourceNode,&nbsp;...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.ShortestPaths.getShortestPathBetweenNodes" title="dta.ShortestPaths.getShortestPathBetweenNodes"><tt class="xref py py-obj docutils literal"><span class="pre">getShortestPathBetweenNodes</span></tt></a>(sourceNode,&nbsp;...)</td>
 <td>Return the path from the sourceNode to the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.initialiseMovementCostsWithFFTT" title="dta.ShortestPaths.initialiseMovementCostsWithFFTT"><tt class="xref py py-obj docutils literal"><span class="pre">initialiseMovementCostsWithFFTT</span></tt></a>(network)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.ShortestPaths.initialiseMovementCostsWithFFTT" title="dta.ShortestPaths.initialiseMovementCostsWithFFTT"><tt class="xref py py-obj docutils literal"><span class="pre">initialiseMovementCostsWithFFTT</span></tt></a>(network)</td>
 <td>Initialize all the movement costs with the edge free flow travel time in min</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.initializeEdgeCostsWithLength" title="dta.ShortestPaths.initializeEdgeCostsWithLength"><tt class="xref py py-obj docutils literal"><span class="pre">initializeEdgeCostsWithLength</span></tt></a>(network)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.ShortestPaths.initializeEdgeCostsWithLength" title="dta.ShortestPaths.initializeEdgeCostsWithLength"><tt class="xref py py-obj docutils literal"><span class="pre">initializeEdgeCostsWithLength</span></tt></a>(network)</td>
 <td>Initalize all the edge costs with the edge lengths in feet</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.initializeMovementCostsWithLength" title="dta.ShortestPaths.initializeMovementCostsWithLength"><tt class="xref py py-obj docutils literal"><span class="pre">initializeMovementCostsWithLength</span></tt></a>(network)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.ShortestPaths.initializeMovementCostsWithLength" title="dta.ShortestPaths.initializeMovementCostsWithLength"><tt class="xref py py-obj docutils literal"><span class="pre">initializeMovementCostsWithLength</span></tt></a>(network)</td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.initiaxblizeEdgeCostsWithFFTT" title="dta.ShortestPaths.initiaxblizeEdgeCostsWithFFTT"><tt class="xref py py-obj docutils literal"><span class="pre">initiaxblizeEdgeCostsWithFFTT</span></tt></a>(network)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.ShortestPaths.initiaxblizeEdgeCostsWithFFTT" title="dta.ShortestPaths.initiaxblizeEdgeCostsWithFFTT"><tt class="xref py py-obj docutils literal"><span class="pre">initiaxblizeEdgeCostsWithFFTT</span></tt></a>(network)</td>
 <td>Initialize all the edge costs with the edge free flow travel times in minutes</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.labelCorrectingWithLabelsOnLinks" title="dta.ShortestPaths.labelCorrectingWithLabelsOnLinks"><tt class="xref py py-obj docutils literal"><span class="pre">labelCorrectingWithLabelsOnLinks</span></tt></a>(graph,&nbsp;...)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.ShortestPaths.labelCorrectingWithLabelsOnLinks" title="dta.ShortestPaths.labelCorrectingWithLabelsOnLinks"><tt class="xref py py-obj docutils literal"><span class="pre">labelCorrectingWithLabelsOnLinks</span></tt></a>(graph,&nbsp;...)</td>
 <td>Implementation of Pape&#8217;s shortest path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.labelCorrectingWithLabelsOnNodes" title="dta.ShortestPaths.labelCorrectingWithLabelsOnNodes"><tt class="xref py py-obj docutils literal"><span class="pre">labelCorrectingWithLabelsOnNodes</span></tt></a>(graph,&nbsp;...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.ShortestPaths.labelCorrectingWithLabelsOnNodes" title="dta.ShortestPaths.labelCorrectingWithLabelsOnNodes"><tt class="xref py py-obj docutils literal"><span class="pre">labelCorrectingWithLabelsOnNodes</span></tt></a>(graph,&nbsp;...)</td>
 <td>Implementation of Pape&#8217;s shortest path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.ShortestPaths.labelSettingWithLabelsOnNodes" title="dta.ShortestPaths.labelSettingWithLabelsOnNodes"><tt class="xref py py-obj docutils literal"><span class="pre">labelSettingWithLabelsOnNodes</span></tt></a>(graph,&nbsp;...)</td>
-<td>Implementation of Pape&#8217;s shortest path</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.ShortestPaths.labelSettingWithLabelsOnNodes" title="dta.ShortestPaths.labelSettingWithLabelsOnNodes"><tt class="xref py py-obj docutils literal"><span class="pre">labelSettingWithLabelsOnNodes</span></tt></a>(graph,&nbsp;...[,&nbsp;...])</td>
+<td><span class="target" id="index-0"></span></td>
 </tr>
 </tbody>
 </table>
@@ -172,7 +175,7 @@ are not included in the shortest path.</p>
 
 <dl class="classmethod">
 <dt id="dta.ShortestPaths.labelSettingWithLabelsOnNodes">
-<em class="property">classmethod </em><tt class="descname">labelSettingWithLabelsOnNodes</tt><big>(</big><em>graph</em>, <em>sourceVertex</em>, <em>endVertex</em><big>)</big><a class="headerlink" href="#dta.ShortestPaths.labelSettingWithLabelsOnNodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">labelSettingWithLabelsOnNodes</tt><big>(</big><em>graph</em>, <em>sourceVertex</em>, <em>endVertex</em>, <em>includeVirtual=False</em>, <em>maxLabel=1.7976931348623157e+308</em>, <em>filterRoadLinkEvalStr=None</em><big>)</big><a class="headerlink" href="#dta.ShortestPaths.labelSettingWithLabelsOnNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of Pape&#8217;s shortest path
 using a deque. Vertices are inserted to the 
 left of the deque if they have been already 
@@ -214,7 +217,7 @@ are not included in the shortest path.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -243,12 +246,12 @@ are not included in the shortest path.</p>
         <li class="right" >
           <a href="dta.Path.html" title="dta.Path"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

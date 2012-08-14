@@ -59,4 +59,19 @@ dta.VirtualNode
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VirtualNode.COORDINATE_UNITS
+      ~VirtualNode.DEFAULT_CONTROL
+      ~VirtualNode.DEFAULT_LABEL
+      ~VirtualNode.DEFAULT_LEVEL
+      ~VirtualNode.DEFAULT_PRIORITY
+      ~VirtualNode.GEOMETRY_TYPES
+      ~VirtualNode.GEOMETRY_TYPE_CENTROID
+      ~VirtualNode.GEOMETRY_TYPE_INTERSECTION
+      ~VirtualNode.GEOMETRY_TYPE_JUNCTION
+      ~VirtualNode.GEOMETRY_TYPE_VIRTUAL
+   
    

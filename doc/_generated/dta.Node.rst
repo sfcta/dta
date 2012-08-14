@@ -54,4 +54,17 @@ dta.Node
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Node.COORDINATE_UNITS
+      ~Node.DEFAULT_LABEL
+      ~Node.DEFAULT_LEVEL
+      ~Node.GEOMETRY_TYPES
+      ~Node.GEOMETRY_TYPE_CENTROID
+      ~Node.GEOMETRY_TYPE_INTERSECTION
+      ~Node.GEOMETRY_TYPE_JUNCTION
+      ~Node.GEOMETRY_TYPE_VIRTUAL
+   
    

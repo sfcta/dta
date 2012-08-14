@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.TransitLine &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.TransitLine &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.TransitSegment" href="dta.TransitSegment.html" />
     <link rel="prev" title="dta.TPPlusTransitRoute" href="dta.TPPlusTransitRoute.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.TPPlusTransitRoute.html" title="dta.TPPlusTransitRoute"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -78,104 +81,119 @@ A Transit Line consists of a set of attributes and a list of <a class="reference
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.TransitLine.__init__" title="dta.TransitLine.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt>(net,&nbsp;id,&nbsp;label,&nbsp;litype,&nbsp;vtype,&nbsp;...)</td>
+<td>Constructor.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.addSegment" title="dta.TransitLine.addSegment"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.addSegment</span></tt></a></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">addSegment</span></tt>(link,&nbsp;dwell[,&nbsp;label,&nbsp;lane,&nbsp;...])</td>
+<td>Create a <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instance with the given information and add it to this</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">checkMovementsAreAllowed</span></tt>(enableMovement)</td>
+<td>Iterates through the <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instances for this line, and warns about any</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getDynameqFileHeaderStr</span></tt>()</td>
+<td>Returns the Dynameq-formatted header string (the start of the file preceding the actual transit line data</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getDynameqStr</span></tt>()</td>
+<td>Returns the Dynameq-formatted string representation of the transit line.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFirstNode</span></tt>()</td>
+<td>Get the first node in the transit path</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLastNode</span></tt>()</td>
+<td>Get the last node in the transit path</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumSegments</span></tt>()</td>
+<td>Return the number of segments(=links) the transit line has</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumStops</span></tt>()</td>
+<td>Return the number of stops the transit line makes</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSegment</span></tt>([startNodeId,&nbsp;endNodeId])</td>
+<td>Return the segment with starting from startNodeId or ending to node with</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasNode</span></tt>(nodeId)</td>
+<td>Return True if the transit Line visits the node with the given id</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasSegment</span></tt>([startNodeId,&nbsp;endNodeId])</td>
+<td>Return True if the line has a segment with the given start or end nodes.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isPathValid</span></tt>()</td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.checkMovementsAreAllowed" title="dta.TransitLine.checkMovementsAreAllowed"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.checkMovementsAreAllowed</span></tt></a></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterSegments</span></tt>()</td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getDynameqFileHeaderStr" title="dta.TransitLine.getDynameqFileHeaderStr"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getDynameqFileHeaderStr</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">lastSegment</span></tt>()</td>
+<td>Returns the last segment.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getDynameqStr" title="dta.TransitLine.getDynameqStr"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getDynameqStr</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">read</span></tt>(net,&nbsp;fileName)</td>
+<td>Generator function that yields <a class="reference internal" href="#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a> instances</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getFirstNode" title="dta.TransitLine.getFirstNode"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getFirstNode</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getLastNode" title="dta.TransitLine.getLastNode"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getLastNode</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getNumSegments" title="dta.TransitLine.getNumSegments"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getNumSegments</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getNumStops" title="dta.TransitLine.getNumStops"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getNumStops</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.getSegment" title="dta.TransitLine.getSegment"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.getSegment</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.hasNode" title="dta.TransitLine.hasNode"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.hasNode</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.hasSegment" title="dta.TransitLine.hasSegment"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.hasSegment</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.isPathValid" title="dta.TransitLine.isPathValid"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.isPathValid</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.iterSegments" title="dta.TransitLine.iterSegments"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.iterSegments</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.read" title="dta.TransitLine.read"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.read</span></tt></a></td>
-<td></td>
-</tr>
-<tr><td><a class="reference internal" href="#dta.TransitLine.validatePath" title="dta.TransitLine.validatePath"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.validatePath</span></tt></a></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">validatePath</span></tt>()</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.TransitLine.id" title="dta.TransitLine.id"><tt class="xref py py-obj docutils literal"><span class="pre">TransitLine.id</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">LINE_ACTIVE</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">LINE_INACTIVE</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">LINE_TYPE_BUS</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">LINE_TYPE_TRAM</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">id</span></tt></td>
+<td>Integer identifier for the transit line.</td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
 <dt id="dta.TransitLine.LINE_ACTIVE">
-<tt class="descname">LINE_ACTIVE</tt><a class="headerlink" href="#dta.TransitLine.LINE_ACTIVE" title="Permalink to this definition">¶</a></dt>
-<dd><p>If the transit line is active in the simulation, pass this as the <em>active</em> arg of :py:meth:<a href="#id1"><span class="problematic" id="id2">`</span></a>TransitLine.__init__</p>
+<tt class="descname">LINE_ACTIVE</tt><em class="property"> = 1</em><a class="headerlink" href="#dta.TransitLine.LINE_ACTIVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the transit line is active in the simulation, pass this as the <em>active</em> arg of <a class="reference internal" href="#dta.TransitLine.__init__" title="dta.TransitLine.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TransitLine.__init__()</span></tt></a></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.TransitLine.LINE_INACTIVE">
-<tt class="descname">LINE_INACTIVE</tt><a class="headerlink" href="#dta.TransitLine.LINE_INACTIVE" title="Permalink to this definition">¶</a></dt>
-<dd><p>If the transit line is not active in the simulation, pass this as the <em>active</em> arg of :py:meth:<a href="#id3"><span class="problematic" id="id4">`</span></a>TransitLine.__init__</p>
+<tt class="descname">LINE_INACTIVE</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.TransitLine.LINE_INACTIVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the transit line is not active in the simulation, pass this as the <em>active</em> arg of <a class="reference internal" href="#dta.TransitLine.__init__" title="dta.TransitLine.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TransitLine.__init__()</span></tt></a></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.TransitLine.LINE_TYPE_BUS">
-<tt class="descname">LINE_TYPE_BUS</tt><a class="headerlink" href="#dta.TransitLine.LINE_TYPE_BUS" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">LINE_TYPE_BUS</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.TransitLine.LINE_TYPE_BUS" title="Permalink to this definition">¶</a></dt>
 <dd><p>If the transit line is a bus, pass this as the <em>litype</em> arg of <a class="reference internal" href="#dta.TransitLine.__init__" title="dta.TransitLine.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TransitLine.__init__()</span></tt></a></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.TransitLine.LINE_TYPE_TRAM">
-<tt class="descname">LINE_TYPE_TRAM</tt><a class="headerlink" href="#dta.TransitLine.LINE_TYPE_TRAM" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">LINE_TYPE_TRAM</tt><em class="property"> = 1</em><a class="headerlink" href="#dta.TransitLine.LINE_TYPE_TRAM" title="Permalink to this definition">¶</a></dt>
 <dd><p>If the transit line is a tram or an LRT, pass this as the <em>litype</em> arg of <a class="reference internal" href="#dta.TransitLine.__init__" title="dta.TransitLine.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TransitLine.__init__()</span></tt></a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.TransitLine.addSegment">
-<tt class="descname">addSegment</tt><big>(</big><em>link</em>, <em>dwell</em>, <em>label=None</em>, <em>lane=1</em>, <em>stopside=0</em>, <em>position=-1</em><big>)</big><a class="headerlink" href="#dta.TransitLine.addSegment" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">addSegment</tt><big>(</big><em>link</em>, <em>dwell</em>, <em>label=None</em>, <em>lane=0</em>, <em>stopside=0</em>, <em>position=-1</em><big>)</big><a class="headerlink" href="#dta.TransitLine.addSegment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instance with the given information and add it to this
 line.</p>
-<p>See :py:meth:<a href="#id5"><span class="problematic" id="id6">`</span></a>TransitSegment.__init__ for how most of the arguments are interpreted.
+<p>See :py:meth:<a href="#id1"><span class="problematic" id="id2">`</span></a>TransitSegment.__init__ for how most of the arguments are interpreted.
 Pass -1 for <em>position</em> to append it to the end of this line&#8217;s transit segments, otherwise
 the <em>position</em> will be used for insertion.</p>
 </dd></dl>
@@ -248,7 +266,8 @@ Otherwise return false</p>
 <dl class="attribute">
 <dt id="dta.TransitLine.id">
 <tt class="descname">id</tt><a class="headerlink" href="#dta.TransitLine.id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Integer identifier for the transit line.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="dta.TransitLine.isPathValid">
@@ -269,8 +288,12 @@ Otherwise return false</p>
 <dl class="classmethod">
 <dt id="dta.TransitLine.read">
 <em class="property">classmethod </em><tt class="descname">read</tt><big>(</big><em>net</em>, <em>fileName</em><big>)</big><a class="headerlink" href="#dta.TransitLine.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generator function that yields TransitLine objects 
-read from the input fileName</p>
+<dd><p>Generator function that yields <a class="reference internal" href="#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a> instances 
+read from file specified by <em>fileName</em>.  For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">transitline</span> <span class="ow">in</span> <span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">input_transit_filename</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">transitline</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -302,7 +325,7 @@ read from the input fileName</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -331,12 +354,12 @@ read from the input fileName</p>
         <li class="right" >
           <a href="dta.TPPlusTransitRoute.html" title="dta.TPPlusTransitRoute"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

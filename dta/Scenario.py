@@ -28,11 +28,15 @@ class Scenario(object):
     
     __all__ = ["__init__", "vehicleClassNames"]
 
-    def __init__(self, startTime, endTime):
+    def __init__(self, startTime = Time(0,0), endTime=Time(23,0)):
         """
-        Constructor.
+        Constructor of a Scenario.
         
-        *startTime* and *endTime* are dta.Utils.Time instances.
+        :param startTime: the start time of the scenario.
+        :type startTime: a :py:class:`dta.Time` instance
+        :param endTime: the end time of the scenario.
+        :type endTime: a :py:class:`dta.Time` instance
+        
         """
         self.startTime = startTime
         self.endTime   = endTime

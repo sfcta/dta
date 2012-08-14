@@ -34,4 +34,13 @@ dta.TimePlan
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TimePlan.CONTROL_TYPE_CONSTANT
+      ~TimePlan.CONTROL_TYPE_PRETIMED
+      ~TimePlan.TURN_ON_RED_NO
+      ~TimePlan.TURN_ON_RED_YES
+   
    

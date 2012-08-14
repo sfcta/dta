@@ -27,6 +27,7 @@ dta.TransitLine
       ~TransitLine.hasSegment
       ~TransitLine.isPathValid
       ~TransitLine.iterSegments
+      ~TransitLine.lastSegment
       ~TransitLine.read
       ~TransitLine.validatePath
    
@@ -38,6 +39,10 @@ dta.TransitLine
 
    .. autosummary::
    
+      ~TransitLine.LINE_ACTIVE
+      ~TransitLine.LINE_INACTIVE
+      ~TransitLine.LINE_TYPE_BUS
+      ~TransitLine.LINE_TYPE_TRAM
       ~TransitLine.id
    
    

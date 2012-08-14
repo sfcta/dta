@@ -63,4 +63,17 @@ dta.Centroid
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Centroid.COORDINATE_UNITS
+      ~Centroid.DEFAULT_LABEL
+      ~Centroid.DEFAULT_LEVEL
+      ~Centroid.GEOMETRY_TYPES
+      ~Centroid.GEOMETRY_TYPE_CENTROID
+      ~Centroid.GEOMETRY_TYPE_INTERSECTION
+      ~Centroid.GEOMETRY_TYPE_JUNCTION
+      ~Centroid.GEOMETRY_TYPE_VIRTUAL
+   
    

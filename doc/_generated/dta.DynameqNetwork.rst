@@ -20,11 +20,14 @@ dta.DynameqNetwork
       ~DynameqNetwork.addNode
       ~DynameqNetwork.addPlanCollectionInfo
       ~DynameqNetwork.areIDsUnique
+      ~DynameqNetwork.cleanStreetNames
       ~DynameqNetwork.deepcopy
       ~DynameqNetwork.findLinksForRoadLabels
       ~DynameqNetwork.findMovementForRoadLabels
+      ~DynameqNetwork.findNRoadLinksNearestCoords
       ~DynameqNetwork.findNodeForRoadLabels
       ~DynameqNetwork.findNodeNearestCoords
+      ~DynameqNetwork.getCleanStreetName
       ~DynameqNetwork.getLinkForId
       ~DynameqNetwork.getLinkForNodeIdPair
       ~DynameqNetwork.getLinkType
@@ -90,5 +93,25 @@ dta.DynameqNetwork
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DynameqNetwork.ADVANCED_FILE
+      ~DynameqNetwork.ADVANCED_HEADER
+      ~DynameqNetwork.BASE_FILE
+      ~DynameqNetwork.BASE_HEADER
+      ~DynameqNetwork.CONTROL_FILE
+      ~DynameqNetwork.CTRL_HEADER
+      ~DynameqNetwork.LINK_FLOW_OUT
+      ~DynameqNetwork.LINK_SPEED_OUT
+      ~DynameqNetwork.LINK_TIME_OUT
+      ~DynameqNetwork.MOVEMENT_FLOW_IN
+      ~DynameqNetwork.MOVEMENT_FLOW_OUT
+      ~DynameqNetwork.MOVEMENT_SPEED_OUT
+      ~DynameqNetwork.MOVEMENT_TIME_OUT
+      ~DynameqNetwork.PRIORITIES_FILE
+      ~DynameqNetwork.TRANSIT_FILE
    
    

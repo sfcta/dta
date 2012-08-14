@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.CountsVsVolumes &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.CountsVsVolumes &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.Demand" href="dta.Demand.html" />
     <link rel="prev" title="dta.ShortestPaths" href="dta.ShortestPaths.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.ShortestPaths.html" title="dta.ShortestPaths"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -64,47 +67,58 @@
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.__init__" title="dta.CountsVsVolumes.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(net,&nbsp;path,&nbsp;reverse)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.CountsVsVolumes.__init__" title="dta.CountsVsVolumes.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a>(net,&nbsp;path,&nbsp;reverse)</td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.getCountsAlongCorridor" title="dta.CountsVsVolumes.getCountsAlongCorridor"><tt class="xref py py-obj docutils literal"><span class="pre">getCountsAlongCorridor</span></tt></a>(startTimeInMin,&nbsp;...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.CountsVsVolumes.getCountsAlongCorridor" title="dta.CountsVsVolumes.getCountsAlongCorridor"><tt class="xref py py-obj docutils literal"><span class="pre">getCountsAlongCorridor</span></tt></a>(startTimeInMin,&nbsp;...)</td>
 <td>Generator method that returns the edge, left turn and right turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.getIntersectionLocations" title="dta.CountsVsVolumes.getIntersectionLocations"><tt class="xref py py-obj docutils literal"><span class="pre">getIntersectionLocations</span></tt></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.CountsVsVolumes.getIntersectionLocations" title="dta.CountsVsVolumes.getIntersectionLocations"><tt class="xref py py-obj docutils literal"><span class="pre">getIntersectionLocations</span></tt></a>()</td>
 <td>Return a list of intersection locations along the route</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.getIntersectionNames" title="dta.CountsVsVolumes.getIntersectionNames"><tt class="xref py py-obj docutils literal"><span class="pre">getIntersectionNames</span></tt></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.CountsVsVolumes.getIntersectionNames" title="dta.CountsVsVolumes.getIntersectionNames"><tt class="xref py py-obj docutils literal"><span class="pre">getIntersectionNames</span></tt></a>()</td>
 <td>Return a list of the intersection names along the route</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.getMidLinkLocations" title="dta.CountsVsVolumes.getMidLinkLocations"><tt class="xref py py-obj docutils literal"><span class="pre">getMidLinkLocations</span></tt></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.CountsVsVolumes.getMidLinkLocations" title="dta.CountsVsVolumes.getMidLinkLocations"><tt class="xref py py-obj docutils literal"><span class="pre">getMidLinkLocations</span></tt></a>()</td>
 <td>Return a list of link midpoint locations</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.getMovementVolumesCrossingCorridor" title="dta.CountsVsVolumes.getMovementVolumesCrossingCorridor"><tt class="xref py py-obj docutils literal"><span class="pre">getMovementVolumesCrossingCorridor</span></tt></a>(...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.CountsVsVolumes.getMovementVolumesCrossingCorridor" title="dta.CountsVsVolumes.getMovementVolumesCrossingCorridor"><tt class="xref py py-obj docutils literal"><span class="pre">getMovementVolumesCrossingCorridor</span></tt></a>(...)</td>
 <td>Return the left and right turn volumes</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.getVolumesAlongCorridor" title="dta.CountsVsVolumes.getVolumesAlongCorridor"><tt class="xref py py-obj docutils literal"><span class="pre">getVolumesAlongCorridor</span></tt></a>(startTimeInMin,&nbsp;...)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.CountsVsVolumes.getVolumesAlongCorridor" title="dta.CountsVsVolumes.getVolumesAlongCorridor"><tt class="xref py py-obj docutils literal"><span class="pre">getVolumesAlongCorridor</span></tt></a>(startTimeInMin,&nbsp;...)</td>
 <td>Generator method that returns the edge, leftTurn and right turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.iterMovementCountsCrossingRoute" title="dta.CountsVsVolumes.iterMovementCountsCrossingRoute"><tt class="xref py py-obj docutils literal"><span class="pre">iterMovementCountsCrossingRoute</span></tt></a>(route,&nbsp;...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.CountsVsVolumes.iterMovementCountsCrossingRoute" title="dta.CountsVsVolumes.iterMovementCountsCrossingRoute"><tt class="xref py py-obj docutils literal"><span class="pre">iterMovementCountsCrossingRoute</span></tt></a>(route,&nbsp;...)</td>
 <td>Generator method that yields the left turn and right turn counts</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.plotEdgeCountsAlongRoute" title="dta.CountsVsVolumes.plotEdgeCountsAlongRoute"><tt class="xref py py-obj docutils literal"><span class="pre">plotEdgeCountsAlongRoute</span></tt></a>(plot,&nbsp;route,&nbsp;...)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.CountsVsVolumes.plotEdgeCountsAlongRoute" title="dta.CountsVsVolumes.plotEdgeCountsAlongRoute"><tt class="xref py py-obj docutils literal"><span class="pre">plotEdgeCountsAlongRoute</span></tt></a>(plot,&nbsp;route,&nbsp;...)</td>
 <td>Adds count information to the provided plot</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.plotEdgeVolumesAlongRoute" title="dta.CountsVsVolumes.plotEdgeVolumesAlongRoute"><tt class="xref py py-obj docutils literal"><span class="pre">plotEdgeVolumesAlongRoute</span></tt></a>(route,&nbsp;...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#dta.CountsVsVolumes.plotEdgeVolumesAlongRoute" title="dta.CountsVsVolumes.plotEdgeVolumesAlongRoute"><tt class="xref py py-obj docutils literal"><span class="pre">plotEdgeVolumesAlongRoute</span></tt></a>(route,&nbsp;...)</td>
 <td>Creates a scatterplot with the Y axis representing edges along the route</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.CountsVsVolumes.writeVolumesVsCounts" title="dta.CountsVsVolumes.writeVolumesVsCounts"><tt class="xref py py-obj docutils literal"><span class="pre">writeVolumesVsCounts</span></tt></a>(startTimeInMin,&nbsp;...[,&nbsp;svg])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#dta.CountsVsVolumes.writeVolumesVsCounts" title="dta.CountsVsVolumes.writeVolumesVsCounts"><tt class="xref py py-obj docutils literal"><span class="pre">writeVolumesVsCounts</span></tt></a>(startTimeInMin,&nbsp;...[,&nbsp;svg])</td>
 <td>Export the corridor volume plot to the outPlotFileName. The volumes to be summarized are from</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="dta.CountsVsVolumes._getIntersectionNamesAndLocations">
+<tt class="descname">_getIntersectionNamesAndLocations</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CountsVsVolumes._getIntersectionNamesAndLocations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of intersection names and intersection locations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.CountsVsVolumes._getIntersectionNamesAndLocationsInReverse">
+<tt class="descname">_getIntersectionNamesAndLocationsInReverse</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.CountsVsVolumes._getIntersectionNamesAndLocationsInReverse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="dta.CountsVsVolumes.getCountsAlongCorridor">
 <tt class="descname">getCountsAlongCorridor</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.CountsVsVolumes.getCountsAlongCorridor" title="Permalink to this definition">¶</a></dt>
@@ -194,7 +208,7 @@ startTime to endTime.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -223,12 +237,12 @@ startTime to endTime.</p>
         <li class="right" >
           <a href="dta.ShortestPaths.html" title="dta.ShortestPaths"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
