@@ -21,19 +21,24 @@ import logging
 __all__ = ['DtaLogger', 'setupLogging']
 
 
-# for all dta logging needs!
+#: This is the instance of :py:class:`Logger` that gets used for all dta logging needs!
 DtaLogger = logging.getLogger("DTALogger")
-
 
 def setupLogging(infoLogFilename, debugLogFilename, logToConsole=True):
     """ 
-    Sets up the logger.  The infoLog is terse, just gives the bare minimum of details
-    so the network composition will be clear later.
-    The debuglog is very noisy, for debugging.
-        
-    Pass none to either.
-    Spews it all out to console too, if logToConsole is true.
+    Sets up the logger.
+    
+    :param infoLogFilename: info log file, will receive log messages of level INFO or more important.
+       Pass None for no info log file.
+    :param debugLogFilename: debug log file, will receive log messages of level DEBUG or more important.
+       Pass None for no debug log file.
+    :param logToConsole: if true, INFO and above will also go to the console.
+
     """
+    # already setup - don't setup more
+    if len(DtaLogger.handlers) == 3:
+        return
+    
     # create a logger
     DtaLogger.setLevel(logging.DEBUG)
 
