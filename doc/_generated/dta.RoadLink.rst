@@ -20,12 +20,16 @@ dta.RoadLink
       ~RoadLink.addShifts
       ~RoadLink.allowsAll
       ~RoadLink.coordinatesAlongLink
+      ~RoadLink.coordinatesAndShapePointIdxAlongLink
+      ~RoadLink.createReverseLink
+      ~RoadLink.disallowSplitForConnector
       ~RoadLink.euclideanLength
       ~RoadLink.euclideanLengthInLengthUnits
       ~RoadLink.findOutgoingMovement
       ~RoadLink.getAngle
       ~RoadLink.getCenterLine
       ~RoadLink.getDirection
+      ~RoadLink.getDistanceFromPoint
       ~RoadLink.getEndNode
       ~RoadLink.getEndNodeId
       ~RoadLink.getFacilityType
@@ -53,6 +57,7 @@ dta.RoadLink
       ~RoadLink.getReferenceAngle
       ~RoadLink.getReferenceAngleInDegrees
       ~RoadLink.getRightTurn
+      ~RoadLink.getShapePoints
       ~RoadLink.getShifts
       ~RoadLink.getSimInFlow
       ~RoadLink.getSimInVolume
@@ -93,5 +98,18 @@ dta.RoadLink
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RoadLink.DEFAULT_LABEL
+      ~RoadLink.DEFAULT_LANE_WIDTH
+      ~RoadLink.DEFAULT_LEVEL
+      ~RoadLink.DIR_EB
+      ~RoadLink.DIR_NB
+      ~RoadLink.DIR_SB
+      ~RoadLink.DIR_WB
+      ~RoadLink.LENGTH_UNITS
    
    

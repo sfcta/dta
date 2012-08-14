@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.Path &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.Path &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.ShortestPaths" href="dta.ShortestPaths.html" />
     <link rel="prev" title="dta.Movement" href="dta.Movement.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.Movement.html" title="dta.Movement"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -66,65 +69,65 @@ that are connected to each other</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.Path.__init__" title="dta.Path.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt>(net,&nbsp;name,&nbsp;iterLinks)</td>
+<td>Constructor that accepts a network, the path name, and a sequence of connected links instances</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.createPath" title="dta.Path.createPath"><tt class="xref py py-obj docutils literal"><span class="pre">Path.createPath</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">createPath</span></tt>(net,&nbsp;name,&nbsp;intersectionList[,&nbsp;cutoff])</td>
+<td>Returns a <a class="reference internal" href="#dta.Path" title="dta.Path"><tt class="xref py py-class docutils literal"><span class="pre">Path</span></tt></a> instance based on a shortest path that goes through all the intersections in the intersection list</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getCrossStreetName" title="dta.Path.getCrossStreetName"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getCrossStreetName</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCrossStreetName</span></tt>(node)</td>
+<td>Return the cross street name for the node</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getFirstLink" title="dta.Path.getFirstLink"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getFirstLink</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFirstLink</span></tt>()</td>
+<td>Return the first link in the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getFirstNode" title="dta.Path.getFirstNode"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getFirstNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFirstNode</span></tt>()</td>
+<td>Get the first node in the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getLastLink" title="dta.Path.getLastLink"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getLastLink</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLastLink</span></tt>()</td>
+<td>Return the last link in the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getLastNode" title="dta.Path.getLastNode"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getLastNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLastNode</span></tt>()</td>
+<td>Return the last node in the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getLengthInFeet" title="dta.Path.getLengthInFeet"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getLengthInFeet</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLengthInFeet</span></tt>()</td>
+<td>Get the length of the path in feet</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getLengthInMiles" title="dta.Path.getLengthInMiles"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getLengthInMiles</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLengthInMiles</span></tt>()</td>
+<td>Get the length of the path in miles</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getName" title="dta.Path.getName"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getName</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getName</span></tt>()</td>
+<td>Get the name of the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getNumLinks" title="dta.Path.getNumLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getNumLinks</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLinks</span></tt>()</td>
+<td>Get the number of links in the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getSimSpeedInMPH" title="dta.Path.getSimSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getSimSpeedInMPH</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimSpeedInMPH</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the simulated speed in mph durin the specified interval</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getSimTTInMin" title="dta.Path.getSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getSimTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the simulated travel time in minutes for the specified</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.getSimTTInMinToLink" title="dta.Path.getSimTTInMinToLink"><tt class="xref py py-obj docutils literal"><span class="pre">Path.getSimTTInMinToLink</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimTTInMinToLink</span></tt>(endLink,&nbsp;startTimeInMin,&nbsp;...)</td>
+<td>Return the simulated travel time in minutes for the specified</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.iterLinks" title="dta.Path.iterLinks"><tt class="xref py py-obj docutils literal"><span class="pre">Path.iterLinks</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterLinks</span></tt>()</td>
+<td>Return an iterator to the edges of the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.iterLinksInReverse" title="dta.Path.iterLinksInReverse"><tt class="xref py py-obj docutils literal"><span class="pre">Path.iterLinksInReverse</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterLinksInReverse</span></tt>()</td>
+<td>Return an iterator to the links in the path in reverse order</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.iterNodes" title="dta.Path.iterNodes"><tt class="xref py py-obj docutils literal"><span class="pre">Path.iterNodes</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterNodes</span></tt>()</td>
+<td>Return an iterator to the nodes in the path</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Path.writePathsToShp" title="dta.Path.writePathsToShp"><tt class="xref py py-obj docutils literal"><span class="pre">Path.writePathsToShp</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">writePathsToShp</span></tt>(paths,&nbsp;outFileName)</td>
+<td>Write the paths as a shapefile</td>
 </tr>
 </tbody>
 </table>
@@ -132,8 +135,7 @@ that are connected to each other</p>
 <dt id="dta.Path.createPath">
 <em class="property">classmethod </em><tt class="descname">createPath</tt><big>(</big><em>net</em>, <em>name</em>, <em>intersectionList</em>, <em>cutoff=0.69999999999999996</em><big>)</big><a class="headerlink" href="#dta.Path.createPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a <a class="reference internal" href="#dta.Path" title="dta.Path"><tt class="xref py py-class docutils literal"><span class="pre">Path</span></tt></a> instance based on a shortest path that goes through all the intersections in the intersection list</p>
-<blockquote>
-<div><ul>
+<ul>
 <li><p class="first"><em>net</em> is a <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> object</p>
 </li>
 <li><dl class="first docutils">
@@ -143,7 +145,6 @@ that are connected to each other</p>
 </dl>
 </li>
 </ul>
-</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -269,7 +270,7 @@ time period</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -298,12 +299,12 @@ time period</p>
         <li class="right" >
           <a href="dta.Movement.html" title="dta.Movement"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

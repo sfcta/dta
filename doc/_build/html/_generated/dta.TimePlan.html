@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.TimePlan &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.TimePlan &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.PlanCollectionInfo" href="dta.PlanCollectionInfo.html" />
     <link rel="prev" title="dta.Connector" href="dta.Connector.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.Connector.html" title="dta.Connector"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -73,71 +76,102 @@ the start and end times of the time plan</li>
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.TimePlan.__init__" title="dta.TimePlan.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt>(node,&nbsp;offset,&nbsp;planCollectionInfo[,&nbsp;...])</td>
+<td>Constructor.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.addPhase" title="dta.TimePlan.addPhase"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.addPhase</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">addPhase</span></tt>(phase)</td>
+<td>Add the given <em>phase</em> (an instance of <a class="reference internal" href="dta.Phase.html#dta.Phase" title="dta.Phase"><tt class="xref py py-class docutils literal"><span class="pre">Phase</span></tt></a>) to the timeplan</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getCycleLength" title="dta.TimePlan.getCycleLength"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getCycleLength</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCycleLength</span></tt>()</td>
+<td>Return the cycle length in seconds as an integer or float</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getDynameqStr" title="dta.TimePlan.getDynameqStr"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getDynameqStr</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getDynameqStr</span></tt>()</td>
+<td>Return a Dynameq parsable string that represents the time plan</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getNode" title="dta.TimePlan.getNode"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNode</span></tt>()</td>
+<td>Return the node instance the timeplan applies</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getNodeId" title="dta.TimePlan.getNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNodeId</span></tt>()</td>
+<td>Return the id of the node the timeplan applies</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getNumPhases" title="dta.TimePlan.getNumPhases"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getNumPhases</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumPhases</span></tt>()</td>
+<td>Return the number of phases</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getOffset" title="dta.TimePlan.getOffset"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getOffset</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOffset</span></tt>()</td>
+<td>Return the offset as an integer or float</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getPhase" title="dta.TimePlan.getPhase"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getPhase</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getPhase</span></tt>(phaseNum)</td>
+<td>Return the <a class="reference internal" href="dta.Phase.html#dta.Phase" title="dta.Phase"><tt class="xref py py-class docutils literal"><span class="pre">Phase</span></tt></a> instance with the given index.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.getPlanInfo" title="dta.TimePlan.getPlanInfo"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.getPlanInfo</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getPlanInfo</span></tt>()</td>
+<td>Return the plan info associated with this time plan, an instance of <a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo" title="dta.PlanCollectionInfo"><tt class="xref py py-class docutils literal"><span class="pre">PlanCollectionInfo</span></tt></a>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.isValid" title="dta.TimePlan.isValid"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.isValid</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isValid</span></tt>()</td>
+<td>Return True if the plan is valid otherwise return false.  See <a class="reference internal" href="#dta.TimePlan.validate" title="dta.TimePlan.validate"><tt class="xref py py-meth docutils literal"><span class="pre">TimePlan.validate()</span></tt></a> for</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.iterPhases" title="dta.TimePlan.iterPhases"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.iterPhases</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterPhases</span></tt>()</td>
+<td>Return an iterator to the <a class="reference internal" href="dta.Phase.html#dta.Phase" title="dta.Phase"><tt class="xref py py-class docutils literal"><span class="pre">Phase</span></tt></a> instances in the timeplan</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.readDynameqPlans" title="dta.TimePlan.readDynameqPlans"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.readDynameqPlans</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">readDynameqPlans</span></tt>(net,&nbsp;fileName)</td>
+<td>This method reads the Dynameq time plans contained in the input</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.setPermittedMovements" title="dta.TimePlan.setPermittedMovements"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.setPermittedMovements</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setPermittedMovements</span></tt>()</td>
+<td>Examines all the movements in the timeplan pairwise and if two movements conflict with each other it sets the lower priority movement as permitted.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.setSyncPhase" title="dta.TimePlan.setSyncPhase"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.setSyncPhase</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSyncPhase</span></tt>(phaseId)</td>
+<td>Set the phase with input id (an integer) the as the sync phase.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.TimePlan.validate" title="dta.TimePlan.validate"><tt class="xref py py-obj docutils literal"><span class="pre">TimePlan.validate</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">validate</span></tt>([allRedPhaseOK])</td>
+<td>Make the following checks to the timeplan.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">CONTROL_TYPE_CONSTANT</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">CONTROL_TYPE_PRETIMED</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">TURN_ON_RED_NO</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">TURN_ON_RED_YES</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
+<dt id="dta.TimePlan.CONTROL_TYPE_CONSTANT">
+<tt class="descname">CONTROL_TYPE_CONSTANT</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.TimePlan.CONTROL_TYPE_CONSTANT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.TimePlan.CONTROL_TYPE_PRETIMED">
+<tt class="descname">CONTROL_TYPE_PRETIMED</tt><em class="property"> = 1</em><a class="headerlink" href="#dta.TimePlan.CONTROL_TYPE_PRETIMED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="dta.TimePlan.TURN_ON_RED_NO">
-<tt class="descname">TURN_ON_RED_NO</tt><a class="headerlink" href="#dta.TimePlan.TURN_ON_RED_NO" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">TURN_ON_RED_NO</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.TimePlan.TURN_ON_RED_NO" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn on red is not allowed</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.TimePlan.TURN_ON_RED_YES">
-<tt class="descname">TURN_ON_RED_YES</tt><a class="headerlink" href="#dta.TimePlan.TURN_ON_RED_YES" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">TURN_ON_RED_YES</tt><em class="property"> = 1</em><a class="headerlink" href="#dta.TimePlan.TURN_ON_RED_YES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn on red is allowed</p>
 </dd></dl>
 
@@ -275,7 +309,7 @@ not a phase movement that does not exist in the node.</li>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -304,12 +338,12 @@ not a phase movement that does not exist in the node.</li>
         <li class="right" >
           <a href="dta.Connector.html" title="dta.Connector"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

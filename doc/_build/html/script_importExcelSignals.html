@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Importing Excel Signals &mdash; DTA Anyway v1.0 documentation</title>
+    <title>Importing Excel Signals &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="index.html" />
     <link rel="next" title="Importing Stop Signs" href="script_importUnsignalizedIntersections.html" />
     <link rel="prev" title="Importing Transit Routes" href="script_importTPPlusTransitRoutes.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="script_importTPPlusTransitRoutes.html" title="Importing Transit Routes"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -78,6 +81,16 @@
 <p>Contains the timing information for a particular period</p>
 <p>the timing consists of a list of floating numbers that each of which 
 corresponds to a different state of the timing plan</p>
+<dl class="attribute">
+<dt id="importExcelSignals.ExcelSignalTiming.DEFAULT_OFFSET">
+<tt class="descname">DEFAULT_OFFSET</tt><em class="property"> = 0</em><a class="headerlink" href="#importExcelSignals.ExcelSignalTiming.DEFAULT_OFFSET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="importExcelSignals.ExcelSignalTiming.DEFAULT_VALUE">
+<tt class="descname">DEFAULT_VALUE</tt><em class="property"> = -1</em><a class="headerlink" href="#importExcelSignals.ExcelSignalTiming.DEFAULT_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="importExcelSignals.ExcelSignalTiming.getNumIntervals">
 <tt class="descname">getNumIntervals</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/importExcelSignals.html#ExcelSignalTiming.getNumIntervals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importExcelSignals.ExcelSignalTiming.getNumIntervals" title="Permalink to this definition">¶</a></dt>
@@ -146,6 +159,21 @@ corresponds to a different state of the timing plan</p>
 <p>Represents the state of a phase for a specfic duration
 The state can be one of GREEN, YELLOW and RED:
 and the duration is a floating number</p>
+<dl class="attribute">
+<dt id="importExcelSignals.PhaseState.GREEN">
+<tt class="descname">GREEN</tt><em class="property"> = 0</em><a class="headerlink" href="#importExcelSignals.PhaseState.GREEN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="importExcelSignals.PhaseState.RED">
+<tt class="descname">RED</tt><em class="property"> = 2</em><a class="headerlink" href="#importExcelSignals.PhaseState.RED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="importExcelSignals.PhaseState.YELLOW">
+<tt class="descname">YELLOW</tt><em class="property"> = 1</em><a class="headerlink" href="#importExcelSignals.PhaseState.YELLOW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="exception">
@@ -169,6 +197,11 @@ and the duration is a floating number</p>
 <em class="property">class </em><tt class="descclassname">importExcelSignals.</tt><tt class="descname">SignalData</tt><a class="reference internal" href="_modules/importExcelSignals.html#SignalData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importExcelSignals.SignalData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Class that represents the signal data for an intersection.</p>
+<dl class="attribute">
+<dt id="importExcelSignals.SignalData.attrNames">
+<tt class="descname">attrNames</tt><em class="property"> = ['fileName', 'iName', 'topLeftCell', 'phaseSeqCell', 'pedPhaseCell', 'sigInterCell', 'colPhaseData', 'lastColPhaseData', 'gMov1', 'gMov2', 'gMov3', 'gMov4', 'gMov5', 'gMov6', 'gMov7', 'gMov8']</em><a class="headerlink" href="#importExcelSignals.SignalData.attrNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="importExcelSignals.SignalData.getNumTimeIntervals">
 <tt class="descname">getNumTimeIntervals</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/importExcelSignals.html#SignalData.getNumTimeIntervals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importExcelSignals.SignalData.getNumTimeIntervals" title="Permalink to this definition">¶</a></dt>
@@ -197,11 +230,21 @@ by the startHour and endHour input arguments</p>
 <p>Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="importExcelSignals.SignalData.i">
+<tt class="descname">i</tt><em class="property"> = 8</em><a class="headerlink" href="#importExcelSignals.SignalData.i" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="importExcelSignals.SignalData.iterSignalTiming">
 <tt class="descname">iterSignalTiming</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/importExcelSignals.html#SignalData.iterSignalTiming"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importExcelSignals.SignalData.iterSignalTiming" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the signal Timing objects</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="importExcelSignals.SignalData.mappingInfo">
+<tt class="descname">mappingInfo</tt><em class="property"> = ['IntersectionName(for mapping)', 'mapped Intersection Name', 'mapped Node id']</em><a class="headerlink" href="#importExcelSignals.SignalData.mappingInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="importExcelSignals.SignalData.selectCSO">
@@ -209,6 +252,11 @@ by the startHour and endHour input arguments</p>
 <dd><p>returns the ExcelSignalTiming if there is one that is in operation during the 
 input hours. Otherwise it returns none</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="importExcelSignals.SignalData.streets">
+<tt class="descname">streets</tt><em class="property"> = ['Street0', 'Street1', 'Street2', 'Street3']</em><a class="headerlink" href="#importExcelSignals.SignalData.streets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="importExcelSignals.SignalData.toDict">
@@ -235,7 +283,7 @@ input hours. Otherwise it returns none</p>
 
 <dl class="data">
 <dt id="importExcelSignals.USAGE">
-<tt class="descclassname">importExcelSignals.</tt><tt class="descname">USAGE</tt><a class="headerlink" href="#importExcelSignals.USAGE" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">importExcelSignals.</tt><tt class="descname">USAGE</tt><em class="property"> = '\n\n python importExcelSignals.py dynameq_net_dir dynameq_net_prefix excel_signals_dir startTime endTime output_dynameq_dir output_dynameq_net_prefix [overrideturntypes.csv]\n \n e.g.\n \n python importExcelSignals.py . sf Y:\\dta\\SanFrancisco\\2010\\excelSignalCards 15:30 18:30 Y:\\dta\\SanFrancisco\\2010\\network\\movement_override.csv\n \n This script reads all the excel signal cards in the excel_signal_cards dir and converts them to the dynameq network\n specified with the first two arguments.\n \n Only signals that are active in the given time period are converted.\n \n The script writes a new dynameq network that includes the signals to output_dynameq_dir using the prefix output_dynameq_net_prefix\n '</em><a class="headerlink" href="#importExcelSignals.USAGE" title="Permalink to this definition">¶</a></dt>
 <dd><p>How to use this script</p>
 </dd></dl>
 
@@ -269,7 +317,7 @@ with the cleaned street names</p>
 
 <dl class="function">
 <dt id="importExcelSignals.convertSignalToDynameq">
-<tt class="descclassname">importExcelSignals.</tt><tt class="descname">convertSignalToDynameq</tt><big>(</big><em>net</em>, <em>node</em>, <em>card</em>, <em>planInfo</em><big>)</big><a class="reference internal" href="_modules/importExcelSignals.html#convertSignalToDynameq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importExcelSignals.convertSignalToDynameq" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">importExcelSignals.</tt><tt class="descname">convertSignalToDynameq</tt><big>(</big><em>net</em>, <em>node</em>, <em>card</em>, <em>planInfo</em>, <em>startTime</em>, <em>endTime</em><big>)</big><a class="reference internal" href="_modules/importExcelSignals.html#convertSignalToDynameq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importExcelSignals.convertSignalToDynameq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the excel signal described by the card object to
 a Dynameq time plan and return it. The input planInfo
 object determines the time period of operation</p>
@@ -473,7 +521,7 @@ the first argument</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -502,12 +550,12 @@ the first argument</p>
         <li class="right" >
           <a href="script_importTPPlusTransitRoutes.html" title="Importing Transit Routes"
              >previous</a> |</li>
-        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

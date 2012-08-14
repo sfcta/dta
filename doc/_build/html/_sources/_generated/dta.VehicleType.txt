@@ -19,4 +19,10 @@ dta.VehicleType
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VehicleType.LENGTH_UNITS
+   
    

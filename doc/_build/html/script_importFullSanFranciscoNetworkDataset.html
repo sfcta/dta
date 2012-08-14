@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Batch File for Entire Import Process &mdash; DTA Anyway v1.0 documentation</title>
+    <title>Batch File for Entire Import Process &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="index.html" />
     <link rel="next" title="Creating the SF DTA Network from Cube Network and Defining the Scenario" href="script_createSFNetworkFromCubeNetwork.html" />
     <link rel="prev" title="dta.Utils" href="_generated/dta.Utils.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="_generated/dta.Utils.html" title="dta.Utils"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -155,7 +158,8 @@
  99
 100
 101
-102</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
+102
+103</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
 
 <span class="c">:: DTA Anyway code location is required</span>
 <span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_CODE_DIR (
@@ -230,9 +234,10 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importUnsi
 <span class="c">::</span>
 <span class="nl">:createDemand</span>
 <span class="k">FOR</span> <span class="nv">%%V</span> IN (Car_NoToll Truck_NoToll) <span class="k">DO</span> (
-  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> . sf_trn Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>.csv <span class="nv">%%V</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">00</span><span class="nl">:15</span> demand_<span class="nv">%%V</span>.dat
+  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> . sf_trn Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="nv">%%V</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> demand_<span class="nv">%%V</span>.dat 
   <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
 )
+
 <span class="c">:: primary output: demand_{Car,Truck}_NoToll.dat</span>
 <span class="c">:: log     output: importCubeDemand.{DEBUG,INFO}.log</span>
 
@@ -281,7 +286,7 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_attachCoun
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -310,12 +315,12 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_attachCoun
         <li class="right" >
           <a href="_generated/dta.Utils.html" title="dta.Utils"
              >previous</a> |</li>
-        <li><a href="index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.Movement &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.Movement &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.Path" href="dta.Path.html" />
     <link rel="prev" title="dta.TransitSegment" href="dta.TransitSegment.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.TransitSegment.html" title="dta.TransitSegment"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -63,8 +66,7 @@ that define the movement from one to the other (is it a turn?  what&#8217;s the 
 <dt id="dta.Movement.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>node</em>, <em>incomingLink</em>, <em>outgoingLink</em>, <em>freeflowSpeed</em>, <em>vehicleClassGroup</em>, <em>numLanes=None</em>, <em>incomingLane=None</em>, <em>outgoingLane=None</em>, <em>followupTime=0</em><big>)</big><a class="headerlink" href="#dta.Movement.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><em>node</em> is a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance where the movement is located</li>
 <li><em>incomingLink</em>, <em>outgoingLink</em> are <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instances</li>
 <li><em>freeflowSpeed</em> is the maximum speed of the movement; pass None to use that of the <em>incomingLink</em></li>
@@ -81,193 +83,260 @@ of the lane closest to the inside of the roadway (that is, the one with the high
 This attribute can vary over time.  Pass <cite>None</cite> to let the software choose.</li>
 <li><em>followupTime</em> is the follow-up time for the movement.  This attribute can vary over time.</li>
 </ul>
-</div></blockquote>
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.Movement.__init__" title="dta.Movement.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt>(node,&nbsp;incomingLink,&nbsp;outgoingLink,&nbsp;...)</td>
+<td>Constructor.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getAtNode" title="dta.Movement.getAtNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getAtNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getAtNode</span></tt>()</td>
+<td>Returns the node at which the movement is happening</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getCenterLine" title="dta.Movement.getCenterLine"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getCenterLine</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCenterLine</span></tt>()</td>
+<td>Get a list of points representing the movement</td>
 </tr>
-<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getDestinationNode</span></tt></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getDirection</span></tt>()</td>
+<td>Return the direction of the movement as a string</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getDirection" title="dta.Movement.getDirection"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getDirection</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getEndNode</span></tt>()</td>
+<td>Returns the end node of outgoingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getEndNode" title="dta.Movement.getEndNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getEndNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getEndNodeId</span></tt>()</td>
+<td>Returns the end node of outgoingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getEndNodeId" title="dta.Movement.getEndNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getEndNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFreeFlowSpeedInMPH</span></tt>()</td>
+<td>Return the free flow travel speed in mph</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getFreeFlowSpeedInMPH" title="dta.Movement.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getFreeFlowSpeedInMPH</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFreeFlowTTInMin</span></tt>()</td>
+<td>Return the free flow travel time in minutes</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getFreeFlowTTInMin" title="dta.Movement.getFreeFlowTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getFreeFlowTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getId</span></tt>()</td>
+<td>Return a string containing the three node ids that define the movement</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getId" title="dta.Movement.getId"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getIncomingLink</span></tt>()</td>
+<td>Returns the incomingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getIncomingLink" title="dta.Movement.getIncomingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getIncomingLink</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLanes</span></tt>()</td>
+<td>Return the number of lanes the movement has</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getNumLanes" title="dta.Movement.getNumLanes"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getNumLanes</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the number of vehicles executing the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getObsCount" title="dta.Movement.getObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getObsCount</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutgoingLink</span></tt>()</td>
+<td>Returns the outgoung, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</td>
 </tr>
-<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getOriginNode</span></tt></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getProtectedCapacity</span></tt>(planInfo)</td>
+<td>Return the capacity of the movement in vehicles per hour</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getOutgoingLink" title="dta.Movement.getOutgoingLink"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getOutgoingLink</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimInFlow</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the simulated flow for the specified time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getProtectedCapacity" title="dta.Movement.getProtectedCapacity"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getProtectedCapacity</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimInVolume</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the incoming flow from the start to end</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimInFlow" title="dta.Movement.getSimInFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimInFlow</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimOutFlow</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the outgoing flow for the specified time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimInVolume" title="dta.Movement.getSimInVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimInVolume</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimOutVolume</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the outgoing flow from the start to end</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimOutFlow" title="dta.Movement.getSimOutFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimOutFlow</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimSpeedInMPH</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the travel time of the first edge of the movement in</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimOutVolume" title="dta.Movement.getSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimOutVolume</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the mean movement travel time in minutes of</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimSpeedInMPH" title="dta.Movement.getSimSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimSpeedInMPH</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getStartNode</span></tt>()</td>
+<td>Returns the start node of incomingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getSimTTInMin" title="dta.Movement.getSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getSimTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getStartNodeId</span></tt>()</td>
+<td>Returns the start node of incomingLink, a <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instance</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getStartNode" title="dta.Movement.getStartNode"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getStartNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getTimeVaryingCostAt</span></tt>(timeInMin)</td>
+<td>Return the cost (in min) for the time period begining at the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getStartNodeId" title="dta.Movement.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getStartNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getTimeVaryingCostTimeStep</span></tt>()</td>
+<td>Return the time step that is used for the time varying costs</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getTimeVaryingCostAt" title="dta.Movement.getTimeVaryingCostAt"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getTimeVaryingCostAt</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getTurnType</span></tt>()</td>
+<td>Returns the type of the movement, one of <a class="reference internal" href="#dta.Movement.DIR_UTURN" title="dta.Movement.DIR_UTURN"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_UTURN</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_RT" title="dta.Movement.DIR_RT"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_RT</span></tt></a>, <a class="reference internal" href="#dta.Movement.DIR_RT2" title="dta.Movement.DIR_RT2"><tt class="xref py py-attr docutils literal"><span class="pre">Movement.DIR_RT2</span></tt></a>,</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getTimeVaryingCostTimeStep" title="dta.Movement.getTimeVaryingCostTimeStep"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getTimeVaryingCostTimeStep</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getVehicleClassGroup</span></tt>()</td>
+<td>Return the vehicle class group</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getTurnType</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasCountInfo</span></tt>()</td>
+<td>Return True if the movement contains count information else false</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.getVehicleClassGroup" title="dta.Movement.getVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.getVehicleClassGroup</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return True if there is a count for the input time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.hasCountInfo" title="dta.Movement.hasCountInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.hasCountInfo</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isInConflict</span></tt>(other)</td>
+<td>Return true if the current movement is conflicting with the other one</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.hasObsCount" title="dta.Movement.hasObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.hasObsCount</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isLeftTurn</span></tt>()</td>
+<td>Return True if the movement is a left turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.isInConflict" title="dta.Movement.isInConflict"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isInConflict</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isProhibitedToAllVehicleClassGroups</span></tt>()</td>
+<td>Return True if the movement is prohibited for all vehicles</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.isLeftTurn" title="dta.Movement.isLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isLeftTurn</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isRightTurn</span></tt>()</td>
+<td>Return True if the movement is a right turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.isProhibitedToAllVehicleClassGroups" title="dta.Movement.isProhibitedToAllVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isProhibitedToAllVehicleClassGroups</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isThruTurn</span></tt>()</td>
+<td>Return True if the movement is a Through movement</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.isRightTurn" title="dta.Movement.isRightTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isRightTurn</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isUTurn</span></tt>()</td>
+<td>Return True if the movement is a U-Turn.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.isThruTurn" title="dta.Movement.isThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isThruTurn</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">prohibitAllVehicleClassGroups</span></tt>()</td>
+<td>Set the movement to prohibited to all vehicles</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.isUTurn" title="dta.Movement.isUTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.isUTurn</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">prohibitAllVehiclesButTransit</span></tt>()</td>
+<td>Set the movement to prohibited to all vehicles but transit</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.prohibitAllVehicleClassGroups" title="dta.Movement.prohibitAllVehicleClassGroups"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.prohibitAllVehicleClassGroups</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setNumLanes</span></tt>(numlanes)</td>
+<td>Mutator for the number of lanes of the movement</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.prohibitAllVehiclesButTransit" title="dta.Movement.prohibitAllVehiclesButTransit"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.prohibitAllVehiclesButTransit</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;count)</td>
+<td>Set the number of vehicles executing the movement</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setObsCount" title="dta.Movement.setObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setObsCount</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setOverrideTurnType</span></tt>(turntype)</td>
+<td>Sets this movement to use the given turntype rather than figuring it out from the angle between the incoming and outgoing link.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setOverrideTurnType" title="dta.Movement.setOverrideTurnType"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setOverrideTurnType</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setPenaltyInMin</span></tt>(penalty)</td>
+<td>Add the input penalty to the simulated movement travel time</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setPenaltyInMin" title="dta.Movement.setPenaltyInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setPenaltyInMin</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimInVolume</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;...)</td>
+<td>Specify the simulated incoming flow (vehicles per HOUR) for the supplied time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setSimInVolume" title="dta.Movement.setSimInVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimInVolume</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimOutVolume</span></tt>(startTimeInMin,&nbsp;...)</td>
+<td>Specify the simulated outgoing flow (vehicles per HOUR) for the supplied time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setSimOutVolume" title="dta.Movement.setSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimOutVolume</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;...)</td>
+<td>Specify the simulated average travel time for the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setSimTTInMin" title="dta.Movement.setSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setSimTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setTimeVaryingCosts</span></tt>(timeVaryingCosts,&nbsp;timeStep)</td>
+<td>Inputs:timeVaryingCosts is an array containing the cost</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setTimeVaryingCosts" title="dta.Movement.setTimeVaryingCosts"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setTimeVaryingCosts</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setVehicleClassGroup</span></tt>(vehicleClassGroup)</td>
+<td>Set the vehicle class group for this movement</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.setVehicleClassGroup" title="dta.Movement.setVehicleClassGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.setVehicleClassGroup</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">simpleMovementFactory</span></tt>(incomingLink,&nbsp;...)</td>
+<td>Return a movement connecting the input links with the given permissions</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Movement.simpleMovementFactory" title="dta.Movement.simpleMovementFactory"><tt class="xref py py-obj docutils literal"><span class="pre">Movement.simpleMovementFactory</span></tt></a></td>
-<td></td>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_LT</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_LT2</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_RT</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_RT2</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_TH</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_UTURN</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">PERMITTED_ALL</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">PROHIBITED_ALL</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">PROTECTED_CAPACITY_PER_HOUR_PER_LANE</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
 <dt id="dta.Movement.DIR_LT">
-<tt class="descname">DIR_LT</tt><a class="headerlink" href="#dta.Movement.DIR_LT" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DIR_LT</tt><em class="property"> = 'LT'</em><a class="headerlink" href="#dta.Movement.DIR_LT" title="Permalink to this definition">¶</a></dt>
 <dd><p>left turn movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.Movement.DIR_LT2">
-<tt class="descname">DIR_LT2</tt><a class="headerlink" href="#dta.Movement.DIR_LT2" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DIR_LT2</tt><em class="property"> = 'LT2'</em><a class="headerlink" href="#dta.Movement.DIR_LT2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Left turn 2 (diff from LT?) movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.Movement.DIR_RT">
-<tt class="descname">DIR_RT</tt><a class="headerlink" href="#dta.Movement.DIR_RT" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DIR_RT</tt><em class="property"> = 'RT'</em><a class="headerlink" href="#dta.Movement.DIR_RT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Right turn movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.Movement.DIR_RT2">
-<tt class="descname">DIR_RT2</tt><a class="headerlink" href="#dta.Movement.DIR_RT2" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DIR_RT2</tt><em class="property"> = 'RT2'</em><a class="headerlink" href="#dta.Movement.DIR_RT2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Right turn 2 (diff from RT?) movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.Movement.DIR_TH">
-<tt class="descname">DIR_TH</tt><a class="headerlink" href="#dta.Movement.DIR_TH" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DIR_TH</tt><em class="property"> = 'TH'</em><a class="headerlink" href="#dta.Movement.DIR_TH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Throughmovement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="dta.Movement.DIR_UTURN">
-<tt class="descname">DIR_UTURN</tt><a class="headerlink" href="#dta.Movement.DIR_UTURN" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DIR_UTURN</tt><em class="property"> = 'UTURN'</em><a class="headerlink" href="#dta.Movement.DIR_UTURN" title="Permalink to this definition">¶</a></dt>
 <dd><p>U-turn movement (returned by <a class="reference internal" href="#dta.Movement.getTurnType" title="dta.Movement.getTurnType"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.getTurnType()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.PERMITTED_ALL">
+<tt class="descname">PERMITTED_ALL</tt><em class="property"> = 'all'</em><a class="headerlink" href="#dta.Movement.PERMITTED_ALL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.PROHIBITED_ALL">
+<tt class="descname">PROHIBITED_ALL</tt><em class="property"> = 'prohibited'</em><a class="headerlink" href="#dta.Movement.PROHIBITED_ALL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE">
+<tt class="descname">PROTECTED_CAPACITY_PER_HOUR_PER_LANE</tt><em class="property"> = 1900</em><a class="headerlink" href="#dta.Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement._checkInputTimeStep">
+<tt class="descname">_checkInputTimeStep</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement._checkInputTimeStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input time step should always be equal to the sim time step</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement._checkOutputTimeStep">
+<tt class="descname">_checkOutputTimeStep</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement._checkOutputTimeStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that the difference in the input times is in multiples 
+of the simulation time step</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Movement._validateInputTimes">
+<tt class="descname">_validateInputTimes</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Movement._validateInputTimes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that the start time is less than the end time and that both 
+times are in the simulation time window</p>
 </dd></dl>
 
 <dl class="method">
@@ -500,6 +569,12 @@ of between 160 and 180 degrees according to <a class="reference internal" href="
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.Movement.setNumLanes">
+<tt class="descname">setNumLanes</tt><big>(</big><em>numlanes</em><big>)</big><a class="headerlink" href="#dta.Movement.setNumLanes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutator for the number of lanes of the movement</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.Movement.setObsCount">
 <tt class="descname">setObsCount</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>count</em><big>)</big><a class="headerlink" href="#dta.Movement.setObsCount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the number of vehicles executing the movement 
@@ -584,7 +659,7 @@ defined by the vehicle class group.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -613,12 +688,12 @@ defined by the vehicle class group.</p>
         <li class="right" >
           <a href="dta.TransitSegment.html" title="dta.TransitSegment"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

@@ -24,4 +24,12 @@ dta.VehicleClassGroup
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VehicleClassGroup.CLASSDEFINITION_ALL
+      ~VehicleClassGroup.CLASSDEFINITION_PROHIBITED
+      ~VehicleClassGroup.CLASSDEFINITION_TRANSIT
+   
    

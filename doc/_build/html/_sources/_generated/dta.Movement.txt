@@ -16,7 +16,6 @@ dta.Movement
       ~Movement.__init__
       ~Movement.getAtNode
       ~Movement.getCenterLine
-      ~Movement.getDestinationNode
       ~Movement.getDirection
       ~Movement.getEndNode
       ~Movement.getEndNodeId
@@ -26,7 +25,6 @@ dta.Movement
       ~Movement.getIncomingLink
       ~Movement.getNumLanes
       ~Movement.getObsCount
-      ~Movement.getOriginNode
       ~Movement.getOutgoingLink
       ~Movement.getProtectedCapacity
       ~Movement.getSimInFlow
@@ -51,6 +49,7 @@ dta.Movement
       ~Movement.isUTurn
       ~Movement.prohibitAllVehicleClassGroups
       ~Movement.prohibitAllVehiclesButTransit
+      ~Movement.setNumLanes
       ~Movement.setObsCount
       ~Movement.setOverrideTurnType
       ~Movement.setPenaltyInMin
@@ -64,5 +63,19 @@ dta.Movement
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Movement.DIR_LT
+      ~Movement.DIR_LT2
+      ~Movement.DIR_RT
+      ~Movement.DIR_RT2
+      ~Movement.DIR_TH
+      ~Movement.DIR_UTURN
+      ~Movement.PERMITTED_ALL
+      ~Movement.PROHIBITED_ALL
+      ~Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
    
    

@@ -19,4 +19,13 @@ dta.TPPlusTransitNode
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TPPlusTransitNode.ACCESS_ALIGHT
+      ~TPPlusTransitNode.ACCESS_BOARD
+      ~TPPlusTransitNode.ACCESS_BOTH
+      ~TPPlusTransitNode.DELAY_VAL
+   
    

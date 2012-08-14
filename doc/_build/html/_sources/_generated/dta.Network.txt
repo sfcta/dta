@@ -20,11 +20,14 @@ dta.Network
       ~Network.addNode
       ~Network.addPlanCollectionInfo
       ~Network.areIDsUnique
+      ~Network.cleanStreetNames
       ~Network.deepcopy
       ~Network.findLinksForRoadLabels
       ~Network.findMovementForRoadLabels
+      ~Network.findNRoadLinksNearestCoords
       ~Network.findNodeForRoadLabels
       ~Network.findNodeNearestCoords
+      ~Network.getCleanStreetName
       ~Network.getLinkForId
       ~Network.getLinkForNodeIdPair
       ~Network.getLinkType

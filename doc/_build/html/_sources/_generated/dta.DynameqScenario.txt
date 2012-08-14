@@ -30,4 +30,11 @@ dta.DynameqScenario
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DynameqScenario.ADVANCED_HEADER
+      ~DynameqScenario.SCENARIO_FILE
+   
    
