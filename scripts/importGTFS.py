@@ -112,21 +112,23 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
     
     The last three values will be None if no roadlink is found.
     """
-    if stop['stop_id'] in stopid_to_link: return
+    stop_id = stop['stop_id']
+    if stop_id in stopid_to_link: return
     
     QUICK_DIST = 200 # feet
             
     (x,y) = convertLongitudeLatitudeToXY(stop['stop_lon'], stop['stop_lat'])
 
-    closest_tuples = network.findNRoadLinksNearestCoords(x,y, n=4, quick_dist=QUICK_DIST)
+    closest_tuples = network.findNRoadLinksNearestCoords(x,y, n=6, quick_dist=QUICK_DIST)
     
     # none found - bummer!
     if len(closest_tuples) == 0:
-        stopid_to_link[stop['stop_id']] = (x, y, stop['stop_name'], None, None, None)
+        stopid_to_link[stop_id] = (x, y, stop['stop_name'], None, None, None)
     else:
         # check if the stop name changes things
         stop_name_parts = stop['stop_name'].split(" ")
         stop_str = stop_name_parts[0].upper()
+        stop_str = stop_str.replace("MCALLISTER", "MC ALLISTER")
         
         # score best matches
         scores = []
@@ -147,9 +149,43 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
             start_end_ids = (close_tuple[0].getStartNode().getId(), close_tuple[0].getEndNode().getId())
             score += (-10 if start_end_ids==(26811,26908) else 0)
             score += (-10 if start_end_ids==(26908,26811) else 0)
+            
             # hack: stop 7334 goes to the wrong side of the street.  it appears to have coords slightly off?
-            score += (-10 if start_end_ids==(20299,20298) else 0)
-            score += (-10 if start_end_ids==(20296,20299) else 0)
+            score += (-10 if (stop_id=='7334' and close_tuple[0].getDirection() == dta.RoadLink.DIR_WB) else 0)
+            # ? score += (-10 if start_end_ids==(20296,20299) else 0)
+            
+            # hack: stop 7073 goes to the wrong side of the street.  it should be NB not SB
+            score += (-10 if (stop_id=='7073' and close_tuple[0].getDirection() == dta.RoadLink.DIR_SB) else 0)
+            
+            # hack: stop 3255 goes to the wrong side of the street.  it should be EB not WB
+            score += (-10 if (stop_id=='3255' and close_tuple[0].getDirection() == dta.RoadLink.DIR_WB) else 0)
+            
+            # hack: stop 5486 is on the border but goes to the wrong one
+            score += (-10 if (stop_id=='5486' and start_end_ids==(20197,20208)) else 0)
+            
+            # hack: stop 3670 goes to the wrong side of the street.  it should be EB not WB
+            score += (-10 if (stop_id=='3670' and close_tuple[0].getDirection() == dta.RoadLink.DIR_WB) else 0)
+            
+            # hack: stop 7554 goes to the wrong side of the street.  it should be EB not WB
+            score += (-10 if (stop_id=='7554' and close_tuple[0].getDirection() == dta.RoadLink.DIR_WB) else 0)
+            
+            # hack: stop 5247 goes to the wrong side of the street.  it should be SB not NB
+            score += (-10 if (stop_id=='5247' and close_tuple[0].getDirection() == dta.RoadLink.DIR_NB) else 0)
+            
+            # hack: stop 7269 goes to the wrong side of the street.  it should be EB not WB
+            score += (-10 if (stop_id=='7269' and close_tuple[0].getDirection() == dta.RoadLink.DIR_NB) else 0)            
+
+            # hack: stop 2026 goes to the wrong side of the street.  it should be NB not SB
+            score += (-10 if (stop_id=='2026' and close_tuple[0].getDirection() == dta.RoadLink.DIR_SB) else 0)            
+
+            # hack: stop 3210 goes to the wrong side of the street.  it should be SB not NB
+            score += (-10 if (stop_id=='3210' and close_tuple[0].getDirection() == dta.RoadLink.DIR_NB) else 0)     
+                        
+            # hack: stop 6781 goes to the wrong side of the street.  it should be WB not EB
+            score += (-10 if (stop_id=='6781' and close_tuple[0].getDirection() == dta.RoadLink.DIR_EB) else 0)     
+
+            # hack: stop 5878 goes to the wrong side of the street.  it should be EB not WB
+            score += (-10 if (stop_id=='5878' and close_tuple[0].getDirection() == dta.RoadLink.DIR_WB) else 0)  
             
             scores.append(score)
         
@@ -157,15 +193,16 @@ def addStopIdToLinkToDict(stop, network, stopid_to_link):
         max_score = max(scores)
         max_score_idx = scores.index(max_score)
         
-        # debug if not the first one
+        # debug
+        dta.DtaLogger.debug("stop %s %s" % (stop['stop_id'], stop['stop_name']))
         if max_score_idx > 0:
-            dta.DtaLogger.debug("Falling back to secondary link %d for stop %s %s" %
-                                (closest_tuples[max_score_idx][0].getId(), stop['stop_id'], stop['stop_name']))
-            # this is noisy
-            for idx in range(len(scores)):
-                dta.DtaLogger.debug("link %7d (-30%s) score=%d" % (closest_tuples[idx][0].getId(),
-                                                                closest_tuples[idx][0].getLabel(),
-                                                                scores[idx]))
+            dta.DtaLogger.debug(" -> Falling back to secondary link %d" % closest_tuples[max_score_idx][0].getId())
+        
+        # this is noisy
+        for idx in range(len(scores)):
+            dta.DtaLogger.debug("  link %7d (-30%s) score=%d" % (closest_tuples[idx][0].getId(),
+                                                                 closest_tuples[idx][0].getLabel(),
+                                                                 scores[idx]))
 
         stopid_to_link[stop['stop_id']] = (x,y,stop['stop_name'],
                                            closest_tuples[max_score_idx][0],
@@ -270,7 +307,7 @@ if __name__ == "__main__":
 
     dta.setupLogging("importGTFS.INFO.log", "importGTFS.DEBUG.log", logToConsole=True)
 
-    scenario = dta.DynameqScenario(dta.Time(0,0), dta.Time(23,0))
+    scenario = dta.DynameqScenario()
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
@@ -301,6 +338,10 @@ if __name__ == "__main__":
         route_labels.append(route_label)
     
 
+    # We could read the override file but we need this one
+    #              rom Dir, From,        Over,        To Dir,    To St,          desig,    [permission],[lanes]
+    overrides = [ ["EB",    "Market St","Sansome St","NB",      "Sansome St",   "LT",      "Transit"] ]
+    net.setMovementTurnTypeOverrides(overrides)
     
     # Do this in a two-phase way -- first, we have to do all of our split links
     # Then, we actually create the transit lines
@@ -433,7 +474,7 @@ if __name__ == "__main__":
                         except:
                             dta.DtaLogger.error("Error: %s" % str(sys.exc_info()))
                             dta.DtaLogger.error("route %-25s No shortest path found from %d to %d" %
-                                               (label, prev_roadlink.getEndNode(), stop_roadlink.getStartNode()))
+                                               (label, prev_roadlink.getEndNode().getId(), stop_roadlink.getStartNode().getId()))
                             continue
                         
                         node_num_list = [ prev_roadlink.getEndNode().getId() ]

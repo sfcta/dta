@@ -37,4 +37,19 @@ dta.VirtualLink
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VirtualLink.DEFAULT_LABEL
+      ~VirtualLink.FACILITY_TYPE
+      ~VirtualLink.FFSPEED
+      ~VirtualLink.LANES
+      ~VirtualLink.LENGTH
+      ~VirtualLink.LENGTH_FACTOR
+      ~VirtualLink.LEVEL
+      ~VirtualLink.RABOUT
+      ~VirtualLink.RESPONSE_FACTOR
+      ~VirtualLink.REVERSE
+   
    

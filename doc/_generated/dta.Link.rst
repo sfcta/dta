@@ -32,4 +32,10 @@ dta.Link
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Link.DEFAULT_LABEL
+   
    

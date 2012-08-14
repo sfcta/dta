@@ -16,13 +16,12 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import pdb
-
 import datetime
 import os
 from .DtaError import DtaError
 from .Logger import DtaLogger
 from .Scenario import Scenario
+from .Utils import Time
 from .VehicleClassGroup import VehicleClassGroup
 from .VehicleType import VehicleType
 
@@ -43,13 +42,18 @@ class DynameqScenario(Scenario):
         Read the scenario file from disk and return the corresponding
         scnario object.
         """
-        #TODO: this may not be the best way to instantiate the Scenario object 
-        sc = Scenario(datetime.time(0,0), datetime.time(12,0))
+        sc = Scenario()
         sc.read(dir, prefix)        
 
-    def __init__(self, startTime, endTime):
+    def __init__(self, startTime = Time(0,0), endTime=Time(23,0)):
         """
-        Constructor. Creates empty Dynameq scenario
+        Constructor of a Scenario for Dynameq.
+
+        :param startTime: the start time of the scenario.
+        :type startTime: a :py:class:`dta.Time` instance
+        :param endTime: the end time of the scenario.
+        :type endTime: a :py:class:`dta.Time` instance
+        
         """
         Scenario.__init__(self, startTime, endTime)
 
@@ -60,8 +64,6 @@ class DynameqScenario(Scenario):
         """
         Reads the scenario configuration from the Dynameq scenario file.
         """
-        #TODO: the read method will overwrite the startTime and endTime properties 
-
         # scenario file processing
         scenariofile = os.path.join(dir, DynameqScenario.SCENARIO_FILE % file_prefix)
         if not os.path.exists(scenariofile):
@@ -146,15 +148,13 @@ class DynameqScenario(Scenario):
 
     def _readStudyPeriodFromFields(self, fields):
         """ 
-        Reads the study period and returns the start and times as datetime.time objects
+        Reads the study period and sets the :py:attr:`Scenario.startTime` and :py:attr:`Scenario.endTime`
         """  
         time1 = fields[0].split(":")
         time2 = fields[1].split(":")
         
-        self.startTime  = datetime.time(hour=int(time1[0]),                                                                    
-                                        minute=int(time1[1]))
-        self.endTime    = datetime.time(hour=int(time2[0]), 
-                                            minute=int(time2[1]))
+        self.startTime  = Time(hour=int(time1[0]), minute=int(time1[1]))
+        self.endTime    = Time(hour=int(time2[0]), minute=int(time2[1]))
     
     def _writeStudyPeriodToScenarioFile(self, scenariofile_object):
         """
@@ -169,6 +169,8 @@ class DynameqScenario(Scenario):
     def _readEventsFromFields(self, scenariofile):
         """
         Generator function, yields (eventTime, eventDescription) to the caller
+        
+        TODO: update to use dta.Time rather than datetime.time for consistency.
         """
         timestrs = fields[0].split(":")
         eventTime = datetime.time(hour=int(timestrs[0]), minute=int(timestrs[1]))

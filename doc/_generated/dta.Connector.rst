@@ -20,6 +20,9 @@ dta.Connector
       ~Connector.addShifts
       ~Connector.allowsAll
       ~Connector.coordinatesAlongLink
+      ~Connector.coordinatesAndShapePointIdxAlongLink
+      ~Connector.createReverseLink
+      ~Connector.disallowSplitForConnector
       ~Connector.endIsRoadNode
       ~Connector.euclideanLength
       ~Connector.euclideanLengthInLengthUnits
@@ -28,6 +31,7 @@ dta.Connector
       ~Connector.getCenterLine
       ~Connector.getCentroid
       ~Connector.getDirection
+      ~Connector.getDistanceFromPoint
       ~Connector.getEndNode
       ~Connector.getEndNodeId
       ~Connector.getFacilityType
@@ -56,6 +60,7 @@ dta.Connector
       ~Connector.getReferenceAngleInDegrees
       ~Connector.getRightTurn
       ~Connector.getRoadNode
+      ~Connector.getShapePoints
       ~Connector.getShifts
       ~Connector.getSimInFlow
       ~Connector.getSimInVolume
@@ -78,6 +83,7 @@ dta.Connector
       ~Connector.hasRightTurn
       ~Connector.hasSameAttributes
       ~Connector.hasThruTurn
+      ~Connector.isBoundaryConnector
       ~Connector.isConnector
       ~Connector.isOverlapping
       ~Connector.isRoadLink
@@ -100,5 +106,19 @@ dta.Connector
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Connector.DEFAULT_LABEL
+      ~Connector.DEFAULT_LANE_WIDTH
+      ~Connector.DEFAULT_LEVEL
+      ~Connector.DIR_EB
+      ~Connector.DIR_NB
+      ~Connector.DIR_SB
+      ~Connector.DIR_WB
+      ~Connector.FACILITY_TYPE
+      ~Connector.LENGTH_UNITS
    
    

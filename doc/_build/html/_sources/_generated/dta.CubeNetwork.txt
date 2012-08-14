@@ -21,11 +21,14 @@ dta.CubeNetwork
       ~CubeNetwork.addPlanCollectionInfo
       ~CubeNetwork.applyTurnProhibitions
       ~CubeNetwork.areIDsUnique
+      ~CubeNetwork.cleanStreetNames
       ~CubeNetwork.deepcopy
       ~CubeNetwork.findLinksForRoadLabels
       ~CubeNetwork.findMovementForRoadLabels
+      ~CubeNetwork.findNRoadLinksNearestCoords
       ~CubeNetwork.findNodeForRoadLabels
       ~CubeNetwork.findNodeNearestCoords
+      ~CubeNetwork.getCleanStreetName
       ~CubeNetwork.getLinkForId
       ~CubeNetwork.getLinkForNodeIdPair
       ~CubeNetwork.getLinkType
@@ -88,5 +91,12 @@ dta.CubeNetwork
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~CubeNetwork.EXPORT_SCRIPT
+      ~CubeNetwork.EXPORT_SCRIPTNAME
    
    

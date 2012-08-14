@@ -25,4 +25,11 @@ dta.PhaseMovement
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PhaseMovement.PERMITTED
+      ~PhaseMovement.PROTECTED
+   
    

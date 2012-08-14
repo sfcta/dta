@@ -33,4 +33,12 @@ dta.TPPlusTransitRoute
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TPPlusTransitRoute.attrs
+      ~TPPlusTransitRoute.extAttributes
+      ~TPPlusTransitRoute.intAttributes
+   
    

@@ -129,7 +129,7 @@ Misc
    dta.CountsVsVolumes
    dta.Demand
    dta.DtaError
-   dta.DtaLogger
+   dta.Logger
    dta.MultiArray
    dta.Time
    dta.Utils

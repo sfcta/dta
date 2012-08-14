@@ -604,7 +604,7 @@ class ShortestPaths(object):
                 # don't include the RoadLink instance if specified
                 localsdict = {}
                 localsdict['roadlink'] = edge
-                if edge.isRoadLink() and eval(filterRoadLinkEvalStr, globals(), localsdict): 
+                if edge.isRoadLink() and filterRoadLinkEvalStr and eval(filterRoadLinkEvalStr, globals(), localsdict): 
                     dta.DtaLogger.debug("Skipping edge %10s with ft=%d" % (edge.getId(), edge.getFacilityType()))
                     continue
                 

@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.VirtualNode &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.VirtualNode &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.Centroid" href="dta.Centroid.html" />
     <link rel="prev" title="dta.RoadNode" href="dta.RoadNode.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.RoadNode.html" title="dta.RoadNode"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -69,148 +72,261 @@ See <a class="reference internal" href="dta.Network.html#dta.Network.insertVirtu
 <dt id="dta.VirtualNode.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>x</em>, <em>y</em>, <em>label=None</em>, <em>level=None</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li>id is a unique identifier (unique within the containing network), an integer</li>
 <li><em>x</em> and <em>y</em> are coordinates in the units specified by <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a></li>
 <li>label is a string, for readability.  If None passed, will default to &#8220;label [id]&#8221;</li>
 <li>level is for vertical alignment.  More details TBD.  If None passed, will use default.</li>
 </ul>
-</div></blockquote>
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.VirtualNode.__init__" title="dta.VirtualNode.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt>(id,&nbsp;x,&nbsp;y[,&nbsp;label,&nbsp;level])</td>
+<td>Constructor.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getCardinality" title="dta.VirtualNode.getCardinality"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getCardinality</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCardinality</span></tt>()</td>
+<td>Return a pair of numbers representing the number of</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getCentroid" title="dta.VirtualNode.getCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getCentroid</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCentroid</span></tt>()</td>
+<td>Return the <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> associated with this virtual node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getConnectedRoadNode" title="dta.VirtualNode.getConnectedRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getConnectedRoadNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getConnectedRoadNode</span></tt>()</td>
+<td>Return a connected <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getId" title="dta.VirtualNode.getId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getId</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getId</span></tt>()</td>
+<td>Returns the integer id for this node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getIncomingLinkForId" title="dta.VirtualNode.getIncomingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getIncomingLinkForId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getIncomingLinkForId</span></tt>(linkId)</td>
+<td>Returns an incoming link if one has an ID matching <em>linkId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getIncomingLinkForNodeId" title="dta.VirtualNode.getIncomingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getIncomingLinkForNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getIncomingLinkForNodeId</span></tt>(nodeId)</td>
+<td>Returns an incoming link if one starts from <em>nodeId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getMovement" title="dta.VirtualNode.getMovement"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getMovement</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMovement</span></tt>(startNodeId,&nbsp;endNodeId)</td>
+<td>Return the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> from <em>startNodeId</em> to <em>endNodeId</em> that goes through</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getName" title="dta.VirtualNode.getName"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getName</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getName</span></tt>()</td>
+<td>Return the name of the intersection as a string consisting of the upper-cased labels</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumAdjacentLinks" title="dta.VirtualNode.getNumAdjacentLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumAdjacentLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumAdjacentLinks</span></tt>()</td>
+<td>Returns the number of links adjacent to this node (either incoming or outgoing).</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumAdjacentNodes" title="dta.VirtualNode.getNumAdjacentNodes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumAdjacentNodes</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumAdjacentNodes</span></tt>()</td>
+<td>Return the number of nodes that are connected to this node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumAdjacentRoadLinks" title="dta.VirtualNode.getNumAdjacentRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumAdjacentRoadLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumAdjacentRoadLinks</span></tt>()</td>
+<td>Returns the number of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to this node (either incoming or outgoing).</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumAdjacentRoadNodes" title="dta.VirtualNode.getNumAdjacentRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumAdjacentRoadNodes</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumAdjacentRoadNodes</span></tt>()</td>
+<td>Return the number of <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances that share a link with this node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumIncomingLinks" title="dta.VirtualNode.getNumIncomingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumIncomingLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumIncomingLinks</span></tt>()</td>
+<td>Returns the number of incoming links.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumMovements" title="dta.VirtualNode.getNumMovements"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumMovements</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumMovements</span></tt>()</td>
+<td>Return the number of <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances associated with this node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getNumOutgoingLinks" title="dta.VirtualNode.getNumOutgoingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getNumOutgoingLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumOutgoingLinks</span></tt>()</td>
+<td>Returns the number of outgoing links.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getStreetNames" title="dta.VirtualNode.getStreetNames"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getStreetNames</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getStreetNames</span></tt>([incoming,&nbsp;outgoing])</td>
+<td>Return the street names (labels) of the relevant links as a sorted upper-case list.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getX" title="dta.VirtualNode.getX"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getX</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getX</span></tt>()</td>
+<td>Returns the x-coordinate for this node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.getY" title="dta.VirtualNode.getY"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.getY</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getY</span></tt>()</td>
+<td>Returns the y-coordinate for this node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.hasConnector" title="dta.VirtualNode.hasConnector"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.hasConnector</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasConnector</span></tt>()</td>
+<td>Return True if there is a connector attached to the node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.hasIncomingLinkForId" title="dta.VirtualNode.hasIncomingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.hasIncomingLinkForId</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasIncomingLinkForId</span></tt>(linkId)</td>
+<td>Returns True if there is an incoming link with the given <em>linkId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.hasIncomingLinkForNodeId" title="dta.VirtualNode.hasIncomingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.hasIncomingLinkForNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasIncomingLinkForNodeId</span></tt>(nodeId)</td>
+<td>Returns True if there is an incoming link starting from <em>nodeId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.hasMovement" title="dta.VirtualNode.hasMovement"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.hasMovement</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasMovement</span></tt>(startNodeId,&nbsp;endNodeId)</td>
+<td>Return True if a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> exists from the node with <em>startNodeId</em> through this node</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.hasOutgoingLinkForId" title="dta.VirtualNode.hasOutgoingLinkForId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.hasOutgoingLinkForId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasOutgoingLinkForId</span></tt>(linkId)</td>
+<td>Returns True if there is an outgoing link with the given <em>linkId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.hasOutgoingLinkForNodeId" title="dta.VirtualNode.hasOutgoingLinkForNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.hasOutgoingLinkForNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasOutgoingLinkForNodeId</span></tt>(nodeId)</td>
+<td>Returns True if there is an outgoing link towards a node with the given <em>nodeId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isCentroid" title="dta.VirtualNode.isCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isCentroid</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isCentroid</span></tt>()</td>
+<td>Return True if this Node is a Centroid</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isIntersection" title="dta.VirtualNode.isIntersection"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isIntersection</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isIntersection</span></tt>()</td>
+<td>Return True if this node is an intersection</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isJunction" title="dta.VirtualNode.isJunction"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isJunction</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isJunction</span></tt>([countRoadNodesOnly])</td>
+<td>Return True if this node is a junction.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isMidblockNode" title="dta.VirtualNode.isMidblockNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isMidblockNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isMidblockNode</span></tt>([countRoadNodesOnly])</td>
+<td>Return True if the node is a shape point (e.g. Node 51245 in the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isRoadNode" title="dta.VirtualNode.isRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isRoadNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isRoadNode</span></tt>()</td>
+<td>Return True if this Node is a RoadNode.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.isVirtualNode" title="dta.VirtualNode.isVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.isVirtualNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isVirtualNode</span></tt>()</td>
+<td>Return True if this Node is a VirtualNode</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterAdjacentLinks" title="dta.VirtualNode.iterAdjacentLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterAdjacentLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterAdjacentLinks</span></tt>()</td>
+<td>Return an iterator to all <a class="reference internal" href="dta.Link.html#dta.Link" title="dta.Link"><tt class="xref py py-class docutils literal"><span class="pre">Link</span></tt></a> instances adjacent (incoming or outgoing)</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterAdjacentNodes" title="dta.VirtualNode.iterAdjacentNodes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterAdjacentNodes</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterAdjacentNodes</span></tt>()</td>
+<td>Return an iterator to the adjacent <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterAdjacentRoadLinks" title="dta.VirtualNode.iterAdjacentRoadLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterAdjacentRoadLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterAdjacentRoadLinks</span></tt>()</td>
+<td>Return an iterator to all <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances adjacent to this node (excluding Connectors)</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterAdjacentRoadNodes" title="dta.VirtualNode.iterAdjacentRoadNodes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterAdjacentRoadNodes</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterAdjacentRoadNodes</span></tt>()</td>
+<td>Return an iterator to all <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances adjacent to this Node</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterDownstreamNodes" title="dta.VirtualNode.iterDownstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterDownstreamNodes</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterDownstreamNodes</span></tt>()</td>
+<td>Returns an iterator to the end nodes of all outgoing links.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterIncomingLinks" title="dta.VirtualNode.iterIncomingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterIncomingLinks</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterIncomingLinks</span></tt>()</td>
+<td>Returns iterator for the incoming links.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterLinks" title="dta.VirtualNode.iterLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterLinks</span></tt>()</td>
+<td>Returns an iterator to all adjacent links.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterMovements" title="dta.VirtualNode.iterMovements"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterMovements</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterMovements</span></tt>()</td>
+<td>Return an iterator to all the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances going through the node.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterOutgoingLinks" title="dta.VirtualNode.iterOutgoingLinks"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterOutgoingLinks</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterOutgoingLinks</span></tt>()</td>
+<td>Returns iterator for the outgoing links.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.VirtualNode.iterUpstreamNodes" title="dta.VirtualNode.iterUpstreamNodes"><tt class="xref py py-obj docutils literal"><span class="pre">VirtualNode.iterUpstreamNodes</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterUpstreamNodes</span></tt>()</td>
+<td>Returns an iterator to the start nodes of all incoming links.</td>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">COORDINATE_UNITS</span></tt></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_CONTROL</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_LABEL</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_LEVEL</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_PRIORITY</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">GEOMETRY_TYPES</span></tt></td>
+<td>list() -&gt; new list</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">GEOMETRY_TYPE_CENTROID</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">GEOMETRY_TYPE_INTERSECTION</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">GEOMETRY_TYPE_JUNCTION</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">GEOMETRY_TYPE_VIRTUAL</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dta.VirtualNode.COORDINATE_UNITS">
+<tt class="descname">COORDINATE_UNITS</tt><em class="property"> = None</em><a class="headerlink" href="#dta.VirtualNode.COORDINATE_UNITS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.DEFAULT_CONTROL">
+<tt class="descname">DEFAULT_CONTROL</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.VirtualNode.DEFAULT_CONTROL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.DEFAULT_LABEL">
+<tt class="descname">DEFAULT_LABEL</tt><em class="property"> = ''</em><a class="headerlink" href="#dta.VirtualNode.DEFAULT_LABEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.DEFAULT_LEVEL">
+<tt class="descname">DEFAULT_LEVEL</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.VirtualNode.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.DEFAULT_PRIORITY">
+<tt class="descname">DEFAULT_PRIORITY</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.VirtualNode.DEFAULT_PRIORITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.GEOMETRY_TYPES">
+<tt class="descname">GEOMETRY_TYPES</tt><em class="property"> = [1, 2, 99]</em><a class="headerlink" href="#dta.VirtualNode.GEOMETRY_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.GEOMETRY_TYPE_CENTROID">
+<tt class="descname">GEOMETRY_TYPE_CENTROID</tt><em class="property"> = 100</em><a class="headerlink" href="#dta.VirtualNode.GEOMETRY_TYPE_CENTROID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.GEOMETRY_TYPE_INTERSECTION">
+<tt class="descname">GEOMETRY_TYPE_INTERSECTION</tt><em class="property"> = 1</em><a class="headerlink" href="#dta.VirtualNode.GEOMETRY_TYPE_INTERSECTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.GEOMETRY_TYPE_JUNCTION">
+<tt class="descname">GEOMETRY_TYPE_JUNCTION</tt><em class="property"> = 2</em><a class="headerlink" href="#dta.VirtualNode.GEOMETRY_TYPE_JUNCTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.VirtualNode.GEOMETRY_TYPE_VIRTUAL">
+<tt class="descname">GEOMETRY_TYPE_VIRTUAL</tt><em class="property"> = 99</em><a class="headerlink" href="#dta.VirtualNode.GEOMETRY_TYPE_VIRTUAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode._addIncomingLink">
+<tt class="descname">_addIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.VirtualNode._addIncomingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that the given link ends in this node, and adds it to the list of
+incoming links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode._addOutgoingLink">
+<tt class="descname">_addOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.VirtualNode._addOutgoingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that the given link starts with this node, and adds it to the list of
+outgoing links.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode._removeIncomingLink">
+<tt class="descname">_removeIncomingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.VirtualNode._removeIncomingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple removal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.VirtualNode._removeOutgoingLink">
+<tt class="descname">_removeOutgoingLink</tt><big>(</big><em>link</em><big>)</big><a class="headerlink" href="#dta.VirtualNode._removeOutgoingLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple removal.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dta.VirtualNode.getCardinality">
 <tt class="descname">getCardinality</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getCardinality" title="Permalink to this definition">¶</a></dt>
@@ -222,20 +338,12 @@ incoming and outgoing links respectively.</p>
 <dt id="dta.VirtualNode.getCentroid">
 <tt class="descname">getCentroid</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getCentroid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> associated with this virtual node.</p>
-<div class="admonition-todo admonition " id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">what makes this a Centroid as opposed to just an adjacent node?</p>
-</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.VirtualNode.getConnectedRoadNode">
 <tt class="descname">getConnectedRoadNode</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.getConnectedRoadNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a connected <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a>.</p>
-<div class="admonition-todo admonition " id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">Why is this useful, it returns one when there could be others?</p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -379,20 +487,12 @@ to the node with <em>endNodeId</em>, and if that movement is <strong>not prohibi
 <dt id="dta.VirtualNode.isIntersection">
 <tt class="descname">isIntersection</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.VirtualNode.isIntersection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is an intersection</p>
-<div class="admonition-todo admonition " id="index-2">
-<p class="first admonition-title">Todo</p>
-<p class="last">And an intersection is what?  Technical definition please.</p>
-</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="dta.VirtualNode.isJunction">
 <tt class="descname">isJunction</tt><big>(</big><em>countRoadNodesOnly=False</em><big>)</big><a class="headerlink" href="#dta.VirtualNode.isJunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if this node is a junction.</p>
-<div class="admonition-todo admonition " id="index-3">
-<p class="first admonition-title">Todo</p>
-<p class="last">And a junction is what?  Technical definition please.</p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -506,7 +606,7 @@ to this node</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -535,12 +635,12 @@ to this node</p>
         <li class="right" >
           <a href="dta.RoadNode.html" title="dta.RoadNode"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

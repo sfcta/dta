@@ -235,4 +235,4 @@ autosummary_generate = True
 
 graphviz_dot = r"C:\Program Files (x86)\Graphviz 2.28\bin\dot.exe"
 inheritance_graph_attrs = dict(rankdir="TB")
-todo_include_todos = True
+# todo_include_todos = True

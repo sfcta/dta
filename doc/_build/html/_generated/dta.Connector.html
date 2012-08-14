@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dta.Connector &mdash; DTA Anyway v1.0 documentation</title>
+    <title>dta.Connector &mdash; DTA Anyway 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/dta.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="DTA Anyway v1.0 documentation" href="../index.html" />
+    <link rel="top" title="DTA Anyway 1.0 documentation" href="../index.html" />
     <link rel="next" title="dta.TimePlan" href="dta.TimePlan.html" />
     <link rel="prev" title="dta.VirtualLink" href="dta.VirtualLink.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="dta.VirtualLink.html" title="dta.VirtualLink"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -70,273 +73,396 @@ a Centroid or a VirtualNode.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr><td><a class="reference internal" href="#dta.Connector.__init__" title="dta.Connector.__init__"><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt></a></td>
-<td>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">__init__</span></tt>(id,&nbsp;startNode,&nbsp;endNode,&nbsp;...)</td>
+<td>Constructor.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.addLanePermission" title="dta.Connector.addLanePermission"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.addLanePermission</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">addLanePermission</span></tt>(laneId,&nbsp;vehicleClassGroup)</td>
+<td>Adds the lane permissions for the lane numbered by <em>laneId</em> (outside lane is lane 0, increases towards inside edge.)</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.addOutgoingMovement" title="dta.Connector.addOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.addOutgoingMovement</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">addOutgoingMovement</span></tt>(movement)</td>
+<td>Adds the given movement.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.addShapePoint" title="dta.Connector.addShapePoint"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.addShapePoint</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">addShapePoint</span></tt>(x,&nbsp;y)</td>
+<td>Append a shape point to the link.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.addShifts" title="dta.Connector.addShifts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.addShifts</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">addShifts</span></tt>(startShift,&nbsp;endShift[,&nbsp;addShapepoints])</td>
+<td><ul class="simple">
+<li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from</li>
+</ul>
+</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.allowsAll" title="dta.Connector.allowsAll"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.allowsAll</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">allowsAll</span></tt>()</td>
+<td>Is there a lane on this link that allows all?</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.coordinatesAlongLink" title="dta.Connector.coordinatesAlongLink"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.coordinatesAlongLink</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">coordinatesAlongLink</span></tt>(fromStart,&nbsp;distance[,&nbsp;...])</td>
+<td>Like <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.coordinatesAndShapePointIdxAlongLink" title="dta.RoadLink.coordinatesAndShapePointIdxAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAndShapePointIdxAlongLink()</span></tt></a> but only returns the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.endIsRoadNode" title="dta.Connector.endIsRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.endIsRoadNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">coordinatesAndShapePointIdxAlongLink</span></tt>(...[,&nbsp;...])</td>
+<td>Returns the 3-tuple (<em>x</em>,*y*,*idx*) where (<em>x</em>,*y*) is the point along this link given by</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.euclideanLength" title="dta.Connector.euclideanLength"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.euclideanLength</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">createReverseLink</span></tt>(newid)</td>
+<td>Instantiate and return a new link that is the reverse of this one.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.euclideanLengthInLengthUnits" title="dta.Connector.euclideanLengthInLengthUnits"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.euclideanLengthInLengthUnits</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disallowSplitForConnector</span></tt>(...)</td>
+<td>Returns True if this road link should <em>not</em> be split for a <a class="reference internal" href="#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.findOutgoingMovement" title="dta.Connector.findOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.findOutgoingMovement</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">endIsRoadNode</span></tt>()</td>
+<td>Returns a boolean indicating wither the end node is the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getAngle" title="dta.Connector.getAngle"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getAngle</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">euclideanLength</span></tt>([includeShape])</td>
+<td>Calculates the length based on simple Euclidean distance.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getCenterLine" title="dta.Connector.getCenterLine"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getCenterLine</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">euclideanLengthInLengthUnits</span></tt>([includeShape])</td>
+<td>Return the length of the link in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getCentroid" title="dta.Connector.getCentroid"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getCentroid</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">findOutgoingMovement</span></tt>(nodeId)</td>
+<td>Returns the outgoing movement ending in the given <em>nodeId</em>.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getDirection" title="dta.Connector.getDirection"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getDirection</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getAngle</span></tt>(other[,&nbsp;usingShapepoints])</td>
+<td>Return the angle in degrees (in the range (-180, 180]) between this link and <em>other</em>,</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getEndNode" title="dta.Connector.getEndNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getEndNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCenterLine</span></tt>([atStart,&nbsp;atEnd,&nbsp;...])</td>
+<td>Offset the link to the right 0.5*numLanes*:py:attr:<cite>RoadLink.DEFAULT_LANE_WIDTH</cite> and</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getEndNodeId" title="dta.Connector.getEndNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getEndNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCentroid</span></tt>()</td>
+<td>Return the centroid associated with this connector</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getFacilityType" title="dta.Connector.getFacilityType"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getFacilityType</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getDirection</span></tt>([atEnd])</td>
+<td>Returns the direction of the link as one of <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_EB" title="dta.RoadLink.DIR_EB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_EB</span></tt></a>,  <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.DIR_NB" title="dta.RoadLink.DIR_NB"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.DIR_NB</span></tt></a>,</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getFreeFlowSpeedInMPH" title="dta.Connector.getFreeFlowSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getFreeFlowSpeedInMPH</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getDistanceFromPoint</span></tt>(x,&nbsp;y)</td>
+<td>Projects (<em>x</em>, <em>y</em>) onto the road link center line (including the shape points).</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getFreeFlowTTInMin" title="dta.Connector.getFreeFlowTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getFreeFlowTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getEndNode</span></tt>()</td>
+<td>Accessor for endNode</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getGroup" title="dta.Connector.getGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getGroup</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getEndNodeId</span></tt>()</td>
+<td>Return the id of the end node</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getId" title="dta.Connector.getId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFacilityType</span></tt>()</td>
+<td>Returns the facility type; see <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.__init__" title="dta.RoadLink.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.__init__()</span></tt></a> for more on that variable.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getIid" title="dta.Connector.getIid"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getIid</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFreeFlowSpeedInMPH</span></tt>()</td>
+<td>Return the free flow speed in MPH</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getLabel" title="dta.Connector.getLabel"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getLabel</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getFreeFlowTTInMin</span></tt>()</td>
+<td>Return the free flow travel time in minutes</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getLeftTurn" title="dta.Connector.getLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getLeftTurn</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getGroup</span></tt>()</td>
+<td>Return the group number fo the link</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getLength" title="dta.Connector.getLength"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getLength</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getId</span></tt>()</td>
+<td>Return the link id</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getLengthInCoordinateUnits" title="dta.Connector.getLengthInCoordinateUnits"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getLengthInCoordinateUnits</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getIid</span></tt>()</td>
+<td>Return a pair representing the start and end node ids</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getMidPoint" title="dta.Connector.getMidPoint"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getMidPoint</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLabel</span></tt>()</td>
+<td>Return the link label</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getNumIncomingMovements" title="dta.Connector.getNumIncomingMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getNumIncomingMovements</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLeftTurn</span></tt>()</td>
+<td>Return the left turn movement of the link or raise an error if it does not exist</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getNumLanes" title="dta.Connector.getNumLanes"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getNumLanes</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLength</span></tt>()</td>
+<td>Return the length of the link in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getNumOutgoingMovements" title="dta.Connector.getNumOutgoingMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getNumOutgoingMovements</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLengthInCoordinateUnits</span></tt>()</td>
+<td>Returns the length of the link in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a> units.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getNumShapePoints" title="dta.Connector.getNumShapePoints"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getNumShapePoints</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMidPoint</span></tt>()</td>
+<td>Return the midpoint of the link&#8217;s centerline as a tuple of two floats</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getObsCount" title="dta.Connector.getObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getObsCount</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumIncomingMovements</span></tt>()</td>
+<td>Returns the number of incoming movements</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getObsMeanTT" title="dta.Connector.getObsMeanTT"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getObsMeanTT</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLanes</span></tt>()</td>
+<td>Return the number of lanes.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getObsSpeedInMPH" title="dta.Connector.getObsSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getObsSpeedInMPH</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumOutgoingMovements</span></tt>()</td>
+<td>Returns the number of outgoing movements</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getOrientation" title="dta.Connector.getOrientation"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getOrientation</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumShapePoints</span></tt>()</td>
+<td>Return the number of shape points this link has</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getOtherEnd" title="dta.Connector.getOtherEnd"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getOtherEnd</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the number of vehicles traversing the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getOutgoingMovement" title="dta.Connector.getOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getOutgoingMovement</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsMeanTT</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the observed mean travel time of the link in minutes</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getOutline" title="dta.Connector.getOutline"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getOutline</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsSpeedInMPH</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the observed speed of specified time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getReferenceAngle" title="dta.Connector.getReferenceAngle"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getReferenceAngle</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOrientation</span></tt>([atEnd,&nbsp;usingShapepoints])</td>
+<td>Returns the angle of the link in degrees from the North</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getReferenceAngleInDegrees" title="dta.Connector.getReferenceAngleInDegrees"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getReferenceAngleInDegrees</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOtherEnd</span></tt>(node)</td>
+<td>Return the other end node than the one provided.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getRightTurn" title="dta.Connector.getRightTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getRightTurn</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutgoingMovement</span></tt>(nodeId)</td>
+<td>Return True if the link has an outgoing movement towards nodeId</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getRoadNode" title="dta.Connector.getRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getRoadNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutline</span></tt>([scale])</td>
+<td>Return the outline of the link as a linearRing of points</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getShifts" title="dta.Connector.getShifts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getShifts</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getReferenceAngle</span></tt>()</td>
+<td>Visualizing the link as a straight vector from (0,0), returns the angle between &lt;1,0&gt; and this link.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSimInFlow" title="dta.Connector.getSimInFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSimInFlow</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getReferenceAngleInDegrees</span></tt>()</td>
+<td>Return the Reference angle in degrees</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSimInVolume" title="dta.Connector.getSimInVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSimInVolume</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getRightTurn</span></tt>()</td>
+<td>Return the thru movement of the link or raise an error if it does not exist</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSimOutFlow" title="dta.Connector.getSimOutFlow"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSimOutFlow</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getRoadNode</span></tt>()</td>
+<td>Return the RoadNode of the Connector</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSimOutVolume" title="dta.Connector.getSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSimOutVolume</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getShapePoints</span></tt>()</td>
+<td>Accessor for the shape points.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSimSpeedInMPH" title="dta.Connector.getSimSpeedInMPH"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSimSpeedInMPH</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getShifts</span></tt>()</td>
+<td>Returns the <em>startShift</em> and <em>endShift</em> ordered pair, or (None,None) if it wasn&#8217;t set.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSimTTInMin" title="dta.Connector.getSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSimTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimInFlow</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the simulated incoming flow in vph</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getStartNode" title="dta.Connector.getStartNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getStartNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimInVolume</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the incoming volume on the link from startTimeInMin to endTimeInMin</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getStartNodeId" title="dta.Connector.getStartNodeId"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getStartNodeId</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimOutFlow</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the simulated flow in vph</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getSumOfAllMovementCounts" title="dta.Connector.getSumOfAllMovementCounts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getSumOfAllMovementCounts</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimOutVolume</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return the volume on the link from startTimeInMin to endTimeInMin</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getThruTurn" title="dta.Connector.getThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getThruTurn</span></tt></a></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimSpeedInMPH</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
 <td></td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.getVirtualNode" title="dta.Connector.getVirtualNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.getVirtualNode</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Get the average travel time of the vehicles traversing the link</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasAllMovementCounts" title="dta.Connector.hasAllMovementCounts"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasAllMovementCounts</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getStartNode</span></tt>()</td>
+<td>Accessor for startNode</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasCountInfo" title="dta.Connector.hasCountInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasCountInfo</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getStartNodeId</span></tt>()</td>
+<td>Return the id of the start node</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasDirection" title="dta.Connector.hasDirection"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasDirection</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getSumOfAllMovementCounts</span></tt>(startTimeInMin,&nbsp;...)</td>
+<td>Return the sum of all outgoing movement counts</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasLeftTurn" title="dta.Connector.hasLeftTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasLeftTurn</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getThruTurn</span></tt>()</td>
+<td>Return the thru movement of the link or raise an error if it does not exist</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasMovementCountInfo" title="dta.Connector.hasMovementCountInfo"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasMovementCountInfo</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getVirtualNode</span></tt>()</td>
+<td>Return the Virtual Node associated with this connector</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasObsCount" title="dta.Connector.hasObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasObsCount</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasAllMovementCounts</span></tt>(startTimeInMin,&nbsp;...)</td>
+<td>Return True if there is a count for all outgoing movements</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasOutgoingMovement" title="dta.Connector.hasOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasOutgoingMovement</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasCountInfo</span></tt>()</td>
+<td>Return True if the link contains count information else false</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasRightTurn" title="dta.Connector.hasRightTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasRightTurn</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasDirection</span></tt>(dir[,&nbsp;atEnd])</td>
+<td>Returns True if the link is going in that direction at all.  That is, if a link is oriented to the</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasSameAttributes" title="dta.Connector.hasSameAttributes"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasSameAttributes</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasLeftTurn</span></tt>()</td>
+<td>Return True if the link has a through turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.hasThruTurn" title="dta.Connector.hasThruTurn"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.hasThruTurn</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasMovementCountInfo</span></tt>()</td>
+<td>Return True if any outgoing movement on the link</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.isConnector" title="dta.Connector.isConnector"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.isConnector</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<td>Return True if there is a count for the input time period</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.isOverlapping" title="dta.Connector.isOverlapping"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.isOverlapping</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasOutgoingMovement</span></tt>(nodeId[,&nbsp;vehicleClassGroup])</td>
+<td>Return True if the link has an outgoing movement towards nodeId.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.isRoadLink" title="dta.Connector.isRoadLink"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.isRoadLink</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasRightTurn</span></tt>()</td>
+<td>Return True if the link has a through turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.isVirtualLink" title="dta.Connector.isVirtualLink"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.isVirtualLink</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasSameAttributes</span></tt>(other)</td>
+<td>Return True if the two links have the same attributes return True</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.iterIncidentMovements" title="dta.Connector.iterIncidentMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.iterIncidentMovements</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasThruTurn</span></tt>()</td>
+<td>Return True if the link has a through turn</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.iterIncomingMovements" title="dta.Connector.iterIncomingMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.iterIncomingMovements</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isBoundaryConnector</span></tt>()</td>
+<td>Return True if the connector&#8217;s centroid is in the list of exteral centroids</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.iterOutgoingMovements" title="dta.Connector.iterOutgoingMovements"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.iterOutgoingMovements</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isConnector</span></tt>()</td>
+<td>Return True if this Link is a Connector</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.prohibitOutgoingMovement" title="dta.Connector.prohibitOutgoingMovement"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.prohibitOutgoingMovement</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isOverlapping</span></tt>(other[,&nbsp;usingShapepoints])</td>
+<td>Return True if the given link and <em>other</em> overlap.  Assumes they share an endpoint.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setEndNode" title="dta.Connector.setEndNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setEndNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">isRoadLink</span></tt>()</td>
+<td>Return True this Link is RoadLink</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setGroup" title="dta.Connector.setGroup"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setGroup</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">isVirtualLink</span></tt>()</td>
+<td>Return True if this LInk is a VirtualLink</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setLabel" title="dta.Connector.setLabel"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setLabel</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterIncidentMovements</span></tt>()</td>
+<td>Return an iterator to all the incident movemements</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setLength" title="dta.Connector.setLength"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setLength</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterIncomingMovements</span></tt>()</td>
+<td>Iterator for the incoming movements of this link</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setNumLanes" title="dta.Connector.setNumLanes"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setNumLanes</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterOutgoingMovements</span></tt>()</td>
+<td>Iterator for the outgoing movements of this link</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setObsCount" title="dta.Connector.setObsCount"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setObsCount</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">prohibitOutgoingMovement</span></tt>(movementToProhibit)</td>
+<td>Prohibit the input movement</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setSimOutVolume" title="dta.Connector.setSimOutVolume"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setSimOutVolume</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setEndNode</span></tt>(newEndNode)</td>
+<td>This is a dumb method which allows the caller to substitute the newEndNode for the old one.</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setSimTTInMin" title="dta.Connector.setSimTTInMin"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setSimTTInMin</span></tt></a></td>
-<td></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setGroup</span></tt>(group)</td>
+<td>Set the group number fo the link</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.setStartNode" title="dta.Connector.setStartNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.setStartNode</span></tt></a></td>
-<td></td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setLabel</span></tt>(label)</td>
+<td>Set the link label</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setLength</span></tt>(newLength)</td>
+<td>Sets the asserted length of this link; the <em>newLength</em> should be in units specified by <cite>RoadLink.LENGTH_UNITS</cite></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setNumLanes</span></tt>(numLanes)</td>
+<td>Sets the number of lanes to the given value</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;count)</td>
+<td>Set the number of vehicles Traversing the link</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimOutVolume</span></tt>(startTimeInMin,&nbsp;...)</td>
+<td>Set the simulated volume on the edge provided that the edge</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;...)</td>
+<td>Set the simulated travel time on the link for the particular input period</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setStartNode</span></tt>(newStartNode)</td>
+<td>This is a dumb method which allows the caller to substitute the newStartNode for the old one.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">startIsRoadNode</span></tt>()</td>
+<td>Returns a boolean indicating wither the start node is the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_LABEL</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_LANE_WIDTH</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DEFAULT_LEVEL</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_EB</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_NB</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_SB</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">DIR_WB</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">FACILITY_TYPE</span></tt></td>
+<td>int(x[, base]) -&gt; integer</td>
 </tr>
-<tr><td><a class="reference internal" href="#dta.Connector.startIsRoadNode" title="dta.Connector.startIsRoadNode"><tt class="xref py py-obj docutils literal"><span class="pre">Connector.startIsRoadNode</span></tt></a></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">LENGTH_UNITS</span></tt></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
+<dt id="dta.Connector.DEFAULT_LABEL">
+<tt class="descname">DEFAULT_LABEL</tt><em class="property"> = ''</em><a class="headerlink" href="#dta.Connector.DEFAULT_LABEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Connector.DEFAULT_LANE_WIDTH">
+<tt class="descname">DEFAULT_LANE_WIDTH</tt><em class="property"> = 12</em><a class="headerlink" href="#dta.Connector.DEFAULT_LANE_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="dta.Connector.DEFAULT_LEVEL">
-<tt class="descname">DEFAULT_LEVEL</tt><a class="headerlink" href="#dta.Connector.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">DEFAULT_LEVEL</tt><em class="property"> = 0</em><a class="headerlink" href="#dta.Connector.DEFAULT_LEVEL" title="Permalink to this definition">¶</a></dt>
 <dd><p>default level value</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="dta.Connector.DIR_EB">
+<tt class="descname">DIR_EB</tt><em class="property"> = 'EB'</em><a class="headerlink" href="#dta.Connector.DIR_EB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Connector.DIR_NB">
+<tt class="descname">DIR_NB</tt><em class="property"> = 'NB'</em><a class="headerlink" href="#dta.Connector.DIR_NB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Connector.DIR_SB">
+<tt class="descname">DIR_SB</tt><em class="property"> = 'SB'</em><a class="headerlink" href="#dta.Connector.DIR_SB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Connector.DIR_WB">
+<tt class="descname">DIR_WB</tt><em class="property"> = 'WB'</em><a class="headerlink" href="#dta.Connector.DIR_WB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="dta.Connector.FACILITY_TYPE">
-<tt class="descname">FACILITY_TYPE</tt><a class="headerlink" href="#dta.Connector.FACILITY_TYPE" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">FACILITY_TYPE</tt><em class="property"> = 99</em><a class="headerlink" href="#dta.Connector.FACILITY_TYPE" title="Permalink to this definition">¶</a></dt>
 <dd><p>connectors have a specific facility type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dta.Connector.LENGTH_UNITS">
+<tt class="descname">LENGTH_UNITS</tt><em class="property"> = None</em><a class="headerlink" href="#dta.Connector.LENGTH_UNITS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector._checkInputTimeStep">
+<tt class="descname">_checkInputTimeStep</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector._checkInputTimeStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the difference of the input times is equal to the simulation time step</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector._checkOutputTimeStep">
+<tt class="descname">_checkOutputTimeStep</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector._checkOutputTimeStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the difference of the input times is in multiples of the simulation time step</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector._hasMovementVolumes">
+<tt class="descname">_hasMovementVolumes</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector._hasMovementVolumes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if at least one movement has a volume 
+greater than 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector._removeOutgoingMovement">
+<tt class="descname">_removeOutgoingMovement</tt><big>(</big><em>movementToRemove</em><big>)</big><a class="headerlink" href="#dta.Connector._removeOutgoingMovement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the input movement</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector._validateInputTimes">
+<tt class="descname">_validateInputTimes</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em><big>)</big><a class="headerlink" href="#dta.Connector._validateInputTimes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that the input times belong to the simulation window</p>
 </dd></dl>
 
 <dl class="method">
@@ -362,10 +488,16 @@ such as showing curvature.</p>
 <dl class="method">
 <dt id="dta.Connector.addShifts">
 <tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em>, <em>addShapepoints=False</em><big>)</big><a class="headerlink" href="#dta.Connector.addShifts" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
+<dd><ul>
+<li><dl class="first docutils">
+<dt><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from</dt>
+<dd><p class="first last">the center line of the roadway that the first segment is shifted.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<blockquote>
 <div><ul class="simple">
-<li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from
-the center line of the roadway that the first segment is shifted.</li>
 <li><em>endShift</em>: End-shift: the shift value of the last segment of the link, that is, the number of 
 lanes from the center line of the roadway that the last segment is shifted.</li>
 </ul>
@@ -399,6 +531,12 @@ the (<em>x</em>,*y*) was ultimately found (useful for splitting links and alloca
 <p>Takes shape points into account.</p>
 <p>If <em>distance</em> is longer than the euclidean distance of the link, and not <em>goPastEnd</em> raises
 a <a class="reference internal" href="dta.DtaError.html#dta.DtaError" title="dta.DtaError"><tt class="xref py py-class docutils literal"><span class="pre">DtaError</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.createReverseLink">
+<tt class="descname">createReverseLink</tt><big>(</big><em>newid</em><big>)</big><a class="headerlink" href="#dta.Connector.createReverseLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate and return a new link that is the reverse of this one.</p>
 </dd></dl>
 
 <dl class="method">
@@ -965,7 +1103,7 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -994,12 +1132,12 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
         <li class="right" >
           <a href="dta.VirtualLink.html" title="dta.VirtualLink"
              >previous</a> |</li>
-        <li><a href="../index.html">DTA Anyway v1.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">DTA Anyway 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, SFCTA Modeling Crew.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
