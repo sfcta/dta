@@ -217,6 +217,7 @@ if __name__ == '__main__':
         'FT4 AT0':23, 'FT4 AT1':23, 'FT4 AT2':20, 'FT4 AT3':20, 'FT4 AT4':35, 'FT4 AT5':35, 
         'FT5 AT0':30, 'FT5 AT1':30, 'FT5 AT2':35, 'FT5 AT3':35, 'FT5 AT4':40, 'FT5 AT5':40, 
         'FT7 AT0':28, 'FT7 AT1':28, 'FT7 AT2':30, 'FT7 AT3':32, 'FT7 AT4':40, 'FT7 AT5':40, 
+        'FT9 AT0':10, 'FT9 AT1':10, 'FT9 AT2':10, 'FT9 AT3':10, 'FT9 AT4':10, 'FT9 AT5':10,         
         'FT11 AT0':18, 'FT11 AT1':18, 'FT11 AT2':18, 'FT11 AT3':15, 'FT11 AT4':35, 'FT11 AT5':35, 
         'FT12 AT0':26, 'FT12 AT1':26, 'FT12 AT2':28, 'FT12 AT3':30, 'FT12 AT4':40, 'FT12 AT5':40, 
         'FT15 AT0':30, 'FT15 AT1':30, 'FT15 AT2':33, 'FT15 AT3':36, 'FT15 AT4':50, 'FT15 AT5':50, 
@@ -229,8 +230,9 @@ if __name__ == '__main__':
     	'FT4 AT0 FLAT' : 1.2,	'FT4 AT1 FLAT' : 1.2,	'FT4 AT2 FLAT' : 1.2,	'FT4 AT3 FLAT' : 1.2,	'FT4 AT4 FLAT' : 1.2,	'FT4 AT5 FLAT' : 1.2,
     	'FT5 AT0 FLAT' : 1.2,	'FT5 AT1 FLAT' : 1.2,	'FT5 AT2 FLAT' : 1.2,	'FT5 AT3 FLAT' : 1.2,	'FT5 AT4 FLAT' : 1.2,	'FT5 AT5 FLAT' : 1.2,
     	'FT7 AT0 FLAT' : 1.2,	'FT7 AT1 FLAT' : 1.2,	'FT7 AT2 FLAT' : 1.2,	'FT7 AT3 FLAT' : 1.2,	'FT7 AT4 FLAT' : 1.2,	'FT7 AT5 FLAT' : 1.2,
+    	'FT9 AT0 FLAT' : 1.2,	'FT9 AT1 FLAT' : 1.2,	'FT9 AT2 FLAT' : 1.2,	'FT9 AT3 FLAT' : 1.2,	'FT9 AT4 FLAT' : 1.2,	'FT9 AT5 FLAT' : 1.2,
     	'FT11 AT0 FLAT' : 1.2,	'FT11 AT1 FLAT' : 1.2,	'FT11 AT2 FLAT' : 1.2,	'FT11 AT3 FLAT' : 1.2,	'FT11 AT4 FLAT' : 1.2,	'FT11 AT5 FLAT' : 1.2,
-	'FT12 AT0 FLAT' : 1.2,	'FT12 AT1 FLAT' : 1.2,	'FT12 AT2 FLAT' : 1.2,	'FT12 AT3 FLAT' : 1.2,	'FT12 AT4 FLAT' : 1.2,	'FT12 AT5 FLAT' : 1.2,
+    	'FT12 AT0 FLAT' : 1.2,	'FT12 AT1 FLAT' : 1.2,	'FT12 AT2 FLAT' : 1.2,	'FT12 AT3 FLAT' : 1.2,	'FT12 AT4 FLAT' : 1.2,	'FT12 AT5 FLAT' : 1.2,
     	'FT15 AT0 FLAT' : 1.2,	'FT15 AT1 FLAT' : 1.2,	'FT15 AT2 FLAT' : 1.2,	'FT15 AT3 FLAT' : 1.2,	'FT15 AT4 FLAT' : 1.2,	'FT15 AT5 FLAT' : 1.2,
     	'FT1 AT0 UP' : 1.32,	'FT1 AT1 UP' : 1.32,	'FT1 AT2 UP' : 1.32,	'FT1 AT3 UP' : 1.32,	'FT1 AT4 UP' : 1.32,	'FT1 AT5 UP' : 1.32,
     	'FT2 AT0 UP' : 1.1,	'FT2 AT1 UP' : 1.1,	'FT2 AT2 UP' : 1.1,	'FT2 AT3 UP' : 1.1,	'FT2 AT4 UP' : 1.1,	'FT2 AT5 UP' : 1.1,
@@ -238,6 +240,7 @@ if __name__ == '__main__':
     	'FT4 AT0 UP' : 1.32,	'FT4 AT1 UP' : 1.32,	'FT4 AT2 UP' : 1.32,	'FT4 AT3 UP' : 1.32,	'FT4 AT4 UP' : 1.32,	'FT4 AT5 UP' : 1.32,
     	'FT5 AT0 UP' : 1.32,	'FT5 AT1 UP' : 1.32,	'FT5 AT2 UP' : 1.32,	'FT5 AT3 UP' : 1.32,	'FT5 AT4 UP' : 1.32,	'FT5 AT5 UP' : 1.32,
     	'FT7 AT0 UP' : 1.32,	'FT7 AT1 UP' : 1.32,	'FT7 AT2 UP' : 1.32,	'FT7 AT3 UP' : 1.32,	'FT7 AT4 UP' : 1.32,	'FT7 AT5 UP' : 1.32,
+    	'FT9 AT0 UP' : 1.32,	'FT9 AT1 UP' : 1.32,	'FT9 AT2 UP' : 1.32,	'FT9 AT3 UP' : 1.32,	'FT9 AT4 UP' : 1.32,	'FT9 AT5 UP' : 1.32,
     	'FT11 AT0 UP' : 1.32,	'FT11 AT1 UP' : 1.32,	'FT11 AT2 UP' : 1.32,	'FT11 AT3 UP' : 1.32,	'FT11 AT4 UP' : 1.32,	'FT11 AT5 UP' : 1.32,
     	'FT12 AT0 UP' : 1.32,	'FT12 AT1 UP' : 1.32,	'FT12 AT2 UP' : 1.32,	'FT12 AT3 UP' : 1.32,	'FT12 AT4 UP' : 1.32,	'FT12 AT5 UP' : 1.32,
     	'FT15 AT0 UP' : 1.32,	'FT15 AT1 UP' : 1.32,	'FT15 AT2 UP' : 1.32,	'FT15 AT3 UP' : 1.32,	'FT15 AT4 UP' : 1.32,	'FT15 AT5 UP' : 1.32,
@@ -247,6 +250,7 @@ if __name__ == '__main__':
     	'FT4 AT0 DOWN' : 1.08,	'FT4 AT1 DOWN' : 1.08,	'FT4 AT2 DOWN' : 1.08,	'FT4 AT3 DOWN' : 1.08,	'FT4 AT4 DOWN' : 1.08,	'FT4 AT5 DOWN' : 1.08,
     	'FT5 AT0 DOWN' : 1.08,	'FT5 AT1 DOWN' : 1.08,	'FT5 AT2 DOWN' : 1.08,	'FT5 AT3 DOWN' : 1.08,	'FT5 AT4 DOWN' : 1.08,	'FT5 AT5 DOWN' : 1.08,
     	'FT7 AT0 DOWN' : 1.08,	'FT7 AT1 DOWN' : 1.08,	'FT7 AT2 DOWN' : 1.08,	'FT7 AT3 DOWN' : 1.08,	'FT7 AT4 DOWN' : 1.08,	'FT7 AT5 DOWN' : 1.08,
+    	'FT9 AT0 DOWN' : 1.08,	'FT9 AT1 DOWN' : 1.08,	'FT9 AT2 DOWN' : 1.08,	'FT9 AT3 DOWN' : 1.08,	'FT9 AT4 DOWN' : 1.08,	'FT9 AT5 DOWN' : 1.08,
     	'FT11 AT0 DOWN' : 1.08,	'FT11 AT1 DOWN' : 1.08,	'FT11 AT2 DOWN' : 1.08,	'FT11 AT3 DOWN' : 1.08,	'FT11 AT4 DOWN' : 1.08,	'FT11 AT5 DOWN' : 1.08,
     	'FT12 AT0 DOWN' : 1.08,	'FT12 AT1 DOWN' : 1.08,	'FT12 AT2 DOWN' : 1.08,	'FT12 AT3 DOWN' : 1.08,	'FT12 AT4 DOWN' : 1.08,	'FT12 AT5 DOWN' : 1.08,
     	'FT15 AT0 DOWN' : 1.08,	'FT15 AT1 DOWN' : 1.08,	'FT15 AT2 DOWN' : 1.08,	'FT15 AT3 DOWN' : 1.08,	'FT15 AT4 DOWN' : 1.08,	'FT15 AT5 DOWN' : 1.08,
@@ -263,6 +267,7 @@ if __name__ == '__main__':
                      "5":8,
                      # centroid connectors should be what?
                      "6":9,
+                     "9":10,
                      }
     
     linkEffectiveLengthFactor = 1.17 # estimated based on queue length survey data
