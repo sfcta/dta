@@ -73,7 +73,7 @@ IF ERRORLEVEL 1 goto done
 ::
 :createDemand
 FOR %%V IN (Car_NoToll Truck_NoToll) DO (
-  python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv %DTA_CODE_DIR% sf_trn %%V demand_%%V.dat 15:30 18:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00  
+  python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv . sf_stops %%V demand_%%V.dat 15:30 18:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00  
   IF ERRORLEVEL 1 goto done
 )
 :: primary output: demand_{Car,Truck}_NoToll.dat
