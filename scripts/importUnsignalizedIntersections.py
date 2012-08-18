@@ -300,14 +300,61 @@ if __name__ == "__main__":
             
         if not allway: 
             roadnode.setTwoWayStopControl()
-            count_twoway += 1
-        
+            count_twoway += 1            
+
+           
     dta.DtaLogger.info("Read %d stop-sign intersections" % len(cnn_to_recordlist))
     dta.DtaLogger.info("  %-4d: Failed to map" % count_notmapped)
     dta.DtaLogger.info("  %-4d: Ignored because they're signalized" % count_hassignal)
     dta.DtaLogger.info("  %-4d: Setting as allway-stop (including %d questionable, with more stop signs than incoming links)" % (count_allway, count_moreincoming))
     dta.DtaLogger.info("  %-4d: Setting as allway-stop in lieu of custom priorities" % count_allway_fromtwo)
     dta.DtaLogger.info("  %-4d: Setting as twoway-stop" % count_twoway)
+    
+    # Warn for any unsignalized intersection
+    nothing_count = 0
+    inconsistent_count = 0
+    for roadnode in net.iterRoadNodes():
+        # 1 or fewer incoming links: don't care
+        if roadnode.getNumIncomingLinks() <= 1: continue
+        
+        # through movements don't conflict - ok fine
+        thru_movements = []
+        thru_conflict  = False
+        for mov in roadnode.iterMovements():
+            if mov.getTurnType() == dta.Movement.DIR_TH: thru_movements.append(mov)
+        for mov1 in thru_movements:
+            for mov2 in thru_movements:
+                if mov1 == mov2: continue
+                if mov1.isInConflict(mov2): 
+                    thru_conflict = True
+                    break
+        if not thru_conflict: continue
+        
+        # signalized, with a time plan: ok
+        if (roadnode.control == dta.RoadNode.CONTROL_TYPE_SIGNALIZED and 
+            roadnode.priority == dta.RoadNode.PRIORITY_TEMPLATE_SIGNALIZED and 
+            roadnode.hasTimePlan()):
+            continue
+        
+        # stop control of some sort: ok
+        if (roadnode.control == dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED and 
+            roadnode.priority != dta.RoadNode.PRIORITY_TEMPLATE_NONE): continue
+        
+        # it's either inconsistent or not set
+        if (roadnode.control == dta.RoadNode.CONTROL_TYPE_UNSIGNALIZED and 
+            roadnode.priority == dta.RoadNode.PRIORITY_TEMPLATE_NONE):
+            dta.DtaLogger.warn("No stop control or signal   at node %8d: control=%d priority=%2d streets=%s" %
+                               (roadnode.getId(), roadnode.control, roadnode.priority, 
+                                roadnode.getStreetNames(incoming=True, outgoing=False)))
+            nothing_count += 1
+
+        else:
+             dta.DtaLogger.warn("Inconsistent control/signal at node %8d: control=%d priority=%2d streets=%s" %
+                               (roadnode.getId(), roadnode.control, roadnode.priority, 
+                                roadnode.getStreetNames(incoming=True, outgoing=False)))
+             inconsistent_count += 1
+    dta.DtaLogger.info("Found %4d road nodes with no stop control or signals" % nothing_count)
+    dta.DtaLogger.info("Found %4d road nodes with inconsistent stop control or signals" % inconsistent_count)
     
     net.write(".", "sf_stops")
 

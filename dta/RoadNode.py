@@ -108,7 +108,7 @@ class RoadNode(Node):
         self._control    = control
         self._priority   = priority
         
-        #: indexed by the :py:class:`PlanCollectionInfo`
+        # indexed by the :py:class:`PlanCollectionInfo`
         self._timePlans = {}
 
     def isRoadNode(self):
@@ -246,10 +246,8 @@ class RoadNode(Node):
             for ilink in self.iterIncomingLinks():  
                 if ilink == link:
                     continue
-                #if self._getMinAngle(self, ilink, self, link) < minAngle:
                 if link.getAngle(ilink) < minAngle:
-                    print self.getId(),link.getId(), ilink.getId()                     
-
+                    # print self.getId(),link.getId(), ilink.getId()                     
                     return True
             else:
                 return False
@@ -259,9 +257,7 @@ class RoadNode(Node):
                 if olink == link:
                     continue
                 if link.getAngle(olink) < minAngle:
-                    
-#                if self._getMinAngle(self, olink, self, link) < minAngle:
-                    print self.getId(),link.getId(), olink.getId() 
+                    # print self.getId(),link.getId(), olink.getId() 
                     return True
             else:
                 return False
@@ -284,6 +280,7 @@ class RoadNode(Node):
                         
         self._timePlans[timePlan.getPlanInfo()] = timePlan
         self._control = RoadNode.CONTROL_TYPE_SIGNALIZED
+        self._priority = RoadNode.PRIORITY_TEMPLATE_SIGNALIZED
         
     def hasTimePlan(self, planInfo=None):
         """
@@ -333,4 +330,19 @@ class RoadNode(Node):
             raise DtaError("setAllWayStopControl: Node %d set to signalized" % self.getId())
         
         self._priority = RoadNode.PRIORITY_TEMPLATE_TWSC
-        
+    
+    @property
+    def control(self):
+        """
+        Returns the control at this road node, one of :py:attr:`RoadNode.CONTROL_TYPE_UNSIGNALIZED` or :py:attr:`CONTROL_TYPE_SIGNALIZED`
+        """
+        return self._control
+    
+    @property
+    def priority(self):
+        """
+        Returns the priority at this road node, one of :py:attr:`RoadNode.PRIORITY_TEMPLATE_NONE`, :py:attr:`RoadNode.PRIORITY_TEMPLATE_AWSC`,
+        :py:attr:`RoadNode.PRIORITY_TEMPLATE_TWSC`, :py:attr:`RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT`, :py:attr:`RoadNode.PRIORITY_TEMPLATE_MERGE`,
+        or :py:attr:`RoadNode.PRIORITY_TEMPLATE_SIGNALIZED`.
+        """
+        return self._priority
