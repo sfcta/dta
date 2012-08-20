@@ -202,9 +202,10 @@ if __name__ == '__main__':
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
-    centroidIds.extend([1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
-                        7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
-                        8339,8832])     # externals
+    boundaryIds         = [1204,1205,1207,1191,1192,1206,6987,6994,7144,7177,
+                           7654,7677,7678,7705,7706,7709,7721,7972,7973,8338,
+                           8339,8832]     # externals
+    centroidIds.extend(boundaryIds)
    
     # Calculated for freeways and expressways based on Caltrans sensors for freeways in SF
     # Updated for locals/collectors and arterials based on second round MTA speed data
@@ -293,9 +294,9 @@ if __name__ == '__main__':
        centroidIds                      = centroidIds,
        useOldNodeForId                  = True,
        nodeGeometryTypeEvalStr          = "Node.GEOMETRY_TYPE_INTERSECTION",
-       nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_SIGNALIZED",
+       nodeControlEvalStr               = "RoadNode.CONTROL_TYPE_UNSIGNALIZED",
        nodePriorityEvalStr              = "RoadNode.PRIORITY_TEMPLATE_NONE",
-       nodeLabelEvalStr                 = "None",
+       nodeLabelEvalStr                 = "'boundary' if int(OLD_NODE) in boundaryIds else None",
        nodeLevelEvalStr                 = "None",
        linkReverseAttachedIdEvalStr     = "None", #TODO: fix?
        linkFacilityTypeEvalStr          = "ftToDTALookup[FT]",
@@ -312,6 +313,7 @@ if __name__ == '__main__':
        additionalLocals                 = {'ftToDTALookup':ftToDTALookup,
                                            'speedLookup':speedLookup,
                                            'responseTimeLookup':responseTimeLookup,
+                                           'boundaryIds':boundaryIds,
                                            })
     # Apply the transit lanes
     # createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
@@ -348,6 +350,9 @@ if __name__ == '__main__':
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        
     sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=[], 
                                                                               disallowConnectorEvalStr="True if self.getFacilityType() in [1,8] else False")
+
+    # Add Two-Way stop control to connectors, so vehicles coming out of connectors yield to the vehicles already on the street
+    sanfranciscoDynameqNet.addTwoWayStopControlToConnectorsAtRoadlinks()
 
     # Warn on overlapping links, and move virtual nodes up to 100 feet if that helps
     sanfranciscoDynameqNet.handleOverlappingLinks(warn=True, moveVirtualNodeDist=100)

@@ -60,20 +60,20 @@ class Network(object):
         if (not VehicleType.LENGTH_UNITS) or (not Node.COORDINATE_UNITS) or not (RoadLink.LENGTH_UNITS):
             raise DtaError("Network __init__ failed; Please set VehicleType.LENGTH_UNITS, Node.COORDINATE_UNITS and RoadLink.LENGTH_UNITS.")
         
-        #: node id -> node; these can be instances of :py:class:`RoadNode` :py:class:`VirtualNode` or
-        #: :py:class:`Centroid`
+        # node id -> node; these can be instances of :py:class:`RoadNode` :py:class:`VirtualNode` or
+        # :py:class:`Centroid`
         self._nodes         = {}
-        #: link id -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
+        # link id -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
         self._linksById     = {}
-        #: (nodeA id, nodeB id) -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
+        # (nodeA id, nodeB id) -> :py:class:`Link` (these are :py:class:`RoadLink`s and :py:class:`Connector`s)
         self._linksByNodeIdPair = {}
         
-        #: maximum link id
+        # maximum link id
         self._maxLinkId     = 0
-        #: maximum node id
+        # maximum node id
         self._maxNodeId     = 0
         
-        #: the relevant :py:class:`Scenario` instance
+        # the relevant :py:class:`Scenario` instance
         if not isinstance(scenario, Scenario):
             raise DtaError("Network __init__ received invalid scenario %s (not Scenario instance)" %
                            str(scenario))
@@ -684,6 +684,40 @@ class Network(object):
             
         raise DtaError("No candidate links found for roadNode %d" % roadNode.getId())
 
+    def addTwoWayStopControlToConnectorsAtRoadlinks(self):
+        """
+        Add two way stop control to :py:class:`Connector` instances when they are incoming into an intersection
+        with an incoming :py:class:`RoadLink`.
+
+        This way, vehicles on the :py:class:`Connector` will yield to vehicles on the incoming :py:class:`RoadLink`.
+        If the stop is uncontrolled, vehicles will take turns from all incoming links.
+        """
+        two_way_stops_count = 0
+        done = set()
+        
+        for connector in self.iterConnectors():
+            # we only care about those that end at road nodes
+            if not connector.endIsRoadNode(): continue
+            
+            roadnode = connector.getEndNode()
+            
+            # skip if we've already done this one
+            if roadnode in done: continue
+            
+            # we only care if there are incoming roadlinks here
+            incoming_roadlinks = False
+            for inlink in roadnode.iterIncomingLinks():
+                if inlink.isRoadLink():
+                    incoming_roadlinks = True
+                    break
+            if not incoming_roadlinks: continue
+            
+            # set it
+            roadnode.setTwoWayStopControl()
+            two_way_stops_count += 1
+            done.add(roadnode)
+            
+        dta.DtaLogger.info("addTwoWayStopControlToConnectorsAtRoadlinks: created %4d two way stops for connectors" % two_way_stops_count)
 
     def insertVirtualNodeBetweenCentroidsAndRoadNodes(self, startVirtualNodeId=None, startVirtualLinkId=None,
         distanceFromCentroid=0):
@@ -2066,16 +2100,23 @@ class Network(object):
         w = shapefile.Writer(shapefile.POINT)
         w.field("ID",           "N", 10)
         w.field("Type",         "C", 12)
+        w.field("Control",      "N", 2)
+        w.field("Priority",     "N", 2)
 
         for node in self.iterNodes():
             w.point(node.getX(), node.getY())
+            control = 0
+            priority = 0
             if node.isRoadNode():
                 type = "RoadNode"
+                control = node.control
+                priority = node.priority
             elif node.isCentroid():
                 type = "Centroid"
             elif node.isVirtualNode():
                 type = "VirtualNode"
-            w.record(node.getId(), type)
+            
+            w.record(node.getId(), type, control, priority)
 
         w.save(name)
         DtaLogger.info("Wrote nodes to shapefile %s" % name)
