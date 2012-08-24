@@ -46,7 +46,8 @@ class Node(object):
     GEOMETRY_TYPE_CENTROID          = 100
     GEOMETRY_TYPES                  = [GEOMETRY_TYPE_INTERSECTION,
                                        GEOMETRY_TYPE_JUNCTION,
-                                       GEOMETRY_TYPE_VIRTUAL]
+                                       GEOMETRY_TYPE_VIRTUAL,
+                                       GEOMETRY_TYPE_CENTROID]
 
     def __init__(self, id, x, y, geometryType, label=None, level=None):
         """
@@ -60,10 +61,10 @@ class Node(object):
          * *level* is for vertical alignment.  More details TBD.  If None passed, will use default.  
         
         """
-        self._id             = id   #: unique identifier (integer)
-        self._x              = x    #: x-coordinate
-        self._y              = y    #: y-coordinate
-        self._geometryType   = geometryType #: one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or Node.GEOMETRY_TYPE_VIRTUAL
+        self._id             = id   # unique identifier (integer)
+        self._x              = x    # x-coordinate
+        self._y              = y    # y-coordinate
+        self._geometryType   = geometryType # one of Node.GEOMETRY_TYPE_INTERSECTION, Node.GEOMETRY_TYPE_JUNCTION, or Node.GEOMETRY_TYPE_VIRTUAL
         
         if label:
             self._label = label
@@ -75,11 +76,30 @@ class Node(object):
         else:
             self._level = Node.DEFAULT_LEVEL
         
-        #: List of incoming Link objects, in clockwise order starting from <1,0>
+        # List of incoming Link objects, in clockwise order starting from <1,0>
         self._incomingLinks = []
         
-        #: List of outgoing link objects, in clockwise order starting from <1,0>
+        # List of outgoing link objects, in clockwise order starting from <1,0>
         self._outgoingLinks = []
+    
+    @property
+    def geometryType(self):
+        """
+        Returns the geometry type for this node, one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION`, :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`,
+        :py:attr:`Node.GEOMETRY_TYPE_VIRTUAL` or :py:attr:`Node.GEOMETRY_TYPE_CENTROID`.
+        """
+        return self._geometryType
+    
+    @geometryType.setter
+    def geometryType(self, value):
+        """
+        Sets the geometry type for this node, which should be one of :py:attr:`Node.GEOMETRY_TYPE_INTERSECTION`, :py:attr:`Node.GEOMETRY_TYPE_JUNCTION`,
+        :py:attr:`Node.GEOMETRY_TYPE_VIRTUAL` or :py:attr:`Node.GEOMETRY_TYPE_CENTROID`.
+        """
+        if value not in Node.GEOMETRY_TYPES:
+            raise DtaError("Trying to set geometry type to invalid value %s for node %d" % (str(value), self._id))
+        
+        self._geometryType = value
     
     def __str__(self):
         """
@@ -228,7 +248,7 @@ class Node(object):
             if link.getEndNode(). getId() == nodeId:
                 return True
         return False
-
+        
     def hasMovement(self, startNodeId, endNodeId):
         """
         Return True if a :py:class:`Movement` exists from the node with *startNodeId* through this node
@@ -323,7 +343,7 @@ class Node(object):
         for link in self.iterIncomingLinks():
             if link.getStartNode().getId() == nodeId:
                 return link
-        raise DtaError("Node %d does not have an incoming link starting from" % (self._id, nodeId)) 
+        raise DtaError("Node %d does not have an incoming link starting from %d" % (self._id, nodeId)) 
 
     def getNumIncomingLinks(self):
         """
@@ -440,11 +460,19 @@ class Node(object):
         
     def getMovement(self, startNodeId, endNodeId):
         """
-        Return the :py:class:`Movement` from *startNodeId* to *endNodeId* that goes through
-        this node.
+        Return the :py:class:`Movement` from the start node identified by the *startNodeId* to 
+        the end node identified by the *endNodeId* that goes through this node.
         """
         iLink = self.getIncomingLinkForNodeId(startNodeId)
         return iLink.getOutgoingMovement(endNodeId)
+    
+    def getMovementForLinkIds(self, incomingLinkId, outgoingLinkId):
+        """
+        Return the :py:class:`Movement` with incoming and outgoing links specified by
+        *incomingLinkId* and *outgoingLinkId*.
+        """
+        iLink = self.getIncomingLinkForId(incomingLinkId)
+        return iLink.getOutgoingMovementForLinkId(outgoingLinkId)
         
     def getNumMovements(self):
         """

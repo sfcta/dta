@@ -346,3 +346,4 @@ class RoadNode(Node):
         or :py:attr:`RoadNode.PRIORITY_TEMPLATE_SIGNALIZED`.
         """
         return self._priority
+    

@@ -48,10 +48,19 @@ class Movement(object):
     #: Throughmovement (returned by :py:meth:`Movement.getTurnType`)
     DIR_TH      = 'TH'
     
+    #: Where did this come from?
     PROTECTED_CAPACITY_PER_HOUR_PER_LANE = 1900
-
-    PERMITTED_ALL = "all"
-    PROHIBITED_ALL = "prohibited"
+    
+    #: Use this to signify that a default follow-up time is to be used for movement
+    #:
+    #: .. note::
+    #:    In Dynameq, if a value of follow-up time other than this is specified for any movement at a node, 
+    #:    the Customize option will be automatically set for the specified priority template at this node and
+    #:    the user-defined values of follow-up time will be used in place of those specified by the template.
+    #:    All movements at the node for which this value is specified for the follow-up time will receive the follow-up 
+    #:    time specified by the priority template (if applicable).
+    #:
+    FOLLOWUP_TIME_DEFAULT = -1
     
     @classmethod
     def simpleMovementFactory(cls, incomingLink, outgoingLink, vehicleClassGroup):
@@ -67,35 +76,32 @@ class Movement(object):
                         )
                                 
     def __init__(self, node, incomingLink, outgoingLink, freeflowSpeed, vehicleClassGroup,
-                 numLanes=None, incomingLane=None, outgoingLane=None, followupTime=0):
+                 numLanes=None, incomingLane=None, outgoingLane=None, followupTime=FOLLOWUP_TIME_DEFAULT):
         """
         Constructor.
         
-         * *node* is a :py:class:`RoadNode` instance where the movement is located
-         * *incomingLink*, *outgoingLink* are :py:class:`Link` instances
-         * *freeflowSpeed* is the maximum speed of the movement; pass None to use that of the *incomingLink*
-         * *vehicleClassGroup* is the allowed group of vehicles that can use this Movement; it should be an
+         :param node: a :py:class:`RoadNode` instance where the movement is located
+         :param incomingLink: a :py:class:`Link` instance representing the incoming link of the movement
+         :param outgoingLink: a :py:class:`Link` instance representing the outgoing link of the movement
+         :param freeflowSpeed: is the maximum speed of the movement; pass None to use that of the *incomingLink*
+         :param vehicleClassGroup: the allowed group of vehicles that can use this Movement; it should be an
            instance of :py:class:`VehicleClassGroup`
-         * *numLanes* is the width of the movement.  For a movement that has a different number of lanes
+         :param numLanes: the width of the movement.  For a movement that has a different number of lanes
            upstream and downstream, the minimum of these two values should be used.  The number of lanes
            can vary over time.  Pass `None` to let the software choose.
-         * *incomingLane*: Of the lanes associated with this movement on the *incomingLink*, the id number
-           of tbhe lane closest to the inside of the roadway (that is, the one with the highest id number).
-           This attribute can vary over time.  Pass `None` to let the software choose.
-         * *outgoingLane*: Of the lanes associated with this movement on the *outgoingLink*, the id number
+         :param incomingLane: Of the lanes associated with this movement on the *incomingLink*, the id number
            of the lane closest to the inside of the roadway (that is, the one with the highest id number).
            This attribute can vary over time.  Pass `None` to let the software choose.
-         * *followupTime* is the follow-up time for the movement.  This attribute can vary over time.
+         :param outgoingLane: Of the lanes associated with this movement on the *outgoingLink*, the id number
+           of the lane closest to the inside of the roadway (that is, the one with the highest id number).
+           This attribute can vary over time.  Pass `None` to let the software choose.
+         :param followupTime: is the follow-up time for the movement.  This attribute can vary over time.
+           Default value is :py:attr:`Movement.FOLLOWUP_TIME_DEFAULT`
+         
         """
         # type checking
         if not isinstance(node, RoadNode):
             DtaLogger.debug("Movement instantiated with non-RoadNode: %s" % str(node))
-        #if not isinstance(incomingLink, RoadLink):
-        #    DtaLogger.debug("Movement instantiated with non-RoadLink incomingLink: %s" % str(incomingLink))
-        #if not isinstance(outgoingLink, RoadLink):
-        #    DtaLogger.debug("Movement instantiated with non-RoadLink outgoingLink: %s" % str(outgoingLink))
-        
-        # DtaLogger.debug("Movement instantiated with links %s %s" % (str(incomingLink),str(outgoingLink)))
 
         if not isinstance(vehicleClassGroup, VehicleClassGroup):
             raise DtaError("Movement instantiated with invalid vehicleClassGroup: %s" % str(vehicleClassGroup))
@@ -115,9 +121,12 @@ class Movement(object):
         
         self._centerline    = self.getCenterLine()
         
+        self._higherPriorityMovements = [] # list of (Movement, CriticalGapTime(sec), CriticalWaitTime(sec)
+        
         self._simOutVolume  = defaultdict(int)      # indexed by timeperiod
         self._simInVolume   = defaultdict(int)      # indexed by timeperiod
         self._simMeanTT     = defaultdict(float)    # indexed by timeperiod
+        
         # TODO: what is this used for?!      
         self._penalty   = 0
         self._timeVaryingCosts = []
@@ -354,6 +363,46 @@ class Movement(object):
                        % self.getId())
          #return self.getNumLanes() * Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
                 
+    def addHigherPriorityMovement(self, higherprio_movement, critical_gap=4, critical_wait=30):
+        """
+        Sets the given *higherprio_movement* (another :py:class:`Movement` instance) as having higher
+        priority than this one, with the given *critical_gap* and *critical_wait* times in seconds.
+        
+        The *critical_gap* determines the gap that waiting drivers performing the lower-priority movement
+        will accept before making their movement.  From the Dynameq documentation::
+        
+          Decreasing this value results in more vehicles on the lower
+          priority movement merging with or crossing the higher-priority traffic stream, when this stream is in
+          under-saturated conditions.  In saturated traffic conditions, there are essentially no available gaps, 
+          and the *critical_wait* parameter determines the amount of flow on the lower-priority movement.
+          
+          The *critical_wait* reflects the influence of driver impatience on gap-acceptance behavior.
+          As waiting time increases, the driver may eventually accept a gap that is not normally considered
+          acceptable, and may even oblige the higher priority vehicle to slow down in order to maintain a
+          safe distance (or to avoid a collision).
+          
+          Decreasing the value of critical wait results in more vehicles on the lower-priority movement
+          merging with or crossing the higher-priority traffic stream, when this stream is in saturated conditions.
+        
+        """
+        # could do more checking
+        if not isinstance(higherprio_movement, Movement):
+            DtaLogger.debug("addHigherPriorityMovement called with non-movement: %s" % str(higherprio_movement))
+
+        self._higherPriorityMovements.append( (higherprio_movement, critical_gap, critical_wait) )
+        
+    def iterHigherPriorityMovements(self):
+        """
+        Returns an iterator to the higher priority movements, which is really a 3-tuple of
+        (higherprio_movement (a :py:class:`Movement` instance), critical gap (a float), critical wait (a float))
+        For example::
+        
+          for (higherprio_movement, critical_gap, crical_wait) in movement.iterHigherPriorityMovements():
+              print "Movement = %s, critical_gap = %f, critical_wait = %f" % (str(higherprio_movement, critical_gap, critical_wait)
+            
+        """
+        return iter(self._higherPriorityMovements)
+    
     def _checkInputTimeStep(self, startTimeInMin, endTimeInMin):
         """The input time step should always be equal to the sim time step"""
         if endTimeInMin - startTimeInMin != self.simTimeStepInMin:

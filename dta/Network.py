@@ -642,6 +642,9 @@ class Network(object):
             if nodeToAttachConnector == None:
                 nodeToAttachConnector = self.splitLink(candidateLinks[0], splitReverseLink=splitReverseLink)
     
+            # this node is now an intersection, not a junction
+            nodeToAttachConnector.geometryType = Node.GEOMETRY_TYPE_INTERSECTION 
+            
             if connector.startIsRoadNode():
     
                 newConnector = Connector(connector.getId(),
@@ -904,6 +907,30 @@ class Network(object):
         for link in self.iterLinks():
             if isinstance(link, VirtualLink):
                 yield link
+    
+    def iterMovements(self):
+        """
+        Returns an iterator to all the :py:class:`Movement` instances in the network by
+        iterating through links (sorted by ID) and their outgoing movements.
+        """
+        for linkId in sorted(self._linksById.keys()):
+            # only roadlinks and connectors have movements
+            if (not isinstance(self._linksById[linkId], RoadLink) and
+                not isinstance(self._linksById[linkId], Connector)):
+                continue
+            
+            for movement in self._linksById[linkId].iterOutgoingMovements():
+                yield movement
+
+    def hasCustomPriorities(self):
+        """
+        Does this network have custom priorities?  i.e. Were custom priorities set via :py:meth:`Movement.addHigherPriorityMovement` ?
+        """
+        for movement in self.iterMovements():
+            for (higherprio_movement, critical_gap, critical_wait) in movement.iterHigherPriorityMovements():
+                # found one
+                return True
+        return False
 
     def hasNodeForId(self, nodeId):
         """
@@ -1595,9 +1622,8 @@ class Network(object):
                                newLink1._freeflowSpeed,
                                vcg,
                                newLink1._numLanes,
-                               0,
-                               newLink1._numLanes,
-                               1.0)
+                               incomingLane=0,
+                               outgoingLane=newLink1._numLanes)
         newLink1.addOutgoingMovement(newMovement)
 
     def splitLink(self, linkToSplit, splitReverseLink=False, fraction=0.5):

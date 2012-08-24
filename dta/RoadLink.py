@@ -108,12 +108,12 @@ class RoadLink(Link):
             self._length = length
             
 
-        self._lanePermissions           = {}  #: lane id -> VehicleClassGroup reference
-        self._outgoingMovements         = []  #: list of outgoing Movements
-        self._incomingMovements         = []  #: list of incoming Movements
+        self._lanePermissions           = {}  # lane id -> VehicleClassGroup reference
+        self._outgoingMovements         = []  # list of outgoing Movements
+        self._incomingMovements         = []  # list of incoming Movements
         self._startShift                = None
         self._endShift                  = None
-        self._shapePoints               = []  #: sequenceNum -> (x,y)
+        self._shapePoints               = []  # sequenceNum -> (x,y)
 
         self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
@@ -817,7 +817,8 @@ class RoadLink(Link):
 
     def getOutgoingMovement(self, nodeId):
         """
-        Return True if the link has an outgoing movement towards nodeId
+        Returns the outgoing movement with an end node specified by the given *nodeId*
+        (and this link as the incoming link).
         """
         for mov in self.iterOutgoingMovements():
             if mov.getEndNode().getId() == nodeId:
@@ -825,6 +826,18 @@ class RoadLink(Link):
         raise DtaError("RoadLink from %d to %d does not have a movement to node %d" % (self._startNode.getId(),
                                                                                        self._endNode.getId(),
                                                                                        nodeId))
+    def getOutgoingMovementForLinkId(self, linkId):
+        """
+        Returns the outgoing movement with the outgoing link specified by the given *linkId*
+        (and this link as the incoming link).
+        """
+        for mov in self.iterOutgoingMovements():
+            if mov.getOutgoingLink().getId() == linkId:
+                return mov
+        raise DtaError("RoadLink from %d to %d does not have a movement to link %d" % (self._startNode.getId(),
+                                                                                       self._endNode.getId(),
+                                                                                       linkId))  
+        
     def setNumLanes(self, numLanes):
         """
         Sets the number of lanes to the given value

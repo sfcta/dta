@@ -56,29 +56,40 @@ class DynameqNetwork(Network):
     #: Dynameq's Custom Priorities File name
     PRIORITIES_FILE = '%s_prio.dqt'
     
+    #: Dynameq's Base file header
     BASE_HEADER          = """<DYNAMEQ>
 <VERSION_1.8>
 <BASE_NETWORK_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/
 """
+    #: Dynameq's Advanced file header
     ADVANCED_HEADER     = """<DYNAMEQ>
-<VERSION_1.5>
+<VERSION_1.8>
 <ADVN_NETWORK_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/    
 """
+
+    #: Dynameq's Traffic Control Plan file header
     CTRL_HEADER        = """<DYNAMEQ>
-<VERSION_1.7>
+<VERSION_1.8>
 <CONTROL_PLANS_FILE>
 * CREATED by DTA Anyway http://code.google.com/p/dta/
 """
 
-    MOVEMENT_FLOW_OUT = 'movement_aflowo.dqt'
-    MOVEMENT_FLOW_IN = 'movement_aflowi.dqt'
-    MOVEMENT_TIME_OUT = 'movement_atime.dqt'
-    MOVEMENT_SPEED_OUT = "movement_aspeed.dqt"
-    LINK_FLOW_OUT = 'link_aflowo.dqt'
-    LINK_TIME_OUT = 'link_atime.dqt'
-    LINK_SPEED_OUT = "link_aspeed.dqt"
+    #: Dynameq's Custom Priorities file header
+    PRIORITIES_HEADER   = """<DYNAMEQ>
+<VERSION_1.8>
+<CUSTOM_PRIORITIES_FILE>
+* CREATED by DTA Anyway http://code.google.com/p/dta/
+"""
+
+    MOVEMENT_FLOW_OUT   = 'movement_aflowo.dqt'
+    MOVEMENT_FLOW_IN    = 'movement_aflowi.dqt'
+    MOVEMENT_TIME_OUT   = 'movement_atime.dqt'
+    MOVEMENT_SPEED_OUT  = "movement_aspeed.dqt"
+    LINK_FLOW_OUT       = 'link_aflowo.dqt'
+    LINK_TIME_OUT       = 'link_atime.dqt'
+    LINK_SPEED_OUT      = "link_aspeed.dqt"
     
     def __init__(self, scenario):
         """
@@ -185,7 +196,16 @@ class DynameqNetwork(Network):
                 count += 1
             DtaLogger.info("Read  %8d %-16s from %s" % (count, "TIME PLANS", controlfile))
                         
-        #TODO: what about the custom priorities file?  I don't see that in pbtools               
+        # custom priorities file
+        custompriofile = os.path.join(dir, DynameqNetwork.PRIORITIES_FILE % file_prefix)
+        if os.path.exists(custompriofile):
+            
+            count = 0
+            for fields in self._readSectionFromFile(custompriofile, None, "ENDOFFILE"):
+                self._addCustomPrioritiesFromFields(fields)
+                count += 1
+            DtaLogger.info("Read  %8d %-16s from %s" % (count, "CUSTOM PRIOS", custompriofile))
+                       
         ## TODO - what about the public transit file?
         
     def write(self, dir, file_prefix):
@@ -222,20 +242,34 @@ class DynameqNetwork(Network):
         self._writeControlFile(ctrl_object)
         ctrl_object.close() 
         
+        if self.hasCustomPriorities():
+            custompriofile = os.path.join(dir, DynameqNetwork.PRIORITIES_FILE % file_prefix)
+            customprio_object = open(custompriofile, "w")
+            customprio_object.write(DynameqNetwork.PRIORITIES_HEADER)
+            self._writeCustomPriorities(customprio_object)
+            customprio_object.close()
         
     def _readSectionFromFile(self, filename, sectionName, nextSectionName):
         """
         Generator function, yields fields (array of strings) from the given section of the given file.
+        
+        If *sectionName* is None, starts reading after comments.
+        
         """
         lines = open(filename, "r")
         curLine = ""
-        try:
-            # find the section
-            while curLine != sectionName:
-                curLine = lines.next().strip()
-        except StopIteration:
-            raise DtaError("DynameqNetwork _readSectionFromFile failed to find %s in %s" % 
-                           (sectionName,filename))
+        if sectionName:
+            try:
+                # find the section
+                while curLine != sectionName: curLine = lines.next().strip()
+                
+            except StopIteration:
+                raise DtaError("DynameqNetwork _readSectionFromFile failed to find %s in %s" % 
+                               (sectionName,filename))
+        else:
+            # find the first comment
+            curLine = " "
+            while curLine[0] != "*": curLine = lines.next().strip()
         
         # go past the section name
         curLine = lines.next().strip()
@@ -576,6 +610,11 @@ class DynameqNetwork(Network):
         incomingLane    = int(fields[6])
         outgoingLane    = int(fields[7])
         followupTime    = float(fields[8])
+        
+        # use an int version if possible
+        followupTime_i  = int(followupTime)
+        if followupTime_i == followupTime:
+            followupTime = followupTime_i
     
         node                = self.getNodeForId(nodeId)
         incomingLink        = self.getLinkForId(incomingLinkId)
@@ -598,24 +637,19 @@ class DynameqNetwork(Network):
         basefile_object.write("*   at_node   inc_link   out_link       fspeed                perms lanes inlane outlane  tfollow\n")
         
         count = 0
-        for linkId in sorted(self._linksById.keys()):
+        for movement in self.iterMovements():
             
-            if (not isinstance(self._linksById[linkId], RoadLink) and
-                not isinstance(self._linksById[linkId], Connector)):
-                continue
-            
-            for movement in self._linksById[linkId].iterOutgoingMovements():
-                basefile_object.write("%11d %10d %10d %12s %20s %5d %6d %7d %8s\n" %
-                                      (movement._node.getId(),
-                                       movement.getIncomingLink().getId(),
-                                       movement._outgoingLink.getId(),
-                                       str(-1 if not movement._freeflowSpeed else movement._freeflowSpeed),
-                                       movement._permission.name,
-                                       -1 if not movement._numLanes else movement._numLanes,
-                                       -1 if not movement._incomingLane else movement._incomingLane,
-                                       -1 if not movement._outgoingLane else movement._outgoingLane,
-                                       str(movement._followupTime)))
-                count += 1
+            basefile_object.write("%11d %10d %10d %12s %20s %5d %6d %7d %8s\n" %
+                                  (movement._node.getId(),
+                                   movement.getIncomingLink().getId(),
+                                   movement._outgoingLink.getId(),
+                                   str(-1 if not movement._freeflowSpeed else movement._freeflowSpeed),
+                                   movement._permission.name,
+                                   -1 if not movement._numLanes else movement._numLanes,
+                                   -1 if not movement._incomingLane else movement._incomingLane,
+                                   -1 if not movement._outgoingLane else movement._outgoingLane,
+                                   str(movement._followupTime)))
+            count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "MOVEMENTS", basefile_object.name))                                           
         
                     
@@ -738,6 +772,46 @@ class DynameqNetwork(Network):
                     count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "TIME PLANS", ctrl_object.name))
             
+
+    def _addCustomPrioritiesFromFields(self, fields):
+        """
+        Updates :py:class:`Movement` priorities by adding the information about their higher-priority movements.
+        """
+        at_node_id      = int(fields[0])
+        inc_link_id     = int(fields[1])
+        out_link_id     = int(fields[2])
+        
+        prio_inc_link_id= int(fields[3])
+        prio_out_link_id= int(fields[4])
+        cgap            = float(fields[5])
+        cwait           = float(fields[6])
+        
+        at_node         = self.getNodeForId(at_node_id)
+        movement        = at_node.getMovementForLinkIds(inc_link_id, out_link_id)
+        prio_movement   = at_node.getMovementForLinkIds(prio_inc_link_id, prio_out_link_id)
+        movement.addHigherPriorityMovement(prio_movement, cgap, cwait)
+        
+    def _writeCustomPriorities(self, customprio_object):
+        """
+        Output the custom priorities to disk
+        """
+        customprio_object.write("*        at       inc       out     inc_p     out_p        cgap       cwait\n")
+        count = 0
+        for movement in self.iterMovements():
+            
+            for (higherprio_movement, critical_gap, critical_wait) in movement.iterHigherPriorityMovements():
+                customprio_object.write(" %10d %9d %9d %9d %9d %11.3f %11.3f\n" % \
+                                        (movement.getAtNode().getId(),
+                                         movement.getIncomingLink().getId(),
+                                         movement.getOutgoingLink().getId(),
+                                         higherprio_movement.getIncomingLink().getId(),
+                                         higherprio_movement.getOutgoingLink().getId(),
+                                         critical_gap,
+                                         critical_wait))
+                count += 1
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "CUSTOM PRIOS", customprio_object.name))
+    
+        
     def _readMovementOutFlowsAndTTs(self):
         """
         Read the movement travel times (in seconds) add assign them 
