@@ -149,7 +149,7 @@ if __name__ == '__main__':
     # The rest of San Francisco currently exists as a Cube network.  Initialize it from
     # the Cube network files (which have been exported to dbfs.)
     # This is where we define the :py:class:`dta.Scenario`
-    sanfranciscoScenario = dta.DynameqScenario(dta.Time(15,30), dta.Time(21,30))
+    sanfranciscoScenario = dta.DynameqScenario(dta.Time(14,30), dta.Time(21,30))
 
     # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll 
     # We will provide demand matrices for each of these classes
@@ -163,8 +163,8 @@ if __name__ == '__main__':
     # We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
     sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1,          100.0,      100.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1,          100.0,      100.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.6,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.25,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.25,        70.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT1",     "Transit",      75,     1.6,        35.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT2",     "Transit",     150,     1.6,        35.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Std",  "Transit",  40,     1.6,        70.0,       90.0))
