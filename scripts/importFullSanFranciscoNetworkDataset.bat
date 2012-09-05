@@ -72,7 +72,7 @@ IF ERRORLEVEL 1 goto done
 :: 4) create the car demand
 ::
 :createDemand
-python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv %DTA_CODE_DIR% sf_stops Car_NoToll demand_Car_NoToll.dat 14:30 19:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.13364 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.22594
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv . sf_stops Car_NoToll demand_Car_NoToll.dat 14:30 19:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.13364 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.22594
 IF ERRORLEVEL 1 goto done
 :: primary output: demand_Car_NoToll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
@@ -80,7 +80,7 @@ IF ERRORLEVEL 1 goto done
 :: 5) create the truck demand
 ::
 :createDemand
-python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv %DTA_CODE_DIR% sf_stops Truck_NoToll demand_Truck_NoToll.dat 14:30 19:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.051282 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.039216
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv . sf_stops Truck_NoToll demand_Truck_NoToll.dat 14:30 19:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.051282 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.039216
 IF ERRORLEVEL 1 goto done
 :: primary output: demand_Truck_NoToll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
