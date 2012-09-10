@@ -56,7 +56,7 @@ from dta.Utils import Time
 
 if __name__ == "__main__":
     
-    if len(sys.argv) != 10:
+    if len(sys.argv) != 12:
         print USAGE
         sys.exit(2)
 
@@ -68,7 +68,9 @@ if __name__ == "__main__":
     COUNT_DIR                            = sys.argv[6]  
     LINK_COUNT_FILE_15MIN                = sys.argv[7] 
     MOVEMENT_COUNT_FILE_15MIN            = sys.argv[8]
-    MOVEMENT_COUNT_FILE_5MIN             = sys.argv[9]  
+    MOVEMENT_COUNT_FILE_5MIN             = sys.argv[9]
+    START_TIME                           = sys.argv[10]
+    END_TIME                             = sys.argv[11]
     LINK_VOLUME_FILE_TOTAL               = "AllLinks.csv"
 
     #INPUT_DYNAMEQ_NET_DIR                = "~/Documents/sfcta/06082012/"
@@ -94,7 +96,7 @@ if __name__ == "__main__":
 
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
     
-    simStartTime = 15 * 60 + 30
+    simStartTime = 14 * 60 + 30
     simEndTime = 21 * 60 + 30
     simTimeStep = 5
     reportingTimeStep = int(REPORTING_TIME_STEP)
@@ -197,18 +199,27 @@ if __name__ == "__main__":
     
     # start with the header
     outputStream = open(LINK_VOLUME_FILE_TOTAL, "w") 
-    outputStream.write("LinkID,Label,FacilityType,FreeflowSpeed,NumLanes,StartTime,EndTime,ModelVolume\n")
+    outputStream.write("ANode,BNode,LinkID,LengthInMiles,Label,FacilityType,FreeflowSpeed,NumLanes,StartTime,EndTime,ModelVolume,TravelTime,ModelVolume4to6,ModelVolume5to6\n")
+
+    reportStartTime = Time.readFromString(START_TIME).getMinutes()
+    reportEndTime = Time.readFromString(END_TIME).getMinutes()
         
     # now loop through all links 
-    for link in net.iterRoadLinks():  
+    for link in net.iterRoadLinks():
+        outputStream.write("%d," % link.getStartNode().getId())
+        outputStream.write("%d," % link.getEndNode().getId())
         outputStream.write("%d," % link.getId())
+        outputStream.write("%f," % link.getLength())
         outputStream.write("%s," % link.getLabel())
         outputStream.write("%d," % link.getFacilityType())
         outputStream.write("%d," % link.getFreeFlowSpeedInMPH())
         outputStream.write("%d," % link.getNumLanes())
-        outputStream.write("%s," % Time.fromMinutes(simStartTime))
-        outputStream.write("%s," % Time.fromMinutes(simEndTime))       
-        outputStream.write("%d\n" % link.getSimOutVolume(simStartTime, simEndTime))
+        outputStream.write("%s," % Time.fromMinutes(reportStartTime))
+        outputStream.write("%s," % Time.fromMinutes(reportEndTime))
+        outputStream.write("%d," % link.getSimOutVolume(reportStartTime, reportEndTime))
+        outputStream.write("%f," % link.getSimTTInMin(reportStartTime, reportEndTime))
+        outputStream.write("%d," % link.getSimOutVolume(16*60, 18*60))
+        outputStream.write("%d\n" % link.getSimOutVolume(17*60, 18*60))
 
     # done in a separate script
     #link1 = gearyWBStart = net.getLinkForId(18394)

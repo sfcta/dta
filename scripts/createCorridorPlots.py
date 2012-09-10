@@ -92,7 +92,7 @@ if __name__ == "__main__":
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
 
     #magic numbers here. This information may (or may not) be somewhere in the .dqt files 
-    simStartTime = 15 * 60 + 30
+    simStartTime = 14 * 60 + 30
     simEndTime = 21 * 60 + 30
     simTimeStep = 5
     net.readSimResults(simStartTime, simEndTime, 5)

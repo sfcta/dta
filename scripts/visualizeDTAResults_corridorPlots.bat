@@ -41,3 +41,14 @@ python %DTA_CODE_DIR%\scripts\visualizeDTAResults.py D:\SFCTA_Validation\validat
 :: primary output: link60min.csv movement60min.csv
 :: log     output: visualizeDTAResults.{DEBUG,INFO}.log
 IF ERRORLEVEL 1 goto done
+
+::
+:: 2) create the corridor plots
+::
+:createCorridorPlots
+python %DTA_CODE_DIR%\scripts\createCorridorPlots.py D:\SFCTA_Validation\validation2010.pb_sept5_RS_T2\Reports\Export %DYNAMEQ_NET_PREFIX% 17:00 18:00 D:\SFCTA_Validation\Counts\2011_LOS_Monitoring_Fixed.csv D:\SFCTA_Validation\Counts counts_links_15min_1600_1830_recent_midweek.dat counts_movements_15min_1600_1830_recent_midweek.dat counts_movements_5min_1600_1800_recent_midweek.dat ObsVsSimulatedRouteTravelTimes.csv
+:: primary output: 
+:: log     output: createCorridorPlots.{DEBUG,INFO}.log
+IF ERRORLEVEL 1 goto done
+
+:done
