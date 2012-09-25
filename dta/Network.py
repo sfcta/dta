@@ -534,28 +534,30 @@ class Network(object):
                         else:
                             prohibitedMovement = Movement.simpleMovementFactory(ilink, olink,
                                  self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_PROHIBITED))
-                            ilink.addOutgoingMovement(prohibitedMovement) 
-                    else:
-                        # fill in missing movements
-                        if not ilink.hasOutgoingMovement(olink.getEndNode().getId()):
-                            
-                            # one of incoming or outgoing link doesn't allow all
-                            vcg = self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL)
-                            if not ilink.allowsAll():
-                                DtaLogger.warn("moveCentroidConnectorsFromIntersectionsToMidblocks: incoming link %d-%d %s %s does not allow all" % 
-                                               (ilink.getStartNode().getId(), ilink.getEndNode().getId(),
-                                                ilink.getLabel(), ilink.getDirection()))
-                                vcg = ilink._lanePermissions[0]
-                                
-                            if not olink.allowsAll():
-                                DtaLogger.warn("moveCentroidConnectorsFromIntersectionsToMidblocks: outgoing link %d-%d %s %s does not allow all" % 
-                                               (olink.getStartNode().getId(), olink.getEndNode().getId(),
-                                                olink.getLabel(), olink.getDirection()))
-                                # this should really be more like an intersection between the incoming vcg and the outgoing
-                                vcg = olink._lanePermissions[0]
-                            
-                            allowedMovement = Movement.simpleMovementFactory(ilink, olink,vcg)
-                            ilink.addOutgoingMovement(allowedMovement)
+                            ilink.addOutgoingMovement(prohibitedMovement)
+                        continue
+                    
+                    # movement already exists, continue
+                    if ilink.hasOutgoingMovement(olink.getEndNode().getId()): continue
+
+                    # fill in missing movements
+                    # one of incoming or outgoing link doesn't allow all
+                    vcg = self.getScenario().getVehicleClassGroup(VehicleClassGroup.CLASSDEFINITION_ALL)
+                    if not ilink.allowsAll():
+                        DtaLogger.warn("moveCentroidConnectorsFromIntersectionsToMidblocks: incoming link %d-%d %s %s does not allow all" % 
+                                       (ilink.getStartNode().getId(), ilink.getEndNode().getId(),
+                                        ilink.getLabel(), ilink.getDirection()))
+                        vcg = ilink._lanePermissions[0]
+                        
+                    if not olink.allowsAll():
+                        DtaLogger.warn("moveCentroidConnectorsFromIntersectionsToMidblocks: outgoing link %d-%d %s %s does not allow all" % 
+                                       (olink.getStartNode().getId(), olink.getEndNode().getId(),
+                                        olink.getLabel(), olink.getDirection()))
+                        # this should really be more like an intersection between the incoming vcg and the outgoing
+                        vcg = olink._lanePermissions[0]
+                    
+                    allowedMovement = Movement.simpleMovementFactory(ilink, olink,vcg)
+                    ilink.addOutgoingMovement(allowedMovement)
                             
             for mov in node.iterMovements():
                 if not mov.isThruTurn():
@@ -1672,6 +1674,7 @@ class Network(object):
                 self._split(linkToSplit2, midNode, length2, length1, linkToSplit2.getNumShapePoints()-shpidx)
                 self.removeLink(linkToSplit2)
 
+                # prohibit U-Turns at the split
                 link1 = self.getLinkForNodeIdPair(linkToSplit.getStartNode().getId(), midNode.getId())
                 link2 = self.getLinkForNodeIdPair(midNode.getId(), linkToSplit.getStartNode().getId())
                 

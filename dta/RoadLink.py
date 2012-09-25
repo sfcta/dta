@@ -489,8 +489,8 @@ class RoadLink(Link):
         
         if not movement:
             return False
-        
-        if vehicleClassGroup and mov.getVehicleClassGroup() == vehicleClassGroup:
+                
+        if (not vehicleClassGroup) or (vehicleClassGroup and mov.getVehicleClassGroup() == vehicleClassGroup):
             return True
         
         return False
