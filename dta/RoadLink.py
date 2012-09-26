@@ -118,6 +118,9 @@ class RoadLink(Link):
         self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
         self._obsCount = {}
+    
+    def __repr__(self):
+        return "<Link id:%d  label:%s  dir:%s>" % (self.getId(), self.getLabel(), self.getDirection())
         
     def createReverseLink(self, newid):
         """

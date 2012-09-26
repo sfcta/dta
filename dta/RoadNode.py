@@ -331,6 +331,12 @@ class RoadNode(Node):
         
         self._priority = RoadNode.PRIORITY_TEMPLATE_TWSC
     
+    def setPriorityTemplateNone(self):
+        """
+        Sets the road node's priority template to :py:attr:`RoadNode.PRIORITY_TEMPLATE_NONE`.
+        """
+        self._priority = RoadNode.PRIORITY_TEMPLATE_NONE
+    
     @property
     def control(self):
         """

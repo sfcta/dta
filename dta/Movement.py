@@ -138,6 +138,9 @@ class Movement(object):
 
         self._obsCount = {}
         
+    def __repr__(self):
+        return "Movement node:%d inlink:%d outlink:%d" % (self._node.getId(), self._incomingLink.getId(), self._outgoingLink.getId())
+        
     def getIncomingLink(self):
         """
         Returns the incomingLink, a :py:class:`Link` instance

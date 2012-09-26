@@ -91,6 +91,7 @@ copy sf_stops_scen.dqt sf_final_scen.dqt
 copy sf_stops_base.dqt sf_final_base.dqt
 copy sf_stops_advn.dqt sf_final_advn.dqt
 copy sf_stops_ctrl.dqt sf_final_ctrl.dqt
+copy sf_stops_prio.dqt sf_final_prio.dqt
 copy sf_trn_ptrn.dqt   sf_final_ptrn.dqt
 
 :: This is here because countdracula is not typically setup.  Unless you're Lisa. ;)

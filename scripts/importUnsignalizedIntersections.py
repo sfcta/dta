@@ -66,6 +66,11 @@ def readStopSignShapefile(shapefilename):
         if cnn == 0:
             cnn = "nocnn_%d" % nocnn_id
             nocnn_id += 1
+        # hack - consolidated cnn
+        elif cnn == 26099000:
+            cnn = 26101000
+        elif cnn == 22457000:
+            cnn = 22456000
         
         # add the point
         sr_record_dict['COORDS'] = point
@@ -158,41 +163,6 @@ def checkStreetnameConsistency(dta_node_id, dta_streets, stopsign_streets, stops
             dta.DtaLogger.warn("Streetname consistency check: node %d doesn't have %s [%s]  (Searched %s)" % 
                                (dta_node_id, checktype, checkname, str(dta_streets)))
 
-def updateNodePriority(net,matchedNodes):
-    conflictNodes = []
-    # If node was matched 4 or more times, it is set to all-way stop.  If node was matched fewer times, it is set to two-way stop.
-    for node in net.iterRoadNodes():
-        if node in matchedNodes:
-            if matchedNodes.count(node)>=node.getNumIncomingLinks():
-                node._priority = 1
-            elif matchedNodes.count(node)<node.getNumIncomingLinks() and matchedNodes.count(node)>=1:
-                if float(matchedNodes.count(node))/float(node.getNumIncomingLinks())>0.5:
-                    node._priority=1
-                else:
-                    node._priority = 2
-                    maxFac = 100
-                    maxFacName = ""
-                    for links in node.iterIncomingLinks():
-                        streetLabel = str(node._label)
-                        splitval = streetLabel.find("&")
-                        streetName = streetLabel[:splitval]
-                        streetName = cleanStreetName(streetName)
-                        #dta.DtaLogger.info("TW stop at node %s has link %s with facility type %s and %s has priority." % (node.getId(),links.getLabel(),links.getFacilityType(),streetName))
-                        if links.getFacilityType()==maxFac:
-                            if links.getLabel()==maxFacName:
-                                continue
-                            else:
-                                dta.DtaLogger.error("Two-way stop %s at %s has conflicting facility types.  Set to four-way." % (node.getId(),node.getStreetNames()))
-                                node._priority = 1
-                                if node not in conflictNodes:
-                                    conflictNodes.append(node)
-                                #for link2 in node.iterIncomingLinks():
-                                    #dta.DtaLogger.error("TW stop tagged %d of %d times at node %s at %d, %d has link %s with facility type %s and %s has priority." % (matchedNodes.count(node),node.getNumIncomingLinks(),node.getId(),node.getX(),node.getY(),link2.getLabel(),link2.getFacilityType(),streetName))
-                        elif links.getFacilityType()<maxFac:
-                            maxFac = links.getFacilityType()
-                            maxFacName = links.getLabel()
-    dta.DtaLogger.info("%d stops are two-way with facility type conflicts" % len(conflictNodes))
-    return True
 
 #: this_is_main                
 if __name__ == "__main__":
@@ -223,19 +193,24 @@ if __name__ == "__main__":
     count_hassignal     = 0
     count_moreincoming  = 0
     count_allway        = 0
-    count_twoway        = 0
-    count_allway_fromtwo= 0
+    count_twoway        = 0 # no custom
+    count_twoway_custom = 0
+    count_allway_fromtwo= 0 # use this?
+    
     # the cnn is unique per intersection so loop through each intersection with stop signs
     for cnn, stopsignlist in cnn_to_recordlist.iteritems():
         
         # these are the streets for the stop signs
         stopsign_streets   = []
         stopsign_x_streets = []
+        # and the dirs
+        stopsign_dirs      = []
         for stopsign in stopsignlist:
             if stopsign['STREET'] not in stopsign_streets:
                 stopsign_streets.append(stopsign['STREET'])
             if stopsign['X_STREET'] not in stopsign_x_streets:
                 stopsign_x_streets.append(stopsign['X_STREET'])
+            stopsign_dirs.append(stopsign['ST_FACING'])
 
         # find the nearest node to this                
         (min_dist, roadnode) = net.findNodeNearestCoords(stopsignlist[0]['COORDS'][0], stopsignlist[0]['COORDS'][1], quick_dist=100.0)
@@ -259,56 +234,96 @@ if __name__ == "__main__":
             count_hassignal += 1
             continue
         
-        # if the number of incoming links == the number of stop signs, mark it an all way stop
+        # warn when more stops than incoming links
         if len(stopsignlist) > roadnode.getNumIncomingLinks():
             dta.DtaLogger.warn("Roadnode %d missing incoming links?  More stop signs than incoming links" % roadnode.getId())
             count_moreincoming += 1 # not exclusive count!
             
-        if  len(stopsignlist) >= roadnode.getNumIncomingLinks():
+        # if the number of incoming links == the number of stop signs
+        # OR the number of stop signs is >=4
+        # mark it an all way stop
+        if  len(stopsignlist) >= roadnode.getNumIncomingLinks() or len(stopsignlist) >= 4:
             roadnode.setAllWayStopControl()
             count_allway += 1
             continue
         
-        # two way stop
-        # todo: look at the matching facility type issue and set up custom priorities
-
-        # collect the through movements
-        through_movements = []        
+        # two way stop -- assign custom priorities; incoming links with stops are lower priority than incoming links without stops
+        inlink_stops   = []
+        inlink_nostops = []     
         for inlink in roadnode.iterIncomingLinks():
-            try:
-                through_movements.append(inlink.getThruTurn())
-            except:
-                pass
-        
-        # for now: set to all way stops if multiple incoming through movements conflict and 
-        # their incoming links have the same facility type
-        allway   = False        
-        for mov1 in through_movements:
-            for mov2 in through_movements:
-                if mov1 == mov2: continue
-                if not mov1.isInConflict(mov2): continue
-                # now they're in conflict
-                
-                if mov1.getIncomingLink().getFacilityType() == mov2.getIncomingLink().getFacilityType():
-                    # and equivalent priority
-                    roadnode.setAllWayStopControl()
-                    allway = True
-                    count_allway_fromtwo += 1
+            # by direction
+            if inlink.getDirection() in stopsign_dirs:
+                inlink_stops.append(inlink)
+                continue
+            # direction is there, name matches
+            is_stop = False
+            for stopsign in stopsignlist:
+                if inlink.getLabel().startswith(stopsign['STREET']) and inlink.hasDirection(stopsign['ST_FACING']):
+                    is_stop = True
                     break
-            # alway - done already
-            if allway: break 
-            
-        if not allway: 
-            roadnode.setTwoWayStopControl()
-            count_twoway += 1            
+            if is_stop:
+                inlink_stops.append(inlink)
+            else:
+                inlink_nostops.append(inlink)                    
+        
+        dta.DtaLogger.debug("inlink_stops: "+str(inlink_stops))
+        dta.DtaLogger.debug("inlink_nostops: "+str(inlink_nostops))
+        
+        # did we find all the stops?
+        if len(inlink_stops) != len(stopsignlist):
+            dta.DtaLogger.warn("RoadNode %d: stop links != stopsigns; links=[%s], stopsigns=[%s]" %
+                                (roadnode.getId(), str(inlink_stops), str(stopsignlist)))
 
-           
+        # check if stop facilities > nostop facility
+        min_stop_fac_num = 9999
+        for inlink in inlink_stops:
+            if min_stop_fac_num > inlink.getFacilityType(): min_stop_fac_num = inlink.getFacilityType()
+        max_nostop_fac_num = -9999
+        for inlink in inlink_nostops:
+            if max_nostop_fac_num < inlink.getFacilityType(): max_nostop_fac_num = inlink.getFacilityType()
+        dta.DtaLogger.debug("RoadNode %d: stop sign min facility num %d vs no-stop max facility num %d" % 
+                            (roadnode.getId(), min_stop_fac_num, max_nostop_fac_num))
+            
+        # if so, we're done -- no need to customize
+        if min_stop_fac_num > max_nostop_fac_num:
+            roadnode.setTwoWayStopControl()
+            count_twoway += 1
+            continue
+        
+        # if not, we need to customize
+        roadnode.setPriorityTemplateNone()
+        count_twoway_custom += 1
+        
+        for inlink_stop in inlink_stops:
+            for mov_stop in inlink_stop.iterOutgoingMovements():
+                if mov_stop.isProhibitedToAllVehicleClassGroups(): continue
+                
+                # set the no-stop movements as higher priority
+                for inlink_nostop in inlink_nostops:
+                    for mov_nostop in inlink_nostop.iterOutgoingMovements():
+                        if mov_nostop.isProhibitedToAllVehicleClassGroups(): continue
+                        
+                        # don't mention it if they're not in conflict anyway
+                        if not mov_stop.isInConflict(mov_nostop): continue
+
+                        # these are based on the (default) project settings
+                        if mov_stop.isThruTurn():
+                            critical_gap = 6.5
+                        elif mov_stop.isLeftTurn():
+                            critical_gap = 7.10
+                        elif mov_stop.isRightTurn():
+                            critical_gap = 6.2
+                        else:
+                            dta.DtaLogger.fatal("I don't recognize the turn type of the stop-sign controled movement %s" % move_stop)
+                        mov_stop.addHigherPriorityMovement(mov_nostop, critical_gap=critical_gap, critical_wait=60)
+                                   
     dta.DtaLogger.info("Read %d stop-sign intersections" % len(cnn_to_recordlist))
     dta.DtaLogger.info("  %-4d: Failed to map" % count_notmapped)
     dta.DtaLogger.info("  %-4d: Ignored because they're signalized" % count_hassignal)
     dta.DtaLogger.info("  %-4d: Setting as allway-stop (including %d questionable, with more stop signs than incoming links)" % (count_allway, count_moreincoming))
     dta.DtaLogger.info("  %-4d: Setting as allway-stop in lieu of custom priorities" % count_allway_fromtwo)
-    dta.DtaLogger.info("  %-4d: Setting as twoway-stop" % count_twoway)
+    dta.DtaLogger.info("  %-4d: Setting as twoway-stop without custom priorities" % count_twoway)
+    dta.DtaLogger.info("  %-4d: Setting as twoway-stop with custom priorities" % count_twoway_custom)
     
     # Warn for any unsignalized intersection
     nothing_count = 0
