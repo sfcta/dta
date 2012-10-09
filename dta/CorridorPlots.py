@@ -18,10 +18,7 @@ __license__     = """
 
 import datetime
 from itertools import izip
-import pdb
-
 import numpy as np
-import pylab as plt 
 
 import dta
 from dta.Logger import DtaLogger
@@ -202,7 +199,9 @@ class CountsVsVolumes(object):
     
     @classmethod
     def plotEdgeCountsAlongRoute(cls, plot, route, startTimeInMin, endTimeInMin, color):
-        """Adds count information to the provided plot"""
+        """
+        Adds count information to the provided plot
+        """
         countLocations = []
         counts = []
 
@@ -229,8 +228,14 @@ class CountsVsVolumes(object):
         
     @classmethod
     def plotEdgeVolumesAlongRoute(cls, route, startTimeInMin, endTimeInMin, color):
-        """Creates a scatterplot with the Y axis representing edges along the route
-        and the x axis representing volumes""" 
+        """
+        Creates a scatterplot with the Y axis representing edges along the route
+        and the x axis representing volumes
+
+        .. Note:: Requires `pylab <http://www.scipy.org/PyLab>`_ module.    
+        """
+        import pylab as plt 
+
         volumes = []
         for edge in route.iterEdges():
             if volumeLocations:
@@ -258,8 +263,11 @@ class CountsVsVolumes(object):
         """
         Export the corridor volume plot to the outPlotFileName. The volumes to be summarized are from
         startTime to endTime. 
-        """
         
+        .. Note:: Requires `pylab <http://www.scipy.org/PyLab>`_ module.    
+        """
+        import pylab as plt 
+
         plt.clf()
         plt.cla()
         figure = plt.figure(1)

@@ -3,9 +3,6 @@
 Utility functions for use throughout DTA Anyway.
 
 """
-import pylab as plt
-import pdb
-
 __copyright__   = "Copyright 2011 SFCTA"
 __license__     = """
     This file is part of DTA.
@@ -618,8 +615,12 @@ def getNumZeroEntries(matrix):
 def plotTripHistogram(matrix, outputFile):
     """
     Plot a histogram of the cell values and write the result in the outputFile
-    *matrix* is a numpy array 
+    *matrix* is a numpy array .
+    
+    .. Note:: Requires `pylab <http://www.scipy.org/PyLab>`_ module.
     """
+    import pylab as plt
+    
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.grid(True)
