@@ -63,7 +63,21 @@ def addShifts(sanfranciscoCubeNet):
     
     # HWY 101 N On-Ramp at Marin / Bayshore
     sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0, addShapepoints=True)
+    
+    # Stockton SB to Post
+    sanfranciscoCubeNet.getLinkForNodeIdPair(24907,24908).addShifts(0,1, addShapepoints=True)
 
+def addTurnPockets(sanfranciscoCubeNet):
+    """
+    The San Francisco network has a few turn pockets -- add these.
+    """
+    # Post EB, Powell to Stockton has a block long turn pocket (right turn only)
+    post_eb = sanfranciscoCubeNet.getLinkForNodeIdPair(24918,24908)
+    post_eb.setNumLanes(3)
+    post_thru_stockton = post_eb.findOutgoingMovement(24660)
+    post_thru_stockton.setNumLanes(2)
+    
+    
 def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
     Creates transit-only lanes based on the BUSLANE_PM field.
@@ -78,15 +92,137 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
         if buslane_pm == 0: continue
         
         for lane_id in range(link.getNumLanes()):
-            # diamond lane or side BRT lane
-            if lane_id == 0 and (buslane_pm == 1 or buslane_pm == 2):
+            # around union square is special - right turn lanes exist to the right of buses
+            if ab_tuple in [(24908,24906),  # Stockton SB, Post to Maiden Lane
+                            (24906,24901),  # Stockton SB, Maiden Lane to Geary St
+                            (24901,24903),  # Geary WB, Stockton to Powell
+                            (24918,24908)]: # Post EB, Powell to Stockton
+                if lane_id == 1 and (buslane_pm == 1 or buslane_pm == 2): 
+                    link.addLanePermission(lane_id, transitVCG)
+                else:
+                    link.addLanePermission(lane_id, allVCG)
+            # diamond lane or side BRT lane1
+            elif lane_id == 0 and (buslane_pm == 1 or buslane_pm == 2):
                 link.addLanePermission(lane_id, transitVCG)
             # center BRT lane
             elif lane_id == link.getNumLanes()-1 and buslane_pm == 3:
                 link.addLanePermission(lane_id, transitVCG)
             else:
                 link.addLanePermission(lane_id, allVCG)
+
+def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, splitForConnectors=False):
+    """
+    Looks at all the transit-only links and splits them to allow right or left turns for general traffic, if needed.
+    """
+    right_splits = 0
+    right_perms  = 0
+    left_splits  = 0
+    left_perms   = 0
+
+    done         = False
+    
+    # outter loop due to the fact we have to start searching for qualifying links again after we split since the iteration
+    # will break once we update the roadlinks with a split
+    while not done:
         
+        did_split = False
+        
+        for link in sanfranciscoCubeNet.iterRoadLinks():
+            
+            # one lane - it doesn't matter
+            if link.getNumLanes() == 1: continue
+            
+            ###################### check the right transit lane (lane 0) - are right turns allowed?
+            lane_id = 0
+            right_lane_perm = link.getLanePermission(lane_id)
+            if right_lane_perm == transitVCG:
+                
+                right_turn_allowed = False
+                
+                for mov in link.iterOutgoingMovements():
+                    # are right turns into general purpose lanes allowed?  (Not including into alleys)
+                    if (mov.isRightTurn() and
+                        mov.getVehicleClassGroup() == allVCG and
+                        mov.getOutgoingLink().getFacilityType() != 10):
+ 
+                        # if splitForConnectors is False and the right turn is a connector, it doesn't count
+                        if not splitForConnectors and mov.getOutgoingLink().getFacilityType() == 99: continue
+                        
+                        right_turn_allowed = True
+                
+                if not right_turn_allowed: continue
+                
+                # is the link already split?
+                if link.getStartNode().getNumAdjacentNodes() == 2:
+                    # dta.DtaLogger.debug("No need to split link %d for right turn from transit lane" % link.getId())
+                    modlink = link
+                else:
+                    dta.DtaLogger.debug("Splitting link %d-%d for right turn from transit lane" %
+                                        (link.getStartNode().getId(), link.getEndNode().getId()))
+                    midnode = sanfranciscoCubeNet.splitLink(link, splitReverseLink=True, fraction=0.5)
+
+                    newlink = sanfranciscoCubeNet.getLinkForNodeIdPair(link.getStartNode().getId(), midnode.getId())
+                    modlink = sanfranciscoCubeNet.getLinkForNodeIdPair(midnode.getId(), link.getEndNode().getId())
+                    
+                    did_split = True
+                    right_splits += 1
+                
+                modlink.addLanePermission(lane_id, allVCG)
+                right_perms += 1
+                
+                # if the link was split then we have to start again, the iterRoadLinks() won't work anymore
+                if did_split: break
+            
+            # This is repeated code because I didn't want to loop through right/left -- it would be less readable.
+            
+            ###################### check the left lane - are left turns allowed?
+            lane_id = link.getNumLanes() - 1
+            left_lane_perm = link.getLanePermission(lane_id)
+            if left_lane_perm == transitVCG:
+                
+                left_turn_allowed = False
+                
+                for mov in link.iterOutgoingMovements():
+                    # are left turns into general purpose lanes allowed?  (Not including into alleys)
+                    if (mov.isLeftTurn() and
+                        mov.getVehicleClassGroup() == allVCG and
+                        mov.getOutgoingLink().getFacilityType() != 10):
+ 
+                        # if splitForConnectors is False and the left turn is a connector, it doesn't count
+                        if not splitForConnectors and mov.getOutgoingLink().getFacilityType() == 99: continue
+                        
+                        left_turn_allowed = True
+                
+                if not left_turn_allowed: continue
+                
+                # is the link already split?
+                if link.getStartNode().getNumAdjacentNodes() == 2:
+                    # dta.DtaLogger.debug("No need to split link %d for left turn from transit lane" % link.getId())
+                    modlink = link
+                else:
+                    dta.DtaLogger.debug("Splitting link %d-%d for left turn from transit lane" %
+                                        (link.getStartNode().getId(), link.getEndNode().getId()))
+                    midnode = sanfranciscoCubeNet.splitLink(link, splitReverseLink=True, fraction=0.5)
+
+                    newlink = sanfranciscoCubeNet.getLinkForNodeIdPair(link.getStartNode().getId(), midnode.getId())
+                    modlink = sanfranciscoCubeNet.getLinkForNodeIdPair(midnode.getId(), link.getEndNode().getId())
+                    
+                    did_split = True
+                    left_splits += 1
+                
+                modlink.addLanePermission(lane_id, allVCG)
+                left_perms += 1
+                
+                # if the link was split then we have to start again, the iterRoadLinks() won't work anymore
+                if did_split: break
+                
+        
+        # no splitting?? We're done!
+        if not did_split: done = True
+            
+    dta.DtaLogger.debug("Split %3d links for right turns from transit lanes, updated %3d permissions" % (right_splits, right_perms))
+    dta.DtaLogger.debug("Split %3d links for left  turns from transit lanes, updated %3d permissions" % (left_splits,  left_perms))
+    
 def removeHOVStubs(sanfranciscoDynameqNet):
     """
     The San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
@@ -316,11 +452,11 @@ if __name__ == '__main__':
                                            'boundaryIds':boundaryIds,
                                            })
     # Apply the transit lanes
-    # createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
+    createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
         
     # create the movements for the network for all vehicles
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
-    
+        
     # Apply the turn prohibitions
     sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     
@@ -334,6 +470,9 @@ if __name__ == '__main__':
      
     # Some special links needing shifts
     addShifts(sanfranciscoCubeNet)
+    
+    # Some special links needing turn pockets
+    addTurnPockets(sanfranciscoCubeNet)
     
     # Convert the network to a Dynameq DTA network
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
@@ -350,6 +489,11 @@ if __name__ == '__main__':
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        
     sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=[], 
                                                                               disallowConnectorEvalStr="True if self.getFacilityType() in [1,8] else False")
+
+    # Allow turns from transit lanes -- this needs to be done after the centroid connectors are moved or they interfere connecting
+    # to intersections
+    allowTurnsFromTransitOnlyLanes(sanfranciscoDynameqNet, allVCG, transitVCG, splitForConnectors=False)
+
 
     # Add Two-Way stop control to connectors, so vehicles coming out of connectors yield to the vehicles already on the street
     sanfranciscoDynameqNet.addTwoWayStopControlToConnectorsAtRoadlinks()

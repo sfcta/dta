@@ -351,7 +351,18 @@ class RoadLink(Link):
                            (laneId, self._numLanes))
         
         self._lanePermissions[laneId] = vehicleClassGroup
+    
+    def getLanePermission(self, laneId):
+        """
+        Accessor for the :py:class:`VehicleClassGroup` that uses the given lane.
         
+        Returns None if nothing is set.
+        """
+        if len(self._lanePermissions) <= laneId:
+            return None
+        
+        return self._lanePermissions[laneId]
+    
     def allowsAll(self):
         """
         Is there a lane on this link that allows all?
@@ -1050,13 +1061,13 @@ class RoadLink(Link):
             
     def getGroup(self):
         """
-        Return the group number fo the link
+        Return the group number for the link
         """
         return self._group
     
     def setGroup(self, group):
         """
-        Set the group number fo the link
+        Set the group number for the link
         """
         self._group = group
                 

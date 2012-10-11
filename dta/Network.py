@@ -1651,7 +1651,7 @@ class Network(object):
         length2      = total_length*(1.0-fraction)
         
         (midX, midY, shpidx) = linkToSplit.coordinatesAndShapePointIdxAlongLink(fromStart=True, 
-                                                                                distance=fraction*linkToSplit.getLengthInCoordinateUnits(),
+                                                                                distance=fraction*linkToSplit.euclideanLength(includeShape=True),
                                                                                 goPastEnd=False)
 
         midNode = RoadNode(self._maxNodeId + 1, midX, midY, 
