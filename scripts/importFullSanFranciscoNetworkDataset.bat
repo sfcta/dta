@@ -107,6 +107,7 @@ set OLDPATH=%PATH%
 set PATH=C:\Python27;C:\Python27\Scripts;C:\OSGeo4W\bin;C:\Program Files (x86)\PostgreSQL\9.0\bin;C:\Program Files (x86)\Citilabs\CubeVoyager;C:\Program Files (x86)\Git\bin
 set PYTHONPATH=%DTA_CODE_DIR%;%COUNTDRACULA_CODE_DIR%
 python %DTA_CODE_DIR%\scripts\attachCountsFromCountDracula.py -l sf_final_links.shp -m sf_final_movements.shp -n sf_final_nodes.shp . sf_final
+set PATH=%OLDPATH%
 IF ERRORLEVEL 1 goto done
 
 :done
