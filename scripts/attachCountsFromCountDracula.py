@@ -93,7 +93,7 @@ def findDtaMovementForTurnCountLocation(sanfranciscoDynameqNet, turn_count_locat
     return None
                 
 def exportTurnCountsToDynameqUserDataFile(sanfranciscoDynameqNet, starttime, period, num_intervals,
-                                               suffix, from_date=None, to_date=None, weekdays=None,
+                                               suffix, from_year=None, to_year=None, weekdays=None,
                                                all_count_workbook=None):
     """
     Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.
@@ -104,8 +104,8 @@ def exportTurnCountsToDynameqUserDataFile(sanfranciscoDynameqNet, starttime, per
     * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
     * *num_intervals* is an integer defining how many intervals we'll export
     * *suffix* is an optional suffix for the file name (something descriptive)
-    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
-    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
+    * *from_year* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
+    * *to_year* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
     * If *weekdays* is passed (a list of integers, where Sunday is 1 and Saturday is 7), then counts will
       only include the given weekdays.
     * If *all_count_workbook* is passed (it should be an xlwt.Workbook) then the raw data will be added
@@ -120,10 +120,10 @@ def exportTurnCountsToDynameqUserDataFile(sanfranciscoDynameqNet, starttime, per
                                                               "_%s" % suffix if suffix else "")
     
     kwargs = {'period_minutes': int(period.total_seconds()/60)}
-    if from_date: 
-        kwargs['count_date__gte'] = from_date
-    if to_date:
-        kwargs['count_date__lte'] = to_date
+    if from_year: 
+        kwargs['count_year__gte'] = from_year
+    if to_year:
+        kwargs['count_year__lte'] = to_year
     # I don't know why this one fails
     # I get django.core.exceptions.FieldError: Join on field 'count_date' not permitted. Did you misspell 'week_day' for the lookup type?
     #if weekdays:
@@ -137,7 +137,7 @@ def exportTurnCountsToDynameqUserDataFile(sanfranciscoDynameqNet, starttime, per
     outfile.write("* starttime: %s\n" % starttime.strftime("%H:%M"))
     outfile.write("* period: %d min\n" % (period.seconds/60))
     outfile.write("* num_intervals: %d\n" % num_intervals)
-    outfile.write("* date_range: %s - %s\n" % (str(from_date), str(to_date)))
+    outfile.write("* date_range: %s - %s\n" % (str(from_year), str(to_year)))
     outfile.write("* weekdays: %s\n" % str(weekdays))
     outfile.write("* CREATED %s\n" % datetime.datetime.now().ctime())
     outfile.write("*%8s %8s %8s" % ("at","start","end"))
@@ -275,7 +275,7 @@ def exportTurnCountsToDynameqUserDataFile(sanfranciscoDynameqNet, starttime, per
 
             # figure out multiyear
             count_years = set()
-            for movement_count in movement_counts_for_location: count_years.add(movement_count.count_date.year)
+            for movement_count in movement_counts_for_location: count_years.add(movement_count.count_year)
             
             for movement_count in movement_counts_for_location:
                 # data row
@@ -327,7 +327,7 @@ def findDtaLinkForMainlineCountLocation(sanfranciscoDynameqNet, mainline_count_l
     
 
 def exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime, period, num_intervals,
-                                                   suffix=None, from_date=None, to_date=None, weekdays=None,
+                                                   suffix=None, from_year=None, to_year=None, weekdays=None,
                                                    all_count_workbook=None):
     """
     Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.
@@ -338,8 +338,8 @@ def exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime, 
     * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
     * *num_intervals* is an integer defining how many intervals we'll export
     * *suffix* is an optional suffix for the file name (something descriptive)
-    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
-    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
+    * *from_year* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
+    * *to_year* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
     * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
       only include the given weekdays.
     * If *all_count_workbook* is passed (it should be an xlwt.Workbook) then the raw data will be added
@@ -354,10 +354,10 @@ def exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime, 
                                                           endtime.strftime("%H%M"),
                                                           "_%s" % suffix if suffix else "")
     kwargs = {'period_minutes': int(period.total_seconds()/60)}
-    if from_date: 
-        kwargs['count_date__gte'] = from_date
-    if to_date:
-        kwargs['count_date__lte'] = to_date    
+    if from_year: 
+        kwargs['count_year__gte'] = from_year
+    if to_year:
+        kwargs['count_year__lte'] = to_year    
     
     # file header (comments)
     outfile         = open(filename, "w")
@@ -367,7 +367,7 @@ def exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime, 
     outfile.write("* starttime: %s\n" % starttime.strftime("%H:%M"))
     outfile.write("* period: %d min\n" % (period.seconds/60))
     outfile.write("* num_intervals: %d\n" % num_intervals)
-    outfile.write("* date_range: %s - %s\n" % (str(from_date), str(to_date)))
+    outfile.write("* date_range: %s - %s\n" % (str(from_year), str(to_year)))
     outfile.write("* weekdays: %s\n" % str(weekdays))
     outfile.write("* CREATED %s\n" % datetime.datetime.now().ctime())
     outfile.write("*%8s %8s" % ("from","to"))
@@ -503,7 +503,7 @@ def exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime, 
 
             # figure out multiyear
             count_years = set()
-            for link_count in link_counts_for_location: count_years.add(link_count.count_date.year)
+            for link_count in link_counts_for_location: count_years.add(link_count.count_year)
             
             for link_count in link_counts_for_location:
                 # data row
@@ -520,8 +520,11 @@ def exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime, 
                 sheet.write(row_num,7, location_id_to_location[location_id].to_street.street_name,   STYLE_REG)
                 # count data, starttime, year, allyears, time, period (min), vtype, refpos, sourcefile, project
                 sheet.write(row_num,8,  link_count.count,                           STYLE_REG)
-                sheet.write(row_num,9,  datetime.datetime.combine(link_count.count_date, link_count.start_time), STYLE_DATE)
-                sheet.write(row_num,10, link_count.count_date.year,                 STYLE_REG)
+                if link_count.count_date == None:
+                    sheet.write(row_num,9,  link_count.start_time, STYLE_TIME)
+                else:
+                    sheet.write(row_num,9,  datetime.datetime.combine(link_count.count_date, link_count.start_time), STYLE_DATE)
+                sheet.write(row_num,10, link_count.count_year,                 STYLE_REG)
                 sheet.write(row_num,11, str(sorted(count_years)),                   STYLE_REG)
                 sheet.write(row_num,12, link_count.start_time,                      STYLE_TIME)
                 sheet.write(row_num,13, link_count.period_minutes,                  STYLE_REG)
@@ -579,14 +582,14 @@ if __name__ == '__main__':
     # Time slices here are based on what we have available (according to CountDracula's querySanFranciscoCounts.py)
     
     for suffix in ["all", "all_midweek", "recent", "recent_midweek"]:
-        from_date   = None
-        to_date     = None
+        from_year   = None
+        to_year     = None
         weekdays    = None
         
         # year range
         if suffix.find("recent") >= 0:
-            from_date   = datetime.date(year=2009,month=1 ,day=1 )
-            to_date     = datetime.date(year=2011,month=12,day=31)
+            from_year   = 2009
+            to_year     = 2011
             
         # weekdays
         if suffix.find("midweek") >= 0:
@@ -595,19 +598,27 @@ if __name__ == '__main__':
         dta.DtaLogger.info("Processing %s" % suffix)
         exportTurnCountsToDynameqUserDataFile   (sanfranciscoDynameqNet, starttime=datetime.time(16,00), 
                                                  period=datetime.timedelta(minutes=15), num_intervals=10, 
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
+                                                 suffix=suffix, from_year=from_year, to_year=to_year, weekdays=weekdays,
                                                  all_count_workbook=counts_wb)
         exportTurnCountsToDynameqUserDataFile   (sanfranciscoDynameqNet, starttime=datetime.time(16,00),
                                                  period=datetime.timedelta(minutes= 5), num_intervals=24,
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
+                                                 suffix=suffix, from_year=from_year, to_year=to_year, weekdays=weekdays,
                                                  all_count_workbook=counts_wb)
         exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime=datetime.time(16,00),
                                                  period=datetime.timedelta(minutes=60), num_intervals=2,
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
+                                                 suffix=suffix, from_year=from_year, to_year=to_year, weekdays=weekdays,
                                                  all_count_workbook=counts_wb)
         exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime=datetime.time(16,00),
                                                  period=datetime.timedelta(minutes=15), num_intervals=10,
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
+                                                 suffix=suffix, from_year=from_year, to_year=to_year, weekdays=weekdays,
+                                                 all_count_workbook=counts_wb)
+        # static counts - PM period
+        
+        if weekdays: continue  # no notion of weekdays...
+        
+        exportMainlineCountsToDynameUserDataFile(sanfranciscoDynameqNet, starttime=datetime.time(15,30),
+                                                 period=datetime.timedelta(minutes=60*3), num_intervals=1,
+                                                 suffix=suffix, from_year=from_year, to_year=to_year, weekdays=weekdays,
                                                  all_count_workbook=counts_wb)
 
     counts_wb.save("counts_generated_%s.xls" % str(datetime.date.today()))
