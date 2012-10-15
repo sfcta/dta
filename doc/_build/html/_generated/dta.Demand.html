@@ -108,7 +108,10 @@ time, origin taz, destination taz.</p>
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setValue</span></tt>(timeLabel,&nbsp;origin,&nbsp;destination,&nbsp;value)</td>
 <td>Set the value of the given timeLabel, origin, and destination</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeDynameqTable</span></tt>(outputStream[,&nbsp;format])</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeDynameqDemandHeader</span></tt>(outputStream,&nbsp;...)</td>
+<td>Write the demand header in the dynameq format ..</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeDynameqTable</span></tt>(outputStream[,&nbsp;format])</td>
 <td>Write the demand in the dynameq format ..</td>
 </tr>
 </tbody>
@@ -189,6 +192,13 @@ a path does not exist from origin to destination</p>
 <dt id="dta.Demand.setValue">
 <tt class="descname">setValue</tt><big>(</big><em>timeLabel</em>, <em>origin</em>, <em>destination</em>, <em>value</em><big>)</big><a class="headerlink" href="#dta.Demand.setValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the value of the given timeLabel, origin, and destination</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="dta.Demand.writeDynameqDemandHeader">
+<em class="property">classmethod </em><tt class="descname">writeDynameqDemandHeader</tt><big>(</big><em>outputStream</em>, <em>startTime</em>, <em>endTime</em>, <em>vehClassName</em>, <em>format='full'</em><big>)</big><a class="headerlink" href="#dta.Demand.writeDynameqDemandHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the demand header in the dynameq format
+.. todo:: implement linear writing</p>
 </dd></dl>
 
 <dl class="method">

@@ -19,6 +19,7 @@ dta.CubeNetwork
       ~CubeNetwork.addMovement
       ~CubeNetwork.addNode
       ~CubeNetwork.addPlanCollectionInfo
+      ~CubeNetwork.addTwoWayStopControlToConnectorsAtRoadlinks
       ~CubeNetwork.applyTurnProhibitions
       ~CubeNetwork.areIDsUnique
       ~CubeNetwork.cleanStreetNames
@@ -51,6 +52,7 @@ dta.CubeNetwork
       ~CubeNetwork.handleOverlappingLinks
       ~CubeNetwork.handleShortLinks
       ~CubeNetwork.hasCentroidForId
+      ~CubeNetwork.hasCustomPriorities
       ~CubeNetwork.hasLinkForId
       ~CubeNetwork.hasLinkForNodeIdPair
       ~CubeNetwork.hasNodeForId
@@ -59,6 +61,7 @@ dta.CubeNetwork
       ~CubeNetwork.iterCentroids
       ~CubeNetwork.iterConnectors
       ~CubeNetwork.iterLinks
+      ~CubeNetwork.iterMovements
       ~CubeNetwork.iterNodes
       ~CubeNetwork.iterPlanCollectionInfo
       ~CubeNetwork.iterRoadLinks

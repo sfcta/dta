@@ -21,6 +21,7 @@ dta.RoadNode
       ~RoadNode.getIncomingLinkForId
       ~RoadNode.getIncomingLinkForNodeId
       ~RoadNode.getMovement
+      ~RoadNode.getMovementForLinkIds
       ~RoadNode.getName
       ~RoadNode.getNumAdjacentLinks
       ~RoadNode.getNumAdjacentNodes
@@ -60,6 +61,7 @@ dta.RoadNode
       ~RoadNode.iterTimePlans
       ~RoadNode.iterUpstreamNodes
       ~RoadNode.setAllWayStopControl
+      ~RoadNode.setPriorityTemplateNone
       ~RoadNode.setTwoWayStopControl
    
    
@@ -88,5 +90,8 @@ dta.RoadNode
       ~RoadNode.PRIORITY_TEMPLATE_ROUNDABOUT
       ~RoadNode.PRIORITY_TEMPLATE_SIGNALIZED
       ~RoadNode.PRIORITY_TEMPLATE_TWSC
+      ~RoadNode.control
+      ~RoadNode.geometryType
+      ~RoadNode.priority
    
    

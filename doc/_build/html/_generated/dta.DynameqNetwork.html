@@ -94,98 +94,104 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">addPlanCollectionInfo</span></tt>(startTime,&nbsp;endTime,&nbsp;...)</td>
 <td>Instantiates a new <a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo" title="dta.PlanCollectionInfo"><tt class="xref py py-class docutils literal"><span class="pre">PlanCollectionInfo</span></tt></a> for this network with the given attributes and returns it.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">areIDsUnique</span></tt>(net2)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">addTwoWayStopControlToConnectorsAtRoadlinks</span></tt>()</td>
+<td>Add two way stop control to <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances when they are incoming into an intersection</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">areIDsUnique</span></tt>(net2)</td>
 <td>Returns True if the node and link Ids are unique</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">cleanStreetNames</span></tt>(streetNames)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">cleanStreetNames</span></tt>(streetNames)</td>
 <td>Accept street names as a list and return a list</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">deepcopy</span></tt>(originNetwork)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">deepcopy</span></tt>(originNetwork)</td>
 <td>Copies the contents of the originNetwork by creating copies of all its</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">findLinksForRoadLabels</span></tt>(on_street_label,&nbsp;...)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">findLinksForRoadLabels</span></tt>(on_street_label,&nbsp;...)</td>
 <td>Attempts to find the link(s) with the given <em>on_street_label</em> and <em>on_direction</em> from the street matching <em>from_street_label</em> to the street matching <em>to_street_label</em>.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">findMovementForRoadLabels</span></tt>(...[,&nbsp;...])</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">findMovementForRoadLabels</span></tt>(...[,&nbsp;...])</td>
 <td>Attempts to find the movement from the given <em>incoming_street_label</em> and <em>incoming_direction</em> to the given <em>outgoing_street_label</em> and <em>outgoing_direction</em>.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">findNRoadLinksNearestCoords</span></tt>(x,&nbsp;y[,&nbsp;n,&nbsp;...])</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">findNRoadLinksNearestCoords</span></tt>(x,&nbsp;y[,&nbsp;n,&nbsp;...])</td>
 <td>Iterates though <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances and returns the <em>n</em> closest</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">findNodeForRoadLabels</span></tt>(road_label_list,&nbsp;CUTOFF)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">findNodeForRoadLabels</span></tt>(road_label_list,&nbsp;CUTOFF)</td>
 <td>Finds matching node for a set of road labels and returns a <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instance.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">findNodeNearestCoords</span></tt>(x,&nbsp;y[,&nbsp;quick_dist])</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">findNodeNearestCoords</span></tt>(x,&nbsp;y[,&nbsp;quick_dist])</td>
 <td>Iterates though <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances and returns</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCleanStreetName</span></tt>(streetName)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getCleanStreetName</span></tt>(streetName)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLinkForId</span></tt>(linkId)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLinkForId</span></tt>(linkId)</td>
 <td>Accessor for link given the <em>linkId</em>.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLinkForNodeIdPair</span></tt>(nodeAId,&nbsp;nodeBId)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLinkForNodeIdPair</span></tt>(nodeAId,&nbsp;nodeBId)</td>
 <td>Accessor for the link given the link nodes.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLinkType</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLinkType</span></tt>()</td>
 <td>Return a unique integer representing the link type  ..</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMaxLinkId</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMaxLinkId</span></tt>()</td>
 <td>Return the max link Id in the network</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMaxNodeId</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMaxNodeId</span></tt>()</td>
 <td>REturn the max noe id in the network</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNodeForId</span></tt>(nodeId)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNodeForId</span></tt>(nodeId)</td>
 <td>Accessor for node given the <em>nodeId</em>.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNodeType</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNodeType</span></tt>()</td>
 <td>Return a unique integer representing the node type.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumCentroids</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumCentroids</span></tt>()</td>
 <td>Returns the number of centroids in the network</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumConnectors</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumConnectors</span></tt>()</td>
 <td>Return the number of connectors in the Network</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLinks</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLinks</span></tt>()</td>
 <td>Returns the number of links in the network</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumNodes</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumNodes</span></tt>()</td>
 <td>Returns the number of nodes in the network</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumOverlappingConnectors</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumOverlappingConnectors</span></tt>()</td>
 <td>Return the number of connectors that overlap with a RoadLink or</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumRoadLinks</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumRoadLinks</span></tt>()</td>
 <td>Return the number of RoadLinks in the Network(excluding connectors)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumRoadNodes</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumRoadNodes</span></tt>()</td>
 <td>Returns the number of roadnodes in the network</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumTimePlans</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumTimePlans</span></tt>()</td>
 <td>Return the number of nodes with a time plan</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumVirtualLinks</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumVirtualLinks</span></tt>()</td>
 <td>Return the number of connectors in the Network</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumVirtualNodes</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumVirtualNodes</span></tt>()</td>
 <td>Returns the number of virtual nodes in the network</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getPlanCollectionInfo</span></tt>(startTime,&nbsp;endTime)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getPlanCollectionInfo</span></tt>(startTime,&nbsp;endTime)</td>
 <td>Return the plan collection info for the given input times</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getScenario</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getScenario</span></tt>()</td>
 <td>Return the scenario object associated with this network</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">handleOverlappingLinks</span></tt>(warn[,&nbsp;...])</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">handleOverlappingLinks</span></tt>(warn[,&nbsp;...])</td>
 <td>For each node, checks if any incoming links overlap, and if any outgoing links overlap.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">handleShortLinks</span></tt>(minLength,&nbsp;warn,&nbsp;setLength)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">handleShortLinks</span></tt>(minLength,&nbsp;warn,&nbsp;setLength)</td>
 <td>Goes through the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances (including <tt class="xref py py-class docutils literal"><span class="pre">Connectors</span></tt>)</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasCentroidForId</span></tt>(nodeId)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasCentroidForId</span></tt>(nodeId)</td>
 <td>Return True if there is a centroid with the given id</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasCustomPriorities</span></tt>()</td>
+<td>Does this network have custom priorities?  i.e.</td>
 </tr>
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">hasLinkForId</span></tt>(linkId)</td>
 <td>Return True if a link with the given id exists</td>
@@ -211,97 +217,100 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterLinks</span></tt>()</td>
 <td>Return an iterator to the link collection</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterNodes</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterMovements</span></tt>()</td>
+<td>Returns an iterator to all the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances in the network by</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterNodes</span></tt>()</td>
 <td>Return an iterator to the node collection</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterPlanCollectionInfo</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterPlanCollectionInfo</span></tt>()</td>
 <td>Return an iterator to the planInfo objects</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterRoadLinks</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterRoadLinks</span></tt>()</td>
 <td>Return an iterator for to the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instances in the network that are</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterRoadNodes</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterRoadNodes</span></tt>()</td>
 <td>Return an iterator to the <a class="reference internal" href="dta.RoadNode.html#dta.RoadNode" title="dta.RoadNode"><tt class="xref py py-class docutils literal"><span class="pre">RoadNode</span></tt></a> instances in the network.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterVirtualLinks</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterVirtualLinks</span></tt>()</td>
 <td>Return an iterator to the <a class="reference internal" href="dta.VirtualLink.html#dta.VirtualLink" title="dta.VirtualLink"><tt class="xref py py-class docutils literal"><span class="pre">VirtualLink</span></tt></a> instances in the network.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterVirtualNodes</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">iterVirtualNodes</span></tt>()</td>
 <td>Return an iterator to the <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a> instances in the network.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeLinks</span></tt>(link1,&nbsp;link2)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeLinks</span></tt>(link1,&nbsp;link2)</td>
 <td>Merge the two input sequential links.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeSecondaryNetwork</span></tt>(secondaryNetwork)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeSecondaryNetwork</span></tt>(secondaryNetwork)</td>
 <td>This method will create a polygon around the current  (primary network).</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeSecondaryNetworkBasedOnLinkIds</span></tt>(...)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeSecondaryNetworkBasedOnLinkIds</span></tt>(...)</td>
 <td>This method will add all the elements of the secondary network to the current one.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeSecondaryNetworkBasedOnLinkIds2</span></tt>(...)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">mergeSecondaryNetworkBasedOnLinkIds2</span></tt>(...)</td>
 <td>This method will create copies of all the elements of the  secondary network that do not exist in the current network  and add them to the current network.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">moveCentroidConnectorFromIntersectionToMidblock</span></tt>(...)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">moveCentroidConnectorFromIntersectionToMidblock</span></tt>(...)</td>
 <td>Remove the input connector for an intersection and attach it to a midblock  location.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">moveCentroidConnectorsFromIntersectionsToMidblocks</span></tt>([...])</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">moveCentroidConnectorsFromIntersectionsToMidblocks</span></tt>([...])</td>
 <td>Remove centroid connectors from intersections and attach them to midblock locations.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">moveVirtualNodesToAvoidShortConnectors</span></tt>(...)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">moveVirtualNodesToAvoidShortConnectors</span></tt>(...)</td>
 <td>Connectors are sometimes too short.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">read</span></tt>(dir,&nbsp;file_prefix)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">read</span></tt>(dir,&nbsp;file_prefix)</td>
 <td>Reads the network in the given <em>dir</em> with the given <em>file_prefix</em>.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">readLinkShape</span></tt>(linkShapefile,&nbsp;...[,&nbsp;skipEvalStr])</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">readLinkShape</span></tt>(linkShapefile,&nbsp;...[,&nbsp;skipEvalStr])</td>
 <td>Uses the given <em>linkShapefile</em> to add shape points to the network, in order to more accurately</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">readObsLinkCounts</span></tt>(...)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">readObsLinkCounts</span></tt>(...)</td>
 <td>Assign the link counts</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">readObsMovementCounts</span></tt>(...)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">readObsMovementCounts</span></tt>(...)</td>
 <td>Assign the movement counts</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">readSimResults</span></tt>(simStartTimeInMin,&nbsp;...)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">readSimResults</span></tt>(simStartTimeInMin,&nbsp;...)</td>
 <td>Read the movement and link travel times and flows</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeLink</span></tt>(linkToRemove)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeLink</span></tt>(linkToRemove)</td>
 <td>Remove the input link from the network</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeNode</span></tt>(nodeToRemove)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeNode</span></tt>(nodeToRemove)</td>
 <td>Remove the input node from the network</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeShapePoints</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeShapePoints</span></tt>()</td>
 <td>Remove shape points from the network  ..</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeUnconnectedNodes</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">removeUnconnectedNodes</span></tt>()</td>
 <td>Removes any nodes that aren&#8217;t linked to anything (have no adjacent links).</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">renameLink</span></tt>(oldLinkId,&nbsp;newLinkId)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">renameLink</span></tt>(oldLinkId,&nbsp;newLinkId)</td>
 <td>Give the newLinkId to the link with oldLinkId</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">renameNode</span></tt>(oldNodeId,&nbsp;newNodeId)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">renameNode</span></tt>(oldNodeId,&nbsp;newNodeId)</td>
 <td>Give the node with oldNodeId the new id</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setMovementTurnTypeOverrides</span></tt>(overrides)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setMovementTurnTypeOverrides</span></tt>(overrides)</td>
 <td>Sets movement turn type overrides.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">splitLink</span></tt>(linkToSplit[,&nbsp;splitReverseLink,&nbsp;...])</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">splitLink</span></tt>(linkToSplit[,&nbsp;splitReverseLink,&nbsp;...])</td>
 <td>Split the input link at <em>fraction</em> of the way along the link.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">write</span></tt>(dir,&nbsp;file_prefix)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">write</span></tt>(dir,&nbsp;file_prefix)</td>
 <td>Writes the network into the given <em>dir</em> with the given <em>file_prefix</em></td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeCountListToFile</span></tt>(dir,&nbsp;starttime,&nbsp;period,&nbsp;...)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeCountListToFile</span></tt>(dir,&nbsp;starttime,&nbsp;period,&nbsp;...)</td>
 <td>Writes counts to movements from CountDracula</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeLinksToShp</span></tt>(name)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeLinksToShp</span></tt>(name)</td>
 <td>Export all the links to a shapefile with the given name</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeMovementsToShp</span></tt>(name[,&nbsp;planInfo])</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeMovementsToShp</span></tt>(name[,&nbsp;planInfo])</td>
 <td>Export all the movements to a shapefile with the given name</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeNodesToShp</span></tt>(name)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">writeNodesToShp</span></tt>(name)</td>
 <td>Export all the nodes to a shapefile with the given name</td>
 </tr>
 </tbody>
@@ -355,7 +364,10 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">PRIORITIES_FILE</span></tt></td>
 <td>str(object) -&gt; string</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">TRANSIT_FILE</span></tt></td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">PRIORITIES_HEADER</span></tt></td>
+<td>str(object) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">TRANSIT_FILE</span></tt></td>
 <td>str(object) -&gt; string</td>
 </tr>
 </tbody>
@@ -368,8 +380,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 
 <dl class="attribute">
 <dt id="dta.DynameqNetwork.ADVANCED_HEADER">
-<tt class="descname">ADVANCED_HEADER</tt><em class="property"> = '&lt;DYNAMEQ&gt;\n&lt;VERSION_1.5&gt;\n&lt;ADVN_NETWORK_FILE&gt;\n* CREATED by DTA Anyway http://code.google.com/p/dta/    \n'</em><a class="headerlink" href="#dta.DynameqNetwork.ADVANCED_HEADER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descname">ADVANCED_HEADER</tt><em class="property"> = '&lt;DYNAMEQ&gt;\n&lt;VERSION_1.8&gt;\n&lt;ADVN_NETWORK_FILE&gt;\n* CREATED by DTA Anyway http://code.google.com/p/dta/    \n'</em><a class="headerlink" href="#dta.DynameqNetwork.ADVANCED_HEADER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Advanced file header</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="dta.DynameqNetwork.BASE_FILE">
@@ -380,7 +393,8 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 <dl class="attribute">
 <dt id="dta.DynameqNetwork.BASE_HEADER">
 <tt class="descname">BASE_HEADER</tt><em class="property"> = '&lt;DYNAMEQ&gt;\n&lt;VERSION_1.8&gt;\n&lt;BASE_NETWORK_FILE&gt;\n* CREATED by DTA Anyway http://code.google.com/p/dta/\n'</em><a class="headerlink" href="#dta.DynameqNetwork.BASE_HEADER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Dynameq&#8217;s Base file header</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="dta.DynameqNetwork.CONTROL_FILE">
@@ -390,8 +404,9 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 
 <dl class="attribute">
 <dt id="dta.DynameqNetwork.CTRL_HEADER">
-<tt class="descname">CTRL_HEADER</tt><em class="property"> = '&lt;DYNAMEQ&gt;\n&lt;VERSION_1.7&gt;\n&lt;CONTROL_PLANS_FILE&gt;\n* CREATED by DTA Anyway http://code.google.com/p/dta/\n'</em><a class="headerlink" href="#dta.DynameqNetwork.CTRL_HEADER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descname">CTRL_HEADER</tt><em class="property"> = '&lt;DYNAMEQ&gt;\n&lt;VERSION_1.8&gt;\n&lt;CONTROL_PLANS_FILE&gt;\n* CREATED by DTA Anyway http://code.google.com/p/dta/\n'</em><a class="headerlink" href="#dta.DynameqNetwork.CTRL_HEADER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Traffic Control Plan file header</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="dta.DynameqNetwork.LINK_FLOW_OUT">
@@ -435,9 +450,21 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 </dd></dl>
 
 <dl class="attribute">
+<dt id="dta.DynameqNetwork.PRIORITIES_HEADER">
+<tt class="descname">PRIORITIES_HEADER</tt><em class="property"> = '&lt;DYNAMEQ&gt;\n&lt;VERSION_1.8&gt;\n&lt;CUSTOM_PRIORITIES_FILE&gt;\n* CREATED by DTA Anyway http://code.google.com/p/dta/\n'</em><a class="headerlink" href="#dta.DynameqNetwork.PRIORITIES_HEADER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Custom Priorities file header</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dta.DynameqNetwork.TRANSIT_FILE">
 <tt class="descname">TRANSIT_FILE</tt><em class="property"> = '%s_ptrn.dqt'</em><a class="headerlink" href="#dta.DynameqNetwork.TRANSIT_FILE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dynameq&#8217;s Transit Lines File name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork._addCustomPrioritiesFromFields">
+<tt class="descname">_addCustomPrioritiesFromFields</tt><big>(</big><em>fields</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork._addCustomPrioritiesFromFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> priorities by adding the information about their higher-priority movements.</p>
 </dd></dl>
 
 <dl class="method">
@@ -505,6 +532,7 @@ to the corresponding movement</p>
 <dt id="dta.DynameqNetwork._readSectionFromFile">
 <tt class="descname">_readSectionFromFile</tt><big>(</big><em>filename</em>, <em>sectionName</em>, <em>nextSectionName</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork._readSectionFromFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator function, yields fields (array of strings) from the given section of the given file.</p>
+<p>If <em>sectionName</em> is None, starts reading after comments.</p>
 </dd></dl>
 
 <dl class="method">
@@ -545,6 +573,12 @@ ready for writing.</p>
 <dt id="dta.DynameqNetwork._writeControlFile">
 <tt class="descname">_writeControlFile</tt><big>(</big><em>ctrl_object</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork._writeControlFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output the control plans to disk</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork._writeCustomPriorities">
+<tt class="descname">_writeCustomPriorities</tt><big>(</big><em>customprio_object</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork._writeCustomPriorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the custom priorities to disk</p>
 </dd></dl>
 
 <dl class="method">
@@ -656,6 +690,15 @@ and that the id is not already used; stores it.</p>
 <tt class="descname">addPlanCollectionInfo</tt><big>(</big><em>startTime</em>, <em>endTime</em>, <em>name</em>, <em>description</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addPlanCollectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiates a new <a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo" title="dta.PlanCollectionInfo"><tt class="xref py py-class docutils literal"><span class="pre">PlanCollectionInfo</span></tt></a> for this network with the given attributes and returns it.
 See <a class="reference internal" href="dta.PlanCollectionInfo.html#dta.PlanCollectionInfo.__init__" title="dta.PlanCollectionInfo.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">PlanCollectionInfo.__init__()</span></tt></a> for arguments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.addTwoWayStopControlToConnectorsAtRoadlinks">
+<tt class="descname">addTwoWayStopControlToConnectorsAtRoadlinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.addTwoWayStopControlToConnectorsAtRoadlinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add two way stop control to <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances when they are incoming into an intersection
+with an incoming <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>.</p>
+<p>This way, vehicles on the <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> will yield to vehicles on the incoming <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a>.
+If the stop is uncontrolled, vehicles will take turns from all incoming links.</p>
 </dd></dl>
 
 <dl class="method">
@@ -915,6 +958,12 @@ and for those with lengths less than <em>minLength</em>, do the following:</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.DynameqNetwork.hasCustomPriorities">
+<tt class="descname">hasCustomPriorities</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasCustomPriorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this network have custom priorities?  i.e. Were custom priorities set via <a class="reference internal" href="dta.Movement.html#dta.Movement.addHigherPriorityMovement" title="dta.Movement.addHigherPriorityMovement"><tt class="xref py py-meth docutils literal"><span class="pre">Movement.addHigherPriorityMovement()</span></tt></a> ?</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.DynameqNetwork.hasLinkForId">
 <tt class="descname">hasLinkForId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.hasLinkForId" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if a link with the given id exists</p>
@@ -969,6 +1018,13 @@ so it will be in the same location if that argument is specified as zero.</p>
 <dt id="dta.DynameqNetwork.iterLinks">
 <tt class="descname">iterLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterLinks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an iterator to the link collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork.iterMovements">
+<tt class="descname">iterMovements</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.iterMovements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator to all the <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> instances in the network by
+iterating through links (sorted by ID) and their outgoing movements.</p>
 </dd></dl>
 
 <dl class="method">

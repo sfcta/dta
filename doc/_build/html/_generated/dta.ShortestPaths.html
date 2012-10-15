@@ -64,7 +64,7 @@
 <dl class="method">
 <dt id="dta.ShortestPaths.__init__">
 <tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.ShortestPaths.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<dd><p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -175,7 +175,7 @@ are not included in the shortest path.</p>
 
 <dl class="classmethod">
 <dt id="dta.ShortestPaths.labelSettingWithLabelsOnNodes">
-<em class="property">classmethod </em><tt class="descname">labelSettingWithLabelsOnNodes</tt><big>(</big><em>graph</em>, <em>sourceVertex</em>, <em>endVertex</em>, <em>includeVirtual=False</em>, <em>maxLabel=1.7976931348623157e+308</em>, <em>filterRoadLinkEvalStr=None</em><big>)</big><a class="headerlink" href="#dta.ShortestPaths.labelSettingWithLabelsOnNodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">labelSettingWithLabelsOnNodes</tt><big>(</big><em>graph</em>, <em>sourceVertex</em>, <em>endVertex</em>, <em>includeVirtual=False</em>, <em>sourceLabel=0.0</em>, <em>maxLabel=1.7976931348623157e+308</em>, <em>filterRoadLinkEvalStr=None</em><big>)</big><a class="headerlink" href="#dta.ShortestPaths.labelSettingWithLabelsOnNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of Pape&#8217;s shortest path
 using a deque. Vertices are inserted to the 
 left of the deque if they have been already 

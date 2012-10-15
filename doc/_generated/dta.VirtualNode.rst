@@ -21,6 +21,7 @@ dta.VirtualNode
       ~VirtualNode.getIncomingLinkForId
       ~VirtualNode.getIncomingLinkForNodeId
       ~VirtualNode.getMovement
+      ~VirtualNode.getMovementForLinkIds
       ~VirtualNode.getName
       ~VirtualNode.getNumAdjacentLinks
       ~VirtualNode.getNumAdjacentNodes
@@ -73,5 +74,6 @@ dta.VirtualNode
       ~VirtualNode.GEOMETRY_TYPE_INTERSECTION
       ~VirtualNode.GEOMETRY_TYPE_JUNCTION
       ~VirtualNode.GEOMETRY_TYPE_VIRTUAL
+      ~VirtualNode.geometryType
    
    

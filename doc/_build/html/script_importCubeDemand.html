@@ -56,191 +56,356 @@
             
   <div class="section" id="module-importCubeDemand">
 <span id="importing-static-demand"></span><h1>Importing Static Demand<a class="headerlink" href="#module-importCubeDemand" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="importCubeDemand.writeDynameqDemandHeader">
-<tt class="descclassname">importCubeDemand.</tt><tt class="descname">writeDynameqDemandHeader</tt><big>(</big><em>outputStream</em>, <em>startTime</em>, <em>endTime</em>, <em>vehClassName</em>, <em>format='full'</em><big>)</big><a class="reference internal" href="_modules/importCubeDemand.html#writeDynameqDemandHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importCubeDemand.writeDynameqDemandHeader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write the demand header in the dynameq format
-.. todo:: implement linear writing</p>
-</dd></dl>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    This file is part of DTA.</span>
 
-<div class="highlight-python"><pre>__copyright__   = "Copyright 2011 SFCTA"
-__license__     = """
-    This file is part of DTA.
+<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
+<span class="s">    it under the terms of the GNU General Public License as published by</span>
+<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="s">    (at your option) any later version.</span>
 
-    DTA is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<span class="s">    DTA is distributed in the hope that it will be useful,</span>
+<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="s">    GNU General Public License for more details.</span>
 
-    DTA is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<span class="s">    You should have received a copy of the GNU General Public License</span>
+<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="s">&quot;&quot;&quot;</span>
 
-    You should have received a copy of the GNU General Public License
-    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
-"""
-
-import pdb 
-import dta
-import os
-import sys
-import datetime
+<span class="kn">import</span> <span class="nn">getopt</span>
+<span class="kn">import</span> <span class="nn">pdb</span> 
+<span class="kn">import</span> <span class="nn">dta</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">csv</span>
 
 
 
 
-USAGE = r"""
+<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
 
- python importCubeDemand.py dynameq_net_dir dynameq_net_prefix cube_demand_table cubeVehicleClass startTime endTime demand_portion timeStep output_demand_table cube_demand_table2 startTime2 endTime2 demand_portion2
- 
- e.g.
- 
-python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf_trn Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010AM.csv Car_NoToll 14:30 18:30 14:30 15:30 01:00 0.33 demand_Car_NoToll.dat Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010AM.csv 15:30 18:30 00:30 1.00
- ****IMPORTANT****
- Demand tables must be input in chronological order with the earliest start time first, and they must have non-overlapping time periods.
- *****************
- The command line above will import the CAR trips in the SanFranciscoSubArea_2010AM.csv table and the SanFranciscoSubArea_2010PM.csv table to the dynameq network located in
- %DTA_CODE_DIR% and having the prefix sf_trn.
- The whole time period being read in is from 14:30 to 18:30.
- The time period associated with the SanFranciscoSubArea_2010PM.csv table is from 15:30 to 18:30. The other (AM) *.csv file listed will also be read and added to the 14:30-15:30 period.
- The demand portion variables indicate the fraction of the demand from the input tables that should be added to the Dynameq demand table.
- This is useful when only taking 1 hour of demand from a 3-hour input table.
- The output table will have 8 time periods, given the 4 hours of demand being imported and the 30 minute time slices and will be saved in the %DTA_CODE_DIR% in the dynameq format.
- 
- """
+<span class="s"> python importCubeDemand.py dynameq_net_dir dynameq_net_prefix cubeVehicleClass output_demand_table startTime endTime cube_demand_table1 startTime1 endTime1 demand_portion1 timeStep1 cube_demand_table2 startTime2 endTime2 demand_portion2</span>
+<span class="s"> </span>
+<span class="s"> e.g.</span>
+<span class="s"> </span>
+<span class="s">python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf_trn Car_NoToll demand_Car_NoToll.dat 14:30 18:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.15  Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 00:30 1.00</span>
+<span class="s"> ****IMPORTANT****</span>
+<span class="s"> Demand tables must be input in chronological order with the earliest start time first, and they must have non-overlapping time periods.</span>
+<span class="s"> *****************</span>
+<span class="s"> The command line above will import the Car_NoToll trips in the SanFranciscoSubArea_2010_MD.csv table and the SanFranciscoSubArea_2010_PM.csv table to the dynameq network located in</span>
+<span class="s"> %DTA_CODE_DIR% and having the prefix sf_trn.</span>
+<span class="s"> The whole time period being read in is from 14:30 to 18:30.</span>
+<span class="s"> The time period associated with the SanFranciscoSubArea_2010_PM.csv table is from 15:30 to 18:30. The other (MD) *.csv file listed will also be read and added to the 14:30-15:30 period.</span>
+<span class="s"> The demand portion variables indicate the fraction of the demand from the input tables that should be added to the Dynameq demand table.</span>
+<span class="s"> This is useful when only taking a fraction of the total demand (i.e. 1 hour of demand from a 3-hour input table).</span>
+<span class="s"> The code is able to loop through any number of demand tables and assocated demand periods as long as they are in chronological order, within the scenario time period, and covering the entire</span>
+<span class="s"> period specified by the start time and end time.</span>
+<span class="s"> The output table will have 7 time periods, given the first hour being imported as one time slice and the remaining 3 hours of demand being imported</span>
+<span class="s"> in 30 minute time slices and will be saved in the %DTA_CODE_DIR</span><span class="si">% i</span><span class="s">n the dynameq format.</span>
+<span class="s"> </span>
+<span class="s"> &quot;&quot;&quot;</span>
 
-def writeDynameqDemandHeader(outputStream, startTime, endTime, vehClassName, format='full'):
-        """
-        Write the demand header in the dynameq format
-        .. todo:: implement linear writing
-        """
+               
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">optlist</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;f:&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">USAGE</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+
+    <span class="n">INPUT_DYNAMEQ_NET_DIR</span>         <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span>      <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">CUBE_VEH_CLASS</span>                <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">OUTPUT_DYNAMEQ_TABLE</span>          <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">START_TIME</span>                    <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">END_TIME</span>                      <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">optlist</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">opt</span><span class="p">,</span><span class="n">arg</span><span class="p">)</span> <span class="ow">in</span> <span class="n">optlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-f&quot;</span><span class="p">:</span>
+                <span class="n">DEMAND_PROFILE_FILE</span>   <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">DEMAND_PROFILE_FILE</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
+
+    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;importCubeDemand.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;importCubeDemand.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">outputStream</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">OUTPUT_DYNAMEQ_TABLE</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
         
-        if format != 'full':
-            raise DtaError("Unimplemented Matrix Format specified: %s" % (format))
-            
-        FORMAT_LINEAR    = 'FORMAT:linear'
-        FORMAT_FULL      = 'FORMAT:full'    
-        HEADER_LINE1     = '*DEMAND MATRIX ASCII FILE [FULL FORMAT]- GENERATED'
-        VEHCLASS_SECTION = 'VEH_CLASS'
-        DEFAULT_VEHCLASS = 'Default'
-        DATA_SECTION     = 'DATA'
-        
+    <span class="n">scenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">()</span>
+    <span class="n">scenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span> 
+    <span class="n">net</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
 
-        outputStream.write("&lt;DYNAMEQ&gt;\n&lt;VERSION_1.8&gt;\n&lt;MATRIX_FILE&gt;\n")
-        outputStream.write('%s %s %s\n' % ("Created by python DTA by SFCTA", 
-                                           datetime.datetime.now().strftime("%x"), 
-                                           datetime.datetime.now().strftime("%X")))
-        if format == 'full':
-            outputStream.write('%s\n' % FORMAT_FULL)
-        elif format == 'linear':
-            outputStream.write('%s\n' % FORMAT_LINEAR)
-        else:
-             raise DtaError("Don't understand Dynameq Output Matrix Format: %s" % (format))
-             
-        outputStream.write('%s\n' % VEHCLASS_SECTION)
-        outputStream.write('%s\n' % vehClassName)
-        outputStream.write('%s\n' % DATA_SECTION)
-        outputStream.write("%s\n%s\n" % (startTime.strftime("%H:%M"),
-                                         endTime.strftime("%H:%M")))                
+    <span class="n">startTime</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME</span><span class="p">)</span>
+    <span class="n">endTime</span>   <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">END_TIME</span><span class="p">)</span>
 
+  
+<span class="c"># Read in the demand profile(s) if an input file was provided</span>
+    <span class="n">factorsStart</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">DEMAND_PROFILE_FILE</span><span class="p">:</span>
+        <span class="n">factorsEnd</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">factorsList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">factorsLists</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">factorNum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">inputStream</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">DEMAND_PROFILE_FILE</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">inputStream</span><span class="p">):</span>
+            <span class="n">factorsList</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">factorsStart</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="s">&quot;Start Time&quot;</span><span class="p">]))</span>
+            <span class="n">factorsEnd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="s">&quot;End Time&quot;</span><span class="p">]))</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">factorNum</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s">&quot;Factor </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ii</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">factorNum</span><span class="p">:</span>
+                <span class="n">factorsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">factorNum</span><span class="p">)</span>
+                <span class="n">ii</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">factorNum</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s">&quot;Factor </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ii</span><span class="p">]</span>
+            <span class="n">factorsLists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">factorsList</span><span class="p">)</span>
 
-if __name__ == "__main__":
+<span class="c"># Check to make sure that demand is within the scenario time.  Exit if not.  </span>
 
-    if len(sys.argv) &lt; 12:
-        print USAGE
-        sys.exit(2)
+    <span class="k">if</span> <span class="n">startTime</span> <span class="o">&lt;</span> <span class="n">scenario</span><span class="o">.</span><span class="n">startTime</span><span class="p">:</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Demand cannot start before scenario start time.  Demand start = </span><span class="si">%s</span><span class="s">, Scenario start = </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">startTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">),</span> <span class="n">scenario</span><span class="o">.</span><span class="n">startTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">)))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">endTime</span> <span class="o">&gt;</span> <span class="n">scenario</span><span class="o">.</span><span class="n">endTime</span><span class="p">:</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Demand cannot end after scenario end time.  Demand end = </span><span class="si">%s</span><span class="s">, Scenario end = </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">),</span> <span class="n">scenario</span><span class="o">.</span><span class="n">endTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">)))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
-    INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
-    INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
-    CUBE_TABLE                    = sys.argv[3]
-    CUBE_VEH_CLASS                = sys.argv[4]
-    START_TIME                    = sys.argv[5]
-    END_TIME                      = sys.argv[6]
-    START_TIME1                   = sys.argv[7]
-    END_TIME1                     = sys.argv[8]
-    TIME_STEP1                    = sys.argv[9]
-    DEMAND_PORTION1                = sys.argv[10]
-    OUTPUT_DYNAMEQ_TABLE          = sys.argv[11]
+    <span class="c"># Create and write out demand for each table in the correct order (earliest first and getting continualy later.)</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">Demand</span><span class="o">.</span><span class="n">writeDynameqDemandHeader</span><span class="p">(</span><span class="n">outputStream</span><span class="p">,</span> <span class="n">startTime</span><span class="p">,</span> <span class="n">endTime</span><span class="p">,</span> <span class="n">CUBE_VEH_CLASS</span><span class="p">)</span>
+    <span class="n">numDemandTables</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">numDemandTables</span><span class="p">):</span>
+        <span class="n">CUBE_TABLE</span>            <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">6</span><span class="o">+</span><span class="p">(</span><span class="n">ii</span><span class="o">*</span><span class="mi">5</span><span class="p">)]</span>
+        <span class="n">START_TIME_N</span>          <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">7</span><span class="o">+</span><span class="p">(</span><span class="n">ii</span><span class="o">*</span><span class="mi">5</span><span class="p">)]</span>
+        <span class="n">END_TIME_N</span>            <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">8</span><span class="o">+</span><span class="p">(</span><span class="n">ii</span><span class="o">*</span><span class="mi">5</span><span class="p">)]</span>
+        <span class="n">TIME_STEP</span>             <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">9</span><span class="o">+</span><span class="p">(</span><span class="n">ii</span><span class="o">*</span><span class="mi">5</span><span class="p">)]</span>
+        <span class="n">DEMAND_PORTION</span>        <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">10</span><span class="o">+</span><span class="p">(</span><span class="n">ii</span><span class="o">*</span><span class="mi">5</span><span class="p">)]</span>
 
-    if len(sys.argv)&gt;12:
-        CUBE_TABLE2               = sys.argv[12]
-        START_TIME2               = sys.argv[13]
-        END_TIME2                 = sys.argv[14]
-        TIME_STEP2                = sys.argv[15]
-        DEMAND_PORTION2           = sys.argv[16]
-    else:
-        CUBE_TABLE2               = None 
-    if len(sys.argv)&gt;17:
-        CUBE_TABLE3               = sys.argv[17]
-        START_TIME3               = sys.argv[18]
-        END_TIME3                 = sys.argv[19]
-        TIME_STEP3                = sys.argv[20]
-        DEMAND_PORTION3           = sys.argv[21]
-    else:
-        CUBE_TABLE3               = None
+    <span class="c"># Check to be sure time is continuous</span>
+        <span class="k">if</span> <span class="n">ii</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME_N</span><span class="p">)</span> <span class="o">!=</span> <span class="n">startTime</span><span class="p">:</span>
+                <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Start time of first demand period (</span><span class="si">%s</span><span class="s">) must equal provided demand start time of </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">START_TIME_N</span><span class="p">,</span> <span class="n">startTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">ii</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="n">numDemandTables</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME_N</span><span class="p">)</span> <span class="o">!=</span> <span class="n">endTime_n</span><span class="p">:</span>
+                <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Time should be continuous.  Start time of demand period </span><span class="si">%d</span><span class="s"> does not equal end time of demand period </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ii</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">ii</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ii</span> <span class="o">==</span> <span class="n">numDemandTables</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">END_TIME_N</span><span class="p">)</span> <span class="o">!=</span> <span class="n">endTime</span><span class="p">:</span>
+                <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;End time of last demand period (</span><span class="si">%s</span><span class="s">) must equal provided demand end time of </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">END_TIME_N</span><span class="p">,</span> <span class="n">endTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">)))</span>
 
-    dta.VehicleType.LENGTH_UNITS= "feet"
-    dta.Node.COORDINATE_UNITS   = "feet"
-    dta.RoadLink.LENGTH_UNITS   = "miles"
+    <span class="c"># Set start time, end time, and time step for the demand period</span>
+        <span class="n">startTime_n</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME_N</span><span class="p">)</span>
+        <span class="n">endTime_n</span>   <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">END_TIME_N</span><span class="p">)</span>
+        <span class="n">timeStep</span>    <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">TIME_STEP</span><span class="p">)</span>
 
-    dta.setupLogging("importCubeDemand.INFO.log", "importCubeDemand.DEBUG.log", logToConsole=True)
+    <span class="c"># Check to see if demand period has a demand profile</span>
 
-    outputStream = open(OUTPUT_DYNAMEQ_TABLE, "w") 
+        <span class="n">demProf</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">factorsStart</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">startTime_n</span> <span class="o">==</span> <span class="n">factorsStart</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="ow">and</span> <span class="n">endTime_n</span> <span class="o">==</span> <span class="n">factorsEnd</span><span class="p">[</span><span class="n">jj</span><span class="p">]:</span>
+                <span class="n">demProf</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">FactorsList</span> <span class="o">=</span> <span class="n">factorsLists</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span>
 
-        
-    scenario = dta.DynameqScenario()
-    scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
-    net = dta.DynameqNetwork(scenario)
-    net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+    <span class="c"># Read in cube demand table, apply time of day factors (if applicable) and write demand out to OUTPUT_DYNAMEQ_TABLE</span>
 
-    startTime = dta.Utils.Time.readFromString(START_TIME)
-    endTime   = dta.Utils.Time.readFromString(END_TIME)
+        <span class="k">if</span> <span class="n">demProf</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">timeStep</span> <span class="o">=</span> <span class="n">endTime_n</span> <span class="o">-</span> <span class="n">startTime_n</span>
+            <span class="n">demand</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Demand</span><span class="o">.</span><span class="n">readCubeODTable</span><span class="p">(</span><span class="n">CUBE_TABLE</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">CUBE_VEH_CLASS</span><span class="p">,</span> <span class="n">startTime_n</span><span class="p">,</span> <span class="n">endTime_n</span><span class="p">,</span> <span class="n">timeStep</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">DEMAND_PORTION</span><span class="p">))</span>
+            <span class="n">demand</span> <span class="o">=</span> <span class="n">demand</span><span class="o">.</span><span class="n">applyTimeOfDayFactors</span><span class="p">(</span><span class="n">FactorsList</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">demand</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Demand</span><span class="o">.</span><span class="n">readCubeODTable</span><span class="p">(</span><span class="n">CUBE_TABLE</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">CUBE_VEH_CLASS</span><span class="p">,</span> <span class="n">startTime_n</span><span class="p">,</span> <span class="n">endTime_n</span><span class="p">,</span> <span class="n">timeStep</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">DEMAND_PORTION</span><span class="p">))</span>
 
-    if startTime &lt; scenario.startTime:
-        dta.DtaLogger.error("Demand cannot start before scenario start time.  Demand start = %s, Scenario start = %s" % (startTime.strftime("%H:%M"), scenario.startTime.strftime("%H:%M")))
-    if endTime &gt; scenario.endTime:
-        dta.DtaLogger.error("Demand cannot end after scenario end time.  Demand end = %s, Scenario end = %s" % (endTime.strftime("%H:%M"), scenario.endTime.strftime("%H:%M")))
+        <span class="n">demand</span><span class="o">.</span><span class="n">writeDynameqTable</span><span class="p">(</span><span class="n">outputStream</span><span class="p">)</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Wrote </span><span class="si">%10.2f</span><span class="s"> </span><span class="si">%-10s</span><span class="s"> to </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">demand</span><span class="o">.</span><span class="n">getTotalNumTrips</span><span class="p">(),</span> <span class="s">&quot;TRIPS&quot;</span><span class="p">,</span> <span class="n">OUTPUT_DYNAMEQ_TABLE</span><span class="p">))</span>
 
-    startTime1 = dta.Utils.Time.readFromString(START_TIME1)
-    endTime1   = dta.Utils.Time.readFromString(END_TIME1)
-    timeStep1  = dta.Utils.Time.readFromString(TIME_STEP1)
+    <span class="n">outputStream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    if startTime1 != startTime:
-        dta.DtaLogger.error("Demand tables must be listed in chronological order with the earliest one first.")
-
-    # If there are multiple demand tables being used, check to see what the overall start and end times are and make sure the time periods do not overlap with the exising time period
-    if CUBE_TABLE2:
-        startTime2 = dta.Utils.Time.readFromString(START_TIME2)
-        endTime2   = dta.Utils.Time.readFromString(END_TIME2)
-        timeStep2  = dta.Utils.Time.readFromString(TIME_STEP2)
-        if startTime2 != endTime1:
-            dta.DtaLogger.error("Start of second time period (%s) should equal the end of first time period (%s)." % (startTime2.strftime("%H:%M"),endTime1.strftime("%H:%M")))
-
-        if CUBE_TABLE3:
-            startTime3 = dta.Utils.Time.readFromString(START_TIME3)
-            endTime3   = dta.Utils.Time.readFromString(END_TIME3)
-            timeStep3  = dta.Utils.Time.readFromString(TIME_STEP3) 
-            if startTime3 != endTime2:
-                dta.DtaLogger.error("Start of third time period (%s) should equal the end of second time period (%s)." % (startTime3.strftime("%H:%M"),endTime2.strftime("%H:%M")))
-                
-    # Write out the header for the dynameq file using the overall start and end times found
-    writeDynameqDemandHeader(outputStream, startTime, endTime, CUBE_VEH_CLASS)
-
-    # Create and write out demand for each table in the correct order (earliest first and getting continualy later.)
-    demand1 = dta.Demand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, startTime1, endTime1, timeStep1, float(DEMAND_PORTION1))
-    demand1.writeDynameqTable(outputStream)
-    if CUBE_TABLE2:
-        demand2 = dta.Demand.readCubeODTable(CUBE_TABLE2, net, CUBE_VEH_CLASS, startTime2, endTime2, timeStep2, float(DEMAND_PORTION2))
-        demand2.writeDynameqTable(outputStream)
-    if CUBE_TABLE3:
-        demand3 = dta.Demand.readCubeODTable(CUBE_TABLE3, net, CUBE_VEH_CLASS, startTime3, endTime3, timeStep3, float(DEMAND_PORTION3))
-        demand3.writeDynameqTable(outputStream)
-
-    outputStream.close()
-
-    #dta.DtaLogger.info("Wrote%10.2f %-16s   to %s" % (demand.getTotalNumTrips(),
-    #                                                  "TRIPS", OUTPUT_DYNAMEQ_TABLE))
 
     
     
@@ -250,16 +415,8 @@ if __name__ == "__main__":
     
         
         
-
-
-
-
-
-
-
-
-</pre>
-</div>
+</pre></div>
+</td></tr></table></div>
 </div>
 
 

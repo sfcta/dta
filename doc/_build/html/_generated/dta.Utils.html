@@ -407,7 +407,7 @@ It does so by examining if point <em>pk</em> is inside the boundary box of segme
 
 <dl class="function">
 <dt id="dta.Utils.parseTextRecord">
-<tt class="descclassname">dta.Utils.</tt><tt class="descname">parseTextRecord</tt><big>(</big><em>iterable</em>, <em>is_separator=&lt;_sre.SRE_Pattern object at 0x03923CA0&gt;</em>, <em>is_comment=&lt;_sre.SRE_Pattern object at 0x039267A0&gt;</em>, <em>joiner=&lt;function &lt;lambda&gt; at 0x03926AB0&gt;</em><big>)</big><a class="reference internal" href="../_modules/dta/Utils.html#parseTextRecord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dta.Utils.parseTextRecord" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">dta.Utils.</tt><tt class="descname">parseTextRecord</tt><big>(</big><em>iterable</em>, <em>is_separator=&lt;_sre.SRE_Pattern object at 0x02CABA20&gt;</em>, <em>is_comment=&lt;_sre.SRE_Pattern object at 0x02CABB20&gt;</em>, <em>joiner=&lt;function &lt;lambda&gt; at 0x02CEC3F0&gt;</em><big>)</big><a class="reference internal" href="../_modules/dta/Utils.html#parseTextRecord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dta.Utils.parseTextRecord" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a text file record by record where a record is defined
 in multiple sequential lines and return a string concatenating 
 all the lines of a record into one line.</p>
@@ -430,7 +430,11 @@ be bypassed.</li>
 <dt id="dta.Utils.plotTripHistogram">
 <tt class="descclassname">dta.Utils.</tt><tt class="descname">plotTripHistogram</tt><big>(</big><em>matrix</em>, <em>outputFile</em><big>)</big><a class="reference internal" href="../_modules/dta/Utils.html#plotTripHistogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dta.Utils.plotTripHistogram" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a histogram of the cell values and write the result in the outputFile
-<em>matrix</em> is a numpy array</p>
+<em>matrix</em> is a numpy array .</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Requires <a class="reference external" href="http://www.scipy.org/PyLab">pylab</a> module.</p>
+</div>
 </dd></dl>
 
 <dl class="function">

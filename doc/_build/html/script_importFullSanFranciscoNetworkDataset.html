@@ -159,7 +159,17 @@
 100
 101
 102
-103</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
 
 <span class="c">:: DTA Anyway code location is required</span>
 <span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_CODE_DIR (
@@ -230,15 +240,20 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importUnsi
 <span class="c">:: log     output: importUnsignalizedIntersections.{DEBUG,INFO}.log</span>
 
 <span class="c">::</span>
-<span class="c">:: 4) create the demand</span>
+<span class="c">:: 4) create the car demand</span>
 <span class="c">::</span>
 <span class="nl">:createDemand</span>
-<span class="k">FOR</span> <span class="nv">%%V</span> IN (Car_NoToll Truck_NoToll) <span class="k">DO</span> (
-  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> . sf_trn Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="nv">%%V</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> demand_<span class="nv">%%V</span>.dat 
-  <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
-)
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> -f Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\DemandProfile.csv . sf_stops Car_NoToll demand_Car_NoToll.dat <span class="m">14</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_MD.csv <span class="m">14</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">13364</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_EV.csv <span class="m">18</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">22594</span>
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+<span class="c">:: primary output: demand_Car_NoToll.dat</span>
+<span class="c">:: log     output: importCubeDemand.{DEBUG,INFO}.log</span>
 
-<span class="c">:: primary output: demand_{Car,Truck}_NoToll.dat</span>
+<span class="c">:: 5) create the truck demand</span>
+<span class="c">::</span>
+<span class="nl">:createDemand</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> -f Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\DemandProfile.csv . sf_stops Truck_NoToll demand_Truck_NoToll.dat <span class="m">14</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_MD.csv <span class="m">14</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">051282</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_EV.csv <span class="m">18</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">039216</span>
+<span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
+<span class="c">:: primary output: demand_Truck_NoToll.dat</span>
 <span class="c">:: log     output: importCubeDemand.{DEBUG,INFO}.log</span>
 
 <span class="nl">:copyFinal</span>
@@ -247,18 +262,23 @@ copy sf_stops_scen.dqt sf_final_scen.dqt
 copy sf_stops_base.dqt sf_final_base.dqt
 copy sf_stops_advn.dqt sf_final_advn.dqt
 copy sf_stops_ctrl.dqt sf_final_ctrl.dqt
+copy sf_stops_prio.dqt sf_final_prio.dqt
 copy sf_trn_ptrn.dqt   sf_final_ptrn.dqt
 
-<span class="c">:: This is here because countdracula is not typically setup.  Unless you&#39;re Lisa. ;)</span>
-<span class="k">IF</span> <span class="nv">%USERNAME%</span> <span class="o">NEQ</span> Lisa (
+<span class="c">:: This is here because countdracula is not typically setup.  If it is, then COUNTDRACULA_CODE_DIR should point to the geodjango directory within.</span>
+<span class="k">IF</span> NOT <span class="k">DEFINED</span> COUNTDRACULA_CODE_DIR (
   <span class="k">goto</span> <span class="nl">done</span>
 )
 <span class="c">::</span>
 <span class="c">:: 5) import the counts into userdata files for Dynameq to read</span>
 <span class="c">::</span>
 <span class="nl">:importCounts</span>
-<span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>;Y:\lmz\CountDracula
+<span class="c">:: unfortunately GeoDjango is python 2.7</span>
+<span class="k">set</span> <span class="nv">OLDPATH</span><span class="o">=</span><span class="nv">%PATH%</span>
+<span class="k">set</span> <span class="nv">PATH</span><span class="o">=</span>C:\Python<span class="m">27</span>;C:\Python<span class="m">27</span>\Scripts;C:\OSGeo<span class="m">4</span>W\bin;C:\Program Files (x<span class="m">86</span>)\PostgreSQL\<span class="m">9</span>.<span class="m">0</span>\bin;C:\Program Files (x<span class="m">86</span>)\Citilabs\CubeVoyager;C:\Program Files (x<span class="m">86</span>)\Git\bin
+<span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>;<span class="nv">%COUNTDRACULA_CODE_DIR%</span>
 python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_attachCountsFromCountDracula.html">attachCountsFromCountDracula.py</a> -l sf_final_links.shp -m sf_final_movements.shp -n sf_final_nodes.shp . sf_final
+<span class="k">set</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">%OLDPATH%</span>
 <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
 
 <span class="nl">:done</span>

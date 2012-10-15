@@ -19,6 +19,7 @@ dta.Centroid
       ~Centroid.getIncomingLinkForId
       ~Centroid.getIncomingLinkForNodeId
       ~Centroid.getMovement
+      ~Centroid.getMovementForLinkIds
       ~Centroid.getName
       ~Centroid.getNumAdjacentLinks
       ~Centroid.getNumAdjacentNodes
@@ -75,5 +76,6 @@ dta.Centroid
       ~Centroid.GEOMETRY_TYPE_INTERSECTION
       ~Centroid.GEOMETRY_TYPE_JUNCTION
       ~Centroid.GEOMETRY_TYPE_VIRTUAL
+      ~Centroid.geometryType
    
    

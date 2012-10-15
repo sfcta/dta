@@ -155,7 +155,7 @@ a Centroid or a VirtualNode.</p>
 <td>Return the free flow travel time in minutes</td>
 </tr>
 <tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getGroup</span></tt>()</td>
-<td>Return the group number fo the link</td>
+<td>Return the group number for the link</td>
 </tr>
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getId</span></tt>()</td>
 <td>Return the link id</td>
@@ -166,47 +166,53 @@ a Centroid or a VirtualNode.</p>
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLabel</span></tt>()</td>
 <td>Return the link label</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLeftTurn</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLanePermission</span></tt>(laneId)</td>
+<td>Accessor for the <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> that uses the given lane.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLeftTurn</span></tt>()</td>
 <td>Return the left turn movement of the link or raise an error if it does not exist</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLength</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLength</span></tt>()</td>
 <td>Return the length of the link in <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a> units.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLengthInCoordinateUnits</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getLengthInCoordinateUnits</span></tt>()</td>
 <td>Returns the length of the link in <a class="reference internal" href="dta.Node.html#dta.Node.COORDINATE_UNITS" title="dta.Node.COORDINATE_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">Node.COORDINATE_UNITS</span></tt></a> units.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMidPoint</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getMidPoint</span></tt>()</td>
 <td>Return the midpoint of the link&#8217;s centerline as a tuple of two floats</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumIncomingMovements</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumIncomingMovements</span></tt>()</td>
 <td>Returns the number of incoming movements</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLanes</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumLanes</span></tt>()</td>
 <td>Return the number of lanes.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumOutgoingMovements</span></tt>()</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumOutgoingMovements</span></tt>()</td>
 <td>Returns the number of outgoing movements</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumShapePoints</span></tt>()</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getNumShapePoints</span></tt>()</td>
 <td>Return the number of shape points this link has</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
 <td>Return the number of vehicles traversing the</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsMeanTT</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsMeanTT</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
 <td>Get the observed mean travel time of the link in minutes</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsSpeedInMPH</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getObsSpeedInMPH</span></tt>(startTimeInMin,&nbsp;endTimeInMin)</td>
 <td>Get the observed speed of specified time period</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOrientation</span></tt>([atEnd,&nbsp;usingShapepoints])</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOrientation</span></tt>([atEnd,&nbsp;usingShapepoints])</td>
 <td>Returns the angle of the link in degrees from the North</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOtherEnd</span></tt>(node)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOtherEnd</span></tt>(node)</td>
 <td>Return the other end node than the one provided.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutgoingMovement</span></tt>(nodeId)</td>
-<td>Return True if the link has an outgoing movement towards nodeId</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutgoingMovement</span></tt>(nodeId)</td>
+<td>Returns the outgoing movement with an end node specified by the given <em>nodeId</em></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutgoingMovementForLinkId</span></tt>(linkId)</td>
+<td>Returns the outgoing movement with the outgoing link specified by the given <em>linkId</em></td>
 </tr>
 <tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">getOutline</span></tt>([scale])</td>
 <td>Return the outline of the link as a linearRing of points</td>
@@ -323,7 +329,7 @@ a Centroid or a VirtualNode.</p>
 <td>This is a dumb method which allows the caller to substitute the newEndNode for the old one.</td>
 </tr>
 <tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setGroup</span></tt>(group)</td>
-<td>Set the group number fo the link</td>
+<td>Set the group number for the link</td>
 </tr>
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setLabel</span></tt>(label)</td>
 <td>Set the link label</td>
@@ -654,7 +660,7 @@ road links start point and end point lies the closest point to (<em>x</em>, <em>
 <dl class="method">
 <dt id="dta.Connector.getGroup">
 <tt class="descname">getGroup</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the group number fo the link</p>
+<dd><p>Return the group number for the link</p>
 </dd></dl>
 
 <dl class="method">
@@ -673,6 +679,13 @@ road links start point and end point lies the closest point to (<em>x</em>, <em>
 <dt id="dta.Connector.getLabel">
 <tt class="descname">getLabel</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Connector.getLabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the link label</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getLanePermission">
+<tt class="descname">getLanePermission</tt><big>(</big><em>laneId</em><big>)</big><a class="headerlink" href="#dta.Connector.getLanePermission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> that uses the given lane.</p>
+<p>Returns None if nothing is set.</p>
 </dd></dl>
 
 <dl class="method">
@@ -765,7 +778,15 @@ the start of the link.</p>
 <dl class="method">
 <dt id="dta.Connector.getOutgoingMovement">
 <tt class="descname">getOutgoingMovement</tt><big>(</big><em>nodeId</em><big>)</big><a class="headerlink" href="#dta.Connector.getOutgoingMovement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the link has an outgoing movement towards nodeId</p>
+<dd><p>Returns the outgoing movement with an end node specified by the given <em>nodeId</em>
+(and this link as the incoming link).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Connector.getOutgoingMovementForLinkId">
+<tt class="descname">getOutgoingMovementForLinkId</tt><big>(</big><em>linkId</em><big>)</big><a class="headerlink" href="#dta.Connector.getOutgoingMovementForLinkId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the outgoing movement with the outgoing link specified by the given <em>linkId</em>
+(and this link as the incoming link).</p>
 </dd></dl>
 
 <dl class="method">
@@ -1019,7 +1040,7 @@ called from the <a class="reference internal" href="dta.Network.html#dta.Network
 <dl class="method">
 <dt id="dta.Connector.setGroup">
 <tt class="descname">setGroup</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#dta.Connector.setGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the group number fo the link</p>
+<dd><p>Set the group number for the link</p>
 </dd></dl>
 
 <dl class="method">

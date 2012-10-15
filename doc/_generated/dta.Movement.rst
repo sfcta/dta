@@ -14,6 +14,7 @@ dta.Movement
    .. autosummary::
    
       ~Movement.__init__
+      ~Movement.addHigherPriorityMovement
       ~Movement.getAtNode
       ~Movement.getCenterLine
       ~Movement.getDirection
@@ -47,6 +48,7 @@ dta.Movement
       ~Movement.isRightTurn
       ~Movement.isThruTurn
       ~Movement.isUTurn
+      ~Movement.iterHigherPriorityMovements
       ~Movement.prohibitAllVehicleClassGroups
       ~Movement.prohibitAllVehiclesButTransit
       ~Movement.setNumLanes
@@ -74,8 +76,7 @@ dta.Movement
       ~Movement.DIR_RT2
       ~Movement.DIR_TH
       ~Movement.DIR_UTURN
-      ~Movement.PERMITTED_ALL
-      ~Movement.PROHIBITED_ALL
+      ~Movement.FOLLOWUP_TIME_DEFAULT
       ~Movement.PROTECTED_CAPACITY_PER_HOUR_PER_LANE
    
    

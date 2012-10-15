@@ -39,6 +39,7 @@ dta.RoadLink
       ~RoadLink.getId
       ~RoadLink.getIid
       ~RoadLink.getLabel
+      ~RoadLink.getLanePermission
       ~RoadLink.getLeftTurn
       ~RoadLink.getLength
       ~RoadLink.getLengthInCoordinateUnits
@@ -53,6 +54,7 @@ dta.RoadLink
       ~RoadLink.getOrientation
       ~RoadLink.getOtherEnd
       ~RoadLink.getOutgoingMovement
+      ~RoadLink.getOutgoingMovementForLinkId
       ~RoadLink.getOutline
       ~RoadLink.getReferenceAngle
       ~RoadLink.getReferenceAngleInDegrees

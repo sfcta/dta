@@ -41,6 +41,7 @@ dta.Connector
       ~Connector.getId
       ~Connector.getIid
       ~Connector.getLabel
+      ~Connector.getLanePermission
       ~Connector.getLeftTurn
       ~Connector.getLength
       ~Connector.getLengthInCoordinateUnits
@@ -55,6 +56,7 @@ dta.Connector
       ~Connector.getOrientation
       ~Connector.getOtherEnd
       ~Connector.getOutgoingMovement
+      ~Connector.getOutgoingMovementForLinkId
       ~Connector.getOutline
       ~Connector.getReferenceAngle
       ~Connector.getReferenceAngleInDegrees

@@ -48,545 +48,637 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for attachCountsFromCountDracula</h1><pre>
-__copyright__   = "Copyright 2011 SFCTA"
-__license__     = """
-    This file is part of DTA.
+  <h1>Source code for attachCountsFromCountDracula</h1><div class="highlight"><pre>
+<span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2012 SFCTA&quot;</span>
+<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    This file is part of DTA.</span>
 
-    DTA is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
+<span class="s">    it under the terms of the GNU General Public License as published by</span>
+<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="s">    (at your option) any later version.</span>
 
-    DTA is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<span class="s">    DTA is distributed in the hope that it will be useful,</span>
+<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="s">    GNU General Public License for more details.</span>
 
-    You should have received a copy of the GNU General Public License
-    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
-"""
+<span class="s">    You should have received a copy of the GNU General Public License</span>
+<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="s">&quot;&quot;&quot;</span>
     
 
-USAGE = r"""
+<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
 
- python attachCountsFromCountDracula.py [-l links.shp] [-m movements.shp] [-n nodes.shp] dynameq_net_dir dynameq_net_prefix
- 
- e.g.
- 
- python attachCountsFromCountDracula.py . sf
- 
+<span class="s"> python attachCountsFromCountDracula.py [-l links.shp] [-m movements.shp] [-n nodes.shp] dynameq_net_dir dynameq_net_prefix</span>
+<span class="s"> </span>
+<span class="s"> e.g.</span>
+<span class="s"> </span>
+<span class="s"> python attachCountsFromCountDracula.py . sf</span>
+<span class="s"> </span>
 
- Checks the CountDracula counts database for movement and turn counts for a few different
- timeslice specifications, and writes the data files for Dynameq into the current dir.
-"""
+<span class="s"> Checks the CountDracula counts database for movement and turn counts for a few different</span>
+<span class="s"> timeslice specifications, and writes the data files for Dynameq into the current dir.</span>
+<span class="s">&quot;&quot;&quot;</span>
 
 
-import dta
-import datetime
-import getopt
-import sys
-import xlwt
+<span class="kn">import</span> <span class="nn">dta</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">getopt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">xlwt</span>
 
-# global
-STYLE_REG  = xlwt.easyxf('font: name Calibri')
-STYLE_BOLD = xlwt.easyxf('font: name Calibri, bold on')
-STYLE_TIME = xlwt.easyxf('font: name Calibri', num_format_str='hh:mm')
-STYLE_DATE = xlwt.easyxf('font: name Calibri', num_format_str='yyyy-mm-dd hh:mm ddd')
-STYLE_DATE.alignment = xlwt.Alignment()
-STYLE_DATE.alignment.horz = xlwt.Alignment.HORZ_LEFT
+<span class="c"># global</span>
+<span class="n">STYLE_REG</span>  <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="s">&#39;font: name Calibri&#39;</span><span class="p">)</span>
+<span class="n">STYLE_BOLD</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="s">&#39;font: name Calibri, bold on&#39;</span><span class="p">)</span>
+<span class="n">STYLE_TIME</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="s">&#39;font: name Calibri&#39;</span><span class="p">,</span> <span class="n">num_format_str</span><span class="o">=</span><span class="s">&#39;hh:mm&#39;</span><span class="p">)</span>
+<span class="n">STYLE_DATE</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="s">&#39;font: name Calibri&#39;</span><span class="p">,</span> <span class="n">num_format_str</span><span class="o">=</span><span class="s">&#39;yyyy-mm-dd hh:mm ddd&#39;</span><span class="p">)</span>
+<span class="n">STYLE_DATE</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Alignment</span><span class="p">()</span>
+<span class="n">STYLE_DATE</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">horz</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Alignment</span><span class="o">.</span><span class="n">HORZ_LEFT</span>
 
-<div class="viewcode-block" id="exportTurnCountsToDynameqUserDataFile"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile">[docs]</a>def exportTurnCountsToDynameqUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime, period, num_intervals,
-                                               suffix=None, from_date=None, to_date=None, weekdays=None,
-                                               all_count_workbook=None):
-    """
-    Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.
+<div class="viewcode-block" id="findDtaMovementForTurnCountLocation"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.findDtaMovementForTurnCountLocation">[docs]</a><span class="k">def</span> <span class="nf">findDtaMovementForTurnCountLocation</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">turn_count_location</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the DTA Movement for the given turn_count_location (a CountDracula TurnCountLocation instance).</span>
+<span class="sd">    </span>
+<span class="sd">    Returns None on failure; returns the Movement instance on success.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">movement</span> <span class="o">=</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">findMovementForRoadLabels</span><span class="p">(</span><span class="n">incoming_street_label</span>   <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">from_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                                    <span class="n">incoming_direction</span>      <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">from_dir</span><span class="p">,</span>
+                                                                    <span class="n">outgoing_street_label</span>   <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">to_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                                    <span class="n">outgoing_direction</span>      <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">to_dir</span><span class="p">,</span>
+                                                                    <span class="n">intersection_street_label</span><span class="o">=</span><span class="n">turn_count_location</span><span class="o">.</span><span class="n">intersection_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                                    <span class="n">roadnode_id</span>             <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">intersection</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                                    <span class="n">remove_label_spaces</span>     <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                                                    <span class="n">use_dir_for_movement</span>    <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="c"># use labels</span>
+                                                                    <span class="n">dir_need_not_be_primary</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Found movement </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">movement</span>
     
-    * *cd_reader* is a CountDraculaReader instance where the counts are stored
-    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file
-    * *starttime* is a datetime.time instance defining the start time for the counts we'll extract
-    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
-    * *num_intervals* is an integer defining how many intervals we'll export
-    * *suffix* is an optional suffix for the file name (something descriptive)
-    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
-    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
-    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
-      only include the given weekdays.
-    * If *all_count_workbook* is passed (it should be an xlwt.Workbook) then the raw data will be added
-      to a sheet there as well.
-            
-    Writes to a file called ``counts_movements_Xmin_Y_Z_suffix.dat`` where X is the number of minutes in the period, Y is the starttime and Z is
-    the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat
-    """    
-    endtime         = datetime.datetime.combine(datetime.date(2000,1,1), starttime) + (num_intervals*period)
-    filename        = "counts_movements_%dmin_%s_%s%s.dat" % (period.seconds/60, 
-                                                              starttime.strftime("%H%M"), endtime.strftime("%H%M"),
-                                                              "_%s" % suffix if suffix else "")
-    movement_counts = cd_reader.getTurningCounts(starttime=starttime, period=period, num_intervals=num_intervals,
-                                                 from_date=from_date, to_date=to_date, weekdays=weekdays)
+    <span class="k">except</span> <span class="n">dta</span><span class="o">.</span><span class="n">DtaError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Failed to find movement @ </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">turn_count_location</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span> 
+      
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">movement</span> <span class="o">=</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">findMovementForRoadLabels</span><span class="p">(</span><span class="n">incoming_street_label</span>   <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">from_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                                    <span class="n">incoming_direction</span>      <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">from_dir</span><span class="p">,</span>
+                                                                    <span class="n">outgoing_street_label</span>   <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">to_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                                    <span class="n">outgoing_direction</span>      <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">to_dir</span><span class="p">,</span>
+                                                                    <span class="n">intersection_street_label</span><span class="o">=</span><span class="n">turn_count_location</span><span class="o">.</span><span class="n">intersection_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                                    <span class="n">roadnode_id</span>             <span class="o">=</span> <span class="n">turn_count_location</span><span class="o">.</span><span class="n">intersection</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                                    <span class="n">remove_label_spaces</span>     <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                                                                    <span class="n">use_dir_for_movement</span>    <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>  <span class="c"># use directions over labels</span>
+                                                                    <span class="n">dir_need_not_be_primary</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="c"># keep it tighter tho</span>
+
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Found movement by loosening label constraints: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> to </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> 
+                           <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>
+                            <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">()))</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">movement</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">movement</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">movement</span>
+        
+    <span class="k">except</span> <span class="n">dta</span><span class="o">.</span><span class="n">DtaError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to find movement @ </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">turn_count_location</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>                  
+
+    <span class="k">return</span> <span class="bp">None</span>
+                </div>
+<div class="viewcode-block" id="exportTurnCountsToDynameqUserDataFile"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile">[docs]</a><span class="k">def</span> <span class="nf">exportTurnCountsToDynameqUserDataFile</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">num_intervals</span><span class="p">,</span>
+                                               <span class="n">suffix</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                               <span class="n">all_count_workbook</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.</span>
+<span class="sd">    </span>
+<span class="sd">    * *cd_reader* is a CountDraculaReader instance where the counts are stored</span>
+<span class="sd">    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file</span>
+<span class="sd">    * *starttime* is a datetime.time instance defining the start time for the counts we&#39;ll extract</span>
+<span class="sd">    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)</span>
+<span class="sd">    * *num_intervals* is an integer defining how many intervals we&#39;ll export</span>
+<span class="sd">    * *suffix* is an optional suffix for the file name (something descriptive)</span>
+<span class="sd">    * *from_year* is a datetime.date instance defining the start date (inclusive) of acceptable count dates</span>
+<span class="sd">    * *to_year* is a datetime.date instance defining the end date (inclusive) of acceptable count dates</span>
+<span class="sd">    * If *weekdays* is passed (a list of integers, where Sunday is 1 and Saturday is 7), then counts will</span>
+<span class="sd">      only include the given weekdays.</span>
+<span class="sd">    * If *all_count_workbook* is passed (it should be an xlwt.Workbook) then the raw data will be added</span>
+<span class="sd">      to a sheet there as well.</span>
+<span class="sd">            </span>
+<span class="sd">    Writes to a file called ``counts_movements_Xmin_Y_Z_suffix.dat`` where X is the number of minutes in the period, Y is the starttime and Z is</span>
+<span class="sd">    the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">endtime</span>         <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">num_intervals</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">filename</span>        <span class="o">=</span> <span class="s">&quot;counts_movements_</span><span class="si">%d</span><span class="s">min_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s%s</span><span class="s">.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> 
+                                                              <span class="n">starttime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span> <span class="n">endtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span>
+                                                              <span class="s">&quot;_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
     
-    # file header (comments)
-    outfile         = open(filename, "w")
-    outfile.write("* mainline_counts\n")
-    outfile.write("* domain: Movements\n")
-    outfile.write("* script: %s\n" % sys.argv[0])
-    outfile.write("* starttime: %s\n" % starttime.strftime("%H:%M"))
-    outfile.write("* period: %d min\n" % (period.seconds/60))
-    outfile.write("* num_intervals: %d\n" % num_intervals)
-    outfile.write("* date_range: %s - %s\n" % (str(from_date), str(to_date)))
-    outfile.write("* weekdays: %s\n" % str(weekdays))
-    outfile.write("* CREATED %s\n" % datetime.datetime.now().ctime())
-    outfile.write("*%8s %8s %8s" % ("at","start","end"))
-
-    if all_count_workbook:
-        sheet = all_count_workbook.add_sheet("movavg_%s_%d" % (suffix, period.seconds/60))
-        # header row
-        row_num = 0
-        sheet.write(row_num,0, "from-at-to",    STYLE_BOLD) # for joins
-        sheet.write(row_num,1, "fromstreet",    STYLE_BOLD)
-        sheet.write(row_num,2, "fromdir",       STYLE_BOLD)
-        sheet.write(row_num,3, "tostreet",      STYLE_BOLD)
-        sheet.write(row_num,4, "todir",         STYLE_BOLD)
-
-        sheet.panes_frozen      = True
-        sheet.horz_split_pos    = 1
-        sheet.col(0).width      = 23*256
-        sheet.col(1).width      = 15*256
-        sheet.col(3).width      = 15*256
-
-    for interval in range(num_intervals):
-        curtime     = datetime.datetime.combine(datetime.date(2000,1,1), starttime) + (interval*period)
-        outfile.write("  %s" % curtime.strftime("%H:%M"))
-        if all_count_workbook: sheet.write(row_num, 5+interval, curtime, STYLE_TIME)
-        
-    outfile.write("\n")
-
-    # For each movement count, see if we can find the right place for it in the sanfranciscoDynameqNet
-    movements_found     = 0
-    movements_not_found = 0
-    key_to_movement     = {} # cache key to link
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;period_minutes&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span><span class="o">/</span><span class="mi">60</span><span class="p">)}</span>
+    <span class="k">if</span> <span class="n">from_year</span><span class="p">:</span> 
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;count_year__gte&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">from_year</span>
+    <span class="k">if</span> <span class="n">to_year</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;count_year__lte&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_year</span>
+    <span class="c"># I don&#39;t know why this one fails</span>
+    <span class="c"># I get django.core.exceptions.FieldError: Join on field &#39;count_date&#39; not permitted. Did you misspell &#39;week_day&#39; for the lookup type?</span>
+    <span class="c">#if weekdays:</span>
+    <span class="c">#    kwargs[&#39;count_date__week_day__in&#39;] = weekdays</span>
     
-    for key,counts in movement_counts.iteritems():
+    <span class="c"># file header (comments)</span>
+    <span class="n">outfile</span>         <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* mainline_counts</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* domain: Movements</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* script: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* starttime: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">starttime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* period: </span><span class="si">%d</span><span class="s"> min</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* num_intervals: </span><span class="si">%d</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">num_intervals</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* date_range: </span><span class="si">%s</span><span class="s"> - </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">from_year</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">to_year</span><span class="p">)))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* weekdays: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">weekdays</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* CREATED </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;*</span><span class="si">%8s</span><span class="s"> </span><span class="si">%8s</span><span class="s"> </span><span class="si">%8s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;at&quot;</span><span class="p">,</span><span class="s">&quot;start&quot;</span><span class="p">,</span><span class="s">&quot;end&quot;</span><span class="p">))</span>
 
-        # ignore if there are no real counts here
-        real_counts = [count for count in counts if count &gt; 0]
-        if len(real_counts) == 0: continue
+    <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span>
+        <span class="n">sheet</span> <span class="o">=</span> <span class="n">all_count_workbook</span><span class="o">.</span><span class="n">add_sheet</span><span class="p">(</span><span class="s">&quot;movavg_</span><span class="si">%s</span><span class="s">_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
+        <span class="c"># header row</span>
+        <span class="n">row_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;from-at-to&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for joins</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;fromstreet&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;fromdir&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;tostreet&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="s">&quot;todir&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+
+        <span class="n">sheet</span><span class="o">.</span><span class="n">panes_frozen</span>      <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">horz_split_pos</span>    <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">23</span><span class="o">*</span><span class="mi">256</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">15</span><span class="o">*</span><span class="mi">256</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">15</span><span class="o">*</span><span class="mi">256</span>
+
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+        <span class="n">curtime</span>     <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">curtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span> <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">5</span><span class="o">+</span><span class="n">interval</span><span class="p">,</span> <span class="n">curtime</span><span class="p">,</span> <span class="n">STYLE_TIME</span><span class="p">)</span>
         
-        dta.DtaLogger.debug("Finding movement for %s %s to %s %s @ %d (x street %s)" % 
-                            (key[0], key[1], key[2], key[3], key[5], key[4]))
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="c"># For each movement count, see if we can find the right place for it in the sanfranciscoDynameqNet    </span>
+    <span class="n">location_id_to_movement</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># CountDracula location id to dta.Movement</span>
+    <span class="n">location_ids</span>            <span class="o">=</span> <span class="p">[]</span> <span class="c"># list of location ids in the worksheet/output file</span>
+    <span class="n">movement_counts</span>         <span class="o">=</span> <span class="p">[]</span> <span class="c"># query sets from count dracula, indexed by interval</span>
+    
+    <span class="c"># first, build out location_id_to_movement, location_ids and movement_counts</span>
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+
+        <span class="c"># query</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;start_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
         
-        second_try = False
-        movement = None
-        try:
-            movement = sanfranciscoDynameqNet.findMovementForRoadLabels(incoming_street_label=key[0].replace(" ",""), incoming_direction=key[1],
-                                                                        outgoing_street_label=key[2].replace(" ",""), outgoing_direction=key[3],
-                                                                        intersection_street_label=(key[4] if key[0]==key[2] else None),
-                                                                        roadnode_id=key[5],
-                                                                        remove_label_spaces=True,
-                                                                        use_dir_for_movement=False,    # use labels
-                                                                        dir_need_not_be_primary=True)  # dir not need be primary
-
-            key_to_movement[key] = movement
-            movements_found += 1
-            dta.DtaLogger.debug(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
-                    
-        except dta.DtaError, e:
-            
-            dta.DtaLogger.warn("Failed to find movement @ %d: %s; counts=%s" % (key[5], str(e), str(counts)))    
-            # try again but not within an except
-            second_try = True
-            
-        if second_try:
-            try:
-                movement = sanfranciscoDynameqNet.findMovementForRoadLabels(incoming_street_label=key[0].replace(" ",""), incoming_direction=key[1],
-                                                                            outgoing_street_label=key[2].replace(" ",""), outgoing_direction=key[3],
-                                                                            intersection_street_label=(key[4] if key[0]==key[2] else None),
-                                                                            roadnode_id=key[5],
-                                                                            remove_label_spaces=True,
-                                                                            use_dir_for_movement=True,     # use directions over labels
-                                                                            dir_need_not_be_primary=False) # keep it tighter tho
-
-                key_to_movement[key] = movement
-                movements_found += 1
-                dta.DtaLogger.warn("Found movement by loosening label constraints: %s %s to %s %s" % 
-                                   (movement.getIncomingLink().getLabel(), movement.getIncomingLink().getDirection(),
-                                    movement.getOutgoingLink().getLabel(), movement.getOutgoingLink().getDirection()))
-                dta.DtaLogger.debug(" %8d %8d" % (movement.getIncomingLink().getId(), movement.getOutgoingLink().getId()))
-            
-            except dta.DtaError, e:
-                
-                dta.DtaLogger.error("Failed to find movement @ %d: %s; counts=%s" % (key[5], str(e), str(counts)))                  
-                movements_not_found += 1
-                continue
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">TurnCount</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;location&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weekdays</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">weekday</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">weekday</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">weekdays</span><span class="p">:</span> <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">count_date__week_day</span><span class="o">=</span><span class="n">weekday</span><span class="p">)</span>
+        <span class="n">movement_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qs</span><span class="p">)</span>
         
-        # movement found -- write it out
-        outfile.write(" %8d %8d %8d" % (movement.getAtNode().getId(), 
-                                        movement.getStartNode().getId(),
-                                        movement.getEndNode().getId()))
-        for interval in range(num_intervals):
-            outfile.write(" %6.1f" % counts[interval])
-        outfile.write("\n")
-        
-        # workbook version
-        if all_count_workbook:
-            row_num += 1
-            sheet.write(row_num, 0, "%d %d %d" % (movement.getStartNode().getId(),
-                                                  movement.getAtNode().getId(),
-                                                  movement.getEndNode().getId()), STYLE_REG)
-            sheet.write(row_num, 1, key[0], STYLE_REG)
-            sheet.write(row_num, 2, key[1], STYLE_REG)
-            sheet.write(row_num, 3, key[2], STYLE_REG)
-            sheet.write(row_num, 4, key[3], STYLE_REG)
-            for interval in range(num_intervals):
-                sheet.write(row_num, 5+interval, counts[interval], STYLE_REG)            
+        <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">movement_counts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
             
-    outfile.close()
-    dta.DtaLogger.info("Wrote movement counts for %d movements to %s; failed to find %d movements." % 
-                       (movements_found, filename, movements_not_found))
+            <span class="c"># find the DTA movement for this location, if we haven&#39;t done so already</span>
+            <span class="k">if</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">location_id_to_movement</span><span class="p">:</span>
+                <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">findDtaMovementForTurnCountLocation</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 
-    # write raw data into workbook
-    if all_count_workbook:
-        sheet = all_count_workbook.add_sheet("movements_%s_%d" % (suffix, period.seconds/60))
+            <span class="c"># don&#39;t include the ones we couldn&#39;t map</span>
+            <span class="k">if</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">location_ids</span><span class="p">:</span>
+                <span class="n">location_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
-        # fetch the movement_counts again but without averaging
-        movement_counts = cd_reader.getTurningCounts(starttime=starttime, period=period, num_intervals=num_intervals,
-                                                     from_date=from_date, to_date=to_date, weekdays=weekdays,
-                                                     return_averages=False)
-        # header row
-        row_num = 0
-        # dta location data        
-        sheet.write(row_num,0, "from-at-to",    STYLE_BOLD) # for joins
-        sheet.write(row_num,1, "at-node",       STYLE_BOLD)
-        sheet.write(row_num,2, "from-node",     STYLE_BOLD)
-        sheet.write(row_num,3, "to-node",       STYLE_BOLD)
-        sheet.write(row_num,4, "from_link",     STYLE_BOLD)
-        sheet.write(row_num,5, "to_link",       STYLE_BOLD)
-        # count dracula location data - fromstreet, fromdir, tostreet, todir
-        sheet.write(row_num,6, "fromstreet",    STYLE_BOLD)
-        sheet.write(row_num,7, "fromdir",       STYLE_BOLD)
-        sheet.write(row_num,8, "tostreet",      STYLE_BOLD)
-        sheet.write(row_num,9, "todir",         STYLE_BOLD)
-        # count data, count = [ count, starttime, period, vtype, sourcefile, project ]
-        sheet.write(row_num,10,"count",         STYLE_BOLD)
-        sheet.write(row_num,11,"starttime",     STYLE_BOLD)
-        sheet.write(row_num,12,"year",          STYLE_BOLD) # for ease of trends analysis
-        sheet.write(row_num,13,"allyears",      STYLE_BOLD) # for ease of trends analysis        
-        sheet.write(row_num,14,"time",          STYLE_BOLD) # for ease of trends analysis
-        sheet.write(row_num,15,"period (min)",  STYLE_BOLD)
-        sheet.write(row_num,16,"vtype",         STYLE_BOLD)
-        sheet.write(row_num,17,"sourcefile",    STYLE_BOLD)
-        sheet.write(row_num,18,"project",       STYLE_BOLD)
+    <span class="c"># now we&#39;re ready for output</span>
+    <span class="k">for</span> <span class="n">location_id</span> <span class="ow">in</span> <span class="n">location_ids</span><span class="p">:</span>
 
-        sheet.panes_frozen      = True
-        sheet.horz_split_pos    = 1
-        sheet.col(0).width      = 23*256
-        sheet.col(11).width     = 23*256
-        
-        for key,counts in movement_counts.iteritems():
-            if key not in key_to_movement: continue
+        <span class="c"># movement found -- write it out</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getAtNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> 
+                                        <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>
+                                        <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
 
-            # figure out multiyear
-            count_years = set()
-            for count in counts: count_years.add(count[1].year)
+        <span class="c"># workbook version</span>
+        <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span>
+            <span class="n">row_num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>
+                                                  <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getAtNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>
+                                                  <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()),</span> <span class="n">STYLE_REG</span><span class="p">)</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>      <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># from street</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>  <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># from dir</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>      <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># to street</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>  <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># to dir</span>
             
-            for count in counts:
-                # data row
-                row_num += 1
-                movement = key_to_movement[key]
-                # dta location data                        
-                sheet.write(row_num,0, "%d %d %d" % (movement.getStartNode().getId(), movement.getAtNode().getId(), movement.getEndNode().getId()), STYLE_REG)
-                sheet.write(row_num,1, movement.getAtNode().getId(),        STYLE_REG)
-                sheet.write(row_num,2, movement.getStartNode().getId(),     STYLE_REG)
-                sheet.write(row_num,3, movement.getEndNode().getId(),       STYLE_REG)
-                sheet.write(row_num,4, movement.getIncomingLink().getId(),  STYLE_REG)
-                sheet.write(row_num,5, movement.getOutgoingLink().getId(),  STYLE_REG)
-                # count dracula location data - fromstreet, fromdir, tostreet, todir
-                sheet.write(row_num,6, key[0],                              STYLE_REG)
-                sheet.write(row_num,7, key[1],                              STYLE_REG)
-                sheet.write(row_num,8, key[2],                              STYLE_REG)
-                sheet.write(row_num,9, key[3],                              STYLE_REG)
-                # count data, count = [ count, starttime, period, vtype, sourcefile, project ]
-                sheet.write(row_num,10, count[0],                           STYLE_REG)
-                sheet.write(row_num,11, count[1],                           STYLE_DATE)
-                sheet.write(row_num,12, count[1].year,                      STYLE_REG)
-                sheet.write(row_num,13, str(sorted(count_years)),           STYLE_REG)                
-                sheet.write(row_num,14, 
-                            datetime.time(count[1].hour, 
-                                          count[1].minute,
-                                          count[1].second),                 STYLE_TIME)
-                sheet.write(row_num,15,(count[2].seconds/60),               STYLE_REG)
-                sheet.write(row_num,16,count[3],                            STYLE_REG)
-                sheet.write(row_num,17,count[4],                            STYLE_REG)
-                sheet.write(row_num,18,count[5],                            STYLE_REG)
+        <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+            <span class="n">agg_count_dict</span> <span class="o">=</span> <span class="n">movement_counts</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">location__id</span><span class="o">=</span><span class="n">location_id</span><span class="p">)</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">Avg</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">),</span> <span class="n">Count</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="s">&#39;count__avg&#39;</span> <span class="ow">in</span> <span class="n">agg_count_dict</span> <span class="ow">and</span> <span class="n">agg_count_dict</span><span class="p">[</span><span class="s">&#39;count__avg&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">avg_count</span> <span class="o">=</span> <span class="n">agg_count_dict</span><span class="p">[</span><span class="s">&#39;count__avg&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">agg_count_dict</span><span class="p">[</span><span class="s">&#39;count__count&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">avg_count</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">avg_count</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+            
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%6.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">avg_count</span><span class="p">)</span>
+            
+            <span class="c"># workbook version</span>
+            <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span> <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">5</span><span class="o">+</span><span class="n">interval</span><span class="p">,</span> <span class="n">avg_count</span><span class="p">,</span> <span class="n">STYLE_REG</span><span class="p">)</span>
 
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+            
+    <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Wrote movement counts for </span><span class="si">%d</span><span class="s"> movements to </span><span class="si">%s</span><span class="s">; failed to find </span><span class="si">%d</span><span class="s"> movements.&quot;</span> <span class="o">%</span> 
+                       <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">location_ids</span><span class="p">),</span> <span class="n">filename</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">location_id_to_movement</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">location_ids</span><span class="p">)))</span>
+    
+    <span class="c"># if we&#39;re not doing the raw workbook then we&#39;re done</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">all_count_workbook</span><span class="p">:</span> <span class="k">return</span>
+    
+    <span class="c"># write raw data into workbook</span>
+    <span class="n">sheet</span> <span class="o">=</span> <span class="n">all_count_workbook</span><span class="o">.</span><span class="n">add_sheet</span><span class="p">(</span><span class="s">&quot;movements_</span><span class="si">%s</span><span class="s">_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
+
+    <span class="c"># header row</span>
+    <span class="n">row_num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c"># dta location data        </span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;from-at-to&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for joins</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;at-node&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;from-node&quot;</span><span class="p">,</span>     <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;to-node&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="s">&quot;from_link&quot;</span><span class="p">,</span>     <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span> <span class="s">&quot;to_link&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="c"># count dracula location data - fromstreet, fromdir, tostreet, todir</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="s">&quot;fromstreet&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span> <span class="s">&quot;fromdir&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span> <span class="s">&quot;tostreet&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span> <span class="s">&quot;todir&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="c"># count data, count = [ count, starttime, period, vtype, sourcefile, project ]</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="s">&quot;count&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="s">&quot;starttime&quot;</span><span class="p">,</span>     <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="s">&quot;year&quot;</span><span class="p">,</span>          <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for ease of trends analysis</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="s">&quot;allyears&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for ease of trends analysis        </span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="s">&quot;time&quot;</span><span class="p">,</span>          <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for ease of trends analysis</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="s">&quot;period (min)&quot;</span><span class="p">,</span>  <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="s">&quot;vtype&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="s">&quot;sourcefile&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="s">&quot;project&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+
+    <span class="n">sheet</span><span class="o">.</span><span class="n">panes_frozen</span>      <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">horz_split_pos</span>    <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">23</span><span class="o">*</span><span class="mi">256</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>     <span class="o">=</span> <span class="mi">23</span><span class="o">*</span><span class="mi">256</span>
+    
+    <span class="k">for</span> <span class="n">location_id</span> <span class="ow">in</span> <span class="n">location_ids</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+
+            <span class="n">movement_counts_for_location</span> <span class="o">=</span> <span class="n">movement_counts</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">location__id</span><span class="o">=</span><span class="n">location_id</span><span class="p">)</span>
+
+            <span class="c"># figure out multiyear</span>
+            <span class="n">count_years</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">movement_count</span> <span class="ow">in</span> <span class="n">movement_counts_for_location</span><span class="p">:</span> <span class="n">count_years</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movement_count</span><span class="o">.</span><span class="n">count_year</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">movement_count</span> <span class="ow">in</span> <span class="n">movement_counts_for_location</span><span class="p">:</span>
+                <span class="c"># data row</span>
+                <span class="n">row_num</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c"># dta location data                        </span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> 
+                                                     <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getAtNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>
+                                                     <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()),</span> <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getAtNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>        <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>     <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>       <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>  <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>  <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="c"># count dracula location data - fromstreet, fromdir, tostreet, todir</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>       <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>   <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>       <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span> <span class="n">location_id_to_movement</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>   <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="c"># count, starttime, year, allyears, time, period (min), vtype, sourcefile, project   </span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>               <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">movement_count</span><span class="o">.</span><span class="n">count_date</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span> <span class="n">STYLE_DATE</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">count_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>     <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">count_years</span><span class="p">)),</span>           <span class="n">STYLE_REG</span><span class="p">)</span>                
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>          <span class="n">STYLE_TIME</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">period_minutes</span><span class="p">,</span>      <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">vehicle_type</span><span class="p">,</span>        <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">,</span>          <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span> <span class="n">movement_count</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>             <span class="n">STYLE_REG</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="exportMainlineCountsToDynameUserDataFile"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile">[docs]</a>def exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime, period, num_intervals,
-                                                   suffix=None, from_date=None, to_date=None, weekdays=None,
-                                                   all_count_workbook=None):
-    """
-    Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.
+<div class="viewcode-block" id="findDtaLinkForMainlineCountLocation"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.findDtaLinkForMainlineCountLocation">[docs]</a><span class="k">def</span> <span class="nf">findDtaLinkForMainlineCountLocation</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">mainline_count_location</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the DTA RoadLink for the given mainline_count_location (a CountDracula MainlineCountLocation instance).</span>
+<span class="sd">    </span>
+<span class="sd">    Returns None on failure; returns the RoadLink instance on success.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">links</span> <span class="o">=</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">findLinksForRoadLabels</span><span class="p">(</span><span class="n">on_street_label</span>       <span class="o">=</span> <span class="n">mainline_count_location</span><span class="o">.</span><span class="n">on_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                              <span class="n">on_direction</span>          <span class="o">=</span> <span class="n">mainline_count_location</span><span class="o">.</span><span class="n">on_dir</span><span class="p">,</span>
+                                                              <span class="n">from_street_label</span>     <span class="o">=</span> <span class="n">mainline_count_location</span><span class="o">.</span><span class="n">from_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                              <span class="n">to_street_label</span>       <span class="o">=</span> <span class="n">mainline_count_location</span><span class="o">.</span><span class="n">to_street</span><span class="o">.</span><span class="n">nospace_name</span><span class="p">,</span>
+                                                              <span class="n">remove_label_spaces</span>   <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Found </span><span class="si">%d</span><span class="s"> links: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">links</span><span class="p">)))</span>
+        <span class="c"># return the first</span>
+        <span class="k">return</span> <span class="n">links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="n">dta</span><span class="o">.</span><span class="n">DtaError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to find links for </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">mainline_count_location</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="bp">None</span>
     
-    * *cd_reader* is a CountDraculaReader instance where the counts are stored
-    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file    
-    * *starttime* is a datetime.time instance defining the start time for the counts we'll extract
-    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)
-    * *num_intervals* is an integer defining how many intervals we'll export
-    * *suffix* is an optional suffix for the file name (something descriptive)
-    * *from_date* is a datetime.date instance defining the start date (inclusive) of acceptable count dates
-    * *to_date* is a datetime.date instance defining the end date (inclusive) of acceptable count dates
-    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will
-      only include the given weekdays.
-    * If *all_count_workbook* is passed (it should be an xlwt.Workbook) then the raw data will be added
-      to a sheet there as well.
-          
-    Writes to a file called ``counts_links_Xmin_Y_Z.dat`` where X is the number of minutes in the period, Y is the starttime and Z is
-    the endtime; e.g. counts_links_15min_1600_1830.dat
-    """    
-    endtime         = datetime.datetime.combine(datetime.date(2000,1,1), starttime) + (num_intervals*period)
-    filename        = "counts_links_%dmin_%s_%s%s.dat" % (period.seconds/60, 
-                                                          starttime.strftime("%H%M"), 
-                                                          endtime.strftime("%H%M"),
-                                                          "_%s" % suffix if suffix else "")
-    link_counts     = cd_reader.getMainlineCounts(starttime=starttime, period=period, num_intervals=num_intervals,
-                                                  from_date=from_date, to_date=to_date, weekdays=weekdays)
     
-    # file header (comments)
-    outfile         = open(filename, "w")
-    outfile.write("* mainline_counts\n")
-    outfile.write("* domain: Links\n")
-    outfile.write("* script: %s\n" % sys.argv[0])
-    outfile.write("* starttime: %s\n" % starttime.strftime("%H:%M"))
-    outfile.write("* period: %d min\n" % (period.seconds/60))
-    outfile.write("* num_intervals: %d\n" % num_intervals)
-    outfile.write("* date_range: %s - %s\n" % (str(from_date), str(to_date)))
-    outfile.write("* weekdays: %s\n" % str(weekdays))
-    outfile.write("* CREATED %s\n" % datetime.datetime.now().ctime())
-    outfile.write("*%8s %8s" % ("from","to"))
+</div>
+<div class="viewcode-block" id="exportMainlineCountsToDynameUserDataFile"><a class="viewcode-back" href="../script_attachCountsFromCountDracula.html#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile">[docs]</a><span class="k">def</span> <span class="nf">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">num_intervals</span><span class="p">,</span>
+                                                   <span class="n">suffix</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                                   <span class="n">all_count_workbook</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.</span>
+<span class="sd">    </span>
+<span class="sd">    * *cd_reader* is a CountDraculaReader instance where the counts are stored</span>
+<span class="sd">    * *sanfranciscoDynameqNet* is a :py:class:`Network` instance for looking up the relevant nodes for the output file    </span>
+<span class="sd">    * *starttime* is a datetime.time instance defining the start time for the counts we&#39;ll extract</span>
+<span class="sd">    * *period* is a datetime.timedelta instance defining the duration of each time slice (e.g. 15-minute counts)</span>
+<span class="sd">    * *num_intervals* is an integer defining how many intervals we&#39;ll export</span>
+<span class="sd">    * *suffix* is an optional suffix for the file name (something descriptive)</span>
+<span class="sd">    * *from_year* is a datetime.date instance defining the start date (inclusive) of acceptable count dates</span>
+<span class="sd">    * *to_year* is a datetime.date instance defining the end date (inclusive) of acceptable count dates</span>
+<span class="sd">    * If *weekdays* is passed (a list of integers, where Monday is 0 and Sunday is 6), then counts will</span>
+<span class="sd">      only include the given weekdays.</span>
+<span class="sd">    * If *all_count_workbook* is passed (it should be an xlwt.Workbook) then the raw data will be added</span>
+<span class="sd">      to a sheet there as well.</span>
+<span class="sd">          </span>
+<span class="sd">    Writes to a file called ``counts_links_Xmin_Y_Z.dat`` where X is the number of minutes in the period, Y is the starttime and Z is</span>
+<span class="sd">    the endtime; e.g. counts_links_15min_1600_1830.dat</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">endtime</span>         <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">num_intervals</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">filename</span>        <span class="o">=</span> <span class="s">&quot;counts_links_</span><span class="si">%d</span><span class="s">min_</span><span class="si">%s</span><span class="s">_</span><span class="si">%s%s</span><span class="s">.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> 
+                                                          <span class="n">starttime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span> 
+                                                          <span class="n">endtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H%M&quot;</span><span class="p">),</span>
+                                                          <span class="s">&quot;_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;period_minutes&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span><span class="o">/</span><span class="mi">60</span><span class="p">)}</span>
+    <span class="k">if</span> <span class="n">from_year</span><span class="p">:</span> 
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;count_year__gte&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">from_year</span>
+    <span class="k">if</span> <span class="n">to_year</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;count_year__lte&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_year</span>    
     
-    if all_count_workbook:
-        sheet = all_count_workbook.add_sheet("linkavg_%s_%d" % (suffix, period.seconds/60))
-        # header row
-        row_num = 0
-        sheet.write(row_num,0, "from-to",       STYLE_BOLD) # for joins
-        sheet.write(row_num,1, "onstreet",      STYLE_BOLD)
-        sheet.write(row_num,2, "ondir",         STYLE_BOLD)
-        sheet.write(row_num,3, "fromstreet",    STYLE_BOLD)
-        sheet.write(row_num,4, "tostreet",      STYLE_BOLD)
+    <span class="c"># file header (comments)</span>
+    <span class="n">outfile</span>         <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* mainline_counts</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* domain: Links</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* script: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* starttime: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">starttime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* period: </span><span class="si">%d</span><span class="s"> min</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* num_intervals: </span><span class="si">%d</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">num_intervals</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* date_range: </span><span class="si">%s</span><span class="s"> - </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">from_year</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">to_year</span><span class="p">)))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* weekdays: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">weekdays</span><span class="p">))</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;* CREATED </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;*</span><span class="si">%8s</span><span class="s"> </span><span class="si">%8s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">,</span><span class="s">&quot;to&quot;</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span>
+        <span class="n">sheet</span> <span class="o">=</span> <span class="n">all_count_workbook</span><span class="o">.</span><span class="n">add_sheet</span><span class="p">(</span><span class="s">&quot;linkavg_</span><span class="si">%s</span><span class="s">_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
+        <span class="c"># header row</span>
+        <span class="n">row_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;from-to&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for joins</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;onstreet&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;ondir&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;fromstreet&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="s">&quot;tostreet&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span>
 
-        sheet.panes_frozen      = True
-        sheet.horz_split_pos    = 1
-        sheet.col(0).width      = 15*256
-        sheet.col(1).width      = 15*256
-        sheet.col(3).width      = 15*256
+        <span class="n">sheet</span><span class="o">.</span><span class="n">panes_frozen</span>      <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">horz_split_pos</span>    <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">15</span><span class="o">*</span><span class="mi">256</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">15</span><span class="o">*</span><span class="mi">256</span>
+        <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">15</span><span class="o">*</span><span class="mi">256</span>
         
-    for interval in range(num_intervals):
-        curtime     = datetime.datetime.combine(datetime.date(2000,1,1), starttime) + (interval*period)
-        outfile.write("  %s" % curtime.strftime("%H:%M"))
-        if all_count_workbook: sheet.write(row_num, 5+interval, curtime, STYLE_TIME)
-    outfile.write("\n")
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+        <span class="n">curtime</span>     <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">curtime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span> <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">5</span><span class="o">+</span><span class="n">interval</span><span class="p">,</span> <span class="n">curtime</span><span class="p">,</span> <span class="n">STYLE_TIME</span><span class="p">)</span>
+    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
 
-    # For each link count, see if we can find the right place for it in the sanfranciscoDynameqNet
-    links_found     = 0
-    links_not_found = 0
-    key_to_link     = {} # cache key to link
-    
-    for key,counts in link_counts.iteritems():
+    <span class="c"># For each movement count, see if we can find the right place for it in the sanfranciscoDynameqNet    </span>
+    <span class="n">location_id_to_link</span>     <span class="o">=</span> <span class="p">{}</span> <span class="c"># CountDracula location id to dta.Link</span>
+    <span class="n">location_id_to_location</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># CountDracula location id to CountDracula location</span>
+    <span class="n">location_ids</span>            <span class="o">=</span> <span class="p">[]</span> <span class="c"># list of location ids in the worksheet/output file</span>
+    <span class="n">link_counts</span>             <span class="o">=</span> <span class="p">[]</span> <span class="c"># query sets from CountDracula, indexed by interval</span>
 
-        # ignore if there are no real counts here
-        real_counts = [count for count in counts if count &gt; 0]
-        if len(real_counts) == 0: continue
+    <span class="c"># first, build out location_id_to_link, location_ids and link_counts</span>
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+
+        <span class="c"># query</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;start_time&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">interval</span><span class="o">*</span><span class="n">period</span><span class="p">)</span>
         
-        try:
-            links = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label=key[0].replace(" ",""), on_direction=key[1],
-                                                                  from_street_label=key[2].replace(" ",""),
-                                                                  to_street_label=key[3].replace(" ",""),
-                                                                  remove_label_spaces=True)
-            
-            # attribute the counts to the first part
-            outfile.write(" %8d %8d" % (links[0].getStartNode().getId(), links[0].getEndNode().getId()))
-            for interval in range(num_intervals):
-                outfile.write(" %6.1f" % counts[interval])
-            outfile.write("\n")
-            
-            # workbook version
-            if all_count_workbook:
-                row_num += 1
-                sheet.write(row_num, 0, "%d %d" % (links[0].getStartNode().getId(), links[0].getEndNode().getId()), STYLE_REG)
-                sheet.write(row_num, 1, key[0], STYLE_REG)
-                sheet.write(row_num, 2, key[1], STYLE_REG)
-                sheet.write(row_num, 3, key[2], STYLE_REG)
-                sheet.write(row_num, 4, key[3], STYLE_REG)
-                for interval in range(num_intervals):
-                    sheet.write(row_num, 5+interval, counts[interval], STYLE_REG)
-    
-            key_to_link[key] = links[0]
-            links_found += 1
-
-        except dta.DtaError, e:
-            
-            dta.DtaLogger.error("Failed to find links: %s; counts=%s" % (str(e), str(counts)))               
-            links_not_found += 1
-            
-    outfile.close()
-    dta.DtaLogger.info("Wrote link counts for %d links to %s; failed to find %d links." % 
-                       (links_found, filename, links_not_found))
-
-    # write raw data into workbook
-    if all_count_workbook:
-        sheet = all_count_workbook.add_sheet("links_%s_%d" % (suffix, period.seconds/60))
-
-        # fetch the link_counts again but without averaging
-        link_counts = cd_reader.getMainlineCounts(starttime=starttime, period=period, num_intervals=num_intervals,
-                                                  from_date=from_date, to_date=to_date, weekdays=weekdays,
-                                                  return_averages=False)
-        # header row
-        row_num = 0
-        # dta location data
-        sheet.write(row_num,0, "from-to",       STYLE_BOLD)
-        sheet.write(row_num,1, "from-node",     STYLE_BOLD)
-        sheet.write(row_num,2, "to-node",       STYLE_BOLD)
-        sheet.write(row_num,3, "linkid",        STYLE_BOLD)
-        # count dracula location data
-        sheet.write(row_num,4, "onstreet",      STYLE_BOLD)
-        sheet.write(row_num,5, "ondir",         STYLE_BOLD)
-        sheet.write(row_num,6, "fromstreet",    STYLE_BOLD)
-        sheet.write(row_num,7, "tostreet",      STYLE_BOLD)
-        # count data, count = [ count, starttime, period, vtype, refpos, sourcefile, project ]
-        sheet.write(row_num,8, "count",         STYLE_BOLD)
-        sheet.write(row_num,9, "starttime",     STYLE_BOLD)
-        sheet.write(row_num,10,"year",          STYLE_BOLD) # for ease of trends analysis
-        sheet.write(row_num,11,"allyears",      STYLE_BOLD) # for ease of trends analysis
-        sheet.write(row_num,12,"time",          STYLE_BOLD) # for ease of trends analysis
-        sheet.write(row_num,13,"period (min)",  STYLE_BOLD)
-        sheet.write(row_num,14,"vtype",         STYLE_BOLD)
-        sheet.write(row_num,15,"refpos",        STYLE_BOLD)
-        sheet.write(row_num,16,"sourcefile",    STYLE_BOLD)
-        sheet.write(row_num,17,"project",       STYLE_BOLD)
-
-        sheet.panes_frozen      = True
-        sheet.horz_split_pos    = 1
-        sheet.col(0).width      = 15*256
-        sheet.col(9).width      = 23*256
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">MainlineCount</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;location&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weekdays</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">weekday</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">weekday</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">weekdays</span><span class="p">:</span> <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">count_date__week_day</span><span class="o">=</span><span class="n">weekday</span><span class="p">)</span>
+        <span class="n">link_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qs</span><span class="p">)</span>
         
-        for key,counts in link_counts.iteritems():
-            if key not in key_to_link: continue
+        <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">link_counts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
             
-            # figure out multiyear
-            count_years = set()
-            for count in counts: count_years.add(count[1].year)
-            
-            for count in counts:
-                # data row
-                row_num += 1
-                link = key_to_link[key]
-                # dta location data
-                sheet.write(row_num,0, "%d %d" % (link.getStartNode().getId(), link.getEndNode().getId()), STYLE_REG)
-                sheet.write(row_num,1, link.getStartNode().getId(),                 STYLE_REG)
-                sheet.write(row_num,2, link.getEndNode().getId(),                   STYLE_REG)
-                sheet.write(row_num,3, link.getId(),                                STYLE_REG)
-                # count dracula location data
-                sheet.write(row_num,4, key[0],                                      STYLE_REG)
-                sheet.write(row_num,5, key[1],                                      STYLE_REG)
-                sheet.write(row_num,6, key[2],                                      STYLE_REG)
-                sheet.write(row_num,7, key[3],                                      STYLE_REG)
-                # count data, count = [ count, starttime, period, vtype, refpos, sourcefile, project ]
-                sheet.write(row_num,8, count[0],                                    STYLE_REG)
-                sheet.write(row_num,9, count[1],                                    STYLE_DATE)
-                sheet.write(row_num,10,count[1].year,                               STYLE_REG)
-                sheet.write(row_num,11,str(sorted(count_years)),                    STYLE_REG)
-                sheet.write(row_num,12,
-                            datetime.time(count[1].hour,
-                                          count[1].minute,
-                                          count[1].second),                         STYLE_TIME)
-                sheet.write(row_num,13,(count[2].seconds/60),                       STYLE_REG)
-                sheet.write(row_num,14,count[3],                                    STYLE_REG)
-                sheet.write(row_num,15,count[4],                                    STYLE_REG)
-                sheet.write(row_num,16,count[5],                                    STYLE_REG)
-                sheet.write(row_num,17,count[6],                                    STYLE_REG)
-
-#: this_is_main</div>
-if __name__ == '__main__':
-
-    import countdracula
-
-    optlist, args = getopt.getopt(sys.argv[1:], "l:m:n:")
-    
-    if len(args) != 2:
-        print USAGE
-        sys.exit(2)
-    
-    SF_DYNAMEQ_NET_DIR          = args[0] 
-    SF_DYNAMEQ_NET_PREFIX       = args[1]
-    
-    OUTPUT_LINK_SHAPEFILE       = None
-    OUTPUT_MOVE_SHAPEFILE       = None
-    OUTPUT_NODE_SHAPEFILE       = None
-    
-    for (opt,arg) in optlist:
-        if opt=="-m":
-            OUTPUT_MOVE_SHAPEFILE  = arg
-        elif opt=="-l":
-            OUTPUT_LINK_SHAPEFILE  = arg
-        elif opt=="-n":
-            OUTPUT_NODE_SHAPEFILE  = arg
+            <span class="c"># find the DTA link for this location, if we haven&#39;t done so already</span>
+            <span class="k">if</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">location_id_to_link</span><span class="p">:</span>
+                <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">findDtaLinkForMainlineCountLocation</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+                <span class="n">location_id_to_location</span><span class="p">[</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span>
                 
-    dta.setupLogging("attachCountsFromCountDracula.INFO.log", "attachCountsFromCountDracula.DEBUG.log", logToConsole=True)
-    
-    dta.VehicleType.LENGTH_UNITS= "feet"
-    dta.Node.COORDINATE_UNITS   = "feet"
-    dta.RoadLink.LENGTH_UNITS   = "miles"
-        
-    # Read the SF scenario and DTA network
-    sanfranciscoScenario = dta.DynameqScenario()
-    sanfranciscoScenario.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
-    
-    sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
-    sanfranciscoDynameqNet.read(dir=SF_DYNAMEQ_NET_DIR, file_prefix=SF_DYNAMEQ_NET_PREFIX)
-    
-    counts_wb = xlwt.Workbook()
-    
-    # Instantiate the count dracula reader and do the exports
-    # Time slices here are based on what we have available (according to CountDracula's querySanFranciscoCounts.py)
-    cd_reader       = countdracula.CountsDatabaseReader(pw="ReadOnly", logger=dta.DtaLogger)
-    
-    for suffix in ["all", "all_midweek", "recent", "recent_midweek"]:
-        from_date   = None
-        to_date     = None
-        weekdays    = None
-        
-        # year range
-        if suffix.find("recent") &gt;= 0:
-            from_date   = datetime.date(year=2009,month=1 ,day=1 )
-            to_date     = datetime.date(year=2011,month=12,day=31)
-            
-        # weekdays
-        if suffix.find("midweek") &gt;= 0:
-            weekdays    = [1,2,3] # Tues, Wed, Thurs
-            
-        dta.DtaLogger.info("Processing %s" % suffix)
-        exportTurnCountsToDynameqUserDataFile   (cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00), 
-                                                 period=datetime.timedelta(minutes=15), num_intervals=10, 
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
-                                                 all_count_workbook=counts_wb)
-        exportTurnCountsToDynameqUserDataFile   (cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00),
-                                                 period=datetime.timedelta(minutes= 5), num_intervals=24,
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
-                                                 all_count_workbook=counts_wb)
-        exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00),
-                                                 period=datetime.timedelta(minutes=60), num_intervals=2,
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
-                                                 all_count_workbook=counts_wb)
-        exportMainlineCountsToDynameUserDataFile(cd_reader, sanfranciscoDynameqNet, starttime=datetime.time(16,00),
-                                                 period=datetime.timedelta(minutes=15), num_intervals=10,
-                                                 suffix=suffix, from_date=from_date, to_date=to_date, weekdays=weekdays,
-                                                 all_count_workbook=counts_wb)
+            <span class="c"># don&#39;t include the ones we couldn&#39;t map</span>
+            <span class="k">if</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">location_ids</span><span class="p">:</span>
+                <span class="n">location_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">count</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
-    counts_wb.save("counts_generated_%s.xls" % str(datetime.date.today()))
+    <span class="c"># now we&#39;re ready for output</span>
+    <span class="k">for</span> <span class="n">location_id</span> <span class="ow">in</span> <span class="n">location_ids</span><span class="p">:</span>
     
-    if OUTPUT_LINK_SHAPEFILE: sanfranciscoDynameqNet.writeLinksToShp(OUTPUT_LINK_SHAPEFILE)
-    if OUTPUT_MOVE_SHAPEFILE: sanfranciscoDynameqNet.writeMovementsToShp(OUTPUT_MOVE_SHAPEFILE)
-    if OUTPUT_NODE_SHAPEFILE: sanfranciscoDynameqNet.writeNodesToShp(OUTPUT_NODE_SHAPEFILE)
-    </pre>
+        <span class="c"># link found -- write it out</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%8d</span><span class="s"> </span><span class="si">%8d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()))</span>
+
+        <span class="c"># workbook version</span>
+        <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span>
+            <span class="n">row_num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()),</span> <span class="n">STYLE_REG</span><span class="p">)</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>     <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># onstreet        </span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span> <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># ondir</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">location_id_to_location</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">from_street</span><span class="o">.</span><span class="n">street_name</span><span class="p">,</span> <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># fromstreet</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">location_id_to_location</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">to_street</span><span class="o">.</span><span class="n">street_name</span><span class="p">,</span>   <span class="n">STYLE_REG</span><span class="p">)</span> <span class="c"># tostreet</span>
+           
+        <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+            
+            <span class="n">agg_count_dict</span> <span class="o">=</span> <span class="n">link_counts</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">location__id</span><span class="o">=</span><span class="n">location_id</span><span class="p">)</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">Avg</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">),</span> <span class="n">Count</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="s">&#39;count__avg&#39;</span> <span class="ow">in</span> <span class="n">agg_count_dict</span> <span class="ow">and</span> <span class="n">agg_count_dict</span><span class="p">[</span><span class="s">&#39;count__avg&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">avg_count</span> <span class="o">=</span> <span class="n">agg_count_dict</span><span class="p">[</span><span class="s">&#39;count__avg&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">agg_count_dict</span><span class="p">[</span><span class="s">&#39;count__count&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">avg_count</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">avg_count</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+            
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; </span><span class="si">%6.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">avg_count</span><span class="p">)</span>
+            <span class="c"># workbook version</span>
+            <span class="k">if</span> <span class="n">all_count_workbook</span><span class="p">:</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="mi">5</span><span class="o">+</span><span class="n">interval</span><span class="p">,</span> <span class="n">avg_count</span><span class="p">,</span> <span class="n">STYLE_REG</span><span class="p">)</span>
+                            
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+            
+    <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Wrote link counts for </span><span class="si">%d</span><span class="s"> links to </span><span class="si">%s</span><span class="s">; failed to find </span><span class="si">%d</span><span class="s"> links.&quot;</span> <span class="o">%</span> 
+                       <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">location_ids</span><span class="p">),</span> <span class="n">filename</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">location_id_to_link</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">location_ids</span><span class="p">)))</span>
+
+    <span class="c"># if we&#39;re not doing the raw workbook then we&#39;re done</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">all_count_workbook</span><span class="p">:</span> <span class="k">return</span>
+    
+    <span class="c"># write raw data into workbook</span>
+    <span class="n">sheet</span> <span class="o">=</span> <span class="n">all_count_workbook</span><span class="o">.</span><span class="n">add_sheet</span><span class="p">(</span><span class="s">&quot;links_</span><span class="si">%s</span><span class="s">_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
+
+    <span class="c"># header row</span>
+    <span class="n">row_num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c"># dta location data</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;from-to&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;from-node&quot;</span><span class="p">,</span>     <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;to-node&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;linkid&quot;</span><span class="p">,</span>        <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="c"># count dracula location data</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="s">&quot;onstreet&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span> <span class="s">&quot;ondir&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="s">&quot;fromstreet&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span> <span class="s">&quot;tostreet&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="c"># count data, count = [ count, starttime, period, vtype, refpos, sourcefile, project ]</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span> <span class="s">&quot;count&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span> <span class="s">&quot;starttime&quot;</span><span class="p">,</span>     <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="s">&quot;year&quot;</span><span class="p">,</span>          <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for ease of trends analysis</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="s">&quot;allyears&quot;</span><span class="p">,</span>      <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for ease of trends analysis</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="s">&quot;time&quot;</span><span class="p">,</span>          <span class="n">STYLE_BOLD</span><span class="p">)</span> <span class="c"># for ease of trends analysis</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="s">&quot;period (min)&quot;</span><span class="p">,</span>  <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="s">&quot;vtype&quot;</span><span class="p">,</span>         <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="s">&quot;refpos&quot;</span><span class="p">,</span>        <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="s">&quot;sourcefile&quot;</span><span class="p">,</span>    <span class="n">STYLE_BOLD</span><span class="p">)</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="s">&quot;project&quot;</span><span class="p">,</span>       <span class="n">STYLE_BOLD</span><span class="p">)</span>
+
+    <span class="n">sheet</span><span class="o">.</span><span class="n">panes_frozen</span>      <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">horz_split_pos</span>    <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">15</span><span class="o">*</span><span class="mi">256</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="mi">23</span><span class="o">*</span><span class="mi">256</span>
+
+    <span class="k">for</span> <span class="n">location_id</span> <span class="ow">in</span> <span class="n">location_ids</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_intervals</span><span class="p">):</span>
+
+            <span class="n">link_counts_for_location</span> <span class="o">=</span> <span class="n">link_counts</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">location__id</span><span class="o">=</span><span class="n">location_id</span><span class="p">)</span>
+
+            <span class="c"># figure out multiyear</span>
+            <span class="n">count_years</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">link_count</span> <span class="ow">in</span> <span class="n">link_counts_for_location</span><span class="p">:</span> <span class="n">count_years</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">link_count</span><span class="o">.</span><span class="n">count_year</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">link_count</span> <span class="ow">in</span> <span class="n">link_counts_for_location</span><span class="p">:</span>
+                <span class="c"># data row</span>
+                <span class="n">row_num</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c"># dta location data</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">()),</span> <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getStartNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>                 <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getEndNode</span><span class="p">()</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>                   <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span>                                <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="c"># count dracula location data - onstreet, ondir, fromstreet, tostreet</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>                  <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span> <span class="n">location_id_to_link</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>              <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="n">location_id_to_location</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">from_street</span><span class="o">.</span><span class="n">street_name</span><span class="p">,</span> <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span> <span class="n">location_id_to_location</span><span class="p">[</span><span class="n">location_id</span><span class="p">]</span><span class="o">.</span><span class="n">to_street</span><span class="o">.</span><span class="n">street_name</span><span class="p">,</span>   <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="c"># count data, starttime, year, allyears, time, period (min), vtype, refpos, sourcefile, project</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span>  <span class="n">link_count</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>                           <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">link_count</span><span class="o">.</span><span class="n">count_date</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span>  <span class="n">link_count</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">STYLE_TIME</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span>  <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">link_count</span><span class="o">.</span><span class="n">count_date</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span> <span class="n">STYLE_DATE</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">count_year</span><span class="p">,</span>                 <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">count_years</span><span class="p">)),</span>                   <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>                      <span class="n">STYLE_TIME</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">period_minutes</span><span class="p">,</span>                  <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">vehicle_type</span><span class="p">,</span>                    <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">reference_position</span><span class="p">,</span>              <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">,</span>                      <span class="n">STYLE_REG</span><span class="p">)</span>
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span> <span class="n">link_count</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>                         <span class="n">STYLE_REG</span><span class="p">)</span>
+
+<span class="c">#: this_is_main</span></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;geodjango.settings&#39;</span>
+    <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">setup_environ</span>
+    <span class="kn">from</span> <span class="nn">geodjango</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Avg</span><span class="p">,</span> <span class="n">Count</span>    
+    <span class="kn">from</span> <span class="nn">countdracula.models</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">StreetName</span><span class="p">,</span> <span class="n">MainlineCountLocation</span><span class="p">,</span> <span class="n">MainlineCount</span><span class="p">,</span> <span class="n">TurnCountLocation</span><span class="p">,</span> <span class="n">TurnCount</span>
+
+    <span class="n">optlist</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;l:m:n:&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">USAGE</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">SF_DYNAMEQ_NET_DIR</span>          <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+    <span class="n">SF_DYNAMEQ_NET_PREFIX</span>       <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">OUTPUT_LINK_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">OUTPUT_MOVE_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">OUTPUT_NODE_SHAPEFILE</span>       <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="n">opt</span><span class="p">,</span><span class="n">arg</span><span class="p">)</span> <span class="ow">in</span> <span class="n">optlist</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-m&quot;</span><span class="p">:</span>
+            <span class="n">OUTPUT_MOVE_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">elif</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-l&quot;</span><span class="p">:</span>
+            <span class="n">OUTPUT_LINK_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">elif</span> <span class="n">opt</span><span class="o">==</span><span class="s">&quot;-n&quot;</span><span class="p">:</span>
+            <span class="n">OUTPUT_NODE_SHAPEFILE</span>  <span class="o">=</span> <span class="n">arg</span>
+                
+    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;attachCountsFromCountDracula.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;attachCountsFromCountDracula.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
+        
+    <span class="c"># Read the SF scenario and DTA network</span>
+    <span class="n">sanfranciscoScenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">()</span>
+    <span class="n">sanfranciscoScenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
+    
+    <span class="n">sanfranciscoDynameqNet</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">sanfranciscoScenario</span><span class="p">)</span>
+    <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">file_prefix</span><span class="o">=</span><span class="n">SF_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
+    
+    <span class="n">counts_wb</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Workbook</span><span class="p">()</span>
+    
+    <span class="c"># Instantiate the count dracula reader and do the exports</span>
+    <span class="c"># Time slices here are based on what we have available (according to CountDracula&#39;s querySanFranciscoCounts.py)</span>
+    
+    <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="s">&quot;all_midweek&quot;</span><span class="p">,</span> <span class="s">&quot;recent&quot;</span><span class="p">,</span> <span class="s">&quot;recent_midweek&quot;</span><span class="p">]:</span>
+        <span class="n">from_year</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">to_year</span>     <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">weekdays</span>    <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="c"># year range</span>
+        <span class="k">if</span> <span class="n">suffix</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;recent&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">from_year</span>   <span class="o">=</span> <span class="mi">2009</span>
+            <span class="n">to_year</span>     <span class="o">=</span> <span class="mi">2011</span>
+            
+        <span class="c"># weekdays</span>
+        <span class="k">if</span> <span class="n">suffix</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;midweek&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">weekdays</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span> <span class="c"># Tues, Wed, Thurs</span>
+            
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processing </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="n">exportTurnCountsToDynameqUserDataFile</span>   <span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span> 
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="n">from_year</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="n">to_year</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
+        <span class="n">exportTurnCountsToDynameqUserDataFile</span>   <span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span> <span class="mi">5</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="n">from_year</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="n">to_year</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
+        <span class="n">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="n">from_year</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="n">to_year</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
+        <span class="n">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="n">from_year</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="n">to_year</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
+        <span class="c"># static counts - PM period</span>
+        
+        <span class="k">if</span> <span class="n">weekdays</span><span class="p">:</span> <span class="k">continue</span>  <span class="c"># no notion of weekdays...</span>
+        
+        <span class="n">exportMainlineCountsToDynameUserDataFile</span><span class="p">(</span><span class="n">sanfranciscoDynameqNet</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span>
+                                                 <span class="n">period</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">3</span><span class="p">),</span> <span class="n">num_intervals</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                 <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="n">from_year</span><span class="p">,</span> <span class="n">to_year</span><span class="o">=</span><span class="n">to_year</span><span class="p">,</span> <span class="n">weekdays</span><span class="o">=</span><span class="n">weekdays</span><span class="p">,</span>
+                                                 <span class="n">all_count_workbook</span><span class="o">=</span><span class="n">counts_wb</span><span class="p">)</span>
+
+    <span class="n">counts_wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;counts_generated_</span><span class="si">%s</span><span class="s">.xls&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()))</span>
+    
+    <span class="k">if</span> <span class="n">OUTPUT_LINK_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeLinksToShp</span><span class="p">(</span><span class="n">OUTPUT_LINK_SHAPEFILE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">OUTPUT_MOVE_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeMovementsToShp</span><span class="p">(</span><span class="n">OUTPUT_MOVE_SHAPEFILE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">OUTPUT_NODE_SHAPEFILE</span><span class="p">:</span> <span class="n">sanfranciscoDynameqNet</span><span class="o">.</span><span class="n">writeNodesToShp</span><span class="p">(</span><span class="n">OUTPUT_NODE_SHAPEFILE</span><span class="p">)</span>
+    
+</pre></div>
 
           </div>
         </div>

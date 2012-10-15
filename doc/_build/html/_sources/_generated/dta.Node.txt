@@ -19,6 +19,7 @@ dta.Node
       ~Node.getIncomingLinkForId
       ~Node.getIncomingLinkForNodeId
       ~Node.getMovement
+      ~Node.getMovementForLinkIds
       ~Node.getName
       ~Node.getNumAdjacentLinks
       ~Node.getNumAdjacentNodes
@@ -66,5 +67,6 @@ dta.Node
       ~Node.GEOMETRY_TYPE_INTERSECTION
       ~Node.GEOMETRY_TYPE_JUNCTION
       ~Node.GEOMETRY_TYPE_VIRTUAL
+      ~Node.geometryType
    
    

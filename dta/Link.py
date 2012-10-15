@@ -48,9 +48,9 @@ class Link(object):
         if not isinstance(endNode, Node):
             raise DtaError("Initializing Link with non-Node endNode: %s" % str(endNode))
 
-        #: a Node instance
+        # a Node instance
         self._startNode = startNode
-        #: a Node instance
+        # a Node instance
         self._endNode   = endNode
                 
     def getStartNode(self):

@@ -19,6 +19,7 @@ dta.Network
       ~Network.addMovement
       ~Network.addNode
       ~Network.addPlanCollectionInfo
+      ~Network.addTwoWayStopControlToConnectorsAtRoadlinks
       ~Network.areIDsUnique
       ~Network.cleanStreetNames
       ~Network.deepcopy
@@ -50,6 +51,7 @@ dta.Network
       ~Network.handleOverlappingLinks
       ~Network.handleShortLinks
       ~Network.hasCentroidForId
+      ~Network.hasCustomPriorities
       ~Network.hasLinkForId
       ~Network.hasLinkForNodeIdPair
       ~Network.hasNodeForId
@@ -58,6 +60,7 @@ dta.Network
       ~Network.iterCentroids
       ~Network.iterConnectors
       ~Network.iterLinks
+      ~Network.iterMovements
       ~Network.iterNodes
       ~Network.iterPlanCollectionInfo
       ~Network.iterRoadLinks

@@ -48,328 +48,389 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for importUnsignalizedIntersections</h1><pre>
-__copyright__   = "Copyright 2011 SFCTA"
-__license__     = """
-    This file is part of DTA.
+  <h1>Source code for importUnsignalizedIntersections</h1><div class="highlight"><pre>
+<span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
+<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    This file is part of DTA.</span>
 
-    DTA is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
+<span class="s">    it under the terms of the GNU General Public License as published by</span>
+<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="s">    (at your option) any later version.</span>
 
-    DTA is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<span class="s">    DTA is distributed in the hope that it will be useful,</span>
+<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="s">    GNU General Public License for more details.</span>
 
-    You should have received a copy of the GNU General Public License
-    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
-"""
-
-
-import dta
-from itertools import izip
-import os
-import re
-import shapefile
-import sys 
+<span class="s">    You should have received a copy of the GNU General Public License</span>
+<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="s">&quot;&quot;&quot;</span>
 
 
-USAGE = r"""
+<span class="kn">import</span> <span class="nn">dta</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">izip</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shapefile</span>
+<span class="kn">import</span> <span class="nn">sys</span> 
 
- python importUnsignalizedIntersections.py dynameq_net_dir dynameq_net_prefix stop_signs.shp
- 
- e.g.
- 
- python importUnsignalizedIntersections.py . sf Q:\GIS\Road\StopSigns\allway_stops.shp  Q:\GIS\CityGIS\TrafficControl\StopSigns\stops_signs.shp 
- 
- This script reads all unsignalized intersections from shapefile and updates the priorities of the matching node accordingly.
-  
- The script writes a new dynameq network that includes the new priorities as sf_stops_*.dqt
- """
 
-<div class="viewcode-block" id="readStopSignShapefile"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.readStopSignShapefile">[docs]</a>def readStopSignShapefile(shapefilename):
-    """
-    Reads the stop sign shapefile and returns the following:
+<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
+
+<span class="s"> python importUnsignalizedIntersections.py dynameq_net_dir dynameq_net_prefix stop_signs.shp</span>
+<span class="s"> </span>
+<span class="s"> e.g.</span>
+<span class="s"> </span>
+<span class="s"> python importUnsignalizedIntersections.py . sf Q:\GIS\Road\StopSigns\allway_stops.shp  Q:\GIS\CityGIS\TrafficControl\StopSigns\stops_signs.shp </span>
+<span class="s"> </span>
+<span class="s"> This script reads all unsignalized intersections from shapefile and updates the priorities of the matching node accordingly.</span>
+<span class="s">  </span>
+<span class="s"> The script writes a new dynameq network that includes the new priorities as sf_stops_*.dqt</span>
+<span class="s"> &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="readStopSignShapefile"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.readStopSignShapefile">[docs]</a><span class="k">def</span> <span class="nf">readStopSignShapefile</span><span class="p">(</span><span class="n">shapefilename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads the stop sign shapefile and returns the following:</span>
+<span class="sd">    </span>
+<span class="sd">    { cnn -&gt; [ record1_dict, record2_dict, ... ] }</span>
+<span class="sd">    </span>
+<span class="sd">    Where *record_dict* includes all the fields from the shapefile, plus `COORDS` which maps to the coordinate tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sf</span>      <span class="o">=</span> <span class="n">shapefile</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">shapefilename</span><span class="p">)</span>
+    <span class="n">fields</span>  <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">sf</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+    <span class="n">count</span>   <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nocnn_id</span><span class="o">=</span> <span class="mi">1</span>
     
-    { cnn -&gt; [ record1_dict, record2_dict, ... ] }
-    
-    Where *record_dict* includes all the fields from the shapefile, plus `COORDS` which maps to the coordinate tuple.
-    """
-    sf      = shapefile.Reader(shapefilename)
-    fields  = [field[0] for field in sf.fields[1:]]
-    count   = 0
-    nocnn_id= 1
-    
-    # what we're returning
-    cnn_to_recordlist = {}
-    for sr in sf.shapeRecords():
+    <span class="c"># what we&#39;re returning</span>
+    <span class="n">cnn_to_recordlist</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">sr</span> <span class="ow">in</span> <span class="n">sf</span><span class="o">.</span><span class="n">shapeRecords</span><span class="p">():</span>
         
-        # name the records
-        sr_record_dict = dict(izip(fields, sr.record))
+        <span class="c"># name the records</span>
+        <span class="n">sr_record_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">izip</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">sr</span><span class="o">.</span><span class="n">record</span><span class="p">))</span>
         
-        # we expect these shapes to have one point
-        if len(sr.shape.points) != 1: continue
+        <span class="c"># we expect these shapes to have one point</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sr</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">continue</span>
 
-        point = sr.shape.points[0]
-        cnn   = sr_record_dict['CNN']
-        if cnn == 0:
-            cnn = "nocnn_%d" % nocnn_id
-            nocnn_id += 1
+        <span class="n">point</span> <span class="o">=</span> <span class="n">sr</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cnn</span>   <span class="o">=</span> <span class="n">sr_record_dict</span><span class="p">[</span><span class="s">&#39;CNN&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cnn</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cnn</span> <span class="o">=</span> <span class="s">&quot;nocnn_</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">nocnn_id</span>
+            <span class="n">nocnn_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c"># hack - consolidated cnn</span>
+        <span class="k">elif</span> <span class="n">cnn</span> <span class="o">==</span> <span class="mi">26099000</span><span class="p">:</span>
+            <span class="n">cnn</span> <span class="o">=</span> <span class="mi">26101000</span>
+        <span class="k">elif</span> <span class="n">cnn</span> <span class="o">==</span> <span class="mi">22457000</span><span class="p">:</span>
+            <span class="n">cnn</span> <span class="o">=</span> <span class="mi">22456000</span>
         
-        # add the point
-        sr_record_dict['COORDS'] = point
-        if cnn not in cnn_to_recordlist:
-            cnn_to_recordlist[cnn] = []
-        cnn_to_recordlist[cnn].append(sr_record_dict)
-        count += 1
+        <span class="c"># add the point</span>
+        <span class="n">sr_record_dict</span><span class="p">[</span><span class="s">&#39;COORDS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">point</span>
+        <span class="k">if</span> <span class="n">cnn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cnn_to_recordlist</span><span class="p">:</span>
+            <span class="n">cnn_to_recordlist</span><span class="p">[</span><span class="n">cnn</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cnn_to_recordlist</span><span class="p">[</span><span class="n">cnn</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sr_record_dict</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    dta.DtaLogger.info("Read %d unique nodes and %d stop signs from %s" % (len(cnn_to_recordlist), count, shapefilename))
-    return cnn_to_recordlist
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Read </span><span class="si">%d</span><span class="s"> unique nodes and </span><span class="si">%d</span><span class="s"> stop signs from </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cnn_to_recordlist</span><span class="p">),</span> <span class="n">count</span><span class="p">,</span> <span class="n">shapefilename</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">cnn_to_recordlist</span>
     </div>
-<div class="viewcode-block" id="cleanStreetName"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.cleanStreetName">[docs]</a>def cleanStreetName(streetName):
-    """
-    Given a streetname, this function attempts to make it uniform with the San Francisco DTA Network streetnames.
-    """
+<div class="viewcode-block" id="cleanStreetName"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.cleanStreetName">[docs]</a><span class="k">def</span> <span class="nf">cleanStreetName</span><span class="p">(</span><span class="n">streetName</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a streetname, this function attempts to make it uniform with the San Francisco DTA Network streetnames.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    # these will be treated as regexes so you can specify ^ for the beginning of the string
-    # $ for the end, wild chars, etc
-    corrections = {"TWELFTH":"12TH", 
-                   "ELEVENTH":"11TH",
-                   "TENTH":"10TH",
-                   "NINTH":"9TH",
-                   "EIGHTH":"8TH",
-                   "SEVENTH":"7TH",
-                   "SIXTH":"6TH",
-                   "FIFTH":"5TH",
-                   "FOURTH":"4TH",
-                   "THIRD":"3RD",
-                   "SECOND":"2ND",
-                   "FIRST":"1ST",
-                   "3RDREET":"3RD",
-                   "3RD #3":"3RD",
-                   "BAYSHORE #3":"BAYSHORE",
-                   "09TH":"9TH",
-                   "08TH":"8TH",
-                   "07TH":"7TH",
-                   "06TH":"6TH",
-                   "05TH":"5TH",
-                   "04TH":"4TH",
-                   "03RD":"3RD",
-                   "02ND":"2ND",
-                   "01ST":"1ST",
-                   "ARMY":"CESAR CHAVEZ",
-                   "DEL SUR":"DELSUR",
-                   "EMBARCADERO/KING":"THE EMBARCADERO",
-                   "GREAT HIGHWAY":"GREAT HWY",
-                   "O'FARRELL":"O FARRELL",
-                   "MARTIN L(UTHER)? KING":"MLK",
-                   "MCALLISTER":"MC ALLISTER",
-                   "MCKINNON":"MC KINNON",
-                   "MIDDLEPOINT":"MIDDLE POINT",
-                   "MT VERNON":"MOUNT VERNON",
-                   "^ST ":"SAINT ",            
-                   "VAN NESSNUE":"VAN NESS",                   
-                   "WEST GATE":"WESTGATE",
-                   }
+    <span class="c"># these will be treated as regexes so you can specify ^ for the beginning of the string</span>
+    <span class="c"># $ for the end, wild chars, etc</span>
+    <span class="n">corrections</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;TWELFTH&quot;</span><span class="p">:</span><span class="s">&quot;12TH&quot;</span><span class="p">,</span> 
+                   <span class="s">&quot;ELEVENTH&quot;</span><span class="p">:</span><span class="s">&quot;11TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;TENTH&quot;</span><span class="p">:</span><span class="s">&quot;10TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;NINTH&quot;</span><span class="p">:</span><span class="s">&quot;9TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;EIGHTH&quot;</span><span class="p">:</span><span class="s">&quot;8TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;SEVENTH&quot;</span><span class="p">:</span><span class="s">&quot;7TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;SIXTH&quot;</span><span class="p">:</span><span class="s">&quot;6TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;FIFTH&quot;</span><span class="p">:</span><span class="s">&quot;5TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;FOURTH&quot;</span><span class="p">:</span><span class="s">&quot;4TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;THIRD&quot;</span><span class="p">:</span><span class="s">&quot;3RD&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;SECOND&quot;</span><span class="p">:</span><span class="s">&quot;2ND&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;FIRST&quot;</span><span class="p">:</span><span class="s">&quot;1ST&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;3RDREET&quot;</span><span class="p">:</span><span class="s">&quot;3RD&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;3RD #3&quot;</span><span class="p">:</span><span class="s">&quot;3RD&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;BAYSHORE #3&quot;</span><span class="p">:</span><span class="s">&quot;BAYSHORE&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;09TH&quot;</span><span class="p">:</span><span class="s">&quot;9TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;08TH&quot;</span><span class="p">:</span><span class="s">&quot;8TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;07TH&quot;</span><span class="p">:</span><span class="s">&quot;7TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;06TH&quot;</span><span class="p">:</span><span class="s">&quot;6TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;05TH&quot;</span><span class="p">:</span><span class="s">&quot;5TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;04TH&quot;</span><span class="p">:</span><span class="s">&quot;4TH&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;03RD&quot;</span><span class="p">:</span><span class="s">&quot;3RD&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;02ND&quot;</span><span class="p">:</span><span class="s">&quot;2ND&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;01ST&quot;</span><span class="p">:</span><span class="s">&quot;1ST&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;ARMY&quot;</span><span class="p">:</span><span class="s">&quot;CESAR CHAVEZ&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;DEL SUR&quot;</span><span class="p">:</span><span class="s">&quot;DELSUR&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;EMBARCADERO/KING&quot;</span><span class="p">:</span><span class="s">&quot;THE EMBARCADERO&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;GREAT HIGHWAY&quot;</span><span class="p">:</span><span class="s">&quot;GREAT HWY&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;O&#39;FARRELL&quot;</span><span class="p">:</span><span class="s">&quot;O FARRELL&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;MARTIN L(UTHER)? KING&quot;</span><span class="p">:</span><span class="s">&quot;MLK&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;MCALLISTER&quot;</span><span class="p">:</span><span class="s">&quot;MC ALLISTER&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;MCKINNON&quot;</span><span class="p">:</span><span class="s">&quot;MC KINNON&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;MIDDLEPOINT&quot;</span><span class="p">:</span><span class="s">&quot;MIDDLE POINT&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;MT VERNON&quot;</span><span class="p">:</span><span class="s">&quot;MOUNT VERNON&quot;</span><span class="p">,</span>
+                   <span class="s">&quot;^ST &quot;</span><span class="p">:</span><span class="s">&quot;SAINT &quot;</span><span class="p">,</span>            
+                   <span class="s">&quot;VAN NESSNUE&quot;</span><span class="p">:</span><span class="s">&quot;VAN NESS&quot;</span><span class="p">,</span>                   
+                   <span class="s">&quot;WEST GATE&quot;</span><span class="p">:</span><span class="s">&quot;WESTGATE&quot;</span><span class="p">,</span>
+                   <span class="p">}</span>
 
-    cleaned_name = streetName.strip()
-    for wrongName, rightName in corrections.items():
-        cleaned_name = re.sub(wrongName, rightName, cleaned_name)
-    return cleaned_name
+    <span class="n">cleaned_name</span> <span class="o">=</span> <span class="n">streetName</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">wrongName</span><span class="p">,</span> <span class="n">rightName</span> <span class="ow">in</span> <span class="n">corrections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">cleaned_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">wrongName</span><span class="p">,</span> <span class="n">rightName</span><span class="p">,</span> <span class="n">cleaned_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cleaned_name</span>
 </div>
-<div class="viewcode-block" id="checkStreetnameConsistency"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.checkStreetnameConsistency">[docs]</a>def checkStreetnameConsistency(dta_node_id, dta_streets, stopsign_streets, stopsign_x_streets):
-    """
-    Verifies that the stopsign streets and the stopsign_x_streets are subsets of dta_streets.
-    Warns about violations.
-    
-    *dta_node_id* is an integer, just used for logging.  All three  remaining inputs are lists of strings.
-    """
-    # these are what we're checking
-    # check once, and "stopsign street" overrides "stopsign X street"
-    checkname_to_checktype = {}
-    for stopsign_x_street in stopsign_x_streets:
-        checkname_to_checktype[cleanStreetName(stopsign_x_street)] = "stopsign X street"
+<div class="viewcode-block" id="checkStreetnameConsistency"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.checkStreetnameConsistency">[docs]</a><span class="k">def</span> <span class="nf">checkStreetnameConsistency</span><span class="p">(</span><span class="n">dta_node_id</span><span class="p">,</span> <span class="n">dta_streets</span><span class="p">,</span> <span class="n">stopsign_streets</span><span class="p">,</span> <span class="n">stopsign_x_streets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies that the stopsign streets and the stopsign_x_streets are subsets of dta_streets.</span>
+<span class="sd">    Warns about violations.</span>
+<span class="sd">    </span>
+<span class="sd">    *dta_node_id* is an integer, just used for logging.  All three  remaining inputs are lists of strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># these are what we&#39;re checking</span>
+    <span class="c"># check once, and &quot;stopsign street&quot; overrides &quot;stopsign X street&quot;</span>
+    <span class="n">checkname_to_checktype</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">stopsign_x_street</span> <span class="ow">in</span> <span class="n">stopsign_x_streets</span><span class="p">:</span>
+        <span class="n">checkname_to_checktype</span><span class="p">[</span><span class="n">cleanStreetName</span><span class="p">(</span><span class="n">stopsign_x_street</span><span class="p">)]</span> <span class="o">=</span> <span class="s">&quot;stopsign X street&quot;</span>
 
-    for stopsign_street in stopsign_streets:
-        checkname_to_checktype[cleanStreetName(stopsign_street)] = "stopsign street"
+    <span class="k">for</span> <span class="n">stopsign_street</span> <span class="ow">in</span> <span class="n">stopsign_streets</span><span class="p">:</span>
+        <span class="n">checkname_to_checktype</span><span class="p">[</span><span class="n">cleanStreetName</span><span class="p">(</span><span class="n">stopsign_street</span><span class="p">)]</span> <span class="o">=</span> <span class="s">&quot;stopsign street&quot;</span>
     
-    # actually check them now
-    for checkname,checktype in checkname_to_checktype.iteritems():
+    <span class="c"># actually check them now</span>
+    <span class="k">for</span> <span class="n">checkname</span><span class="p">,</span><span class="n">checktype</span> <span class="ow">in</span> <span class="n">checkname_to_checktype</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
 
-        found = False
-        for dta_street in dta_streets:
-            # if any of the dta_streets start with it, coo
-            if dta_street.startswith(checkname):
-                found = True
-                break
+        <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">dta_street</span> <span class="ow">in</span> <span class="n">dta_streets</span><span class="p">:</span>
+            <span class="c"># if any of the dta_streets start with it, coo</span>
+            <span class="k">if</span> <span class="n">dta_street</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">checkname</span><span class="p">):</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">break</span>
             
-        if not found:    
-            dta.DtaLogger.warn("Streetname consistency check: node %d doesn't have %s [%s]  (Searched %s)" % 
-                               (dta_node_id, checktype, checkname, str(dta_streets)))
-</div>
-<div class="viewcode-block" id="updateNodePriority"><a class="viewcode-back" href="../script_importUnsignalizedIntersections.html#importUnsignalizedIntersections.updateNodePriority">[docs]</a>def updateNodePriority(net,matchedNodes):
-    conflictNodes = []
-    # If node was matched 4 or more times, it is set to all-way stop.  If node was matched fewer times, it is set to two-way stop.
-    for node in net.iterRoadNodes():
-        if node in matchedNodes:
-            if matchedNodes.count(node)&gt;=node.getNumIncomingLinks():
-                node._priority = 1
-            elif matchedNodes.count(node)&lt;node.getNumIncomingLinks() and matchedNodes.count(node)&gt;=1:
-                if float(matchedNodes.count(node))/float(node.getNumIncomingLinks())&gt;0.5:
-                    node._priority=1
-                else:
-                    node._priority = 2
-                    maxFac = 100
-                    maxFacName = ""
-                    for links in node.iterIncomingLinks():
-                        streetLabel = str(node._label)
-                        splitval = streetLabel.find("&amp;")
-                        streetName = streetLabel[:splitval]
-                        streetName = cleanStreetName(streetName)
-                        #dta.DtaLogger.info("TW stop at node %s has link %s with facility type %s and %s has priority." % (node.getId(),links.getLabel(),links.getFacilityType(),streetName))
-                        if links.getFacilityType()==maxFac:
-                            if links.getLabel()==maxFacName:
-                                continue
-                            else:
-                                dta.DtaLogger.error("Two-way stop %s at %s has conflicting facility types.  Set to four-way." % (node.getId(),node.getStreetNames()))
-                                node._priority = 1
-                                if node not in conflictNodes:
-                                    conflictNodes.append(node)
-                                #for link2 in node.iterIncomingLinks():
-                                    #dta.DtaLogger.error("TW stop tagged %d of %d times at node %s at %d, %d has link %s with facility type %s and %s has priority." % (matchedNodes.count(node),node.getNumIncomingLinks(),node.getId(),node.getX(),node.getY(),link2.getLabel(),link2.getFacilityType(),streetName))
-                        elif links.getFacilityType()&lt;maxFac:
-                            maxFac = links.getFacilityType()
-                            maxFacName = links.getLabel()
-    dta.DtaLogger.info("%d stops are two-way with facility type conflicts" % len(conflictNodes))
-    return True
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>    
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Streetname consistency check: node </span><span class="si">%d</span><span class="s"> doesn&#39;t have </span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]  (Searched </span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> 
+                               <span class="p">(</span><span class="n">dta_node_id</span><span class="p">,</span> <span class="n">checktype</span><span class="p">,</span> <span class="n">checkname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dta_streets</span><span class="p">)))</span>
 
-#: this_is_main                </div>
-if __name__ == "__main__":
 
-    if len(sys.argv) != 4:
-        print USAGE
-        sys.exit(2)
+<span class="c">#: this_is_main                </span></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
 
-    INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
-    INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
-    STOP_SHAPEFILE                = sys.argv[3]
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">USAGE</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">INPUT_DYNAMEQ_NET_DIR</span>         <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span>      <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">STOP_SHAPEFILE</span>                <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
     
-    # The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths
-    dta.VehicleType.LENGTH_UNITS= "feet"
-    dta.Node.COORDINATE_UNITS   = "feet"
-    dta.RoadLink.LENGTH_UNITS   = "miles"
+    <span class="c"># The SanFrancisco network will use feet for vehicle lengths and coordinates, and miles for link lengths</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
 
-    dta.setupLogging("importUnsignalizedIntersections.INFO.log", "importUnsignalizedIntersections.DEBUG.log", logToConsole=True)
+    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;importUnsignalizedIntersections.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;importUnsignalizedIntersections.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-    scenario = dta.DynameqScenario()
-    scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
-    net = dta.DynameqNetwork(scenario)
-    net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+    <span class="n">scenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">()</span>
+    <span class="n">scenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span> 
+    <span class="n">net</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
 
-    cnn_to_recordlist = readStopSignShapefile(STOP_SHAPEFILE)
+    <span class="n">cnn_to_recordlist</span> <span class="o">=</span> <span class="n">readStopSignShapefile</span><span class="p">(</span><span class="n">STOP_SHAPEFILE</span><span class="p">)</span>
     
-    count_notmapped     = 0
-    count_hassignal     = 0
-    count_moreincoming  = 0
-    count_allway        = 0
-    count_twoway        = 0
-    count_allway_fromtwo= 0
-    # the cnn is unique per intersection so loop through each intersection with stop signs
-    for cnn, stopsignlist in cnn_to_recordlist.iteritems():
+    <span class="n">count_notmapped</span>     <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_hassignal</span>     <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_moreincoming</span>  <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_allway</span>        <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_twoway</span>        <span class="o">=</span> <span class="mi">0</span> <span class="c"># no custom</span>
+    <span class="n">count_twoway_custom</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_allway_fromtwo</span><span class="o">=</span> <span class="mi">0</span> <span class="c"># use this?</span>
+    
+    <span class="c"># the cnn is unique per intersection so loop through each intersection with stop signs</span>
+    <span class="k">for</span> <span class="n">cnn</span><span class="p">,</span> <span class="n">stopsignlist</span> <span class="ow">in</span> <span class="n">cnn_to_recordlist</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
         
-        # these are the streets for the stop signs
-        stopsign_streets   = []
-        stopsign_x_streets = []
-        for stopsign in stopsignlist:
-            if stopsign['STREET'] not in stopsign_streets:
-                stopsign_streets.append(stopsign['STREET'])
-            if stopsign['X_STREET'] not in stopsign_x_streets:
-                stopsign_x_streets.append(stopsign['X_STREET'])
+        <span class="c"># these are the streets for the stop signs</span>
+        <span class="n">stopsign_streets</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">stopsign_x_streets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c"># and the dirs</span>
+        <span class="n">stopsign_dirs</span>      <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">stopsign</span> <span class="ow">in</span> <span class="n">stopsignlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;STREET&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopsign_streets</span><span class="p">:</span>
+                <span class="n">stopsign_streets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;STREET&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;X_STREET&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopsign_x_streets</span><span class="p">:</span>
+                <span class="n">stopsign_x_streets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;X_STREET&#39;</span><span class="p">])</span>
+            <span class="n">stopsign_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;ST_FACING&#39;</span><span class="p">])</span>
 
-        # find the nearest node to this                
-        (min_dist, roadnode) = net.findNodeNearestCoords(stopsignlist[0]['COORDS'][0], stopsignlist[0]['COORDS'][1], quick_dist=100.0)
+        <span class="c"># find the nearest node to this                </span>
+        <span class="p">(</span><span class="n">min_dist</span><span class="p">,</span> <span class="n">roadnode</span><span class="p">)</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">findNodeNearestCoords</span><span class="p">(</span><span class="n">stopsignlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;COORDS&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stopsignlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;COORDS&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">quick_dist</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
         
-        if roadnode == None:
-            dta.DtaLogger.warn("Could not find road node near %s and %s in the stop sign file" % (stopsignlist[0]['STREET'], stopsignlist[0]['X_STREET']))
-            count_notmapped += 1
-            continue
+        <span class="k">if</span> <span class="n">roadnode</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Could not find road node near </span><span class="si">%s</span><span class="s"> and </span><span class="si">%s</span><span class="s"> in the stop sign file&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">stopsignlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;STREET&#39;</span><span class="p">],</span> <span class="n">stopsignlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;X_STREET&#39;</span><span class="p">]))</span>
+            <span class="n">count_notmapped</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
 
-        dta.DtaLogger.debug("min_dist = %.3f roadnodeID=%d roadnode_streets=%s stopsign_streets=%s" % 
-                            (min_dist, roadnode.getId(), str(roadnode.getStreetNames(incoming=True, outgoing=False)),
-                             str(stopsign_streets)))
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;min_dist = </span><span class="si">%.3f</span><span class="s"> roadnodeID=</span><span class="si">%d</span><span class="s"> roadnode_streets=</span><span class="si">%s</span><span class="s"> stopsign_streets=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> 
+                            <span class="p">(</span><span class="n">min_dist</span><span class="p">,</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">getStreetNames</span><span class="p">(</span><span class="n">incoming</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">outgoing</span><span class="o">=</span><span class="bp">False</span><span class="p">)),</span>
+                             <span class="nb">str</span><span class="p">(</span><span class="n">stopsign_streets</span><span class="p">)))</span>
 
-        # streetname checking; warn if stopsign_streets are not found in the roadnode_streets
-        checkStreetnameConsistency(roadnode.getId(), roadnode.getStreetNames(incoming=True, outgoing=False),
-                                   stopsign_streets, stopsign_x_streets)
+        <span class="c"># streetname checking; warn if stopsign_streets are not found in the roadnode_streets</span>
+        <span class="n">checkStreetnameConsistency</span><span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getStreetNames</span><span class="p">(</span><span class="n">incoming</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">outgoing</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                                   <span class="n">stopsign_streets</span><span class="p">,</span> <span class="n">stopsign_x_streets</span><span class="p">)</span>
                         
-        # if the roadnode is already a signalized intersection, move on
-        if roadnode.hasTimePlan():
-            dta.DtaLogger.warn("Roadnode %d already has signal. Ignoring stop sign info." % roadnode.getId())
-            count_hassignal += 1
-            continue
+        <span class="c"># if the roadnode is already a signalized intersection, move on</span>
+        <span class="k">if</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">hasTimePlan</span><span class="p">():</span>
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Roadnode </span><span class="si">%d</span><span class="s"> already has signal. Ignoring stop sign info.&quot;</span> <span class="o">%</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
+            <span class="n">count_hassignal</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
         
-        # if the number of incoming links == the number of stop signs, mark it an all way stop
-        if len(stopsignlist) &gt; roadnode.getNumIncomingLinks():
-            dta.DtaLogger.warn("Roadnode %d missing incoming links?  More stop signs than incoming links" % roadnode.getId())
-            count_moreincoming += 1 # not exclusive count!
+        <span class="c"># warn when more stops than incoming links</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stopsignlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getNumIncomingLinks</span><span class="p">():</span>
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Roadnode </span><span class="si">%d</span><span class="s"> missing incoming links?  More stop signs than incoming links&quot;</span> <span class="o">%</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
+            <span class="n">count_moreincoming</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c"># not exclusive count!</span>
             
-        if  len(stopsignlist) &gt;= roadnode.getNumIncomingLinks():
-            roadnode.setAllWayStopControl()
-            count_allway += 1
-            continue
+        <span class="c"># if the number of incoming links == the number of stop signs</span>
+        <span class="c"># OR the number of stop signs is &gt;=4</span>
+        <span class="c"># mark it an all way stop</span>
+        <span class="k">if</span>  <span class="nb">len</span><span class="p">(</span><span class="n">stopsignlist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getNumIncomingLinks</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">stopsignlist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">setAllWayStopControl</span><span class="p">()</span>
+            <span class="n">count_allway</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
         
-        # two way stop
-        # todo: look at the matching facility type issue and set up custom priorities
+        <span class="c"># two way stop -- assign custom priorities; incoming links with stops are lower priority than incoming links without stops</span>
+        <span class="n">inlink_stops</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">inlink_nostops</span> <span class="o">=</span> <span class="p">[]</span>     
+        <span class="k">for</span> <span class="n">inlink</span> <span class="ow">in</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">iterIncomingLinks</span><span class="p">():</span>
+            <span class="c"># by direction</span>
+            <span class="k">if</span> <span class="n">inlink</span><span class="o">.</span><span class="n">getDirection</span><span class="p">()</span> <span class="ow">in</span> <span class="n">stopsign_dirs</span><span class="p">:</span>
+                <span class="n">inlink_stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inlink</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="c"># direction is there, name matches</span>
+            <span class="n">is_stop</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">stopsign</span> <span class="ow">in</span> <span class="n">stopsignlist</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">inlink</span><span class="o">.</span><span class="n">getLabel</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;STREET&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="n">inlink</span><span class="o">.</span><span class="n">hasDirection</span><span class="p">(</span><span class="n">stopsign</span><span class="p">[</span><span class="s">&#39;ST_FACING&#39;</span><span class="p">]):</span>
+                    <span class="n">is_stop</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">is_stop</span><span class="p">:</span>
+                <span class="n">inlink_stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inlink</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inlink_nostops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inlink</span><span class="p">)</span>                    
+        
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;inlink_stops: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">inlink_stops</span><span class="p">))</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;inlink_nostops: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">inlink_nostops</span><span class="p">))</span>
+        
+        <span class="c"># did we find all the stops?</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inlink_stops</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stopsignlist</span><span class="p">):</span>
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;RoadNode </span><span class="si">%d</span><span class="s">: stop links != stopsigns; links=[</span><span class="si">%s</span><span class="s">], stopsigns=[</span><span class="si">%s</span><span class="s">]&quot;</span> <span class="o">%</span>
+                                <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">inlink_stops</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">stopsignlist</span><span class="p">)))</span>
 
-        # collect the through movements
-        through_movements = []        
-        for inlink in roadnode.iterIncomingLinks():
-            try:
-                through_movements.append(inlink.getThruTurn())
-            except:
-                pass
+        <span class="c"># check if stop facilities &gt; nostop facility</span>
+        <span class="n">min_stop_fac_num</span> <span class="o">=</span> <span class="mi">9999</span>
+        <span class="k">for</span> <span class="n">inlink</span> <span class="ow">in</span> <span class="n">inlink_stops</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">min_stop_fac_num</span> <span class="o">&gt;</span> <span class="n">inlink</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">():</span> <span class="n">min_stop_fac_num</span> <span class="o">=</span> <span class="n">inlink</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">()</span>
+        <span class="n">max_nostop_fac_num</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+        <span class="k">for</span> <span class="n">inlink</span> <span class="ow">in</span> <span class="n">inlink_nostops</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">max_nostop_fac_num</span> <span class="o">&lt;</span> <span class="n">inlink</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">():</span> <span class="n">max_nostop_fac_num</span> <span class="o">=</span> <span class="n">inlink</span><span class="o">.</span><span class="n">getFacilityType</span><span class="p">()</span>
+        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;RoadNode </span><span class="si">%d</span><span class="s">: stop sign min facility num </span><span class="si">%d</span><span class="s"> vs no-stop max facility num </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> 
+                            <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">min_stop_fac_num</span><span class="p">,</span> <span class="n">max_nostop_fac_num</span><span class="p">))</span>
+            
+        <span class="c"># if so, we&#39;re done -- no need to customize</span>
+        <span class="k">if</span> <span class="n">min_stop_fac_num</span> <span class="o">&gt;</span> <span class="n">max_nostop_fac_num</span><span class="p">:</span>
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">setTwoWayStopControl</span><span class="p">()</span>
+            <span class="n">count_twoway</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
         
-        # for now: set to all way stops if multiple incoming through movements conflict and 
-        # their incoming links have the same facility type
-        allway   = False        
-        for mov1 in through_movements:
-            for mov2 in through_movements:
-                if mov1 == mov2: continue
-                if not mov1.isInConflict(mov2): continue
-                # now they're in conflict
+        <span class="c"># if not, we need to customize</span>
+        <span class="n">roadnode</span><span class="o">.</span><span class="n">setPriorityTemplateNone</span><span class="p">()</span>
+        <span class="n">count_twoway_custom</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="k">for</span> <span class="n">inlink_stop</span> <span class="ow">in</span> <span class="n">inlink_stops</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mov_stop</span> <span class="ow">in</span> <span class="n">inlink_stop</span><span class="o">.</span><span class="n">iterOutgoingMovements</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">mov_stop</span><span class="o">.</span><span class="n">isProhibitedToAllVehicleClassGroups</span><span class="p">():</span> <span class="k">continue</span>
                 
-                if mov1.getIncomingLink().getFacilityType() == mov2.getIncomingLink().getFacilityType():
-                    # and equivalent priority
-                    roadnode.setAllWayStopControl()
-                    allway = True
-                    count_allway_fromtwo += 1
-                    break
-            # alway - done already
-            if allway: break 
-            
-        if not allway: 
-            roadnode.setTwoWayStopControl()
-            count_twoway += 1
+                <span class="c"># set the no-stop movements as higher priority</span>
+                <span class="k">for</span> <span class="n">inlink_nostop</span> <span class="ow">in</span> <span class="n">inlink_nostops</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">mov_nostop</span> <span class="ow">in</span> <span class="n">inlink_nostop</span><span class="o">.</span><span class="n">iterOutgoingMovements</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">mov_nostop</span><span class="o">.</span><span class="n">isProhibitedToAllVehicleClassGroups</span><span class="p">():</span> <span class="k">continue</span>
+                        
+                        <span class="c"># don&#39;t mention it if they&#39;re not in conflict anyway</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">mov_stop</span><span class="o">.</span><span class="n">isInConflict</span><span class="p">(</span><span class="n">mov_nostop</span><span class="p">):</span> <span class="k">continue</span>
+
+                        <span class="c"># these are based on the (default) project settings</span>
+                        <span class="k">if</span> <span class="n">mov_stop</span><span class="o">.</span><span class="n">isThruTurn</span><span class="p">():</span>
+                            <span class="n">critical_gap</span> <span class="o">=</span> <span class="mf">6.5</span>
+                        <span class="k">elif</span> <span class="n">mov_stop</span><span class="o">.</span><span class="n">isLeftTurn</span><span class="p">():</span>
+                            <span class="n">critical_gap</span> <span class="o">=</span> <span class="mf">7.10</span>
+                        <span class="k">elif</span> <span class="n">mov_stop</span><span class="o">.</span><span class="n">isRightTurn</span><span class="p">():</span>
+                            <span class="n">critical_gap</span> <span class="o">=</span> <span class="mf">6.2</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;I don&#39;t recognize the turn type of the stop-sign controled movement </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">move_stop</span><span class="p">)</span>
+                        <span class="n">mov_stop</span><span class="o">.</span><span class="n">addHigherPriorityMovement</span><span class="p">(</span><span class="n">mov_nostop</span><span class="p">,</span> <span class="n">critical_gap</span><span class="o">=</span><span class="n">critical_gap</span><span class="p">,</span> <span class="n">critical_wait</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+                                   
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Read </span><span class="si">%d</span><span class="s"> stop-sign intersections&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cnn_to_recordlist</span><span class="p">))</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Failed to map&quot;</span> <span class="o">%</span> <span class="n">count_notmapped</span><span class="p">)</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Ignored because they&#39;re signalized&quot;</span> <span class="o">%</span> <span class="n">count_hassignal</span><span class="p">)</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as allway-stop (including </span><span class="si">%d</span><span class="s"> questionable, with more stop signs than incoming links)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">count_allway</span><span class="p">,</span> <span class="n">count_moreincoming</span><span class="p">))</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as allway-stop in lieu of custom priorities&quot;</span> <span class="o">%</span> <span class="n">count_allway_fromtwo</span><span class="p">)</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as twoway-stop without custom priorities&quot;</span> <span class="o">%</span> <span class="n">count_twoway</span><span class="p">)</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%-4d</span><span class="s">: Setting as twoway-stop with custom priorities&quot;</span> <span class="o">%</span> <span class="n">count_twoway_custom</span><span class="p">)</span>
+    
+    <span class="c"># Warn for any unsignalized intersection</span>
+    <span class="n">nothing_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">inconsistent_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">roadnode</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">iterRoadNodes</span><span class="p">():</span>
+        <span class="c"># 1 or fewer incoming links: don&#39;t care</span>
+        <span class="k">if</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">getNumIncomingLinks</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">continue</span>
         
-    dta.DtaLogger.info("Read %d stop-sign intersections" % len(cnn_to_recordlist))
-    dta.DtaLogger.info("  %-4d: Failed to map" % count_notmapped)
-    dta.DtaLogger.info("  %-4d: Ignored because they're signalized" % count_hassignal)
-    dta.DtaLogger.info("  %-4d: Setting as allway-stop (including %d questionable, with more stop signs than incoming links)" % (count_allway, count_moreincoming))
-    dta.DtaLogger.info("  %-4d: Setting as allway-stop in lieu of custom priorities" % count_allway_fromtwo)
-    dta.DtaLogger.info("  %-4d: Setting as twoway-stop" % count_twoway)
-    
-    net.write(".", "sf_stops")
+        <span class="c"># through movements don&#39;t conflict - ok fine</span>
+        <span class="n">thru_movements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">thru_conflict</span>  <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">mov</span> <span class="ow">in</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">iterMovements</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">mov</span><span class="o">.</span><span class="n">getTurnType</span><span class="p">()</span> <span class="o">==</span> <span class="n">dta</span><span class="o">.</span><span class="n">Movement</span><span class="o">.</span><span class="n">DIR_TH</span><span class="p">:</span> <span class="n">thru_movements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mov</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mov1</span> <span class="ow">in</span> <span class="n">thru_movements</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mov2</span> <span class="ow">in</span> <span class="n">thru_movements</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mov1</span> <span class="o">==</span> <span class="n">mov2</span><span class="p">:</span> <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">mov1</span><span class="o">.</span><span class="n">isInConflict</span><span class="p">(</span><span class="n">mov2</span><span class="p">):</span> 
+                    <span class="n">thru_conflict</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">thru_conflict</span><span class="p">:</span> <span class="k">continue</span>
+        
+        <span class="c"># signalized, with a time plan: ok</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="n">dta</span><span class="o">.</span><span class="n">RoadNode</span><span class="o">.</span><span class="n">CONTROL_TYPE_SIGNALIZED</span> <span class="ow">and</span> 
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">priority</span> <span class="o">==</span> <span class="n">dta</span><span class="o">.</span><span class="n">RoadNode</span><span class="o">.</span><span class="n">PRIORITY_TEMPLATE_SIGNALIZED</span> <span class="ow">and</span> 
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">hasTimePlan</span><span class="p">()):</span>
+            <span class="k">continue</span>
+        
+        <span class="c"># stop control of some sort: ok</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="n">dta</span><span class="o">.</span><span class="n">RoadNode</span><span class="o">.</span><span class="n">CONTROL_TYPE_UNSIGNALIZED</span> <span class="ow">and</span> 
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">priority</span> <span class="o">!=</span> <span class="n">dta</span><span class="o">.</span><span class="n">RoadNode</span><span class="o">.</span><span class="n">PRIORITY_TEMPLATE_NONE</span><span class="p">):</span> <span class="k">continue</span>
+        
+        <span class="c"># it&#39;s either inconsistent or not set</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="n">dta</span><span class="o">.</span><span class="n">RoadNode</span><span class="o">.</span><span class="n">CONTROL_TYPE_UNSIGNALIZED</span> <span class="ow">and</span> 
+            <span class="n">roadnode</span><span class="o">.</span><span class="n">priority</span> <span class="o">==</span> <span class="n">dta</span><span class="o">.</span><span class="n">RoadNode</span><span class="o">.</span><span class="n">PRIORITY_TEMPLATE_NONE</span><span class="p">):</span>
+            <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;No stop control or signal   at node </span><span class="si">%8d</span><span class="s">: control=</span><span class="si">%d</span><span class="s"> priority=</span><span class="si">%2d</span><span class="s"> streets=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span>
+                               <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> 
+                                <span class="n">roadnode</span><span class="o">.</span><span class="n">getStreetNames</span><span class="p">(</span><span class="n">incoming</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">outgoing</span><span class="o">=</span><span class="bp">False</span><span class="p">)))</span>
+            <span class="n">nothing_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    net.writeNodesToShp("sf_stops_nodes")
-    net.writeLinksToShp("sf_stops_links")         
+        <span class="k">else</span><span class="p">:</span>
+             <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Inconsistent control/signal at node </span><span class="si">%8d</span><span class="s">: control=</span><span class="si">%d</span><span class="s"> priority=</span><span class="si">%2d</span><span class="s"> streets=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span>
+                               <span class="p">(</span><span class="n">roadnode</span><span class="o">.</span><span class="n">getId</span><span class="p">(),</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">roadnode</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> 
+                                <span class="n">roadnode</span><span class="o">.</span><span class="n">getStreetNames</span><span class="p">(</span><span class="n">incoming</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">outgoing</span><span class="o">=</span><span class="bp">False</span><span class="p">)))</span>
+             <span class="n">inconsistent_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Found </span><span class="si">%4d</span><span class="s"> road nodes with no stop control or signals&quot;</span> <span class="o">%</span> <span class="n">nothing_count</span><span class="p">)</span>
+    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Found </span><span class="si">%4d</span><span class="s"> road nodes with inconsistent stop control or signals&quot;</span> <span class="o">%</span> <span class="n">inconsistent_count</span><span class="p">)</span>
+    
+    <span class="n">net</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="s">&quot;sf_stops&quot;</span><span class="p">)</span>
+
+    <span class="n">net</span><span class="o">.</span><span class="n">writeNodesToShp</span><span class="p">(</span><span class="s">&quot;sf_stops_nodes&quot;</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">writeLinksToShp</span><span class="p">(</span><span class="s">&quot;sf_stops_links&quot;</span><span class="p">)</span>         
     
 
             
             
-
-</pre>
+</pre></div>
 
           </div>
         </div>

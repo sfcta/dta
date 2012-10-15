@@ -19,6 +19,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.addMovement
       ~DynameqNetwork.addNode
       ~DynameqNetwork.addPlanCollectionInfo
+      ~DynameqNetwork.addTwoWayStopControlToConnectorsAtRoadlinks
       ~DynameqNetwork.areIDsUnique
       ~DynameqNetwork.cleanStreetNames
       ~DynameqNetwork.deepcopy
@@ -50,6 +51,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.handleOverlappingLinks
       ~DynameqNetwork.handleShortLinks
       ~DynameqNetwork.hasCentroidForId
+      ~DynameqNetwork.hasCustomPriorities
       ~DynameqNetwork.hasLinkForId
       ~DynameqNetwork.hasLinkForNodeIdPair
       ~DynameqNetwork.hasNodeForId
@@ -58,6 +60,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.iterCentroids
       ~DynameqNetwork.iterConnectors
       ~DynameqNetwork.iterLinks
+      ~DynameqNetwork.iterMovements
       ~DynameqNetwork.iterNodes
       ~DynameqNetwork.iterPlanCollectionInfo
       ~DynameqNetwork.iterRoadLinks
@@ -112,6 +115,7 @@ dta.DynameqNetwork
       ~DynameqNetwork.MOVEMENT_SPEED_OUT
       ~DynameqNetwork.MOVEMENT_TIME_OUT
       ~DynameqNetwork.PRIORITIES_FILE
+      ~DynameqNetwork.PRIORITIES_HEADER
       ~DynameqNetwork.TRANSIT_FILE
    
    

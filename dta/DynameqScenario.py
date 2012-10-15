@@ -57,7 +57,7 @@ class DynameqScenario(Scenario):
         """
         Scenario.__init__(self, startTime, endTime)
 
-        #: for now just a list: (name, units, turn_expr, link_expr, desc)
+        # for now just a list: (name, units, turn_expr, link_expr, desc)
         self._generalizedCosts = []
     
     def read(self, dir, file_prefix):

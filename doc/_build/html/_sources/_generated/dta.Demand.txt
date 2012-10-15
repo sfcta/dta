@@ -23,6 +23,7 @@ dta.Demand
       ~Demand.readDynameqTable
       ~Demand.removeInvalidODPairs
       ~Demand.setValue
+      ~Demand.writeDynameqDemandHeader
       ~Demand.writeDynameqTable
    
    

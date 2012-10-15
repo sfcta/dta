@@ -135,9 +135,11 @@ ENDRUN
         """
         Reads the network from the given csv files.
         
-        * *nodesCsvFilename* is the csv with the node data; *nodeVariableNames* are the column names.
-        * *linksCsvFilename* is the csv with the link data; *linkVariableNames* are the column names.
-        * *centroidIds* is a list of the node Ids that should be interpreted as centroids
+        :param nodesCsvFilename: the csv with the node data
+        :param nodeVariableNames: the column names in the file specified by *nodesCsvFilename*
+        :param linksCsvFilename: the csv with the link data
+        :param linkVariableNames: the column names in the file specified by *linksCsvFilename*
+        :param centroidIds: a list of the node Ids that should be interpreted as centroids
         
         The following strings are used to indicate how the **nodes** should be interpreted.  These
         will be eval()ed by python, and so they can reference one of the *nodeVariableNames*, or they
@@ -154,40 +156,39 @@ ENDRUN
         
         Note that the CSV fields are all strings, which is why SIGNAL is cast to an int here.
         
-        * *useOldNodeForId* indicates that the ``OLD_NODE`` variable is to be used for the ID (rather than ``N``).
-        * *nodeGeometryTypeEvalStr* indicates how to set the *geometryType* for each :py:class:`RoadNode`
-        * *nodeControlEvalStr* indicates how to set the *control* for each :py:class:`RoadNode`
-        * *nodePriorityEvalStr* indicates how to set the *priority* for each :py:class:`RoadNode`
-        * *nodeLabelEvalStr* indicates how to set the *label* for each :py:class:`Node`
-        * *nodeLevelEvalStr* indicates how to set the *level* for each :py:class:`Node`
+        :param useOldNodeForId: indicates that the ``OLD_NODE`` variable is to be used for the ID (rather than ``N``).
+        :param nodeGeometryTypeEvalStr: indicates how to set the *geometryType* for each :py:class:`RoadNode`
+        :param nodeControlEvalStr: indicates how to set the *control* for each :py:class:`RoadNode`
+        :param nodePriorityEvalStr: indicates how to set the *priority* for each :py:class:`RoadNode`
+        :param nodeLabelEvalStr: indicates how to set the *label* for each :py:class:`Node`
+        :param nodeLevelEvalStr: indicates how to set the *level* for each :py:class:`Node`
 
         Similarly, the following strings are used to indicate how the **links** should be interpreted.
         
-        * *linkReverseAttachedIdEvalStr* indicates how to set the *reversedAttachedId* for :py:class:`RoadLink`
+        :param linkReverseAttachedIdEvalStr: indicates how to set the *reversedAttachedId* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkFacilityTypeEvalStr* indicates how to set the *facilityType* for :py:class:`RoadLink`
+        :param linkFacilityTypeEvalStr: indicates how to set the *facilityType* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkLengthEvalStr* indicates how to set the *length* for :py:class:`RoadLink`
+        :param linkLengthEvalStr: indicates how to set the *length* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkFreeflowSpeedEvalStr* indicates how to set the *freeflowSpeed* for :py:class:`RoadLink`
+        :param linkFreeflowSpeedEvalStr: indicates how to set the *freeflowSpeed* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkEffectiveLengthFactorEvalStr* indicates how to set the *effectiveLengthFactor* for :py:class:`RoadLink`
+        :param linkEffectiveLengthFactorEvalStr: indicates how to set the *effectiveLengthFactor* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkResponseTimeFactorEvalStr* indicates how to set the *responseTimeFactor* for :py:class:`RoadLink`
+        :param linkResponseTimeFactorEvalStr: indicates how to set the *responseTimeFactor* for :py:class:`RoadLink`
           and :py:class:`Connector` instances 
-        * *linkNumLanesEvalStr* indicates how to set the *numLanes* for :py:class:`RoadLink`
+        :param linkNumLanesEvalStr: indicates how to set the *numLanes* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkRoundAboutEvalStr* indicates how to set the *roundAbout* for :py:class:`RoadLink`
+        :param linkRoundAboutEvalStr: indicates how to set the *roundAbout* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkLevelEvalStr* indicates how to set the *level* for :py:class:`RoadLink`
+        :param linkLevelEvalStr: indicates how to set the *level* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkLabelEvalStr* indicates how to set the *label* for :py:class:`RoadLink`
+        :param linkLabelEvalStr: indicates how to set the *label* for :py:class:`RoadLink`
           and :py:class:`Connector` instances
-        * *linkGroupEvalStr* indicates how to set the *group* for :py:class:`RoadLink`
+        :param linkGroupEvalStr: indicates how to set the *group* for :py:class:`RoadLink`
           and :py:class:`Connector` instances.
-        
-        Last, use *linkSkipEvalStr* to skip import of certain links, and 
-        use  *additionalLocals* is a dictionary to add to the locals dict for the ``eval`` calls above.
+        :param linkSkipEvalStr: specifies links to skip in the import
+        :param additionalLocals: a dictionary to add to the locals dict for the ``eval`` calls above.
         
         Note that the dictionary of available variables from *linkVariableNames* is saved into
         :py:attr:`CubeNetwork.additionalLinkVariables`, keyed by the tuple of link's node IDs,
