@@ -297,10 +297,10 @@ if __name__ == '__main__':
     
     # length is in feet (from above), response time is in seconds, maxSpeed is in mi/hour
     # We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   14,     1,          100.0,      100.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     14,     1,          100.0,      100.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 30,     1.25,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   30,     1.25,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   21,       1,       100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     21,       1,       100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 31.5,  1.25,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   31.5,  1.25,        70.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT1",     "Transit",      75,     1.6,        35.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT2",     "Transit",     150,     1.6,        35.0,       90.0))
     sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Std",  "Transit",  40,     1.6,        70.0,       90.0))
@@ -334,6 +334,18 @@ if __name__ == '__main__':
                                             "fac_type_pen*(3600*length/fspeed)",            # link_expr
                                             ""              # descr
                                             )
+    sanfranciscoScenario.addGeneralizedCost("Expression_2", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "14.4*length",            # link_expr
+                                            ""              # descr
+                                            )
+    sanfranciscoScenario.addGeneralizedCost("Expression_3", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "14.4*length+fac_type_pen*(1800*length/fspeed)",            # link_expr
+                                            ""              # descr
+                                            )
     
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
@@ -361,37 +373,8 @@ if __name__ == '__main__':
     }
     # Rise dependent response times from traffic flow study
     responseTimeLookup = { \
-     	'FT1 AT0 FLAT' : 1.2,	'FT1 AT1 FLAT' : 1.2,	'FT1 AT2 FLAT' : 1.2,	'FT1 AT3 FLAT' : 1.2,	'FT1 AT4 FLAT' : 1.2,	'FT1 AT5 FLAT' : 1.2,
-     	'FT2 AT0 FLAT' : 1.1,	'FT2 AT1 FLAT' : 1.1,	'FT2 AT2 FLAT' : 1.1,	'FT2 AT3 FLAT' : 1.1,	'FT2 AT4 FLAT' : 1.1,	'FT2 AT5 FLAT' : 1.1,
-    	'FT3 AT0 FLAT' : 1.1,	'FT3 AT1 FLAT' : 1.1,	'FT3 AT2 FLAT' : 1.1,	'FT3 AT3 FLAT' : 1.1,	'FT3 AT4 FLAT' : 1.1,	'FT3 AT5 FLAT' : 1.1,
-    	'FT4 AT0 FLAT' : 1.2,	'FT4 AT1 FLAT' : 1.2,	'FT4 AT2 FLAT' : 1.2,	'FT4 AT3 FLAT' : 1.2,	'FT4 AT4 FLAT' : 1.2,	'FT4 AT5 FLAT' : 1.2,
-    	'FT5 AT0 FLAT' : 1.2,	'FT5 AT1 FLAT' : 1.2,	'FT5 AT2 FLAT' : 1.2,	'FT5 AT3 FLAT' : 1.2,	'FT5 AT4 FLAT' : 1.2,	'FT5 AT5 FLAT' : 1.2,
-    	'FT7 AT0 FLAT' : 1.2,	'FT7 AT1 FLAT' : 1.2,	'FT7 AT2 FLAT' : 1.2,	'FT7 AT3 FLAT' : 1.2,	'FT7 AT4 FLAT' : 1.2,	'FT7 AT5 FLAT' : 1.2,
-    	'FT9 AT0 FLAT' : 1.2,	'FT9 AT1 FLAT' : 1.2,	'FT9 AT2 FLAT' : 1.2,	'FT9 AT3 FLAT' : 1.2,	'FT9 AT4 FLAT' : 1.2,	'FT9 AT5 FLAT' : 1.2,
-    	'FT11 AT0 FLAT' : 1.2,	'FT11 AT1 FLAT' : 1.2,	'FT11 AT2 FLAT' : 1.2,	'FT11 AT3 FLAT' : 1.2,	'FT11 AT4 FLAT' : 1.2,	'FT11 AT5 FLAT' : 1.2,
-    	'FT12 AT0 FLAT' : 1.2,	'FT12 AT1 FLAT' : 1.2,	'FT12 AT2 FLAT' : 1.2,	'FT12 AT3 FLAT' : 1.2,	'FT12 AT4 FLAT' : 1.2,	'FT12 AT5 FLAT' : 1.2,
-    	'FT15 AT0 FLAT' : 1.2,	'FT15 AT1 FLAT' : 1.2,	'FT15 AT2 FLAT' : 1.2,	'FT15 AT3 FLAT' : 1.2,	'FT15 AT4 FLAT' : 1.2,	'FT15 AT5 FLAT' : 1.2,
-    	'FT1 AT0 UP' : 1.32,	'FT1 AT1 UP' : 1.32,	'FT1 AT2 UP' : 1.32,	'FT1 AT3 UP' : 1.32,	'FT1 AT4 UP' : 1.32,	'FT1 AT5 UP' : 1.32,
-    	'FT2 AT0 UP' : 1.1,	'FT2 AT1 UP' : 1.1,	'FT2 AT2 UP' : 1.1,	'FT2 AT3 UP' : 1.1,	'FT2 AT4 UP' : 1.1,	'FT2 AT5 UP' : 1.1,
-    	'FT3 AT0 UP' : 1.1,	'FT3 AT1 UP' : 1.1,	'FT3 AT2 UP' : 1.1,	'FT3 AT3 UP' : 1.1,	'FT3 AT4 UP' : 1.1,	'FT3 AT5 UP' : 1.1,
-    	'FT4 AT0 UP' : 1.32,	'FT4 AT1 UP' : 1.32,	'FT4 AT2 UP' : 1.32,	'FT4 AT3 UP' : 1.32,	'FT4 AT4 UP' : 1.32,	'FT4 AT5 UP' : 1.32,
-    	'FT5 AT0 UP' : 1.32,	'FT5 AT1 UP' : 1.32,	'FT5 AT2 UP' : 1.32,	'FT5 AT3 UP' : 1.32,	'FT5 AT4 UP' : 1.32,	'FT5 AT5 UP' : 1.32,
-    	'FT7 AT0 UP' : 1.32,	'FT7 AT1 UP' : 1.32,	'FT7 AT2 UP' : 1.32,	'FT7 AT3 UP' : 1.32,	'FT7 AT4 UP' : 1.32,	'FT7 AT5 UP' : 1.32,
-    	'FT9 AT0 UP' : 1.32,	'FT9 AT1 UP' : 1.32,	'FT9 AT2 UP' : 1.32,	'FT9 AT3 UP' : 1.32,	'FT9 AT4 UP' : 1.32,	'FT9 AT5 UP' : 1.32,
-    	'FT11 AT0 UP' : 1.32,	'FT11 AT1 UP' : 1.32,	'FT11 AT2 UP' : 1.32,	'FT11 AT3 UP' : 1.32,	'FT11 AT4 UP' : 1.32,	'FT11 AT5 UP' : 1.32,
-    	'FT12 AT0 UP' : 1.32,	'FT12 AT1 UP' : 1.32,	'FT12 AT2 UP' : 1.32,	'FT12 AT3 UP' : 1.32,	'FT12 AT4 UP' : 1.32,	'FT12 AT5 UP' : 1.32,
-    	'FT15 AT0 UP' : 1.32,	'FT15 AT1 UP' : 1.32,	'FT15 AT2 UP' : 1.32,	'FT15 AT3 UP' : 1.32,	'FT15 AT4 UP' : 1.32,	'FT15 AT5 UP' : 1.32,
-    	'FT1 AT0 DOWN' : 1.08,	'FT1 AT1 DOWN' : 1.08,	'FT1 AT2 DOWN' : 1.08,	'FT1 AT3 DOWN' : 1.08,	'FT1 AT4 DOWN' : 1.08,	'FT1 AT5 DOWN' : 1.08,
-    	'FT2 AT0 DOWN' : 1.1,	'FT2 AT1 DOWN' : 1.1,	'FT2 AT2 DOWN' : 1.1,	'FT2 AT3 DOWN' : 1.1,	'FT2 AT4 DOWN' : 1.1,	'FT2 AT5 DOWN' : 1.1,
-    	'FT3 AT0 DOWN' : 1.1,	'FT3 AT1 DOWN' : 1.1,	'FT3 AT2 DOWN' : 1.1,	'FT3 AT3 DOWN' : 1.1,	'FT3 AT4 DOWN' : 1.1,	'FT3 AT5 DOWN' : 1.1,
-    	'FT4 AT0 DOWN' : 1.08,	'FT4 AT1 DOWN' : 1.08,	'FT4 AT2 DOWN' : 1.08,	'FT4 AT3 DOWN' : 1.08,	'FT4 AT4 DOWN' : 1.08,	'FT4 AT5 DOWN' : 1.08,
-    	'FT5 AT0 DOWN' : 1.08,	'FT5 AT1 DOWN' : 1.08,	'FT5 AT2 DOWN' : 1.08,	'FT5 AT3 DOWN' : 1.08,	'FT5 AT4 DOWN' : 1.08,	'FT5 AT5 DOWN' : 1.08,
-    	'FT7 AT0 DOWN' : 1.08,	'FT7 AT1 DOWN' : 1.08,	'FT7 AT2 DOWN' : 1.08,	'FT7 AT3 DOWN' : 1.08,	'FT7 AT4 DOWN' : 1.08,	'FT7 AT5 DOWN' : 1.08,
-    	'FT9 AT0 DOWN' : 1.08,	'FT9 AT1 DOWN' : 1.08,	'FT9 AT2 DOWN' : 1.08,	'FT9 AT3 DOWN' : 1.08,	'FT9 AT4 DOWN' : 1.08,	'FT9 AT5 DOWN' : 1.08,
-    	'FT11 AT0 DOWN' : 1.08,	'FT11 AT1 DOWN' : 1.08,	'FT11 AT2 DOWN' : 1.08,	'FT11 AT3 DOWN' : 1.08,	'FT11 AT4 DOWN' : 1.08,	'FT11 AT5 DOWN' : 1.08,
-    	'FT12 AT0 DOWN' : 1.08,	'FT12 AT1 DOWN' : 1.08,	'FT12 AT2 DOWN' : 1.08,	'FT12 AT3 DOWN' : 1.08,	'FT12 AT4 DOWN' : 1.08,	'FT12 AT5 DOWN' : 1.08,
-    	'FT15 AT0 DOWN' : 1.08,	'FT15 AT1 DOWN' : 1.08,	'FT15 AT2 DOWN' : 1.08,	'FT15 AT3 DOWN' : 1.08,	'FT15 AT4 DOWN' : 1.08,	'FT15 AT5 DOWN' : 1.08,
-  }    
+    	'FLAT' : 1.0,	'UP' : 1.1,	'DOWN' : 0.9,
+    }      
     # see http://code.google.com/p/dta/wiki/NetworkDescriptionForSF
     ftToDTALookup = {"2":1,
                      "3":2,
@@ -407,7 +390,7 @@ if __name__ == '__main__':
                      "9":10,
                      }
     
-    linkEffectiveLengthFactor = 1.17 # estimated based on queue length survey data
+    linkEffectiveLengthFactor = 1.00 # survey data shows effective length similar on different links, only use this to apply special length factors where effective length differs from norms
     
     sanfranciscoCubeNet.readNetfile \
       (netFile=SF_CUBE_NET_FILE,
@@ -439,7 +422,7 @@ if __name__ == '__main__':
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
        linkEffectiveLengthFactorEvalStr = str(linkEffectiveLengthFactor), 
-       linkResponseTimeFactorEvalStr    = "1 if FT=='6' else float(responseTimeLookup['FT'+FT+' AT'+AT + (' UP' if (float(PER_RISE) > 0.05) else (' FLAT' if (float(PER_RISE) > -0.05) else ' DOWN'))])",
+       linkResponseTimeFactorEvalStr    = "1 if FT=='6' else 1 if FT=='1' else 1 if FT=='2' else 1 if FT=='3' else float(responseTimeLookup['UP' if (float(PER_RISE) > 0.05) else ('FLAT' if (float(PER_RISE) > -0.05) else 'DOWN')])",
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
