@@ -82,12 +82,14 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
     Creates transit-only lanes based on the BUSLANE_PM field.
     """
+    transit_lane_links = set()
+
     for link in sanfranciscoCubeNet.iterRoadLinks():
         ab_tuple = (link.getStartNode().getId(), link.getEndNode().getId())
         if ab_tuple not in sanfranciscoCubeNet.additionalLinkVariables: continue
         
         buslane_pm = int(sanfranciscoCubeNet.additionalLinkVariables[ab_tuple]["BUSLANE_PM"])
-        
+                
         # no transit lanes, don't worry about it
         if buslane_pm == 0: continue
         
@@ -99,18 +101,36 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
                             (24918,24908)]: # Post EB, Powell to Stockton
                 if lane_id == 1 and (buslane_pm == 1 or buslane_pm == 2): 
                     link.addLanePermission(lane_id, transitVCG)
+                    transit_lane_links.add(link.getId())
                 else:
                     link.addLanePermission(lane_id, allVCG)
             # diamond lane or side BRT lane1
             elif lane_id == 0 and (buslane_pm == 1 or buslane_pm == 2):
                 link.addLanePermission(lane_id, transitVCG)
+                transit_lane_links.add(link.getId())
             # center BRT lane
             elif lane_id == link.getNumLanes()-1 and buslane_pm == 3:
                 link.addLanePermission(lane_id, transitVCG)
+                transit_lane_links.add(link.getId())
             else:
                 link.addLanePermission(lane_id, allVCG)
+        
+    dta.DtaLogger.info("Added transit lanes to %3d links" % len(transit_lane_links))
+    logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG)
+    
+def logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG):
+    """
+    Tallies and logs how much transit-only lane we have (using link.getLength())
+    """
+    transit_lane_miles = 0.0
+    for link in sanfranciscoCubeNet.iterRoadLinks():
+        
+        for lane_id in range(link.getNumLanes()):
+            if link.getLanePermission(lane_id) == transitVCG:
+                transit_lane_miles += link.getLength()
+    dta.DtaLogger.info("The network has %.1f miles of transit lanes" % transit_lane_miles)
 
-def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, splitForConnectors=False):
+def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, minLinkLength, splitForConnectors=False):
     """
     Looks at all the transit-only links and splits them to allow right or left turns for general traffic, if needed.
     """
@@ -120,6 +140,8 @@ def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, spli
     left_perms   = 0
 
     done         = False
+    short_links_reverted = set() # link ids
+    minLengthForSplit = 2.0*minLinkLength # would splitting it result in short links?
     
     # outter loop due to the fact we have to start searching for qualifying links again after we split since the iteration
     # will break once we update the roadlinks with a split
@@ -151,6 +173,15 @@ def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, spli
                         right_turn_allowed = True
                 
                 if not right_turn_allowed: continue
+                
+                # is the link too short to split?  
+                if link.getLength() < minLengthForSplit:
+                    if link.getId() not in short_links_reverted:
+                        short_links_reverted.add(link.getId())
+                        dta.DtaLogger.debug("Transit link %d-%d too short to split or make transit only.  Reverting to general purpose lane." %
+                                            (link.getStartNode().getId(), link.getEndNode().getId()))
+                        link.addLanePermission(lane_id, allVCG)
+                    continue
                 
                 # is the link already split?
                 if link.getStartNode().getNumAdjacentNodes() == 2:
@@ -194,7 +225,16 @@ def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, spli
                         left_turn_allowed = True
                 
                 if not left_turn_allowed: continue
-                
+
+                # is the link too short to split?
+                if link.getLength() < minLengthForSplit:
+                    if link.getId() not in short_links_reverted:
+                        short_links_reverted.add(link.getId())
+                        dta.DtaLogger.debug("Transit link %d-%d too short to split or make transit only.  Reverting to general purpose lane." %
+                                            (link.getStartNode().getId(), link.getEndNode().getId()))
+                        link.addLanePermission(lane_id, allVCG)
+                    continue
+                                
                 # is the link already split?
                 if link.getStartNode().getNumAdjacentNodes() == 2:
                     # dta.DtaLogger.debug("No need to split link %d for left turn from transit lane" % link.getId())
@@ -220,8 +260,10 @@ def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, spli
         # no splitting?? We're done!
         if not did_split: done = True
             
-    dta.DtaLogger.debug("Split %3d links for right turns from transit lanes, updated %3d permissions" % (right_splits, right_perms))
-    dta.DtaLogger.debug("Split %3d links for left  turns from transit lanes, updated %3d permissions" % (left_splits,  left_perms))
+    dta.DtaLogger.info("Split %3d links for right turns from transit lanes, updated %3d permissions" % (right_splits, right_perms))
+    dta.DtaLogger.info("Split %3d links for left  turns from transit lanes, updated %3d permissions" % (left_splits,  left_perms))
+    dta.DtaLogger.info("Reverted %3d links to general purpose because splitting them would have resulted in short links" % len(short_links_reverted))
+    logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG)
     
 def removeHOVStubs(sanfranciscoDynameqNet):
     """
@@ -318,7 +360,7 @@ if __name__ == '__main__':
     sanfranciscoScenario.addVehicleClassGroup(transitVCG)
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
-    
+        
     # Generalized cost
     # TODO: Make this better!?!
     sanfranciscoScenario.addGeneralizedCost("Expression_0", # name
@@ -391,6 +433,9 @@ if __name__ == '__main__':
                      }
     
     linkEffectiveLengthFactor = 1.00 # survey data shows effective length similar on different links, only use this to apply special length factors where effective length differs from norms
+
+    # we can now calculate this
+    SF_MIN_LINK_LENGTH = round(linkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3)
     
     sanfranciscoCubeNet.readNetfile \
       (netFile=SF_CUBE_NET_FILE,
@@ -475,7 +520,7 @@ if __name__ == '__main__':
 
     # Allow turns from transit lanes -- this needs to be done after the centroid connectors are moved or they interfere connecting
     # to intersections
-    allowTurnsFromTransitOnlyLanes(sanfranciscoDynameqNet, allVCG, transitVCG, splitForConnectors=False)
+    allowTurnsFromTransitOnlyLanes(sanfranciscoDynameqNet, allVCG, transitVCG, minLinkLength=SF_MIN_LINK_LENGTH, splitForConnectors=False)
 
 
     # Add Two-Way stop control to connectors, so vehicles coming out of connectors yield to the vehicles already on the street
@@ -486,7 +531,7 @@ if __name__ == '__main__':
     
     # finally -- Dynameq requires links to be longer than the longest vehicle x the linkEffectiveLengthFactor
     # rounding up because the lengths are specified with 3 decimals in the file, so if they happen to round down they're too short
-    sanfranciscoDynameqNet.handleShortLinks(round(linkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3),
+    sanfranciscoDynameqNet.handleShortLinks(SF_MIN_LINK_LENGTH,
                                             warn=True,
                                             setLength=True)
 
