@@ -133,6 +133,8 @@ def logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG):
 def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, minLinkLength, splitForConnectors=False):
     """
     Looks at all the transit-only links and splits them to allow right or left turns for general traffic, if needed.
+    
+    Splits the link so that the transit section (which is at the start of the link) is *minLinkLength*.
     """
     right_splits = 0
     right_perms  = 0
@@ -190,7 +192,14 @@ def allowTurnsFromTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG, minL
                 else:
                     dta.DtaLogger.debug("Splitting link %d-%d for right turn from transit lane" %
                                         (link.getStartNode().getId(), link.getEndNode().getId()))
-                    midnode = sanfranciscoCubeNet.splitLink(link, splitReverseLink=True, fraction=0.5)
+                    
+                    # if the link is two way -- split in half.  otherwise, at minLinkLength
+                    if sanfranciscoCubeNet.hasLinkForNodeIdPair(link.getEndNode().getId(), link.getStartNode().getId()):
+                        fraction = 0.5
+                    else:
+                        fraction=minLinkLength/link.getLength()
+                        
+                    midnode = sanfranciscoCubeNet.splitLink(link, splitReverseLink=True, fraction=fraction)
 
                     newlink = sanfranciscoCubeNet.getLinkForNodeIdPair(link.getStartNode().getId(), midnode.getId())
                     modlink = sanfranciscoCubeNet.getLinkForNodeIdPair(midnode.getId(), link.getEndNode().getId())
