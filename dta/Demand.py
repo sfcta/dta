@@ -1,4 +1,4 @@
-__copyright__   = "Copyright 2011 SFCTA"
+__copyright__   = "Copyright 2011-2012 SFCTA"
 __license__     = """
     This file is part of DTA.
 
@@ -39,10 +39,20 @@ class Demand(object):
                         startTime, endTime, timeStep, demandPortion):
         """
         Reads the demand (linear format) from the input csv file and returns a demand instance.
-        * *fileName* is a csv file with the fields: "Origin, Destination, <vehicle class name>[demand]"
-        * *net* is an instance of :py:class:'Network'
-        * *vehicleClassName* is the vehicle class that you want to read from the input csv and should correspond to the names of the vehicle classes 
-        * *startTime* and *endTime* are dta.Utils.Time instances 
+        
+        :param fileName: the file containing the demand; this will be a CSV containing 
+           ``Origin, Destination, VehicleClassDemand1, VehicleClassDemand2, ...``.  The header line will be used
+           to determine which column is relevant to which Vehicle Class.
+        :param net: the Network for which this demand is relevant, used to get TAZ numbers.
+        :type net: a :py:class:`Network` instance
+        :param vehClassName: a string that must match the relevant :py:class:`VehicleClass` exactly (it's case-sensitive!)
+        :param startTime: the simulation start time for when this demand will get added to the network.
+        :type startTime: a :py:class:`dta.Utils.Time` instance
+        :param endTime: the simulation end time for this demand will stop being added to the network.
+        :type endTime: a :py:class:`dta.Utils.Time` instance
+        :param timeStep: the granularity of time steps at which the demand is represented.
+        :type timeStep: a :py:class:`dta.Utils.Time` instance
+        
         """
         timeSpan = endTime - startTime
         demand = Demand(net, vehicleClassName, startTime, endTime, timeStep)
@@ -105,9 +115,8 @@ class Demand(object):
     @classmethod
     def readDynameqTable(cls, net, fileName):
         """
-        Read the dynameq demand stored in the fileName that pertains to the 
-        dynameq network a :py:class:`DynameqNetwork`instance. This method reads
-        only rectangular demand tables 
+        Read the dynameq demand stored in the *fileName* that pertains to *net*, a :py:class:`Network` instance.
+        This method reads only rectangular demand tables. 
         """
         DYNAMEQ_FORMAT_FULL = "FORMAT:full" 
         
@@ -166,9 +175,15 @@ class Demand(object):
         Constructor that initializes an empty Demand table that has three dimensions:
         time, origin taz, destination taz. 
         
-        *net* is a dta.Network instance
-        *vehClassName* is a string 
-        *startTime*, *endTime* and *timeStep* are dta.Utils.Time instances 
+        :param net: the Network for which this demand is relevant, used to get TAZ numbers.
+        :type net: a :py:class:`Network` instance
+        :param vehClassName: a string that must match the relevant :py:class:`VehicleClass` exactly (it's case-sensitive!)
+        :param startTime: the simulation start time for when this demand will get added to the network.
+        :type startTime: a :py:class:`dta.Utils.Time` instance
+        :param endTime: the simulation end time for this demand will stop being added to the network.
+        :type endTime: a :py:class:`dta.Utils.Time` instance
+        :param timeStep: the granularity of time steps at which the demand is represented.
+        :type timeStep: a :py:class:`dta.Utils.Time` instance
         """
         self._net = net 
 
@@ -181,17 +196,17 @@ class Demand(object):
         if ((endTime - startTime) % timeStep) != 0:
             raise DtaError("Demand interval is not divisible by the demand time step") 
 
-        self.startTime = startTime
-        self.endTime = endTime
-        self.timeStep = timeStep
-        self.vehClassName = vehClassName
+        self.startTime      = startTime
+        self.endTime        = endTime
+        self.timeStep       = timeStep
+        self.vehClassName   = vehClassName
 
-        self._timePeriods = self._getTimePeriods(startTime, endTime, timeStep)
-        self._timeLabels = self._timePeriods # map(self._datetimeToMilitaryTime, self._getTimePeriods(startTime, endTime, timeStep))
+        self._timePeriods   = self._getTimePeriods(startTime, endTime, timeStep)
+        self._timeLabels    = self._timePeriods # map(self._datetimeToMilitaryTime, self._getTimePeriods(startTime, endTime, timeStep))
 
-        self._centroidIds = sorted([c.getId() for c in net.iterNodes() if c.isCentroid()]) 
+        self._centroidIds   = sorted([c.getId() for c in net.iterNodes() if c.isCentroid()]) 
 
-        self._demandTable = MultiArray("d", [self._timeLabels, self._centroidIds, self._centroidIds])
+        self._demandTable   = MultiArray("d", [self._timeLabels, self._centroidIds, self._centroidIds])
                                              
         #TODO: what are you going to do with vehicle class names? 
         #self._vehicleClassNames = [vehClass.name for vehClass in self._net.getScenario().vehicleClassNames]
@@ -210,7 +225,8 @@ class Demand(object):
         
     def _getTimePeriods(self, startTime, endTime, timeStep):
         """
-        Return the time labels of the different time slices as a list
+        Return the time labels of the different time slices as a list of :py:class:`dta.Utils.Time` instances.
+        Each time in the list is the *end* of the time slice.
         """        
         if ((endTime - startTime) % timeStep) != 0:
             raise DtaError("Demand interval is not divisible by the demand time step") 
@@ -285,7 +301,7 @@ class Demand(object):
 
     def writeDynameqTable(self, outputStream, format='full'):
         """
-        Write the demand in the dynameq format
+        Write the demand in Dynameq format
         .. todo:: implement linear writing
         """
         
@@ -309,7 +325,7 @@ class Demand(object):
 
     def __eq__(self, other):
         """
-        Implementation of the == operator. The comparisson of the 
+        Implementation of the == operator. The comparison of the 
         two demand objects is made using both the data and the labels 
         of the underlying multidimensional arrays. 
         """        

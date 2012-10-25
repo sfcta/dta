@@ -1,4 +1,4 @@
-__copyright__   = "Copyright 2011 SFCTA"
+__copyright__   = "Copyright 2011-2012 SFCTA"
 __license__     = """
     This file is part of DTA.
 
@@ -29,24 +29,51 @@ import csv
 
 USAGE = r"""
 
- python importCubeDemand.py dynameq_net_dir dynameq_net_prefix cubeVehicleClass output_demand_table startTime endTime cube_demand_table1 startTime1 endTime1 demand_portion1 timeStep1 cube_demand_table2 startTime2 endTime2 demand_portion2
+ python importCubeDemand.py [-f demand_profile_file] dynameq_net_dir dynameq_net_prefix 
+        cubeVehicleClass output_demand_table startTime endTime 
+        cube_demand_table1 startTime1 endTime1 timeStep1 demand_portion1 
+        [cube_demand_table2 startTime2 endTime2 timeStep2 demand_portion2]
+        [cube_demand_table3 startTime3 endTime3 timeStep3 demand_portion3]
+        ...
  
  e.g.
- 
-python %DTA_CODE_DIR%\scripts\importCubeDemand.py . sf_trn Car_NoToll demand_Car_NoToll.dat 14:30 18:30 Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.15  Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 00:30 1.00
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f Y:\dta\SanFrancisco\2010\demand\DemandProfile.csv . sf_stops 
+        Car_NoToll demand_Car_NoToll.dat 14:30 19:30 
+        Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.13364
+        Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00
+        Y:\dta\SanFrancisco\2010\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.22594
+
  ****IMPORTANT****
- Demand tables must be input in chronological order with the earliest start time first, and they must have non-overlapping time periods.
+ Input Demand tables must be input in chronological order with the earliest start time first,
+ and they must have non-overlapping time periods.
  *****************
- The command line above will import the Car_NoToll trips in the SanFranciscoSubArea_2010_MD.csv table and the SanFranciscoSubArea_2010_PM.csv table to the dynameq network located in
- %DTA_CODE_DIR% and having the prefix sf_trn.
- The whole time period being read in is from 14:30 to 18:30.
- The time period associated with the SanFranciscoSubArea_2010_PM.csv table is from 15:30 to 18:30. The other (MD) *.csv file listed will also be read and added to the 14:30-15:30 period.
- The demand portion variables indicate the fraction of the demand from the input tables that should be added to the Dynameq demand table.
- This is useful when only taking a fraction of the total demand (i.e. 1 hour of demand from a 3-hour input table).
- The code is able to loop through any number of demand tables and assocated demand periods as long as they are in chronological order, within the scenario time period, and covering the entire
- period specified by the start time and end time.
- The output table will have 7 time periods, given the first hour being imported as one time slice and the remaining 3 hours of demand being imported
- in 30 minute time slices and will be saved in the %DTA_CODE_DIR% in the dynameq format.
+ 
+ The example command above will construct a output a Dynameq ascii demand file, demand_Car_NoToll.dat,
+ covering 14:30-19:30 for the vehicle class "Car_NoToll". 
+ 
+ The DTA network and scenario for this table will be read from the current directory and have the
+ prefix "sf_stops".
+ 
+ The demand will derived from three different input (Cube) demand files:
+    0.13364 of the demand from SanFranciscoSubArea_2010_MD.csv will be used for the 14:30-15:30 period,
+    1.0     of the demand from SanFranciscoSubArea_2010_PM.csv will be used for the 15:30-18:30 period, and
+    0.22594 of the demand from SanFranciscoSubArea_2010_EV.csv will be used for the 18:30-19:30 period.
+    
+ Further, if a demand_profile_file is passed, then any portion of the demand can be further peaked or
+ distributed non-uniformly. The demand_profile_file is a csv file with the following columns:
+ Start Time, End Time, Factor 1, Factor 2, Factor 3,...
+ 
+ If a row is specified matching the start and end time of one of the input demand files, then the demand
+ will be distributed according to the factors.  The sum of the factors must add to 1.  When this is
+ included, then the timeStep specified with the input demand file will be ignored, and the timeStep for
+ this demand period will instead be the timeperiod for the demand period divided by the number of time
+ factors.  So in the given example, the contents of the DemandProfile.csv are:
+ 
+ Start Time,End Time,Factor 1,Factor 2,Factor 3,Factor 4,Factor 5,Factor 6
+ 15:30,18:30,0.15173,0.15772,0.1679,0.17848,0.17492,0.16925
+
+ So the timestep for the 15:30-16:30 period will be (3 hours / 6 periods) = 30 minutes, and
+ not 3 hours as specified by timeStep2=03:00.
  
  """
 
@@ -115,10 +142,14 @@ if __name__ == "__main__":
 # Check to make sure that demand is within the scenario time.  Exit if not.  
 
     if startTime < scenario.startTime:
-        dta.DtaLogger.error("Demand cannot start before scenario start time.  Demand start = %s, Scenario start = %s" % (startTime.strftime("%H:%M"), scenario.startTime.strftime("%H:%M")))
+        dta.DtaLogger.error("Demand cannot start before scenario start time.")
+        dta.DtaLogger.error("Demand start = %s, Scenario start = %s" % 
+                            (startTime.strftime("%H:%M"), scenario.startTime.strftime("%H:%M")))
         sys.exit(2)
     if endTime > scenario.endTime:
-        dta.DtaLogger.error("Demand cannot end after scenario end time.  Demand end = %s, Scenario end = %s" % (endTime.strftime("%H:%M"), scenario.endTime.strftime("%H:%M")))
+        dta.DtaLogger.error("Demand cannot end after scenario end time.")
+        dta.DtaLogger.error("Demand end = %s, Scenario end = %s" %
+                            (endTime.strftime("%H:%M"), scenario.endTime.strftime("%H:%M")))
         sys.exit(2)
 
     # Create and write out demand for each table in the correct order (earliest first and getting continualy later.)
@@ -134,13 +165,18 @@ if __name__ == "__main__":
     # Check to be sure time is continuous
         if ii == 0:
             if dta.Utils.Time.readFromString(START_TIME_N) != startTime:
-                dta.DtaLogger.error("Start time of first demand period (%s) must equal provided demand start time of %s." % (START_TIME_N, startTime.strftime("%H:%M")))
+                dta.DtaLogger.error("Start time of first demand period (%s) must equal demand start time %s." % 
+                                    (START_TIME_N, startTime.strftime("%H:%M")))
+                sys.exit(2)
         elif ii > 0 and ii < numDemandTables-1:
             if dta.Utils.Time.readFromString(START_TIME_N) != endTime_n:
-                dta.DtaLogger.error("Time should be continuous.  Start time of demand period %d does not equal end time of demand period %d." % (ii+1, ii))
+                dta.DtaLogger.error("Start time of demand period %d does not equal end time of demand period %d." % (ii+1, ii))
+                sys.exit(2)
         elif ii > 0 and ii == numDemandTables-1:
             if dta.Utils.Time.readFromString(END_TIME_N) != endTime:
-                dta.DtaLogger.error("End time of last demand period (%s) must equal provided demand end time of %s." % (END_TIME_N, endTime.strftime("%H:%M")))
+                dta.DtaLogger.error("End time of last demand period (%s) must equal demand end time %s." % 
+                                    (END_TIME_N, endTime.strftime("%H:%M")))
+                sys.exit(2)
 
     # Set start time, end time, and time step for the demand period
         startTime_n = dta.Utils.Time.readFromString(START_TIME_N)
@@ -159,11 +195,13 @@ if __name__ == "__main__":
 
         if demProf == 1:
             timeStep = endTime_n - startTime_n
-            demand = dta.Demand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, startTime_n, endTime_n, timeStep, float(DEMAND_PORTION))
+            demand = dta.Demand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, 
+                                                startTime_n, endTime_n, timeStep, float(DEMAND_PORTION))
             demand = demand.applyTimeOfDayFactors(FactorsList)
         else:
-            demand = dta.Demand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, startTime_n, endTime_n, timeStep, float(DEMAND_PORTION))
-
+            demand = dta.Demand.readCubeODTable(CUBE_TABLE, net, CUBE_VEH_CLASS, 
+                                                startTime_n, endTime_n, timeStep, float(DEMAND_PORTION))
+            
         demand.writeDynameqTable(outputStream)
         dta.DtaLogger.info("Wrote %10.2f %-10s to %s" % (demand.getTotalNumTrips(), "TRIPS", OUTPUT_DYNAMEQ_TABLE))
 
