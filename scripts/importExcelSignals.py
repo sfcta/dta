@@ -1672,7 +1672,15 @@ def convertSignalToDynameq(net, node, card, planInfo, startTime, endTime):
                 dMov = node.getMovement(n1, n3)
                 if dMov.isProhibitedToAllVehicleClassGroups():
                     continue
-                phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
+                
+                #Set through movements to be protected
+                if dMov.isThruTurn():
+                    phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
+                #Set all other movements to be permitted
+                else:
+                    phaseMovement = PhaseMovement(dMov, PhaseMovement.PERMITTED)
+                ##TODO: Figure out which turn movements are protected from both other traffic AND conflicting pedestrians/cyclists (i.e. pedestrian scrambles and turn arrows)
+                
                 if not dPhase.hasPhaseMovement(phaseMovement.getMovement().getStartNodeId(),
                                                phaseMovement.getMovement().getEndNodeId()):                    
                     dPhase.addPhaseMovement(phaseMovement)
