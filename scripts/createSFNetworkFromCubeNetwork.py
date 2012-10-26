@@ -76,8 +76,13 @@ def addTurnPockets(sanfranciscoCubeNet):
     post_eb.setNumLanes(3)
     post_thru_stockton = post_eb.findOutgoingMovement(24660)
     post_thru_stockton.setNumLanes(2)
-    
-    
+
+def addCustomResFac(sanFranciscoCubeNet):
+    """
+    Adjusts response time factors for specific links
+    """
+    sanfranciscoCubeNet.getLinkForNodeIdPair(52158,52159).setResTimeFac(.8) #NB US-101 between hospital curve and Central Freeway split
+        
 def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
     Creates transit-only lanes based on the BUSLANE_PM field.
@@ -510,6 +515,9 @@ if __name__ == '__main__':
     
     # Some special links needing turn pockets
     addTurnPockets(sanfranciscoCubeNet)
+    
+    #Some special links need special response times (in one case to mitigate over-penalizing capacity due to high percent of lane changes)
+    addCustomResFac(sanfranciscoCubeNet)
     
     # Convert the network to a Dynameq DTA network
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)
