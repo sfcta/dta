@@ -446,10 +446,14 @@ if __name__ == '__main__':
                      "9":10,
                      }
     
-    linkEffectiveLengthFactor = 1.00 # survey data shows effective length similar on different links, only use this to apply special length factors where effective length differs from norms
+    # Lookup effective length factor (currently set to be 0.95 downtown - AT0&AT1 - and 1.00 elsewhere)
+    linkEffectiveLengthFactorLookup = {"AT0":0.95, "AT1":0.95, "AT2":1.0, "AT3":1.0, "AT4":1.0, "AT5":1.0,}
+    
+    # What is the largest link effective length factor?
+    maxLinkEffectiveLengthFactor=max(linkEffectiveLengthFactorLookup.values())
 
-    # we can now calculate this
-    SF_MIN_LINK_LENGTH = round(linkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3)
+    # We can now calculate minimum link length
+    SF_MIN_LINK_LENGTH = round(maxLinkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3)
     
     sanfranciscoCubeNet.readNetfile \
       (netFile=SF_CUBE_NET_FILE,
@@ -480,7 +484,7 @@ if __name__ == '__main__':
        linkFacilityTypeEvalStr          = "ftToDTALookup[FT]",
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
-       linkEffectiveLengthFactorEvalStr = str(linkEffectiveLengthFactor), 
+       linkEffectiveLengthFactorEvalStr = "float(linkEffectiveLengthFactorLookup['AT'+AT])",
        linkResponseTimeFactorEvalStr    = "1 if FT=='6' else 1 if FT=='1' else 1 if FT=='2' else 1 if FT=='3' else float(responseTimeLookup['UP' if (float(PER_RISE) > 0.05) else ('FLAT' if (float(PER_RISE) > -0.05) else 'DOWN')])",
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
@@ -492,6 +496,7 @@ if __name__ == '__main__':
                                            'speedLookup':speedLookup,
                                            'responseTimeLookup':responseTimeLookup,
                                            'boundaryIds':boundaryIds,
+                                           'linkEffectiveLengthFactorLookup':linkEffectiveLengthFactorLookup,
                                            })
     # Apply the transit lanes
     createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
