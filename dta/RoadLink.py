@@ -378,9 +378,11 @@ class RoadLink(Link):
         
     def addShifts(self, startShift, endShift, addShapepoints=False):
         """
-         * *startShift*: the shift value of the first segment of the link, that is, the number of lanes from
+        Adds a shift to the start and/or end of the roadlink, to change the alignment of either end by one (or more) lane(s).
+        
+        :param startShift: the shift value of the first segment of the link, that is, the number of lanes from
            the center line of the roadway that the first segment is shifted.
-         * *endShift*: End-shift: the shift value of the last segment of the link, that is, the number of 
+        :param endShift: End-shift: the shift value of the last segment of the link, that is, the number of 
            lanes from the center line of the roadway that the last segment is shifted.
            
         Dynameq software requires the link to have at least 2 shape points in order to use these shifts.

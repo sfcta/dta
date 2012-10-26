@@ -27,7 +27,7 @@ class Link(object):
     #: Default label is an empty string
     DEFAULT_LABEL = ""
     
-    def __init__(self, id_, startNode, endNode, label):
+    def __init__(self, id, startNode, endNode, label):
         """
         Constructor.
         
@@ -36,7 +36,7 @@ class Link(object):
          * *label* is a string. If None passed, will use default.
          
         """ 
-        self._id    = id_     # integer id
+        self._id    = id     # integer id
         if label:   
             self._label = label
         else:

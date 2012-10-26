@@ -1,8 +1,8 @@
-__copyright__   = "Copyright 2011 SFCTA"
+__copyright__   = "Copyright 2011-2012 SFCTA"
 __license__     = """
     This file is part of DTA.
 
-     DTA is free software: you can redistribute it and/or modify
+    DTA is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -37,8 +37,8 @@ class PlanCollectionInfo(object):
         A PlanCollectionInfo object has some general info for all the time plans that are
         active between startTime and endTime. The inputs to the constructor are:
         
-        * *startTime*: a :py:class:`dta.Time` object representing the start time of the time plan collection
-        * *endTime*: a :py:class:`dta.Time` object representing the end time of the time plan collection
+        * *startTime*: a :py:class:`dta.Utils.Time` object representing the start time of the time plan collection
+        * *endTime*: a :py:class:`dta.Utils.Time` object representing the end time of the time plan collection
         * *name*: a string containing the name of the plan collection
         * *description*: a string containing the description of the plan collection
          
@@ -60,7 +60,7 @@ class PlanCollectionInfo(object):
                     
     def getTimePeriod(self):
         """
-        Return a tuple of two :py:class:`Utils.Time'objects corresponding to the
+        Return a tuple of two :py:class:`dta.Utils.Time` objects corresponding to the
         start and end time of the plan collection
         """
         return self._startTime, self._endTime
@@ -139,7 +139,7 @@ class TimePlan(object):
         """
         Constructor.
         
-        * *node* is a :py:class:`RoadNode' instance, the node at which the signal resides
+        * *node* is a :py:class:`RoadNode` instance, the node at which the signal resides
         * *offset* is a positive integer representing the synchronization offset, in seconds
         * *planCollectionInfo* is a :py:class:`PlanCollectionInfo` instance, containing information about
           the start and end times of the time plan

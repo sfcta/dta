@@ -203,17 +203,19 @@ class SignalData(object):
         Get the phases as list of dictionaries. By combining phasing data information
         such as the one in the following table 
         
-        Phasing Data
-                           1  2  3  4  5  6  7  8
-          GEARY BLVD (EB)  G  G  Y  R  R  R  R  R
-            10TH AVE (SB)  R  R  R  R  G  G  Y  R
-          GEARY BLVD (WB)  G  G  Y  R  R  R  R  R
-            10TH AVE (NB)  R  R  R  R  G  G  Y  R
+        ::
+        
+         Phasing Data
+                            1  2  3  4  5  6  7  8
+           GEARY BLVD (EB)  G  G  Y  R  R  R  R  R
+             10TH AVE (SB)  R  R  R  R  G  G  Y  R
+           GEARY BLVD (WB)  G  G  Y  R  R  R  R  R
+             10TH AVE (NB)  R  R  R  R  G  G  Y  R
 
         And the signal interval data for the time of day that is specified
         by the startHour and endHour input arguments
  
-	Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]        
+	    Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]        
         """
 
         pPhase = {}

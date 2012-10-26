@@ -223,7 +223,7 @@ class TransitLine(object):
         Create a :py:class:`TransitSegment` instance with the given information and add it to this
         line.
         
-        See :py:meth:`TransitSegment.__init__ for how most of the arguments are interpreted.
+        See :py:meth:`TransitSegment.__init__` for how most of the arguments are interpreted.
         Pass -1 for *position* to append it to the end of this line's transit segments, otherwise
         the *position* will be used for insertion.
         
