@@ -122,6 +122,16 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
         
     dta.DtaLogger.info("Added transit lanes to %3d links" % len(transit_lane_links))
     logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG)
+
+def encodeATintoFollowupTime(sanfranciscoCubeNet):
+    """
+    Hack: This is a hack way to pass Area Type to movements for later use. 
+          This method sets Followup time to 90+AT value. 
+    """
+    for link in sanfranciscoCubeNet.iterRoadLinks():
+        AT = int(sanfranciscoCubeNet.additionalLinkVariables[(link.getStartNode().getId(),link.getEndNode().getId())]['AT'])
+        for mov in link.iterOutgoingMovements():
+            mov.setFollowup(AT+90)
     
 def logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG):
     """
@@ -503,7 +513,10 @@ if __name__ == '__main__':
         
     # create the movements for the network for all vehicles
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
-        
+
+    # HACK: make movement followup times code for AT of the incoming links
+    encodeATintoFollowupTime(sanfranciscoCubeNet)
+
     # Apply the turn prohibitions
     sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     

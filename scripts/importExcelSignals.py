@@ -1913,6 +1913,22 @@ if __name__ == "__main__":
     dta.DtaLogger.info("Number of time plans = %d" % len(allPlansSet))
     dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
 
+    #Adjust Followup time for signalized right and left turning movements 
+    rightTurnFollowupLookup = {90:2.67, 91:2.22, 92:2.0, 93:2.0, 94:2.0, 95:2.0,}
+    leftTurnFollowupLookup  = {90:2.67, 91:2.22, 92:2.0, 93:2.0, 94:2.0, 95:2.0,} 
+    
+    for node in net.iterRoadNodes():
+        for mov in node.iterMovements():
+            if not node.hasTimePlan():
+                mov.setFollowup(-1)
+                continue
+            if mov.isRightTurn():
+                mov.setFollowup(str(rightTurnFollowupLookup[mov.getFollowup()]))
+            elif mov.isLeftTurn():
+                mov.setFollowup(str(leftTurnFollowupLookup[mov.getFollowup()]))
+            else:
+                mov.setFollowup(-1)
+
     net.write(".", "sf_signals")
 
     #net.writeLinksToShp("sf_signals_link")
