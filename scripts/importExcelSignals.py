@@ -1161,6 +1161,39 @@ def findNodeWithSameStreetNames(network, excelCard, CUTOFF, mappedNodes):
 
             return True
     return False
+
+def groupMovementToTurnType(gMovName, addRightToThru=True):
+    """
+    Given *gMovName*, which is the string from the Excel file representing a movement (e.g. ``OTIS SBLT`` or ``17TH ST. W/B THRU``),
+    returns a list of relevant turntypes corresponding to the :py:meth:`Movement.getTurnType` method.
+    
+    Pass *addRightToThru* if you want the through movements to come with right turns automatically.
+
+    the function is being called by mapGroupMovments
+    """
+
+    result = []
+
+    #todo ends with LT
+    leftTurnIndicators = ["LT'S","-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
+    rightTurnIndicators = ["RIGHT TURN", "BRT", " RT"]
+    thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
+
+    indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators, TURN_RIGHT:rightTurnIndicators}
+    result = []
+    thruadded=0
+    movadded=0
+    for dir, dirIndicators in indicators.items():
+        for indicator in dirIndicators:
+            if indicator in gMovName:
+                result.extend(dir)
+                movadded = 1
+                if dir==TURN_THRU:
+                    thruadded=1
+            if dir==TURN_RIGHT and thruadded==1 and addRightToThru:
+                result.extend(dir)
+    return result
+
     
 def mapMovements(mec, baseNetwork):
     
@@ -1217,36 +1250,6 @@ def mapMovements(mec, baseNetwork):
        
         return result
 
-    def getTurnType(gMovName):
-        """
-        Searches the movement name for a known set of turn type indicators such as
-        LT and returns the turn type as a string which is one of the following:
-        TURN_LEFT, TURN_THRU
-
-        the function is being called by mapGroupMovments
-        """
-
-        result = []
-
-        #todo ends with LT
-        leftTurnIndicators = ["LT'S","-L", "WB-L","EB-L","SB-L","NB-L","LEFT TURN", " LT", "NBLT", "SBLT", "WBLT", "EBLT","(NBLT)", "(SBLT)", "(WBLT)", "(EBLT)"]
-        rightTurnIndicators = ["RIGHT TURN", "BRT", " RT"]
-        thruTurnIndicators = [" THRU", " THROUGH", "(THRU)"]
-
-        indicators = {TURN_LEFT:leftTurnIndicators, TURN_THRU:thruTurnIndicators, TURN_RIGHT:rightTurnIndicators}
-        result = []
-        thruadded=0
-        movadded=0
-        for dir, dirIndicators in indicators.items():
-            for indicator in dirIndicators:
-                if indicator in gMovName:
-                    result.extend(dir)
-                    movadded = 1
-                    if dir==TURN_THRU:
-                        thruadded=1
-                if dir==TURN_RIGHT and thruadded==1:
-                    result.extend(dir)
-        return result
 
     def mapGroupMovements(mec, groupMovementNames, bNode):
         """
@@ -1269,7 +1272,7 @@ def mapMovements(mec, baseNetwork):
                 stName = getStreetName(gMovName, streetNames)
             except StreetNameMappingError, e:
                 raise StreetNameMappingError("%s#%d#%s" % (mec.fileName, mec.mappedNodeId, str(e)))
-            gTurnTypes = getTurnType(gMovName)
+            gTurnTypes = groupMovementToTurnType(gMovName)
             gDirections = getDirections(gMovName)
             if "BUSH" in gMovName and "WB" in gDirections:
                 continue
@@ -1422,7 +1425,7 @@ def mapMovements(mec, baseNetwork):
             MovementNames.remove(gMovName)
             groupMovements = tuple(MovementNames)
 
-        gTurnTypes = getTurnType(gMovName)
+        gTurnTypes = groupMovementToTurnType(gMovName)
         gDirections = getDirections(gMovName)
         if "BUSH" in gMovName and "WB" in gDirections:
             MovementNames = list(groupMovements)
@@ -1674,6 +1677,15 @@ def convertSignalToDynameq(net, node, card, planInfo, startTime, endTime):
                 dMov = node.getMovement(n1, n3)
                 if dMov.isProhibitedToAllVehicleClassGroups():
                     continue
+
+                if (dMov.getTurnType() in groupMovementToTurnType(groupMovement,addRightToThru=False)):
+                    dta.DtaLogger.warn("PERMITTED should be PROTECTED? groupMovement=%s turntype=%s,  dMov=[%s %s] to [%s %s] turntype=%s" % \
+                                       (groupMovement, groupMovementToTurnType(groupMovement), 
+                                        dMov.getIncomingLink().getLabel(), 
+                                        dMov.getIncomingLink().getDirection(),
+                                        dMov.getOutgoingLink().getLabel(),
+                                        dMov.getOutgoingLink().getDirection(), 
+                                        dMov.getTurnType()))
                 
                 #Set through movements to be protected
                 if dMov.isThruTurn():
