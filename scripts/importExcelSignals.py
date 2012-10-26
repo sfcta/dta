@@ -1674,7 +1674,15 @@ def convertSignalToDynameq(net, node, card, planInfo, startTime, endTime):
                 dMov = node.getMovement(n1, n3)
                 if dMov.isProhibitedToAllVehicleClassGroups():
                     continue
-                phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
+                
+                #Set through movements to be protected
+                if dMov.isThruTurn():
+                    phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
+                #Set all other movements to be permitted
+                else:
+                    phaseMovement = PhaseMovement(dMov, PhaseMovement.PERMITTED)
+                ##TODO: Figure out which turn movements are protected from both other traffic AND conflicting pedestrians/cyclists (i.e. pedestrian scrambles and turn arrows)
+                
                 if not dPhase.hasPhaseMovement(phaseMovement.getMovement().getStartNodeId(),
                                                phaseMovement.getMovement().getEndNodeId()):                    
                     dPhase.addPhaseMovement(phaseMovement)
@@ -1906,6 +1914,22 @@ if __name__ == "__main__":
     dta.DtaLogger.info("Number of cards are %d; Number of cards with movements are %d" % (len(cardsDone),len(cardsWithMove)))
     dta.DtaLogger.info("Number of time plans = %d" % len(allPlansSet))
     dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
+
+    #Adjust Followup time for signalized right and left turning movements 
+    rightTurnFollowupLookup = {90:2.67, 91:2.22, 92:2.0, 93:2.0, 94:2.0, 95:2.0,}
+    leftTurnFollowupLookup  = {90:2.67, 91:2.22, 92:2.0, 93:2.0, 94:2.0, 95:2.0,} 
+    
+    for node in net.iterRoadNodes():
+        for mov in node.iterMovements():
+            if not node.hasTimePlan():
+                mov.setFollowup(-1)
+                continue
+            if mov.isRightTurn():
+                mov.setFollowup(str(rightTurnFollowupLookup[mov.getFollowup()]))
+            elif mov.isLeftTurn():
+                mov.setFollowup(str(leftTurnFollowupLookup[mov.getFollowup()]))
+            else:
+                mov.setFollowup(-1)
 
     net.write(".", "sf_signals")
 

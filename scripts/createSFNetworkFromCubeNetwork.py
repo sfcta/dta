@@ -76,8 +76,13 @@ def addTurnPockets(sanfranciscoCubeNet):
     post_eb.setNumLanes(3)
     post_thru_stockton = post_eb.findOutgoingMovement(24660)
     post_thru_stockton.setNumLanes(2)
-    
-    
+
+def addCustomResFac(sanFranciscoCubeNet):
+    """
+    Adjusts response time factors for specific links
+    """
+    sanfranciscoCubeNet.getLinkForNodeIdPair(52158,52159).setResTimeFac(.8) #NB US-101 between hospital curve and Central Freeway split
+        
 def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
     Creates transit-only lanes based on the BUSLANE_PM field.
@@ -117,6 +122,16 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
         
     dta.DtaLogger.info("Added transit lanes to %3d links" % len(transit_lane_links))
     logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG)
+
+def encodeATintoFollowupTime(sanfranciscoCubeNet):
+    """
+    Hack: This is a hack way to pass Area Type to movements for later use. 
+          This method sets Followup time to 90+AT value. 
+    """
+    for link in sanfranciscoCubeNet.iterRoadLinks():
+        AT = int(sanfranciscoCubeNet.additionalLinkVariables[(link.getStartNode().getId(),link.getEndNode().getId())]['AT'])
+        for mov in link.iterOutgoingMovements():
+            mov.setFollowup(AT+90)
     
 def logTransitOnlyLaneDistance(sanfranciscoCubeNet, transitVCG):
     """
@@ -441,10 +456,14 @@ if __name__ == '__main__':
                      "9":10,
                      }
     
-    linkEffectiveLengthFactor = 1.00 # survey data shows effective length similar on different links, only use this to apply special length factors where effective length differs from norms
+    # Lookup effective length factor (currently set to be 0.95 downtown - AT0&AT1 - and 1.00 elsewhere)
+    linkEffectiveLengthFactorLookup = {"AT0":0.95, "AT1":0.95, "AT2":1.0, "AT3":1.0, "AT4":1.0, "AT5":1.0,}
+    
+    # What is the largest link effective length factor?
+    maxLinkEffectiveLengthFactor=max(linkEffectiveLengthFactorLookup.values())
 
-    # we can now calculate this
-    SF_MIN_LINK_LENGTH = round(linkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3)
+    # We can now calculate minimum link length
+    SF_MIN_LINK_LENGTH = round(maxLinkEffectiveLengthFactor*sanfranciscoScenario.maxVehicleLength()/5280.0 + 0.0005,3)
     
     sanfranciscoCubeNet.readNetfile \
       (netFile=SF_CUBE_NET_FILE,
@@ -475,7 +494,7 @@ if __name__ == '__main__':
        linkFacilityTypeEvalStr          = "ftToDTALookup[FT]",
        linkLengthEvalStr                = "float(DISTANCE)",
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
-       linkEffectiveLengthFactorEvalStr = str(linkEffectiveLengthFactor), 
+       linkEffectiveLengthFactorEvalStr = "float(linkEffectiveLengthFactorLookup['AT'+AT])",
        linkResponseTimeFactorEvalStr    = "1 if FT=='6' else 1 if FT=='1' else 1 if FT=='2' else 1 if FT=='3' else float(responseTimeLookup['UP' if (float(PER_RISE) > 0.05) else ('FLAT' if (float(PER_RISE) > -0.05) else 'DOWN')])",
        linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
@@ -487,13 +506,17 @@ if __name__ == '__main__':
                                            'speedLookup':speedLookup,
                                            'responseTimeLookup':responseTimeLookup,
                                            'boundaryIds':boundaryIds,
+                                           'linkEffectiveLengthFactorLookup':linkEffectiveLengthFactorLookup,
                                            })
     # Apply the transit lanes
     createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG)
         
     # create the movements for the network for all vehicles
     sanfranciscoCubeNet.addAllMovements(allVCG, includeUTurns=False)
-        
+
+    # HACK: make movement followup times code for AT of the incoming links
+    encodeATintoFollowupTime(sanfranciscoCubeNet)
+
     # Apply the turn prohibitions
     sanfranciscoCubeNet.applyTurnProhibitions(SF_CUBE_TURN_PROHIBITIONS)
     
@@ -510,6 +533,9 @@ if __name__ == '__main__':
     
     # Some special links needing turn pockets
     addTurnPockets(sanfranciscoCubeNet)
+    
+    #Some special links need special response times (in one case to mitigate over-penalizing capacity due to high percent of lane changes)
+    addCustomResFac(sanfranciscoCubeNet)
     
     # Convert the network to a Dynameq DTA network
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)

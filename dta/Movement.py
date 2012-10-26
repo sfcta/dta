@@ -681,6 +681,17 @@ class Movement(object):
         """Return True if there is a count for the input time period  
         """
         return True if self.getObsCount(startTimeInMin, endTimeInMin) else False 
-       
-        
+    
+    def getFollowup(self):
+        """
+        Returns the follow-up time
+        """        
+        return self._followupTime
+    
+    def setFollowup(self, newFollowupTime):
+        """
+        Sets the follow-up time to the given value
+        """ 
+        self._followupTime = newFollowupTime
+                
         

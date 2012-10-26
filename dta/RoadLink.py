@@ -1153,3 +1153,10 @@ class RoadLink(Link):
         Basically this DTA Anyway user defines this functionality by passing in *disallowConnectorEvalStr*.
         """
         return eval(disallowConnectorEvalStr)
+
+    def setResTimeFac(self, newResFac):
+        """
+        Sets the response time factor to the given value
+        """ 
+        self._responseTimeFactor = newResFac 
+    
