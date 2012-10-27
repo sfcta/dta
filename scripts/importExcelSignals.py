@@ -1677,7 +1677,8 @@ def convertSignalToDynameq(net, node, card, planInfo, startTime, endTime):
                 dMov = node.getMovement(n1, n3)
                 if dMov.isProhibitedToAllVehicleClassGroups():
                     continue
-
+                
+                #Warn about turning movements that have dedicated signal phases.  These are designated as PROTECTED below.
                 if (dMov.getTurnType() in groupMovementToTurnType(groupMovement,addRightToThru=False)):
                     dta.DtaLogger.warn("PERMITTED should be PROTECTED? groupMovement=%s turntype=%s,  dMov=[%s %s] to [%s %s] turntype=%s" % \
                                        (groupMovement, groupMovementToTurnType(groupMovement), 
@@ -1689,6 +1690,9 @@ def convertSignalToDynameq(net, node, card, planInfo, startTime, endTime):
                 
                 #Set through movements to be protected
                 if dMov.isThruTurn():
+                    phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
+                #Set turn movements to be protected if there is a dedicated signal phase
+                elif (dMov.getTurnType() in groupMovementToTurnType(groupMovement,addRightToThru=False)):
                     phaseMovement = PhaseMovement(dMov, PhaseMovement.PROTECTED)
                 #Set all other movements to be permitted
                 else:
