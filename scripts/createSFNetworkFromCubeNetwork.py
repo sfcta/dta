@@ -67,15 +67,25 @@ def addShifts(sanfranciscoCubeNet):
     # Stockton SB to Post
     sanfranciscoCubeNet.getLinkForNodeIdPair(24907,24908).addShifts(0,1, addShapepoints=True)
 
-def addTurnPockets(sanfranciscoCubeNet):
+def addTurnPockets(sanfranciscoDynameqNet):
     """
     The San Francisco network has a few turn pockets -- add these.
     """
     # Post EB, Powell to Stockton has a block long turn pocket (right turn only)
-    post_eb = sanfranciscoCubeNet.getLinkForNodeIdPair(24918,24908)
-    post_eb.setNumLanes(3)
-    post_thru_stockton = post_eb.findOutgoingMovement(24660)
-    post_thru_stockton.setNumLanes(2)
+    post_ebs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="POST ST", on_direction=dta.RoadLink.DIR_EB,
+                                                           from_street_label="POWELL ST", to_street_label="STOCKTON ST")
+    for post_eb in post_ebs:
+        post_eb.setNumLanes(3)
+    
+    # find the thru movement from post across stockton
+    for mov in post_ebs[-1].iterOutgoingMovements():
+        if mov.isThruTurn: mov.setNumLanes(2)
+    
+    # Guerrero NB to Market has a right turn pocket
+    guerrero_nbs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="GUERRERO ST", on_direction=dta.RoadLink.DIR_NB,
+                                                                from_street_label="DUBOCE AVE", to_street_label="MARKET ST")
+    guerrero_nbs[-1].setNumLanes(3)
+    
 
 def addCustomResFac(sanFranciscoCubeNet):
     """
@@ -105,6 +115,13 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
                             (24901,24903),  # Geary WB, Stockton to Powell
                             (24918,24908)]: # Post EB, Powell to Stockton
                 if lane_id == 1 and (buslane_pm == 1 or buslane_pm == 2): 
+                    link.addLanePermission(lane_id, transitVCG)
+                    transit_lane_links.add(link.getId())
+                else:
+                    link.addLanePermission(lane_id, allVCG)
+            # bush approaching market is special - left side
+            elif ab_tuple in [(24679,24672)]: # Bush EB from Sansome to Battery
+                if lane_id == link.getNumLanes()-1:
                     link.addLanePermission(lane_id, transitVCG)
                     transit_lane_links.add(link.getId())
                 else:
@@ -531,9 +548,6 @@ if __name__ == '__main__':
     # Some special links needing shifts
     addShifts(sanfranciscoCubeNet)
     
-    # Some special links needing turn pockets
-    addTurnPockets(sanfranciscoCubeNet)
-    
     #Some special links need special response times (in one case to mitigate over-penalizing capacity due to high percent of lane changes)
     addCustomResFac(sanfranciscoCubeNet)
     
@@ -544,7 +558,12 @@ if __name__ == '__main__':
     # the San Francisco network has a few "HOV stubs" -- links intended to facilitate future coding of HOV lanes
     removeHOVStubs(sanfranciscoDynameqNet)
     
-    # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq
+    # Battery between Bush and Market is a parking garage - forcibly split it
+    battery_sbs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="BATTERY ST", on_direction=dta.RoadLink.DIR_SB,
+                                                               from_street_label="BUSH ST", to_street_label="MARKET ST")
+    if len(battery_sbs) == 1: sanfranciscoDynameqNet.splitLink(battery_sbs[0])
+
+    # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq        
     sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000,
                                                                          distanceFromCentroid=50)
     
@@ -557,7 +576,9 @@ if __name__ == '__main__':
     # to intersections
     allowTurnsFromTransitOnlyLanes(sanfranciscoDynameqNet, allVCG, transitVCG, minLinkLength=SF_MIN_LINK_LENGTH, splitForConnectors=False)
 
-
+    # Some special links needing turn pockets
+    addTurnPockets(sanfranciscoDynameqNet)
+    
     # Add Two-Way stop control to connectors, so vehicles coming out of connectors yield to the vehicles already on the street
     sanfranciscoDynameqNet.addTwoWayStopControlToConnectorsAtRoadlinks()
 
