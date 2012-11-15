@@ -1932,8 +1932,8 @@ if __name__ == "__main__":
     dta.DtaLogger.info("Number of excel cards with multiple times matching start and end time = %d" % len(allMoreMatchesSet))
 
     #Adjust Followup time for signalized right and left turning movements 
-    rightTurnFollowupLookup = {90:2.67, 91:2.22, 92:2.0, 93:2.0, 94:2.0, 95:2.0,}
-    leftTurnFollowupLookup  = {90:2.67, 91:2.22, 92:2.0, 93:2.0, 94:2.0, 95:2.0,} 
+    rightTurnFollowupLookup = {90:2.22, 91:2.11, 92:2.0, 93:2.0, 94:2.0, 95:2.0,}
+    leftTurnFollowupLookup  = {90:2.22, 91:2.11, 92:2.0, 93:2.0, 94:2.0, 95:2.0,} 
     
     for node in net.iterRoadNodes():
         for mov in node.iterMovements():
