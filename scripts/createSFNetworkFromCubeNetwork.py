@@ -429,7 +429,12 @@ if __name__ == '__main__':
                                             "14.4*length+fac_type_pen*(1800*length/fspeed)",            # link_expr
                                             ""              # descr
                                             )
-    
+    sanfranciscoScenario.addGeneralizedCost("Expression_4", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "fac_type_pen*(1800*length/fspeed)",            # link_expr
+                                            ""              # descr
+                                            )    
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
