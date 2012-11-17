@@ -16,6 +16,7 @@ __license__     = """
     along with DTA.  If not, see <http://www.gnu.org/licenses/>.
 """
 import pdb 
+import collections
 import copy
 import random
 import difflib
@@ -451,6 +452,30 @@ class Network(object):
             del self._linksByNodeIdPair[(connector.getStartNode().getId(), oldEndNode.getId())]
             self._linksByNodeIdPair[(connector.getStartNode().getId(), newNode.getId())] = connector
 
+    def _removeDuplicateConnectors(self):
+        """
+        Remove duplicate connectors that connect from the
+        same centroid to the same road node
+        """
+        vNodesToDelete = set()
+        for node in self.iterCentroids():
+            # this will map roadnode -> [ virtual nodes IDs ]
+            result = collections.defaultdict(list)
+            for vNode in node.iterAdjacentNodes():
+                if not vNode.isVirtualNode(): continue
+                rNode = vNode.getConnectedRoadNode()
+                result[rNode.getId()].append(vNode.getId())
+            
+            for rNodeId in sorted(result.keys()):
+                vNodes = result[rNodeId]
+                if len(vNodes) == 1: continue
+                # keep the virtual node with the lowest node number
+                for vNodeToRemove in sorted(vNodes)[1:]:
+                    vNodesToDelete.add(vNodeToRemove)
+
+        for vNodeToDelete in vNodesToDelete:
+            self.removeNode(self.getNodeForId(vNodeToDelete))
+            
     def moveCentroidConnectorsFromIntersectionsToMidblocks(self, splitReverseLinks=False, moveVirtualNodeDist=None, 
                                                                   externalNodeIds=[], disallowConnectorEvalStr=None):
         """
@@ -477,7 +502,17 @@ class Network(object):
         
         .. image:: /images/removeCentroidConnectors2.png
            :height: 300px
-                
+
+
+        This method also adjusts the number of lanes for :py:class:`Connector` instances.  If the
+        connector is a boundary connector (according to :py:meth:`Connector.isBoundaryConnector`, then
+        it will adjust the number of lanes to be the sum of the incoming road links if it's an outgoing connector,
+        or the sum of the outgoing road links if it's an incoming connector.  If it's not a boundary
+        connector, then the number of lanes is set to match one of the incoming (if the connector is outgoing)
+        or outgoing (if the connector is incoming) links.
+
+        .. todo:: Move this last functionality to its own method and don't iterate over movements.
+        
         """
 
         allRoadNodes = [node for node in self.iterNodes() if isinstance(node, RoadNode)]
@@ -558,7 +593,10 @@ class Network(object):
                     
                     allowedMovement = Movement.simpleMovementFactory(ilink, olink,vcg)
                     ilink.addOutgoingMovement(allowedMovement)
-                            
+
+            # why iterate through movements?  why not just iterate through connectors?
+            # also why is this in this method and not in its own method?  for non-boundary connectors,
+            # won't it just set lanes to the last movement it happens to hit on?!
             for mov in node.iterMovements():
                 if not mov.isThruTurn():
                     continue

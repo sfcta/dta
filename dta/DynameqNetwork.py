@@ -22,8 +22,6 @@ from itertools import izip, imap
 import os
 import sys, csv
 
-from collections import defaultdict 
-
 from itertools import chain 
 from .Centroid import Centroid
 from .Connector import Connector
@@ -908,26 +906,6 @@ class DynameqNetwork(Network):
         inputStream1.close()
         inputStream2.close()
 
-    def _removeDuplicateConnectors(self):
-        """
-        Remove duplicate connectors that connect from the
-        same centroid to the same road node
-        """
-        vNodesToDelete = set()
-        for node in self.iterCentroids():
-            result = defaultdict(list)
-            for vNode in node.iterAdjacentNodes():
-                if not vNode.isVirtualNode():
-                    continue
-                rNode = vNode.getConnectedRoadNode()
-                result[rNode.getId()].append(vNode)
-            for rNode, vNodes in result.iteritems():
-                if len(vNodes) > 1:
-                   for vNodeToRemove in vNodes[1:]:
-                       vNodesToDelete.add(vNodeToRemove)
-
-        for vNodeToDelete in vNodesToDelete:
-            self.removeNode(vNodeToDelete)
                                
     def readSimResults(self, simStartTimeInMin, simEndTimeInMin, simTimeStepInMin):
         """

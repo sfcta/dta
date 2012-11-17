@@ -213,6 +213,12 @@ class Node(object):
         """
         return self._y
 
+    def getLabel(self):
+        """
+        Return the node label
+        """
+        return self._label
+    
     def hasIncomingLinkForId(self, linkId):
         """
         Returns True if there is an incoming link with the given *linkId*.
