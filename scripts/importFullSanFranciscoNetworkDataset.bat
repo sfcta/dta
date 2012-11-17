@@ -88,7 +88,9 @@ IF ERRORLEVEL 1 goto done
 :createDemand
 python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Car_NoToll demand_Car_NoToll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.22594
 IF ERRORLEVEL 1 goto done
-:: primary output: demand_Car_NoToll.dat
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Car_Toll demand_Car_Toll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.22594
+IF ERRORLEVEL 1 goto done
+:: primary output: demand_Car_NoToll.dat & demand_Car_Toll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
 
 :: 5) create the truck demand
@@ -96,7 +98,9 @@ IF ERRORLEVEL 1 goto done
 :createDemand
 python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Truck_NoToll demand_Truck_NoToll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.051282 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.039216
 IF ERRORLEVEL 1 goto done
-:: primary output: demand_Truck_NoToll.dat
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Truck_Toll demand_Truck_Toll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_MD.csv 14:30 15:30 01:00 0.051282 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_2010_EV.csv 18:30 19:30 01:00 0.039216
+IF ERRORLEVEL 1 goto done
+:: primary output: demand_Truck_NoToll.dat & demand_Truck_Toll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
 
 :copyFinal
