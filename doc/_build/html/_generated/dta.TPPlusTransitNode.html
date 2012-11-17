@@ -58,9 +58,16 @@
 <h1>dta.TPPlusTransitNode<a class="headerlink" href="#dta-tpplustransitnode" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.TPPlusTransitNode">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TPPlusTransitNode</tt><big>(</big><em>nodeId</em>, <em>isStop</em>, <em>access</em>, <em>delay</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">TPPlusTransitNode</tt><big>(</big><em>nodeId</em>, <em>isStop</em>, <em>access</em>, <em>delay</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Representation of a transit node for a <a class="reference internal" href="dta.TPPlusTransitRoute.html#dta.TPPlusTransitRoute" title="dta.TPPlusTransitRoute"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitRoute</span></tt></a></p>
+<p>Basic transit node in a <a class="reference internal" href="dta.TPPlusTransitRoute.html#dta.TPPlusTransitRoute" title="dta.TPPlusTransitRoute"><tt class="xref py py-class docutils literal"><span class="pre">TPPlusTransitRoute</span></tt></a>.</p>
+<ul class="simple">
+<li><em>nodeId</em> is a node number</li>
+<li><em>isStop</em> is a boolean</li>
+<li><em>access</em> is an integer</li>
+<li><em>delay</em> is a float representing the delay at this node, in minutes</li>
+</ul>
 <dl class="method">
 <dt id="dta.TPPlusTransitNode.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>nodeId</em>, <em>isStop</em>, <em>access</em>, <em>delay</em><big>)</big><a class="headerlink" href="#dta.TPPlusTransitNode.__init__" title="Permalink to this definition">¶</a></dt>
@@ -183,7 +190,7 @@
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

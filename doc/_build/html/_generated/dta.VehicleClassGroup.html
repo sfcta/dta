@@ -58,8 +58,16 @@
 <h1>dta.VehicleClassGroup<a class="headerlink" href="#dta-vehicleclassgroup" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.VehicleClassGroup">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VehicleClassGroup</tt><big>(</big><em>name</em>, <em>classDefinitionString</em>, <em>colorCode</em><big>)</big><a class="headerlink" href="#dta.VehicleClassGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">VehicleClassGroup</tt><big>(</big><em>name</em>, <em>classDefinitionString</em>, <em>colorCode</em><big>)</big><a class="headerlink" href="#dta.VehicleClassGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a group (or a set) of VehicleClasses, which are the classNames in <a class="reference internal" href="dta.VehicleType.html#dta.VehicleType" title="dta.VehicleType"><tt class="xref py py-class docutils literal"><span class="pre">VehicleType</span></tt></a>.</p>
+<p>Constructor.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>name</em> is the vehicle class group name (e.g. <tt class="docutils literal"><span class="pre">All</span></tt>, <tt class="docutils literal"><span class="pre">No_Trucks</span></tt>)</li>
+<li><em>classDefinitionString</em> defines the class (either <tt class="docutils literal"><span class="pre">-</span></tt>, <tt class="docutils literal"><span class="pre">*</span></tt>, or a pipe-delimited set of vehicle classes</li>
+<li><em>colorCode</em> is a hex color code for drawing (e.g. <tt class="docutils literal"><span class="pre">#ffff00</span></tt>)</li>
+</ul>
+</div></blockquote>
 <dl class="method">
 <dt id="dta.VehicleClassGroup.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>classDefinitionString</em>, <em>colorCode</em><big>)</big><a class="headerlink" href="#dta.VehicleClassGroup.__init__" title="Permalink to this definition">¶</a></dt>
@@ -219,7 +227,7 @@ but the transit ones.</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

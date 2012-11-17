@@ -20,6 +20,7 @@ dta.VirtualNode
       ~VirtualNode.getId
       ~VirtualNode.getIncomingLinkForId
       ~VirtualNode.getIncomingLinkForNodeId
+      ~VirtualNode.getLabel
       ~VirtualNode.getMovement
       ~VirtualNode.getMovementForLinkIds
       ~VirtualNode.getName

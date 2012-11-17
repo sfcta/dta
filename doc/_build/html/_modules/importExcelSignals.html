@@ -254,17 +254,19 @@
 <span class="sd">        Get the phases as list of dictionaries. By combining phasing data information</span>
 <span class="sd">        such as the one in the following table </span>
 <span class="sd">        </span>
-<span class="sd">        Phasing Data</span>
-<span class="sd">                           1  2  3  4  5  6  7  8</span>
-<span class="sd">          GEARY BLVD (EB)  G  G  Y  R  R  R  R  R</span>
-<span class="sd">            10TH AVE (SB)  R  R  R  R  G  G  Y  R</span>
-<span class="sd">          GEARY BLVD (WB)  G  G  Y  R  R  R  R  R</span>
-<span class="sd">            10TH AVE (NB)  R  R  R  R  G  G  Y  R</span>
+<span class="sd">        ::</span>
+<span class="sd">        </span>
+<span class="sd">         Phasing Data</span>
+<span class="sd">                            1  2  3  4  5  6  7  8</span>
+<span class="sd">           GEARY BLVD (EB)  G  G  Y  R  R  R  R  R</span>
+<span class="sd">             10TH AVE (SB)  R  R  R  R  G  G  Y  R</span>
+<span class="sd">           GEARY BLVD (WB)  G  G  Y  R  R  R  R  R</span>
+<span class="sd">             10TH AVE (NB)  R  R  R  R  G  G  Y  R</span>
 
 <span class="sd">        And the signal interval data for the time of day that is specified</span>
 <span class="sd">        by the startHour and endHour input arguments</span>
 <span class="sd"> </span>
-<span class="sd">	Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]        </span>
+<span class="sd">	    Times: [47.0, 6.0, 3.5, 0.5, 8.0, 20.0, 3.5, 1.5]        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">pPhase</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1210,6 +1212,39 @@
 
             <span class="k">return</span> <span class="bp">True</span>
     <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="groupMovementToTurnType"><a class="viewcode-back" href="../script_importExcelSignals.html#importExcelSignals.groupMovementToTurnType">[docs]</a><span class="k">def</span> <span class="nf">groupMovementToTurnType</span><span class="p">(</span><span class="n">gMovName</span><span class="p">,</span> <span class="n">addRightToThru</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given *gMovName*, which is the string from the Excel file representing a movement (e.g. ``OTIS SBLT`` or ``17TH ST. W/B THRU``),</span>
+<span class="sd">    returns a list of relevant turntypes corresponding to the :py:meth:`Movement.getTurnType` method.</span>
+<span class="sd">    </span>
+<span class="sd">    Pass *addRightToThru* if you want the through movements to come with right turns automatically.</span>
+
+<span class="sd">    the function is being called by mapGroupMovments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c">#todo ends with LT</span>
+    <span class="n">leftTurnIndicators</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;LT&#39;S&quot;</span><span class="p">,</span><span class="s">&quot;-L&quot;</span><span class="p">,</span> <span class="s">&quot;WB-L&quot;</span><span class="p">,</span><span class="s">&quot;EB-L&quot;</span><span class="p">,</span><span class="s">&quot;SB-L&quot;</span><span class="p">,</span><span class="s">&quot;NB-L&quot;</span><span class="p">,</span><span class="s">&quot;LEFT TURN&quot;</span><span class="p">,</span> <span class="s">&quot; LT&quot;</span><span class="p">,</span> <span class="s">&quot;NBLT&quot;</span><span class="p">,</span> <span class="s">&quot;SBLT&quot;</span><span class="p">,</span> <span class="s">&quot;WBLT&quot;</span><span class="p">,</span> <span class="s">&quot;EBLT&quot;</span><span class="p">,</span><span class="s">&quot;(NBLT)&quot;</span><span class="p">,</span> <span class="s">&quot;(SBLT)&quot;</span><span class="p">,</span> <span class="s">&quot;(WBLT)&quot;</span><span class="p">,</span> <span class="s">&quot;(EBLT)&quot;</span><span class="p">]</span>
+    <span class="n">rightTurnIndicators</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;RIGHT TURN&quot;</span><span class="p">,</span> <span class="s">&quot;BRT&quot;</span><span class="p">,</span> <span class="s">&quot; RT&quot;</span><span class="p">]</span>
+    <span class="n">thruTurnIndicators</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot; THRU&quot;</span><span class="p">,</span> <span class="s">&quot; THROUGH&quot;</span><span class="p">,</span> <span class="s">&quot;(THRU)&quot;</span><span class="p">]</span>
+
+    <span class="n">indicators</span> <span class="o">=</span> <span class="p">{</span><span class="n">TURN_LEFT</span><span class="p">:</span><span class="n">leftTurnIndicators</span><span class="p">,</span> <span class="n">TURN_THRU</span><span class="p">:</span><span class="n">thruTurnIndicators</span><span class="p">,</span> <span class="n">TURN_RIGHT</span><span class="p">:</span><span class="n">rightTurnIndicators</span><span class="p">}</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">thruadded</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">movadded</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dirIndicators</span> <span class="ow">in</span> <span class="n">indicators</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="n">dirIndicators</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="n">gMovName</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+                <span class="n">movadded</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">dir</span><span class="o">==</span><span class="n">TURN_THRU</span><span class="p">:</span>
+                    <span class="n">thruadded</span><span class="o">=</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">dir</span><span class="o">==</span><span class="n">TURN_RIGHT</span> <span class="ow">and</span> <span class="n">thruadded</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">addRightToThru</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
     </div>
 <div class="viewcode-block" id="mapMovements"><a class="viewcode-back" href="../script_importExcelSignals.html#importExcelSignals.mapMovements">[docs]</a><span class="k">def</span> <span class="nf">mapMovements</span><span class="p">(</span><span class="n">mec</span><span class="p">,</span> <span class="n">baseNetwork</span><span class="p">):</span>
     
@@ -1266,36 +1301,6 @@
        
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">getTurnType</span><span class="p">(</span><span class="n">gMovName</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Searches the movement name for a known set of turn type indicators such as</span>
-<span class="sd">        LT and returns the turn type as a string which is one of the following:</span>
-<span class="sd">        TURN_LEFT, TURN_THRU</span>
-
-<span class="sd">        the function is being called by mapGroupMovments</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="c">#todo ends with LT</span>
-        <span class="n">leftTurnIndicators</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;LT&#39;S&quot;</span><span class="p">,</span><span class="s">&quot;-L&quot;</span><span class="p">,</span> <span class="s">&quot;WB-L&quot;</span><span class="p">,</span><span class="s">&quot;EB-L&quot;</span><span class="p">,</span><span class="s">&quot;SB-L&quot;</span><span class="p">,</span><span class="s">&quot;NB-L&quot;</span><span class="p">,</span><span class="s">&quot;LEFT TURN&quot;</span><span class="p">,</span> <span class="s">&quot; LT&quot;</span><span class="p">,</span> <span class="s">&quot;NBLT&quot;</span><span class="p">,</span> <span class="s">&quot;SBLT&quot;</span><span class="p">,</span> <span class="s">&quot;WBLT&quot;</span><span class="p">,</span> <span class="s">&quot;EBLT&quot;</span><span class="p">,</span><span class="s">&quot;(NBLT)&quot;</span><span class="p">,</span> <span class="s">&quot;(SBLT)&quot;</span><span class="p">,</span> <span class="s">&quot;(WBLT)&quot;</span><span class="p">,</span> <span class="s">&quot;(EBLT)&quot;</span><span class="p">]</span>
-        <span class="n">rightTurnIndicators</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;RIGHT TURN&quot;</span><span class="p">,</span> <span class="s">&quot;BRT&quot;</span><span class="p">,</span> <span class="s">&quot; RT&quot;</span><span class="p">]</span>
-        <span class="n">thruTurnIndicators</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot; THRU&quot;</span><span class="p">,</span> <span class="s">&quot; THROUGH&quot;</span><span class="p">,</span> <span class="s">&quot;(THRU)&quot;</span><span class="p">]</span>
-
-        <span class="n">indicators</span> <span class="o">=</span> <span class="p">{</span><span class="n">TURN_LEFT</span><span class="p">:</span><span class="n">leftTurnIndicators</span><span class="p">,</span> <span class="n">TURN_THRU</span><span class="p">:</span><span class="n">thruTurnIndicators</span><span class="p">,</span> <span class="n">TURN_RIGHT</span><span class="p">:</span><span class="n">rightTurnIndicators</span><span class="p">}</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">thruadded</span><span class="o">=</span><span class="mi">0</span>
-        <span class="n">movadded</span><span class="o">=</span><span class="mi">0</span>
-        <span class="k">for</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dirIndicators</span> <span class="ow">in</span> <span class="n">indicators</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="n">dirIndicators</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="n">gMovName</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
-                    <span class="n">movadded</span> <span class="o">=</span> <span class="mi">1</span>
-                    <span class="k">if</span> <span class="nb">dir</span><span class="o">==</span><span class="n">TURN_THRU</span><span class="p">:</span>
-                        <span class="n">thruadded</span><span class="o">=</span><span class="mi">1</span>
-                <span class="k">if</span> <span class="nb">dir</span><span class="o">==</span><span class="n">TURN_RIGHT</span> <span class="ow">and</span> <span class="n">thruadded</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">mapGroupMovements</span><span class="p">(</span><span class="n">mec</span><span class="p">,</span> <span class="n">groupMovementNames</span><span class="p">,</span> <span class="n">bNode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1318,7 +1323,7 @@
                 <span class="n">stName</span> <span class="o">=</span> <span class="n">getStreetName</span><span class="p">(</span><span class="n">gMovName</span><span class="p">,</span> <span class="n">streetNames</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">StreetNameMappingError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">StreetNameMappingError</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">#</span><span class="si">%d</span><span class="s">#</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">fileName</span><span class="p">,</span> <span class="n">mec</span><span class="o">.</span><span class="n">mappedNodeId</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
-            <span class="n">gTurnTypes</span> <span class="o">=</span> <span class="n">getTurnType</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
+            <span class="n">gTurnTypes</span> <span class="o">=</span> <span class="n">groupMovementToTurnType</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
             <span class="n">gDirections</span> <span class="o">=</span> <span class="n">getDirections</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
             <span class="k">if</span> <span class="s">&quot;BUSH&quot;</span> <span class="ow">in</span> <span class="n">gMovName</span> <span class="ow">and</span> <span class="s">&quot;WB&quot;</span> <span class="ow">in</span> <span class="n">gDirections</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -1471,7 +1476,7 @@
             <span class="n">MovementNames</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
             <span class="n">groupMovements</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">MovementNames</span><span class="p">)</span>
 
-        <span class="n">gTurnTypes</span> <span class="o">=</span> <span class="n">getTurnType</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
+        <span class="n">gTurnTypes</span> <span class="o">=</span> <span class="n">groupMovementToTurnType</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
         <span class="n">gDirections</span> <span class="o">=</span> <span class="n">getDirections</span><span class="p">(</span><span class="n">gMovName</span><span class="p">)</span>
         <span class="k">if</span> <span class="s">&quot;BUSH&quot;</span> <span class="ow">in</span> <span class="n">gMovName</span> <span class="ow">and</span> <span class="s">&quot;WB&quot;</span> <span class="ow">in</span> <span class="n">gDirections</span><span class="p">:</span>
             <span class="n">MovementNames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">groupMovements</span><span class="p">)</span>
@@ -1723,7 +1728,28 @@
                 <span class="n">dMov</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">getMovement</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n3</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">dMov</span><span class="o">.</span><span class="n">isProhibitedToAllVehicleClassGroups</span><span class="p">():</span>
                     <span class="k">continue</span>
-                <span class="n">phaseMovement</span> <span class="o">=</span> <span class="n">PhaseMovement</span><span class="p">(</span><span class="n">dMov</span><span class="p">,</span> <span class="n">PhaseMovement</span><span class="o">.</span><span class="n">PROTECTED</span><span class="p">)</span>
+                
+                <span class="c">#Warn about turning movements that have dedicated signal phases.  These are designated as PROTECTED below.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">dMov</span><span class="o">.</span><span class="n">getTurnType</span><span class="p">()</span> <span class="ow">in</span> <span class="n">groupMovementToTurnType</span><span class="p">(</span><span class="n">groupMovement</span><span class="p">,</span><span class="n">addRightToThru</span><span class="o">=</span><span class="bp">False</span><span class="p">)):</span>
+                    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;PERMITTED should be PROTECTED? groupMovement=</span><span class="si">%s</span><span class="s"> turntype=</span><span class="si">%s</span><span class="s">,  dMov=[</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">] to [</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">] turntype=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> \
+                                       <span class="p">(</span><span class="n">groupMovement</span><span class="p">,</span> <span class="n">groupMovementToTurnType</span><span class="p">(</span><span class="n">groupMovement</span><span class="p">),</span> 
+                                        <span class="n">dMov</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span> 
+                                        <span class="n">dMov</span><span class="o">.</span><span class="n">getIncomingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span>
+                                        <span class="n">dMov</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getLabel</span><span class="p">(),</span>
+                                        <span class="n">dMov</span><span class="o">.</span><span class="n">getOutgoingLink</span><span class="p">()</span><span class="o">.</span><span class="n">getDirection</span><span class="p">(),</span> 
+                                        <span class="n">dMov</span><span class="o">.</span><span class="n">getTurnType</span><span class="p">()))</span>
+                
+                <span class="c">#Set through movements to be protected</span>
+                <span class="k">if</span> <span class="n">dMov</span><span class="o">.</span><span class="n">isThruTurn</span><span class="p">():</span>
+                    <span class="n">phaseMovement</span> <span class="o">=</span> <span class="n">PhaseMovement</span><span class="p">(</span><span class="n">dMov</span><span class="p">,</span> <span class="n">PhaseMovement</span><span class="o">.</span><span class="n">PROTECTED</span><span class="p">)</span>
+                <span class="c">#Set turn movements to be protected if there is a dedicated signal phase</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">dMov</span><span class="o">.</span><span class="n">getTurnType</span><span class="p">()</span> <span class="ow">in</span> <span class="n">groupMovementToTurnType</span><span class="p">(</span><span class="n">groupMovement</span><span class="p">,</span><span class="n">addRightToThru</span><span class="o">=</span><span class="bp">False</span><span class="p">)):</span>
+                    <span class="n">phaseMovement</span> <span class="o">=</span> <span class="n">PhaseMovement</span><span class="p">(</span><span class="n">dMov</span><span class="p">,</span> <span class="n">PhaseMovement</span><span class="o">.</span><span class="n">PROTECTED</span><span class="p">)</span>
+                <span class="c">#Set all other movements to be permitted</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">phaseMovement</span> <span class="o">=</span> <span class="n">PhaseMovement</span><span class="p">(</span><span class="n">dMov</span><span class="p">,</span> <span class="n">PhaseMovement</span><span class="o">.</span><span class="n">PERMITTED</span><span class="p">)</span>
+                <span class="c">##TODO: Figure out which turn movements are protected from both other traffic AND conflicting pedestrians/cyclists (i.e. pedestrian scrambles and turn arrows)</span>
+                
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">dPhase</span><span class="o">.</span><span class="n">hasPhaseMovement</span><span class="p">(</span><span class="n">phaseMovement</span><span class="o">.</span><span class="n">getMovement</span><span class="p">()</span><span class="o">.</span><span class="n">getStartNodeId</span><span class="p">(),</span>
                                                <span class="n">phaseMovement</span><span class="o">.</span><span class="n">getMovement</span><span class="p">()</span><span class="o">.</span><span class="n">getEndNodeId</span><span class="p">()):</span>                    
                     <span class="n">dPhase</span><span class="o">.</span><span class="n">addPhaseMovement</span><span class="p">(</span><span class="n">phaseMovement</span><span class="p">)</span>
@@ -1956,6 +1982,22 @@
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Number of time plans = </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">allPlansSet</span><span class="p">))</span>
     <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Number of excel cards with multiple times matching start and end time = </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">allMoreMatchesSet</span><span class="p">))</span>
 
+    <span class="c">#Adjust Followup time for signalized right and left turning movements </span>
+    <span class="n">rightTurnFollowupLookup</span> <span class="o">=</span> <span class="p">{</span><span class="mi">90</span><span class="p">:</span><span class="mf">2.67</span><span class="p">,</span> <span class="mi">91</span><span class="p">:</span><span class="mf">2.22</span><span class="p">,</span> <span class="mi">92</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">93</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">94</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">95</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,}</span>
+    <span class="n">leftTurnFollowupLookup</span>  <span class="o">=</span> <span class="p">{</span><span class="mi">90</span><span class="p">:</span><span class="mf">2.67</span><span class="p">,</span> <span class="mi">91</span><span class="p">:</span><span class="mf">2.22</span><span class="p">,</span> <span class="mi">92</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">93</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">94</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">95</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,}</span> 
+    
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">iterRoadNodes</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">mov</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">iterMovements</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">hasTimePlan</span><span class="p">():</span>
+                <span class="n">mov</span><span class="o">.</span><span class="n">setFollowup</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">mov</span><span class="o">.</span><span class="n">isRightTurn</span><span class="p">():</span>
+                <span class="n">mov</span><span class="o">.</span><span class="n">setFollowup</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rightTurnFollowupLookup</span><span class="p">[</span><span class="n">mov</span><span class="o">.</span><span class="n">getFollowup</span><span class="p">()]))</span>
+            <span class="k">elif</span> <span class="n">mov</span><span class="o">.</span><span class="n">isLeftTurn</span><span class="p">():</span>
+                <span class="n">mov</span><span class="o">.</span><span class="n">setFollowup</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">leftTurnFollowupLookup</span><span class="p">[</span><span class="n">mov</span><span class="o">.</span><span class="n">getFollowup</span><span class="p">()]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mov</span><span class="o">.</span><span class="n">setFollowup</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
     <span class="n">net</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="s">&quot;sf_signals&quot;</span><span class="p">)</span>
 
     <span class="c">#net.writeLinksToShp(&quot;sf_signals_link&quot;)</span>
@@ -1999,7 +2041,7 @@
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

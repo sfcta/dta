@@ -58,9 +58,26 @@
 <h1>dta.Demand<a class="headerlink" href="#dta-demand" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Demand">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Demand</tt><big>(</big><em>net</em>, <em>vehClassName</em>, <em>startTime</em>, <em>endTime</em>, <em>timeStep</em><big>)</big><a class="headerlink" href="#dta.Demand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">Demand</tt><big>(</big><em>net</em>, <em>vehClassName</em>, <em>startTime</em>, <em>endTime</em>, <em>timeStep</em><big>)</big><a class="headerlink" href="#dta.Demand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Class that represents the demand matrix for a <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a></p>
+<p>Constructor that initializes an empty Demand table that has three dimensions:
+time, origin taz, destination taz.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>net</strong> (a <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> instance) &#8211; the Network for which this demand is relevant, used to get TAZ numbers.</li>
+<li><strong>vehClassName</strong> &#8211; a string that must match the relevant <tt class="xref py py-class docutils literal"><span class="pre">VehicleClass</span></tt> exactly (it&#8217;s case-sensitive!)</li>
+<li><strong>startTime</strong> (a <a class="reference internal" href="dta.Utils.html#dta.Utils.Time" title="dta.Utils.Time"><tt class="xref py py-class docutils literal"><span class="pre">dta.Utils.Time</span></tt></a> instance) &#8211; the simulation start time for when this demand will get added to the network.</li>
+<li><strong>endTime</strong> (a <a class="reference internal" href="dta.Utils.html#dta.Utils.Time" title="dta.Utils.Time"><tt class="xref py py-class docutils literal"><span class="pre">dta.Utils.Time</span></tt></a> instance) &#8211; the simulation end time for this demand will stop being added to the network.</li>
+<li><strong>timeStep</strong> (a <a class="reference internal" href="dta.Utils.html#dta.Utils.Time" title="dta.Utils.Time"><tt class="xref py py-class docutils literal"><span class="pre">dta.Utils.Time</span></tt></a> instance) &#8211; the granularity of time steps at which the demand is represented.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="dta.Demand.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>net</em>, <em>vehClassName</em>, <em>startTime</em>, <em>endTime</em>, <em>timeStep</em><big>)</big><a class="headerlink" href="#dta.Demand.__init__" title="Permalink to this definition">¶</a></dt>
@@ -291,7 +308,7 @@ a path does not exist from origin to destination</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

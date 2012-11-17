@@ -58,7 +58,7 @@
 <span id="importing-stop-signs"></span><h1>Importing Stop Signs<a class="headerlink" href="#module-importUnsignalizedIntersections" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="importUnsignalizedIntersections.checkStreetnameConsistency">
-<tt class="descclassname">importUnsignalizedIntersections.</tt><tt class="descname">checkStreetnameConsistency</tt><big>(</big><em>dta_node_id</em>, <em>dta_streets</em>, <em>stopsign_streets</em>, <em>stopsign_x_streets</em><big>)</big><a class="reference internal" href="_modules/importUnsignalizedIntersections.html#checkStreetnameConsistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importUnsignalizedIntersections.checkStreetnameConsistency" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">checkStreetnameConsistency</tt><big>(</big><em>dta_node_id</em>, <em>dta_streets</em>, <em>stopsign_streets</em>, <em>stopsign_x_streets</em><big>)</big><a class="reference internal" href="_modules/importUnsignalizedIntersections.html#checkStreetnameConsistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importUnsignalizedIntersections.checkStreetnameConsistency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies that the stopsign streets and the stopsign_x_streets are subsets of dta_streets.
 Warns about violations.</p>
 <p><em>dta_node_id</em> is an integer, just used for logging.  All three  remaining inputs are lists of strings.</p>
@@ -66,13 +66,13 @@ Warns about violations.</p>
 
 <dl class="function">
 <dt id="importUnsignalizedIntersections.cleanStreetName">
-<tt class="descclassname">importUnsignalizedIntersections.</tt><tt class="descname">cleanStreetName</tt><big>(</big><em>streetName</em><big>)</big><a class="reference internal" href="_modules/importUnsignalizedIntersections.html#cleanStreetName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importUnsignalizedIntersections.cleanStreetName" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">cleanStreetName</tt><big>(</big><em>streetName</em><big>)</big><a class="reference internal" href="_modules/importUnsignalizedIntersections.html#cleanStreetName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importUnsignalizedIntersections.cleanStreetName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a streetname, this function attempts to make it uniform with the San Francisco DTA Network streetnames.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="importUnsignalizedIntersections.readStopSignShapefile">
-<tt class="descclassname">importUnsignalizedIntersections.</tt><tt class="descname">readStopSignShapefile</tt><big>(</big><em>shapefilename</em><big>)</big><a class="reference internal" href="_modules/importUnsignalizedIntersections.html#readStopSignShapefile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importUnsignalizedIntersections.readStopSignShapefile" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">readStopSignShapefile</tt><big>(</big><em>shapefilename</em><big>)</big><a class="reference internal" href="_modules/importUnsignalizedIntersections.html#readStopSignShapefile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#importUnsignalizedIntersections.readStopSignShapefile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the stop sign shapefile and returns the following:</p>
 <p>{ cnn -&gt; [ record1_dict, record2_dict, ... ] }</p>
 <p>Where <em>record_dict</em> includes all the fields from the shapefile, plus <cite>COORDS</cite> which maps to the coordinate tuple.</p>
@@ -573,7 +573,7 @@ Warns about violations.</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

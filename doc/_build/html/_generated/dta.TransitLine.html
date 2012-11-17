@@ -58,10 +58,23 @@
 <h1>dta.TransitLine<a class="headerlink" href="#dta-transitline" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.TransitLine">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TransitLine</tt><big>(</big><em>net</em>, <em>id</em>, <em>label</em>, <em>litype</em>, <em>vtype</em>, <em>stime</em>, <em>level</em>, <em>active</em>, <em>hway</em>, <em>dep</em><big>)</big><a class="headerlink" href="#dta.TransitLine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">TransitLine</tt><big>(</big><em>net</em>, <em>id</em>, <em>label</em>, <em>litype</em>, <em>vtype</em>, <em>stime</em>, <em>level</em>, <em>active</em>, <em>hway</em>, <em>dep</em><big>)</big><a class="headerlink" href="#dta.TransitLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Transit Line representation for a DTA Network.
 A Transit Line consists of a set of attributes and a list of <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instances.</p>
+<p>Constructor.</p>
+<ul class="simple">
+<li><em>net</em> is a <a class="reference internal" href="dta.Network.html#dta.Network" title="dta.Network"><tt class="xref py py-class docutils literal"><span class="pre">Network</span></tt></a> instance</li>
+<li><em>id</em> is an integer ID for the transit line</li>
+<li><em>label</em> is a string label</li>
+<li><em>litype</em> is a one of <a class="reference internal" href="#dta.TransitLine.LINE_TYPE_BUS" title="dta.TransitLine.LINE_TYPE_BUS"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_TYPE_BUS</span></tt></a> or <a class="reference internal" href="#dta.TransitLine.LINE_TYPE_TRAM" title="dta.TransitLine.LINE_TYPE_TRAM"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_TYPE_TRAM</span></tt></a></li>
+<li><em>vtype</em> is a string representing vehicle type (more?)</li>
+<li><em>stime</em> is an instance of <a class="reference internal" href="dta.Time.html#dta.Time" title="dta.Time"><tt class="xref py py-class docutils literal"><span class="pre">dta.Time</span></tt></a> representing the start time of the line</li>
+<li><em>level</em> is an indicator for vertical alignment</li>
+<li><em>active</em> is one of <a class="reference internal" href="#dta.TransitLine.LINE_ACTIVE" title="dta.TransitLine.LINE_ACTIVE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_ACTIVE</span></tt></a> or <a class="reference internal" href="#dta.TransitLine.LINE_INACTIVE" title="dta.TransitLine.LINE_INACTIVE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitLine.LINE_INACTIVE</span></tt></a></li>
+<li><em>hway</em> is the line headway in minutes, a float</li>
+<li><em>dep</em> is the number of departures, an integer (???)</li>
+</ul>
 <dl class="method">
 <dt id="dta.TransitLine.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>net</em>, <em>id</em>, <em>label</em>, <em>litype</em>, <em>vtype</em>, <em>stime</em>, <em>level</em>, <em>active</em>, <em>hway</em>, <em>dep</em><big>)</big><a class="headerlink" href="#dta.TransitLine.__init__" title="Permalink to this definition">¶</a></dt>
@@ -193,7 +206,7 @@ A Transit Line consists of a set of attributes and a list of <a class="reference
 <tt class="descname">addSegment</tt><big>(</big><em>link</em>, <em>dwell</em>, <em>label=None</em>, <em>lane=0</em>, <em>stopside=0</em>, <em>position=-1</em><big>)</big><a class="headerlink" href="#dta.TransitLine.addSegment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment" title="dta.TransitSegment"><tt class="xref py py-class docutils literal"><span class="pre">TransitSegment</span></tt></a> instance with the given information and add it to this
 line.</p>
-<p>See :py:meth:<a href="#id1"><span class="problematic" id="id2">`</span></a>TransitSegment.__init__ for how most of the arguments are interpreted.
+<p>See <a class="reference internal" href="dta.TransitSegment.html#dta.TransitSegment.__init__" title="dta.TransitSegment.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">TransitSegment.__init__()</span></tt></a> for how most of the arguments are interpreted.
 Pass -1 for <em>position</em> to append it to the end of this line&#8217;s transit segments, otherwise
 the <em>position</em> will be used for insertion.</p>
 </dd></dl>
@@ -358,7 +371,7 @@ read from file specified by <em>fileName</em>.  For example:</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

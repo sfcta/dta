@@ -58,11 +58,13 @@
 <h1>dta.PhaseMovement<a class="headerlink" href="#dta-phasemovement" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.PhaseMovement">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">PhaseMovement</tt><big>(</big><em>movement</em>, <em>capacityTag</em><big>)</big><a class="headerlink" href="#dta.PhaseMovement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">PhaseMovement</tt><big>(</big><em>movement</em>, <em>capacityTag</em><big>)</big><a class="headerlink" href="#dta.PhaseMovement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Represents a movement specific to a particular phase.  This is basically a <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a> with an
 annotation of whether the Movement is permitted or protected.</p>
 <p>Does this really need to be its own class?  It&#8217;s really just a tuple [Movement, permitted|protected]</p>
+<p>Constructor.  <em>movement</em> is an instance of <a class="reference internal" href="dta.Movement.html#dta.Movement" title="dta.Movement"><tt class="xref py py-class docutils literal"><span class="pre">Movement</span></tt></a>.
+<em>capacityTag</em> is one of <a class="reference internal" href="#dta.PhaseMovement.PROTECTED" title="dta.PhaseMovement.PROTECTED"><tt class="xref py py-attr docutils literal"><span class="pre">PhaseMovement.PROTECTED</span></tt></a> or <a class="reference internal" href="#dta.PhaseMovement.PERMITTED" title="dta.PhaseMovement.PERMITTED"><tt class="xref py py-attr docutils literal"><span class="pre">PhaseMovement.PERMITTED</span></tt></a></p>
 <dl class="method">
 <dt id="dta.PhaseMovement.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>movement</em>, <em>capacityTag</em><big>)</big><a class="headerlink" href="#dta.PhaseMovement.__init__" title="Permalink to this definition">¶</a></dt>
@@ -221,7 +223,7 @@ movement</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

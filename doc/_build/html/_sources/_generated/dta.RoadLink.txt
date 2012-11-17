@@ -94,6 +94,7 @@ dta.RoadLink
       ~RoadLink.setLength
       ~RoadLink.setNumLanes
       ~RoadLink.setObsCount
+      ~RoadLink.setResTimeFac
       ~RoadLink.setSimOutVolume
       ~RoadLink.setSimTTInMin
    

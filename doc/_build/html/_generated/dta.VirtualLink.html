@@ -58,10 +58,19 @@
 <h1>dta.VirtualLink<a class="headerlink" href="#dta-virtuallink" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.VirtualLink">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">VirtualLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">VirtualLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
 <p>A VirtualLink is a Link that connects a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> with
 a <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a>.</p>
+<p>Constructor. Verifies one node is a <a class="reference internal" href="dta.Centroid.html#dta.Centroid" title="dta.Centroid"><tt class="xref py py-class docutils literal"><span class="pre">Centroid</span></tt></a> and the
+other node is a <a class="reference internal" href="dta.VirtualNode.html#dta.VirtualNode" title="dta.VirtualNode"><tt class="xref py py-class docutils literal"><span class="pre">VirtualNode</span></tt></a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
+<li><em>startNode</em>, <em>endNode</em> are <a class="reference internal" href="dta.Node.html#dta.Node" title="dta.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> instances</li>
+<li><em>label</em> is a string, or None</li>
+</ul>
+</div></blockquote>
 <dl class="method">
 <dt id="dta.VirtualLink.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>label</em><big>)</big><a class="headerlink" href="#dta.VirtualLink.__init__" title="Permalink to this definition">¶</a></dt>
@@ -402,7 +411,7 @@ returns 0.</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

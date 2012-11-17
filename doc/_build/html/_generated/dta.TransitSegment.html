@@ -58,9 +58,26 @@
 <h1>dta.TransitSegment<a class="headerlink" href="#dta-transitsegment" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.TransitSegment">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">TransitSegment</tt><big>(</big><em>id</em>, <em>link</em>, <em>label</em>, <em>lane</em>, <em>dwell</em>, <em>stopside</em><big>)</big><a class="headerlink" href="#dta.TransitSegment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">TransitSegment</tt><big>(</big><em>id</em>, <em>link</em>, <em>label</em>, <em>lane</em>, <em>dwell</em>, <em>stopside</em><big>)</big><a class="headerlink" href="#dta.TransitSegment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A piece of a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>, basically a link with a transit line on it.</p>
+<p>A link in a <a class="reference internal" href="dta.TransitLine.html#dta.TransitLine" title="dta.TransitLine"><tt class="xref py py-class docutils literal"><span class="pre">TransitLine</span></tt></a>.  The public instance variables of this class have the same names as the parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>id</strong> &#8211; segment identifier</li>
+<li><strong>link</strong> &#8211; the <a class="reference internal" href="dta.RoadLink.html#dta.RoadLink" title="dta.RoadLink"><tt class="xref py py-class docutils literal"><span class="pre">RoadLink</span></tt></a> instance on which the transit segment runs</li>
+<li><strong>label</strong> &#8211; user-defined label for the segment or stop, a string</li>
+<li><strong>tlane</strong> &#8211; the lane used by the transit line. Use <a class="reference internal" href="#dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED" title="dta.TransitSegment.TRANSIT_LANE_UNSPECIFIED"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.TRANSIT_LANE_UNSPECIFIED</span></tt></a>, 1 for the outside lane, 2 for the next in, etc</li>
+<li><strong>dwell</strong> &#8211; is the average dwell time in seconds, a float</li>
+<li><strong>stopside</strong> &#8211; one of <a class="reference internal" href="#dta.TransitSegment.STOP_EXIT_LANE" title="dta.TransitSegment.STOP_EXIT_LANE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.STOP_EXIT_LANE</span></tt></a>, <a class="reference internal" href="#dta.TransitSegment.STOP_OUTSIDE" title="dta.TransitSegment.STOP_OUTSIDE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.STOP_OUTSIDE</span></tt></a>, or <a class="reference internal" href="#dta.TransitSegment.STOP_INSIDE" title="dta.TransitSegment.STOP_INSIDE"><tt class="xref py py-attr docutils literal"><span class="pre">TransitSegment.STOP_INSIDE</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="dta.TransitSegment.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>link</em>, <em>label</em>, <em>lane</em>, <em>dwell</em>, <em>stopside</em><big>)</big><a class="headerlink" href="#dta.TransitSegment.__init__" title="Permalink to this definition">¶</a></dt>
@@ -224,7 +241,7 @@
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

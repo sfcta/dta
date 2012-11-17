@@ -58,9 +58,12 @@
 <h1>dta.DynameqNetwork<a class="headerlink" href="#dta-dynameqnetwork" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.DynameqNetwork">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">DynameqNetwork</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">DynameqNetwork</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Network.Network</span></tt></p>
 <p>A Dynameq DTA Network.</p>
+<p>Constructor.  Initializes to an empty network.</p>
+<p>Keeps a reference to the given dynameqScenario (a <a class="reference internal" href="dta.DynameqScenario.html#dta.DynameqScenario" title="dta.DynameqScenario"><tt class="xref py py-class docutils literal"><span class="pre">DynameqScenario</span></tt></a> instance)
+for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleClassGroup" title="dta.VehicleClassGroup"><tt class="xref py py-class docutils literal"><span class="pre">VehicleClassGroup</span></tt></a> lookups</p>
 <dl class="method">
 <dt id="dta.DynameqNetwork.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork.__init__" title="Permalink to this definition">¶</a></dt>
@@ -1134,6 +1137,12 @@ facility types 1 and 8 are not splittable, say if they are freeways or ramps.</p
 <img alt="../_images/removeCentroidConnectors1.png" src="../_images/removeCentroidConnectors1.png" style="height: 300px;" />
 <p>After:</p>
 <img alt="../_images/removeCentroidConnectors2.png" src="../_images/removeCentroidConnectors2.png" style="height: 300px;" />
+<p>This method also adjusts the number of lanes for <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances.  If the
+connector is a boundary connector (according to <a class="reference internal" href="dta.Connector.html#dta.Connector.isBoundaryConnector" title="dta.Connector.isBoundaryConnector"><tt class="xref py py-meth docutils literal"><span class="pre">Connector.isBoundaryConnector()</span></tt></a>, then
+it will adjust the number of lanes to be the sum of the incoming road links if it&#8217;s an outgoing connector,
+or the sum of the outgoing road links if it&#8217;s an incoming connector.  If it&#8217;s not a boundary
+connector, then the number of lanes is set to match one of the incoming (if the connector is outgoing)
+or outgoing (if the connector is incoming) links.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1340,7 +1349,7 @@ tolerance = tolerance for matching nodes in two databases in feet (5 ft is appro
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

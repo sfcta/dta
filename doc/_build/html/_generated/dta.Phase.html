@@ -58,13 +58,19 @@
 <h1>dta.Phase<a class="headerlink" href="#dta-phase" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Phase">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Phase</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType=0</em><big>)</big><a class="headerlink" href="#dta.Phase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">Phase</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType=0</em><big>)</big><a class="headerlink" href="#dta.Phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A phase consists of timing (green, yellow and red times) plus a set of <a class="reference internal" href="dta.PhaseMovement.html#dta.PhaseMovement" title="dta.PhaseMovement"><tt class="xref py py-class docutils literal"><span class="pre">PhaseMovement</span></tt></a> instances
 that are allowed to move during the green time.</p>
 <p>A phase can be Standard, or Custom; the difference being that a custom phase movement can
 specify a subset of the movement lanes that are permitted/protected.</p>
 <p>Right now, Custom phases aren&#8217;t really supported.</p>
+<p>Constructor.</p>
+<ul class="simple">
+<li><em>timeplan</em> is the <a class="reference internal" href="dta.TimePlan.html#dta.TimePlan" title="dta.TimePlan"><tt class="xref py py-class docutils literal"><span class="pre">TimePlan</span></tt></a> instance to which this Phase belongs.</li>
+<li><em>green</em>, <em>red</em>, and <em>yellow</em> are numbers (int or float) representing the number of seconds
+for each light</li>
+</ul>
 <dl class="method">
 <dt id="dta.Phase.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>timePlan</em>, <em>green</em>, <em>yellow</em>, <em>red</em>, <em>phaseType=0</em><big>)</big><a class="headerlink" href="#dta.Phase.__init__" title="Permalink to this definition">¶</a></dt>
@@ -297,7 +303,7 @@ input start node to end node</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

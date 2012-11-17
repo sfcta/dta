@@ -18,6 +18,7 @@ dta.Node
       ~Node.getId
       ~Node.getIncomingLinkForId
       ~Node.getIncomingLinkForNodeId
+      ~Node.getLabel
       ~Node.getMovement
       ~Node.getMovementForLinkIds
       ~Node.getName

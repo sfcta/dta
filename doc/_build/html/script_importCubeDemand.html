@@ -270,7 +270,10 @@
 212
 213
 214
-215</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011-2012 SFCTA&quot;</span>
+215
+216
+217
+218</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011-2012 SFCTA&quot;</span>
 <span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">    This file is part of DTA.</span>
 
@@ -439,13 +442,16 @@
             <span class="k">if</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME_N</span><span class="p">)</span> <span class="o">!=</span> <span class="n">startTime</span><span class="p">:</span>
                 <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Start time of first demand period (</span><span class="si">%s</span><span class="s">) must equal demand start time </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> 
                                     <span class="p">(</span><span class="n">START_TIME_N</span><span class="p">,</span> <span class="n">startTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">)))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ii</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="n">numDemandTables</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME_N</span><span class="p">)</span> <span class="o">!=</span> <span class="n">endTime_n</span><span class="p">:</span>
                 <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Start time of demand period </span><span class="si">%d</span><span class="s"> does not equal end time of demand period </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ii</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ii</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ii</span> <span class="o">==</span> <span class="n">numDemandTables</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">END_TIME_N</span><span class="p">)</span> <span class="o">!=</span> <span class="n">endTime</span><span class="p">:</span>
                 <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;End time of last demand period (</span><span class="si">%s</span><span class="s">) must equal demand end time </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> 
                                     <span class="p">(</span><span class="n">END_TIME_N</span><span class="p">,</span> <span class="n">endTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%H:%M&quot;</span><span class="p">)))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="c"># Set start time, end time, and time step for the demand period</span>
         <span class="n">startTime_n</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">readFromString</span><span class="p">(</span><span class="n">START_TIME_N</span><span class="p">)</span>
@@ -542,7 +548,7 @@
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

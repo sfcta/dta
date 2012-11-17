@@ -20,6 +20,7 @@ dta.RoadNode
       ~RoadNode.getId
       ~RoadNode.getIncomingLinkForId
       ~RoadNode.getIncomingLinkForNodeId
+      ~RoadNode.getLabel
       ~RoadNode.getMovement
       ~RoadNode.getMovementForLinkIds
       ~RoadNode.getName

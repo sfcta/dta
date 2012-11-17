@@ -49,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DTA Anyway'
-copyright = u'2011, SFCTA Modeling Crew'
+copyright = u'2011-2012, SFCTA Modeling Crew'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -72,7 +72,7 @@ release = '1.0'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = []
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -82,7 +82,7 @@ exclude_patterns = ['_build']
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -227,11 +227,11 @@ man_pages = [
 # --------------------------------------
 autodoc_default_flags = [ 'members', 'undoc-members', 'private-members', 'inherited-members', 'show-inheritance' ]
 
-# autoclass_content = "both" # classes should include both the class' and the __init__ method's docstring
+autoclass_content = "both" # classes should include both the class' and the __init__ method's docstring
 
 autosummary_generate = True
 
-# keep_warnings = True
+keep_warnings = True
 
 graphviz_dot = r"C:\Program Files (x86)\Graphviz 2.28\bin\dot.exe"
 inheritance_graph_attrs = dict(rankdir="TB")

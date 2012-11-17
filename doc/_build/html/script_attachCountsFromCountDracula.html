@@ -58,7 +58,7 @@
 <span id="importing-validation-counts"></span><h1>Importing Validation Counts<a class="headerlink" href="#module-attachCountsFromCountDracula" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile">
-<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">exportMainlineCountsToDynameUserDataFile</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix=None</em>, <em>from_year=None</em>, <em>to_year=None</em>, <em>weekdays=None</em>, <em>all_count_workbook=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportMainlineCountsToDynameUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">exportMainlineCountsToDynameUserDataFile</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix=None</em>, <em>from_year=None</em>, <em>to_year=None</em>, <em>weekdays=None</em>, <em>all_count_workbook=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportMainlineCountsToDynameUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportMainlineCountsToDynameUserDataFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exports mainline counts from CountDracula database and exports them to a Dynameq link user data file.</p>
 <ul class="simple">
 <li><em>cd_reader</em> is a CountDraculaReader instance where the counts are stored</li>
@@ -80,7 +80,7 @@ the endtime; e.g. counts_links_15min_1600_1830.dat</p>
 
 <dl class="function">
 <dt id="attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile">
-<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">exportTurnCountsToDynameqUserDataFile</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix</em>, <em>from_year=None</em>, <em>to_year=None</em>, <em>weekdays=None</em>, <em>all_count_workbook=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportTurnCountsToDynameqUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">exportTurnCountsToDynameqUserDataFile</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>starttime</em>, <em>period</em>, <em>num_intervals</em>, <em>suffix</em>, <em>from_year=None</em>, <em>to_year=None</em>, <em>weekdays=None</em>, <em>all_count_workbook=None</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#exportTurnCountsToDynameqUserDataFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.exportTurnCountsToDynameqUserDataFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exports turn counts from CountDracula database and exports them to a Dynameq movement user data file.</p>
 <ul class="simple">
 <li><em>cd_reader</em> is a CountDraculaReader instance where the counts are stored</li>
@@ -102,14 +102,14 @@ the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</p>
 
 <dl class="function">
 <dt id="attachCountsFromCountDracula.findDtaLinkForMainlineCountLocation">
-<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">findDtaLinkForMainlineCountLocation</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>mainline_count_location</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#findDtaLinkForMainlineCountLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.findDtaLinkForMainlineCountLocation" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">findDtaLinkForMainlineCountLocation</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>mainline_count_location</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#findDtaLinkForMainlineCountLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.findDtaLinkForMainlineCountLocation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the DTA RoadLink for the given mainline_count_location (a CountDracula MainlineCountLocation instance).</p>
 <p>Returns None on failure; returns the RoadLink instance on success.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="attachCountsFromCountDracula.findDtaMovementForTurnCountLocation">
-<tt class="descclassname">attachCountsFromCountDracula.</tt><tt class="descname">findDtaMovementForTurnCountLocation</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>turn_count_location</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#findDtaMovementForTurnCountLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.findDtaMovementForTurnCountLocation" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">findDtaMovementForTurnCountLocation</tt><big>(</big><em>sanfranciscoDynameqNet</em>, <em>turn_count_location</em><big>)</big><a class="reference internal" href="_modules/attachCountsFromCountDracula.html#findDtaMovementForTurnCountLocation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#attachCountsFromCountDracula.findDtaMovementForTurnCountLocation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the DTA Movement for the given turn_count_location (a CountDracula TurnCountLocation instance).</p>
 <p>Returns None on failure; returns the Movement instance on success.</p>
 </dd></dl>
@@ -367,7 +367,7 @@ the endtime; e.g. counts_movements_15min_1600_1830_suffix.dat</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

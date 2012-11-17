@@ -100,6 +100,7 @@ dta.Connector
       ~Connector.setLength
       ~Connector.setNumLanes
       ~Connector.setObsCount
+      ~Connector.setResTimeFac
       ~Connector.setSimOutVolume
       ~Connector.setSimTTInMin
       ~Connector.setStartNode

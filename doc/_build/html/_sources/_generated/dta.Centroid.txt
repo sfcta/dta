@@ -18,6 +18,7 @@ dta.Centroid
       ~Centroid.getId
       ~Centroid.getIncomingLinkForId
       ~Centroid.getIncomingLinkForNodeId
+      ~Centroid.getLabel
       ~Centroid.getMovement
       ~Centroid.getMovementForLinkIds
       ~Centroid.getName

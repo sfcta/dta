@@ -20,6 +20,7 @@ dta.Movement
       ~Movement.getDirection
       ~Movement.getEndNode
       ~Movement.getEndNodeId
+      ~Movement.getFollowup
       ~Movement.getFreeFlowSpeedInMPH
       ~Movement.getFreeFlowTTInMin
       ~Movement.getId
@@ -51,6 +52,7 @@ dta.Movement
       ~Movement.iterHigherPriorityMovements
       ~Movement.prohibitAllVehicleClassGroups
       ~Movement.prohibitAllVehiclesButTransit
+      ~Movement.setFollowup
       ~Movement.setNumLanes
       ~Movement.setObsCount
       ~Movement.setOverrideTurnType

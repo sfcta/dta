@@ -58,13 +58,15 @@
 <h1>dta.Network<a class="headerlink" href="#dta-network" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.Network">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">Network</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.Network" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">Network</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.Network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Base class that represents a DTA Network.  Networks exist on a continuum between
 macro- and micro-simulation, and this network is meant to represent something
 &#8220;typical&#8221; for a mesosimulation.  Something to be aware of in case it becomes too complicated.</p>
 <p>Subclasses will be used to represent networks for different frameworks (Dynameq, Cube, etc)
 so this class should have no code to deal with any particular file formats.</p>
+<p>Constructor.  Initializes to an empty network, stores reference to given
+scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" title="dta.Scenario"><tt class="xref py py-class docutils literal"><span class="pre">Scenario</span></tt></a> instance).</p>
 <dl class="method">
 <dt id="dta.Network.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>scenario</em><big>)</big><a class="headerlink" href="#dta.Network.__init__" title="Permalink to this definition">¶</a></dt>
@@ -304,6 +306,13 @@ scenario (a <a class="reference internal" href="dta.Scenario.html#dta.Scenario" 
 <dt id="dta.Network._handleOverlappingLinkPair">
 <tt class="descname">_handleOverlappingLinkPair</tt><big>(</big><em>node</em>, <em>link1</em>, <em>link2</em>, <em>warn</em>, <em>moveVirtualNodeDist</em>, <em>incoming=True</em><big>)</big><a class="headerlink" href="#dta.Network._handleOverlappingLinkPair" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method to avoid repeating code; handles a single pair of overlapping links</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.Network._removeDuplicateConnectors">
+<tt class="descname">_removeDuplicateConnectors</tt><big>(</big><big>)</big><a class="headerlink" href="#dta.Network._removeDuplicateConnectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicate connectors that connect from the
+same centroid to the same road node</p>
 </dd></dl>
 
 <dl class="method">
@@ -814,6 +823,12 @@ facility types 1 and 8 are not splittable, say if they are freeways or ramps.</p
 <img alt="../_images/removeCentroidConnectors1.png" src="../_images/removeCentroidConnectors1.png" style="height: 300px;" />
 <p>After:</p>
 <img alt="../_images/removeCentroidConnectors2.png" src="../_images/removeCentroidConnectors2.png" style="height: 300px;" />
+<p>This method also adjusts the number of lanes for <a class="reference internal" href="dta.Connector.html#dta.Connector" title="dta.Connector"><tt class="xref py py-class docutils literal"><span class="pre">Connector</span></tt></a> instances.  If the
+connector is a boundary connector (according to <a class="reference internal" href="dta.Connector.html#dta.Connector.isBoundaryConnector" title="dta.Connector.isBoundaryConnector"><tt class="xref py py-meth docutils literal"><span class="pre">Connector.isBoundaryConnector()</span></tt></a>, then
+it will adjust the number of lanes to be the sum of the incoming road links if it&#8217;s an outgoing connector,
+or the sum of the outgoing road links if it&#8217;s an incoming connector.  If it&#8217;s not a boundary
+connector, then the number of lanes is set to match one of the incoming (if the connector is outgoing)
+or outgoing (if the connector is incoming) links.</p>
 </dd></dl>
 
 <dl class="method">
@@ -980,7 +995,7 @@ opposing direction then split that too.</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

@@ -58,9 +58,35 @@
 <h1>dta.RoadLink<a class="headerlink" href="#dta-roadlink" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="dta.RoadLink">
-<em class="property">class </em><tt class="descclassname">dta.</tt><tt class="descname">RoadLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.RoadLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descname">RoadLink</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.RoadLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dta.Link.Link</span></tt></p>
 <p>A RoadLink in a network.  Both nodes must be RoadNodes.</p>
+<p>Constructor.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>id</em> is a unique identifier (unique within the containing network), an integer</li>
+<li><em>startNode</em>, <em>endNode</em> are Nodes</li>
+<li><em>reverseAttachedId</em> is the id of the reverse link, if attached; pass None if not
+attached</li>
+<li><em>facilityType</em> is a non-negative integer indicating the category of facility such
+as a freeway, arterial, collector, etc.  A lower number indicates a facility of
+higher priority, that is, higher capacity and speed.</li>
+<li><em>length</em> is the link length, in <a class="reference internal" href="#dta.RoadLink.LENGTH_UNITS" title="dta.RoadLink.LENGTH_UNITS"><tt class="xref py py-attr docutils literal"><span class="pre">RoadLink.LENGTH_UNITS</span></tt></a>. Pass None to automatically calculate it.</li>
+<li><em>freeflowSpeed</em> is in km/h or mi/h</li>
+<li><em>effectiveLengthFactor</em> is applied to the effective length of a vehicle while it is
+on the link.  May vary over time with LinkEvents</li>
+<li><em>responseTimeFactor</em> is the applied to the response time of the vehicle while it is
+on the link.  May vary over time with LinkEvents</li>
+<li><em>numLanes</em> is an integer</li>
+<li><em>roundAbout</em> is true/false or 1/0</li>
+<li><em>level</em> is an indicator to attribute vertical alignment/elevation. If None passed, will use default.</li>
+<li><em>label</em> is a link label. If None passed, will use default.</li>
+<li><em>group</em> is an integer that identifies one or more links; groups are used for calculation of approach
+delay to an intersection.  So all vehicles approaching on the links in one group experience the
+same approach delay.  (todo: example of how this should be used?)  If -1 is passed, no group will be
+used.</li>
+</ul>
+</div></blockquote>
 <dl class="method">
 <dt id="dta.RoadLink.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>id</em>, <em>startNode</em>, <em>endNode</em>, <em>reverseAttachedLinkId</em>, <em>facilityType</em>, <em>length</em>, <em>freeflowSpeed</em>, <em>effectiveLengthFactor</em>, <em>responseTimeFactor</em>, <em>numLanes</em>, <em>roundAbout</em>, <em>level</em>, <em>label</em>, <em>group</em><big>)</big><a class="headerlink" href="#dta.RoadLink.__init__" title="Permalink to this definition">¶</a></dt>
@@ -110,10 +136,7 @@ used.</li>
 <td>Append a shape point to the link.</td>
 </tr>
 <tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">addShifts</span></tt>(startShift,&nbsp;endShift[,&nbsp;addShapepoints])</td>
-<td><ul class="simple">
-<li><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from</li>
-</ul>
-</td>
+<td>Adds a shift to the start and/or end of the roadlink, to change the alignment of either end by one (or more) lane(s).</td>
 </tr>
 <tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">allowsAll</span></tt>()</td>
 <td>Is there a lane on this link that allows all?</td>
@@ -343,10 +366,13 @@ used.</li>
 <tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setObsCount</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;count)</td>
 <td>Set the number of vehicles Traversing the link</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimOutVolume</span></tt>(startTimeInMin,&nbsp;...)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setResTimeFac</span></tt>(newResFac)</td>
+<td>Sets the response time factor to the given value</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimOutVolume</span></tt>(startTimeInMin,&nbsp;...)</td>
 <td>Set the simulated volume on the edge provided that the edge</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;...)</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">setSimTTInMin</span></tt>(startTimeInMin,&nbsp;endTimeInMin,&nbsp;...)</td>
 <td>Set the simulated travel time on the link for the particular input period</td>
 </tr>
 </tbody>
@@ -486,20 +512,21 @@ such as showing curvature.</p>
 <dl class="method">
 <dt id="dta.RoadLink.addShifts">
 <tt class="descname">addShifts</tt><big>(</big><em>startShift</em>, <em>endShift</em>, <em>addShapepoints=False</em><big>)</big><a class="headerlink" href="#dta.RoadLink.addShifts" title="Permalink to this definition">¶</a></dt>
-<dd><ul>
-<li><dl class="first docutils">
-<dt><em>startShift</em>: the shift value of the first segment of the link, that is, the number of lanes from</dt>
-<dd><p class="first last">the center line of the roadway that the first segment is shifted.</p>
-</dd>
-</dl>
-</li>
-</ul>
-<blockquote>
-<div><ul class="simple">
-<li><em>endShift</em>: End-shift: the shift value of the last segment of the link, that is, the number of 
+<dd><p>Adds a shift to the start and/or end of the roadlink, to change the alignment of either end by one (or more) lane(s).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>startShift</strong> &#8211; the shift value of the first segment of the link, that is, the number of lanes from
+the center line of the roadway that the first segment is shifted.</li>
+<li><strong>endShift</strong> &#8211; End-shift: the shift value of the last segment of the link, that is, the number of 
 lanes from the center line of the roadway that the last segment is shifted.</li>
 </ul>
-</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Dynameq software requires the link to have at least 2 shape points in order to use these shifts.
 Thus, this method will also add the required shape points, if they&#8217;re lacking (just a linear interpolation
 1/3 and 2/3 along the line via <a class="reference internal" href="#dta.RoadLink.coordinatesAlongLink" title="dta.RoadLink.coordinatesAlongLink"><tt class="xref py py-meth docutils literal"><span class="pre">RoadLink.coordinatesAlongLink()</span></tt></a> if <em>addShapepoints</em> is True.</p>
@@ -1018,6 +1045,12 @@ in the input time period</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="dta.RoadLink.setResTimeFac">
+<tt class="descname">setResTimeFac</tt><big>(</big><em>newResFac</em><big>)</big><a class="headerlink" href="#dta.RoadLink.setResTimeFac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the response time factor to the given value</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dta.RoadLink.setSimOutVolume">
 <tt class="descname">setSimOutVolume</tt><big>(</big><em>startTimeInMin</em>, <em>endTimeInMin</em>, <em>volume</em><big>)</big><a class="headerlink" href="#dta.RoadLink.setSimOutVolume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the simulated volume on the edge provided that the edge 
@@ -1087,7 +1120,7 @@ does not have any emanating movements</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

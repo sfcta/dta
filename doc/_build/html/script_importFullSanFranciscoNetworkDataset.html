@@ -169,12 +169,40 @@
 110
 111
 112
-113</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">:: This file should run in an empty directory, all the way through.</span>
 
 <span class="c">:: DTA Anyway code location is required</span>
 <span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_CODE_DIR (
   <span class="k">echo</span> Please <span class="k">set</span> <span class="nv">the</span> DTA_CODE_DIR environment variable to the directory where DTA Anyway is installed.
-  <span class="k">echo</span> e.g. <span class="k">set</span> <span class="nv">DTA_CODE_DIR</span><span class="o">=</span>Y:\Users\neema\dta
+  <span class="k">echo</span> e.g. <span class="k">set</span> <span class="nv">DTA_CODE_DIR</span><span class="o">=</span>C:\dta
+  <span class="k">goto</span> <span class="nl">done</span>
+)
+
+<span class="c">:: DTA Anyway supply/demand location is required</span>
+<span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_NET_DIR (
+  <span class="k">echo</span> Please <span class="k">set</span> <span class="nv">the</span> DTA_NET_DIR environment variable to the directory where DTA network and matrix data are located.
+  <span class="k">echo</span> e.g. <span class="k">set</span> <span class="nv">DTA_NET_DIR</span><span class="o">=</span>Y:\dta\SanFrancisco\<span class="m">2010</span>
+  <span class="k">goto</span> <span class="nl">done</span>
+)
+
+<span class="c">:: DTA Anyway Cube network filename is required</span>
+<span class="k">IF</span> NOT <span class="k">DEFINED</span> DTA_NET_FILE (
+  <span class="k">echo</span> Please <span class="k">set</span> <span class="nv">the</span> DTA_NET_DIR environment variable to the directory where DTA network and matrix data are located.
+  <span class="k">echo</span> e.g. <span class="k">set</span> <span class="nv">DTA_NET_FILE</span><span class="o">=</span>SanFranciscoSubArea_<span class="m">2010</span>.net
   <span class="k">goto</span> <span class="nl">done</span>
 )
 
@@ -190,7 +218,7 @@
 <span class="c">:: 1) create the network from the Cube network</span>
 <span class="c">::</span>
 <span class="nl">:convertStaticNetwork</span>
-python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_createSFNetworkFromCubeNetwork.html">createSFNetworkFromCubeNetwork.py</a> -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\<span class="m">2010</span>\SanFranciscoSubArea_<span class="m">2010</span>.net Y:\dta\SanFrancisco\<span class="m">2010</span>\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_createSFNetworkFromCubeNetwork.html">createSFNetworkFromCubeNetwork.py</a> -n sf_nodes.shp -l sf_links.shp <span class="nv">%DTA_NET_DIR%</span>\<span class="nv">%DTA_NET_FILE%</span> <span class="nv">%DTA_NET_DIR%</span>\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
 <span class="c">:: primary output: Dynameq files sf_{scen,base,advn,ctrl}.dqt</span>
 <span class="c">:: log     output: createSFNetworkFromCubeNetwork.{DEBUG,INFO}.log</span>
 <span class="c">:: debug   output: sf_{links,nodes}.shp</span>
@@ -201,14 +229,14 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_createSFNe
 <span class="c">:: </span>
 <span class="nl">:importTransit</span>
 <span class="k">if</span> <span class="nv">%TRANSIT_IMPORT%</span> <span class="o">==</span> CUBE (
-  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importTPPlusTransitRoutes.html">importTPPlusTransitRoutes.py</a> . sf Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\sfmuni.lin Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\bus.lin
+  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importTPPlusTransitRoutes.html">importTPPlusTransitRoutes.py</a> . sf <span class="nv">%DTA_NET_DIR%</span>\transit\sfmuni.lin <span class="nv">%DTA_NET_DIR%</span>\transit\bus.lin
   <span class="c">:: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt</span>
   <span class="c">:: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log</span>
   <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
 )
 <span class="k">if</span> <span class="nv">%TRANSIT_IMPORT%</span> <span class="o">==</span> GTFS (
   <span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">%DTA_CODE_DIR%</span>;Y:\lmz\googletransitdatafeed-read-only\python
-  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importGTFS.html">importGTFS.py</a> -s sf_gtfs_stops.shp -l sf_gtfs_links.shp . sf Y:\dta\SanFrancisco\<span class="m">2010</span>\transit\google_transit_sfmta_<span class="m">20120609</span>_<span class="m">20120914</span>.zip
+  python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importGTFS.html">importGTFS.py</a> -s sf_gtfs_stops.shp -l sf_gtfs_links.shp . sf <span class="nv">%DTA_NET_DIR%</span>\transit\google_transit_sfmta_<span class="m">20120609</span>_<span class="m">20120914</span>.zip
   <span class="c">:: primary output: Dynameq files sf_trn_{scen,base,adv,ptrn}.dqt</span>
   <span class="c">:: log     output: importGTFS.{DEBUG,INFO}.log</span>
   <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
@@ -223,7 +251,7 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_createSFNe
 <span class="c">:: sure that transit gets green time.</span>
 <span class="c">::</span>
 <span class="nl">:importSignals</span>
-python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importExcelSignals.html">importExcelSignals.py</a> . sf_trn Y:\dta\SanFrancisco\<span class="m">2010</span>\network\excelSignalCards <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\network\movement_override.csv Y:\dta\SanFrancisco\<span class="m">2010</span>\network\uturnPros.csv
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importExcelSignals.html">importExcelSignals.py</a> . sf_trn <span class="nv">%DTA_NET_DIR%</span>\network\excelSignalCards <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="nv">%DTA_NET_DIR%</span>\network\movement_override.csv <span class="nv">%DTA_NET_DIR%</span>\network\uturnPros.csv
 <span class="c">:: primary output: Dynameq files sf_signals_{scen,base,advn,ctrl}.dqt</span>
 <span class="c">:: log     output: importExcelSignals.{DEBUG,INFO}.log</span>
 <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
@@ -243,7 +271,7 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importUnsi
 <span class="c">:: 4) create the car demand</span>
 <span class="c">::</span>
 <span class="nl">:createDemand</span>
-python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> -f Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\DemandProfile.csv . sf_stops Car_NoToll demand_Car_NoToll.dat <span class="m">14</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_MD.csv <span class="m">14</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">13364</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_EV.csv <span class="m">18</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">22594</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> -f <span class="nv">%DTA_NET_DIR%</span>\demand\DemandProfile.csv . sf_stops Car_NoToll demand_Car_NoToll.dat <span class="m">14</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="nv">%DTA_NET_DIR%</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_MD.csv <span class="m">14</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">13364</span> <span class="nv">%DTA_NET_DIR%</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> <span class="nv">%DTA_NET_DIR%</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_EV.csv <span class="m">18</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">22594</span>
 <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
 <span class="c">:: primary output: demand_Car_NoToll.dat</span>
 <span class="c">:: log     output: importCubeDemand.{DEBUG,INFO}.log</span>
@@ -251,7 +279,7 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCube
 <span class="c">:: 5) create the truck demand</span>
 <span class="c">::</span>
 <span class="nl">:createDemand</span>
-python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> -f Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\DemandProfile.csv . sf_stops Truck_NoToll demand_Truck_NoToll.dat <span class="m">14</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_MD.csv <span class="m">14</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">051282</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> Y:\dta\SanFrancisco\<span class="m">2010</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_EV.csv <span class="m">18</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">039216</span>
+python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_importCubeDemand.html">importCubeDemand.py</a> -f <span class="nv">%DTA_NET_DIR%</span>\demand\DemandProfile.csv . sf_stops Truck_NoToll demand_Truck_NoToll.dat <span class="m">14</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="nv">%DTA_NET_DIR%</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_MD.csv <span class="m">14</span><span class="nl">:30</span> <span class="m">15</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">051282</span> <span class="nv">%DTA_NET_DIR%</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_PM.csv <span class="m">15</span><span class="nl">:30</span> <span class="m">18</span><span class="nl">:30</span> <span class="m">03</span><span class="nl">:00</span> <span class="m">1</span>.<span class="m">00</span> <span class="nv">%DTA_NET_DIR%</span>\demand\SanFranciscoSubArea_<span class="m">2010</span>_EV.csv <span class="m">18</span><span class="nl">:30</span> <span class="m">19</span><span class="nl">:30</span> <span class="m">01</span><span class="nl">:00</span> <span class="m">0</span>.<span class="m">039216</span>
 <span class="k">IF</span> <span class="k">ERRORLEVEL</span> <span class="m">1</span> <span class="k">goto</span> <span class="nl">done</span>
 <span class="c">:: primary output: demand_Truck_NoToll.dat</span>
 <span class="c">:: log     output: importCubeDemand.{DEBUG,INFO}.log</span>
@@ -339,7 +367,7 @@ python <span class="nv">%DTA_CODE_DIR%</span>\scripts\<a href="script_attachCoun
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2011, SFCTA Modeling Crew.
+        &copy; Copyright 2011-2012, SFCTA Modeling Crew.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
