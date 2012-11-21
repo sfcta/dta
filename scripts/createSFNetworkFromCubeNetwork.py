@@ -92,6 +92,15 @@ def addCustomResFac(sanFranciscoCubeNet):
     Adjusts response time factors for specific links
     """
     sanfranciscoCubeNet.getLinkForNodeIdPair(52158,52159).setResTimeFac(.8) #NB US-101 between hospital curve and Central Freeway split
+
+
+def addTollLink(sanFranciscoCubeNet):
+    """
+    Adjusts the tollLink field to match the Cube Network VALUETOLL_FLAG field (1 if the link is tolled, otherwise zero)
+    """
+    for link in sanfranciscoCubeNet.iterRoadLinks():
+         VTF = int(sanfranciscoCubeNet.additionalLinkVariables[(link.getStartNode().getId(),link.getEndNode().getId())]['VALUETOLL_FLAG'])
+         link.setTollLink(VTF)
         
 def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
@@ -435,6 +444,18 @@ if __name__ == '__main__':
                                             "fac_type_pen*(1800*length/fspeed)",            # link_expr
                                             ""              # descr
                                             )    
+    sanfranciscoScenario.addGeneralizedCost("Expression_5", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "fac_type_pen*(1800*length/fspeed)+(value_toll*379)",            # link_expr
+                                            "For Car_Toll - Local and collector penalties and $3 (2012$) toll for tolled links"              # descr
+                                            )    
+    sanfranciscoScenario.addGeneralizedCost("Expression_6", # name
+                                            "Seconds",      # units
+                                            "ptime+(left_turn_pc*left_turn)+(right_turn_pc*right_turn)", # turn_expr
+                                            "fac_type_pen*(1800*length/fspeed)+(value_toll*10000)",            # link_expr
+                                            "For Car_Notoll - Local and collector penalties and prohibitive toll for tolled links"              # descr
+                                            )  
     # Read the Cube network
     sanfranciscoCubeNet = dta.CubeNetwork(sanfranciscoScenario)
     centroidIds         = range(1,982)  # centroids 1-981 are internal to SF
@@ -555,6 +576,9 @@ if __name__ == '__main__':
     
     #Some special links need special response times (in one case to mitigate over-penalizing capacity due to high percent of lane changes)
     addCustomResFac(sanfranciscoCubeNet)
+
+    #Some links may have a toll. Change tollLink field from 0 to 1 if link is tolled
+    addTollLink(sanfranciscoCubeNet)
     
     # Convert the network to a Dynameq DTA network
     sanfranciscoDynameqNet = dta.DynameqNetwork(scenario=sanfranciscoScenario)

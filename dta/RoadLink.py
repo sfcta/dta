@@ -118,6 +118,7 @@ class RoadLink(Link):
         self._simOutVolume = defaultdict(int)
         self._simMeanTT = defaultdict(float)
         self._obsCount = {}
+        self._tollLink = 0
     
     def __repr__(self):
         return "<Link id:%d  label:%s  dir:%s>" % (self.getId(), self.getLabel(), self.getDirection())
@@ -1159,4 +1160,15 @@ class RoadLink(Link):
         Sets the response time factor to the given value
         """ 
         self._responseTimeFactor = newResFac 
-    
+
+    def setTollLink(self, newTollLink):
+        """
+        Sets the tollLink field (dummy var indicating tolled link) to specified value (should be zero or one)
+        """
+        self._tollLink = newTollLink     
+
+    def getTollLink(self):
+        """
+        Return the tollLink value for the link
+        """
+        return self._tollLink

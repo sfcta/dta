@@ -53,6 +53,8 @@ class DynameqNetwork(Network):
     TRANSIT_FILE    = '%s_ptrn.dqt'
     #: Dynameq's Custom Priorities File name
     PRIORITIES_FILE = '%s_prio.dqt'
+    #: Dynameq's Toll User Attribute File name
+    TOLL_FILE = '%s_toll.dqt'
     
     #: Dynameq's Base file header
     BASE_HEADER          = """<DYNAMEQ>
@@ -246,7 +248,12 @@ class DynameqNetwork(Network):
             customprio_object.write(DynameqNetwork.PRIORITIES_HEADER)
             self._writeCustomPriorities(customprio_object)
             customprio_object.close()
-        
+
+        tollfile = os.path.join(dir, DynameqNetwork.TOLL_FILE % file_prefix)
+        toll_object = open(tollfile, "w")
+        self._writeTollFile(toll_object)
+        toll_object.close() 
+
     def _readSectionFromFile(self, filename, sectionName, nextSectionName):
         """
         Generator function, yields fields (array of strings) from the given section of the given file.
@@ -769,7 +776,24 @@ class DynameqNetwork(Network):
                     ctrl_object.write(node.getTimePlan(planInfo).getDynameqStr())
                     count += 1
         DtaLogger.info("Wrote %8d %-16s to %s" % (count, "TIME PLANS", ctrl_object.name))
+
             
+    def _writeTollFile(self, toll_object):
+        """
+        Output the user attribute Toll field to disk
+        """            
+        toll_object.write("* link\n")
+
+        count = 0
+
+        roadLinks = sorted(self.iterRoadLinks() , key=lambda rl:rl.getId()) 
+        for link in roadLinks:
+            toll_object.write(" %10d %1d \n" % (link.getId(),link._tollLink))
+            count += 1
+
+        DtaLogger.info("Wrote %8d %-16s to %s" % (count, "LINKS", toll_object.name))
+        DtaLogger.info("Wrote %8d %-16s to %s" % (self.getNumRoadLinks(), "ROAD LINKS", toll_object.name))
+
 
     def _addCustomPrioritiesFromFields(self, fields):
         """

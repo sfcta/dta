@@ -1589,6 +1589,7 @@ class Network(object):
                             linkToSplit.getLabel(),
                             self._maxLinkId + 1)
         newLink1._lanePermissions = copy.copy(linkToSplit._lanePermissions)
+        newLink1.setTollLink(linkToSplit.getTollLink())
         newLink1._shapePoints = linkToSplit._shapePoints[:shapelen1]
         self.addLink(newLink1)
 
@@ -1607,6 +1608,7 @@ class Network(object):
                             linkToSplit.getLabel(),
                             self._maxLinkId + 1)
         newLink2._lanePermissions = copy.copy(linkToSplit._lanePermissions)
+        newLink2.setTollLink(0)
         shapelen2 = len(linkToSplit._shapePoints) - shapelen1
         if shapelen2 > 0:
             newLink2._shapePoints = linkToSplit._shapePoints[-shapelen2:]
