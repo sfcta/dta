@@ -459,6 +459,12 @@ for <a class="reference internal" href="dta.VehicleClassGroup.html#dta.VehicleCl
 </dd></dl>
 
 <dl class="attribute">
+<dt id="dta.DynameqNetwork.TOLL_FILE">
+<tt class="descname">TOLL_FILE</tt><em class="property"> = '%s_toll.dqt'</em><a class="headerlink" href="#dta.DynameqNetwork.TOLL_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynameq&#8217;s Toll User Attribute File name</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dta.DynameqNetwork.TRANSIT_FILE">
 <tt class="descname">TRANSIT_FILE</tt><em class="property"> = '%s_ptrn.dqt'</em><a class="headerlink" href="#dta.DynameqNetwork.TRANSIT_FILE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dynameq&#8217;s Transit Lines File name</p>
@@ -640,6 +646,12 @@ ready for writing.</p>
 <tt class="descname">_writeShiftsToAdvancedFile</tt><big>(</big><em>advancedfile_object</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork._writeShiftsToAdvancedFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write version of _addLanePermissionsFromFields().  
 <em>advancedfile_object</em> is the file object, ready for writing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dta.DynameqNetwork._writeTollFile">
+<tt class="descname">_writeTollFile</tt><big>(</big><em>toll_object</em><big>)</big><a class="headerlink" href="#dta.DynameqNetwork._writeTollFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the user attribute Toll field to disk</p>
 </dd></dl>
 
 <dl class="method">

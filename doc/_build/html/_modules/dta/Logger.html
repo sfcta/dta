@@ -49,71 +49,71 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for dta.Logger</h1><div class="highlight"><pre>
-<span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
-<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
-<span class="s">    This file is part of DTA.</span>
+  <h1>Source code for dta.Logger</h1><pre>
+__copyright__   = "Copyright 2011 SFCTA"
+__license__     = """
+    This file is part of DTA.
 
-<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
-<span class="s">    it under the terms of the GNU General Public License as published by</span>
-<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
-<span class="s">    (at your option) any later version.</span>
+    DTA is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-<span class="s">    DTA is distributed in the hope that it will be useful,</span>
-<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="s">    GNU General Public License for more details.</span>
+    DTA is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-<span class="s">    You should have received a copy of the GNU General Public License</span>
-<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="s">&quot;&quot;&quot;</span>
+    You should have received a copy of the GNU General Public License
+    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+"""
 
-<span class="kn">import</span> <span class="nn">logging</span>
+import logging
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;DtaLogger&#39;</span><span class="p">,</span> <span class="s">&#39;setupLogging&#39;</span><span class="p">]</span>
+__all__ = ['DtaLogger', 'setupLogging']
 
 
-<span class="c">#: This is the instance of :py:class:`Logger` that gets used for all dta logging needs!</span>
-<span class="n">DtaLogger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;DTALogger&quot;</span><span class="p">)</span>
+#: This is the instance of :py:class:`Logger` that gets used for all dta logging needs!
+DtaLogger = logging.getLogger("DTALogger")
 
-<div class="viewcode-block" id="setupLogging"><a class="viewcode-back" href="../../_generated/dta.Logger.html#dta.Logger.setupLogging">[docs]</a><span class="k">def</span> <span class="nf">setupLogging</span><span class="p">(</span><span class="n">infoLogFilename</span><span class="p">,</span> <span class="n">debugLogFilename</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">    Sets up the logger.</span>
-<span class="sd">    </span>
-<span class="sd">    :param infoLogFilename: info log file, will receive log messages of level INFO or more important.</span>
-<span class="sd">       Pass None for no info log file.</span>
-<span class="sd">    :param debugLogFilename: debug log file, will receive log messages of level DEBUG or more important.</span>
-<span class="sd">       Pass None for no debug log file.</span>
-<span class="sd">    :param logToConsole: if true, INFO and above will also go to the console.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># already setup - don&#39;t setup more</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">return</span>
+<div class="viewcode-block" id="setupLogging"><a class="viewcode-back" href="../../_generated/dta.Logger.html#dta.Logger.setupLogging">[docs]</a>def setupLogging(infoLogFilename, debugLogFilename, logToConsole=True):
+    """ 
+    Sets up the logger.
     
-    <span class="c"># create a logger</span>
-    <span class="n">DtaLogger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    :param infoLogFilename: info log file, will receive log messages of level INFO or more important.
+       Pass None for no info log file.
+    :param debugLogFilename: debug log file, will receive log messages of level DEBUG or more important.
+       Pass None for no debug log file.
+    :param logToConsole: if true, INFO and above will also go to the console.
 
-    <span class="k">if</span> <span class="n">infoLogFilename</span><span class="p">:</span>
-        <span class="n">infologhandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">infoLogFilename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">))</span>
-        <span class="n">infologhandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="n">infologhandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">))</span>
-        <span class="n">DtaLogger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">infologhandler</span><span class="p">)</span>
+    """
+    # already setup - don't setup more
+    if len(DtaLogger.handlers) == 3:
+        return
     
-    <span class="k">if</span> <span class="n">debugLogFilename</span><span class="p">:</span>
-        <span class="n">debugloghandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">debugLogFilename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">))</span>
-        <span class="n">debugloghandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-        <span class="n">debugloghandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> </span><span class="si">%(levelname)s</span><span class="s"> </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M&#39;</span><span class="p">))</span>
-        <span class="n">DtaLogger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">debugloghandler</span><span class="p">)</span>
+    # create a logger
+    DtaLogger.setLevel(logging.DEBUG)
+
+    if infoLogFilename:
+        infologhandler = logging.StreamHandler(open(infoLogFilename, 'w'))
+        infologhandler.setLevel(logging.INFO)
+        infologhandler.setFormatter(logging.Formatter('%(message)s'))
+        DtaLogger.addHandler(infologhandler)
     
-    <span class="k">if</span> <span class="n">logToConsole</span><span class="p">:</span>
-        <span class="n">consolehandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
-        <span class="n">consolehandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="n">consolehandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(name)-12s</span><span class="s">: </span><span class="si">%(levelname)-8s</span><span class="s"> </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">))</span>
-        <span class="n">DtaLogger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">consolehandler</span><span class="p">)</span>
+    if debugLogFilename:
+        debugloghandler = logging.StreamHandler(open(debugLogFilename,'w'))
+        debugloghandler.setLevel(logging.DEBUG)
+        debugloghandler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s', '%Y-%m-%d %H:%M'))
+        DtaLogger.addHandler(debugloghandler)
+    
+    if logToConsole:
+        consolehandler = logging.StreamHandler()
+        consolehandler.setLevel(logging.INFO)
+        consolehandler.setFormatter(logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s'))
+        DtaLogger.addHandler(consolehandler)
         
         </div>
-</pre></div>
+</pre>
 
           </div>
         </div>

@@ -56,233 +56,121 @@
             
   <div class="section" id="module-importTPPlusTransitRoutes">
 <span id="importing-transit-routes"></span><h1>Importing Transit Routes<a class="headerlink" href="#module-importTPPlusTransitRoutes" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
- 31
- 32
- 33
- 34
- 35
- 36
- 37
- 38
- 39
- 40
- 41
- 42
- 43
- 44
- 45
- 46
- 47
- 48
- 49
- 50
- 51
- 52
- 53
- 54
- 55
- 56
- 57
- 58
- 59
- 60
- 61
- 62
- 63
- 64
- 65
- 66
- 67
- 68
- 69
- 70
- 71
- 72
- 73
- 74
- 75
- 76
- 77
- 78
- 79
- 80
- 81
- 82
- 83
- 84
- 85
- 86
- 87
- 88
- 89
- 90
- 91
- 92
- 93
- 94
- 95
- 96
- 97
- 98
- 99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">__copyright__</span>   <span class="o">=</span> <span class="s">&quot;Copyright 2011 SFCTA&quot;</span>
-<span class="n">__license__</span>     <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
-<span class="s">    This file is part of DTA.</span>
+<div class="highlight-python"><pre>__copyright__   = "Copyright 2011 SFCTA"
+__license__     = """
+    This file is part of DTA.
 
-<span class="s">    DTA is free software: you can redistribute it and/or modify</span>
-<span class="s">    it under the terms of the GNU General Public License as published by</span>
-<span class="s">    the Free Software Foundation, either version 3 of the License, or</span>
-<span class="s">    (at your option) any later version.</span>
+    DTA is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-<span class="s">    DTA is distributed in the hope that it will be useful,</span>
-<span class="s">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="s">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="s">    GNU General Public License for more details.</span>
+    DTA is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-<span class="s">    You should have received a copy of the GNU General Public License</span>
-<span class="s">    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="s">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">dta</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+    You should have received a copy of the GNU General Public License
+    along with DTA.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+"""
+import dta
+import os
+import sys
 
 
-<span class="n">USAGE</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
+USAGE = r"""
 
-<span class="s"> python importTPPlusTransitRoutes.py dynameq_net_dir dynameq_net_prefix [tpplus_transit1.lin tpplus_transit2.lin ...]</span>
-<span class="s"> </span>
-<span class="s"> e.g.</span>
-<span class="s"> </span>
-<span class="s"> python importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin</span>
-<span class="s"> </span>
-<span class="s"> This script reads the dynameq network in the given directory, as well as the given Cube TPPlus transit line file,</span>
-<span class="s"> and converts the transit lines into DTA transit lines, outputting them in Dynameq format as </span>
-<span class="s"> [dynameq_net_dir]\sf_trn_ptrn.dqt</span>
-<span class="s"> </span>
-<span class="s"> &quot;&quot;&quot;</span>
+ python importTPPlusTransitRoutes.py dynameq_net_dir dynameq_net_prefix [tpplus_transit1.lin tpplus_transit2.lin ...]
+ 
+ e.g.
+ 
+ python importTPPlusTransitRoutes.py . sf Y:\dta\SanFrancisco\2010\transit\sfmuni.lin Y:\dta\SanFrancisco\2010\transit\bus.lin
+ 
+ This script reads the dynameq network in the given directory, as well as the given Cube TPPlus transit line file,
+ and converts the transit lines into DTA transit lines, outputting them in Dynameq format as 
+ [dynameq_net_dir]\sf_trn_ptrn.dqt
+ 
+ """
  
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+if __name__ == "__main__":
 
-    <span class="n">INPUT_DYNAMEQ_NET_DIR</span>         <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span>      <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">TRANSIT_LINES</span>                 <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+    INPUT_DYNAMEQ_NET_DIR         = sys.argv[1]
+    INPUT_DYNAMEQ_NET_PREFIX      = sys.argv[2]
+    TRANSIT_LINES                 = sys.argv[3:]
 
-    <span class="n">dta</span><span class="o">.</span><span class="n">VehicleType</span><span class="o">.</span><span class="n">LENGTH_UNITS</span><span class="o">=</span> <span class="s">&quot;feet&quot;</span>
-    <span class="n">dta</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">COORDINATE_UNITS</span>   <span class="o">=</span> <span class="s">&quot;feet&quot;</span>
-    <span class="n">dta</span><span class="o">.</span><span class="n">RoadLink</span><span class="o">.</span><span class="n">LENGTH_UNITS</span>   <span class="o">=</span> <span class="s">&quot;miles&quot;</span>
+    dta.VehicleType.LENGTH_UNITS= "feet"
+    dta.Node.COORDINATE_UNITS   = "feet"
+    dta.RoadLink.LENGTH_UNITS   = "miles"
 
-    <span class="n">dta</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">(</span><span class="s">&quot;importTPPlusTransitRoutes.INFO.log&quot;</span><span class="p">,</span> <span class="s">&quot;importTPPlusTransitRoutes.DEBUG.log&quot;</span><span class="p">,</span> <span class="n">logToConsole</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    dta.setupLogging("importTPPlusTransitRoutes.INFO.log", "importTPPlusTransitRoutes.DEBUG.log", logToConsole=True)
     
-    <span class="n">scenario</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqScenario</span><span class="p">()</span>
-    <span class="n">scenario</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span> 
-    <span class="n">net</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">DynameqNetwork</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
-    <span class="n">net</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="n">INPUT_DYNAMEQ_NET_PREFIX</span><span class="p">)</span>
+    scenario = dta.DynameqScenario()
+    scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
+    net = dta.DynameqNetwork(scenario)
+    net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
 
 
-    <span class="n">MODE_TO_LITYPE</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;11&#39;</span><span class="p">:</span><span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">LINE_TYPE_BUS</span><span class="p">,</span>  <span class="c"># Muni Local</span>
-                      <span class="s">&#39;12&#39;</span><span class="p">:</span><span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">LINE_TYPE_BUS</span><span class="p">,</span>  <span class="c"># Muni Express</span>
-                      <span class="s">&#39;13&#39;</span><span class="p">:</span><span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">LINE_TYPE_BUS</span><span class="p">,</span>  <span class="c"># Muni BRT</span>
-                      <span class="s">&#39;14&#39;</span><span class="p">:</span><span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">LINE_TYPE_TRAM</span><span class="p">,</span> <span class="c"># Muni CableCar</span>
-                      <span class="s">&#39;15&#39;</span><span class="p">:</span><span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">LINE_TYPE_TRAM</span><span class="p">,</span> <span class="c"># Muni LRT</span>
-                      <span class="p">}</span>
+    MODE_TO_LITYPE = {'11':dta.TransitLine.LINE_TYPE_BUS,  # Muni Local
+                      '12':dta.TransitLine.LINE_TYPE_BUS,  # Muni Express
+                      '13':dta.TransitLine.LINE_TYPE_BUS,  # Muni BRT
+                      '14':dta.TransitLine.LINE_TYPE_TRAM, # Muni CableCar
+                      '15':dta.TransitLine.LINE_TYPE_TRAM, # Muni LRT
+                      }
     
-    <span class="c"># For now, assume motor standard and LRV1</span>
-    <span class="n">MODE_TO_VTYPE</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;11&#39;</span><span class="p">:</span><span class="s">&quot;Motor_Std&quot;</span><span class="p">,</span>
-                     <span class="s">&#39;12&#39;</span><span class="p">:</span><span class="s">&quot;Motor_Std&quot;</span><span class="p">,</span>
-                     <span class="s">&#39;13&#39;</span><span class="p">:</span><span class="s">&quot;Motor_Std&quot;</span><span class="p">,</span>
-                     <span class="s">&#39;14&#39;</span><span class="p">:</span><span class="s">&quot;CableCar&quot;</span><span class="p">,</span>
-                     <span class="s">&#39;15&#39;</span><span class="p">:</span><span class="s">&quot;LRT2&quot;</span>
-                     <span class="p">}</span>
-    <span class="c"># others are buses</span>
-    <span class="k">for</span> <span class="n">modenum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">30</span><span class="p">):</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">modenum</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MODE_TO_LITYPE</span><span class="p">:</span>
-            <span class="n">MODE_TO_LITYPE</span><span class="p">[</span><span class="s">&quot;</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">modenum</span><span class="p">]</span> <span class="o">=</span> <span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">LINE_TYPE_BUS</span>
-            <span class="n">MODE_TO_VTYPE</span><span class="p">[</span><span class="s">&quot;</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">modenum</span><span class="p">]</span>  <span class="o">=</span> <span class="s">&quot;Motor_Std&quot;</span>
+    # For now, assume motor standard and LRV1
+    MODE_TO_VTYPE = {'11':"Motor_Std",
+                     '12':"Motor_Std",
+                     '13':"Motor_Std",
+                     '14':"CableCar",
+                     '15':"LRT2"
+                     }
+    # others are buses
+    for modenum in range(1,30):
+        key = "%d" % modenum
+        if key not in MODE_TO_LITYPE:
+            MODE_TO_LITYPE["%d" % modenum] = dta.TransitLine.LINE_TYPE_BUS
+            MODE_TO_VTYPE["%d" % modenum]  = "Motor_Std"
 
-    <span class="c"># write the output file</span>
-    <span class="n">output_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">INPUT_DYNAMEQ_NET_DIR</span><span class="p">,</span> <span class="s">&quot;sf_trn_ptrn.dqt&quot;</span><span class="p">)</span>
-    <span class="n">output_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s">&quot;w+&quot;</span><span class="p">)</span>
-    <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dta</span><span class="o">.</span><span class="n">TransitLine</span><span class="o">.</span><span class="n">getDynameqFileHeaderStr</span><span class="p">())</span>
+    # write the output file
+    output_filename = os.path.join(INPUT_DYNAMEQ_NET_DIR, "sf_trn_ptrn.dqt")
+    output_file = open(output_filename,mode="w+")
+    output_file.write(dta.TransitLine.getDynameqFileHeaderStr())
     
-    <span class="n">dtaTransitLineId</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">for</span> <span class="n">transit_file</span> <span class="ow">in</span> <span class="n">TRANSIT_LINES</span><span class="p">:</span>
-        <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;===== Processing </span><span class="si">%s</span><span class="s"> ======&quot;</span> <span class="o">%</span> <span class="n">transit_file</span><span class="p">)</span>
+    dtaTransitLineId = 1
+    for transit_file in TRANSIT_LINES:
+        dta.DtaLogger.info("===== Processing %s ======" % transit_file)
         
-        <span class="k">for</span> <span class="n">tpplusRoute</span> <span class="ow">in</span> <span class="n">dta</span><span class="o">.</span><span class="n">TPPlusTransitRoute</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">transit_file</span><span class="p">):</span>
-            <span class="c"># ignore if there&#39;s no frequency for this time period</span>
-            <span class="k">if</span> <span class="n">tpplusRoute</span><span class="o">.</span><span class="n">getHeadway</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        for tpplusRoute in dta.TPPlusTransitRoute.read(net, transit_file):
+            # ignore if there's no frequency for this time period
+            if tpplusRoute.getHeadway(3) == 0: continue
             
-            <span class="n">dtaTransitLines</span> <span class="o">=</span> <span class="n">tpplusRoute</span><span class="o">.</span><span class="n">toTransitLine</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">dtaTransitLineId</span><span class="p">,</span> <span class="n">MODE_TO_LITYPE</span><span class="p">,</span> <span class="n">MODE_TO_VTYPE</span><span class="p">,</span>
-                                                        <span class="n">headwayIndex</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">startTime</span><span class="o">=</span><span class="n">dta</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">demandDurationInMin</span><span class="o">=</span><span class="mi">3</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+            dtaTransitLines = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, MODE_TO_VTYPE,
+                                                        headwayIndex=3, startTime=dta.Time(15,30), demandDurationInMin=3*60)
 
-            <span class="k">for</span> <span class="n">dtaTransitLine</span> <span class="ow">in</span> <span class="n">dtaTransitLines</span><span class="p">:</span>
-                <span class="c"># ignore if no segments for the DTA network</span>
-                <span class="k">if</span> <span class="n">dtaTransitLine</span><span class="o">.</span><span class="n">getNumSegments</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+            for dtaTransitLine in dtaTransitLines:
+                # ignore if no segments for the DTA network
+                if dtaTransitLine.getNumSegments() == 0: continue
             
-                <span class="c"># check if the movements are allowed</span>
-                <span class="n">dtaTransitLine</span><span class="o">.</span><span class="n">checkMovementsAreAllowed</span><span class="p">(</span><span class="n">enableMovement</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                # check if the movements are allowed
+                dtaTransitLine.checkMovementsAreAllowed(enableMovement=True)
             
-                <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dtaTransitLine</span><span class="o">.</span><span class="n">getDynameqStr</span><span class="p">())</span>
-                <span class="n">dtaTransitLineId</span> <span class="o">+=</span> <span class="mi">1</span>
+                output_file.write(dtaTransitLine.getDynameqStr())
+                dtaTransitLineId += 1
 
-    <span class="n">output_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    output_file.close()
 
-    <span class="n">net</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="s">&quot;sf_trn&quot;</span><span class="p">)</span>
+    net.write(".", "sf_trn")
 
-    <span class="n">dta</span><span class="o">.</span><span class="n">DtaLogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Output </span><span class="si">%d</span><span class="s"> transit lines into </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dtaTransitLineId</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">))</span>
+    dta.DtaLogger.info("Output %d transit lines into %s" % (dtaTransitLineId-1, output_filename))
 
     
     
 
     
                 
-</pre></div>
-</td></tr></table></div>
+</pre>
+</div>
 </div>
 
 
