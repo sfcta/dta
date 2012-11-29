@@ -47,9 +47,9 @@ class CubeNetwork(Network):
     EXPORT_SCRIPT = r"""
 RUN PGM=NETWORK
 
-NETI[1]=%s
- NODEO=%s\nodes.csv,FORMAT=SDF, INCLUDE=%s
- LINKO=%s\links.csv ,FORMAT=SDF, INCLUDE=%s
+NETI[1]="%s"
+ NODEO="%s\nodes.csv",FORMAT=SDF, INCLUDE=%s
+ LINKO="%s\links.csv",FORMAT=SDF, INCLUDE=%s
 ENDRUN    
 """
     
@@ -80,7 +80,7 @@ ENDRUN
         DtaLogger.info("Writing export script to %s" % scriptFilename)
         scriptFile = open(scriptFilename, "w")
         scriptFile.write(CubeNetwork.EXPORT_SCRIPT % 
-                         (netFile, 
+                         (os.path.abspath(netFile), 
                           tempdir, ",".join(nodeVariableNames), 
                           tempdir, ",".join(linkVariableNames)))
         scriptFile.close()
