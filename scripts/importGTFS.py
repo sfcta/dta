@@ -311,6 +311,8 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
+
+    scenario_totaltime = scenario.endTime - scenario.startTime
     
     tfl = transitfeed.Loader(feed_path=GTFS_ZIP)
     schedule = tfl.Load()
@@ -395,7 +397,7 @@ if __name__ == "__main__":
                                                        stime=line_departure,
                                                        level=0,
                                                        active=dta.TransitLine.LINE_ACTIVE,
-                                                       hway=60*6, #run once -- make this cleaner
+                                                       hway=2*(60*scenario_totaltime.hour + scenario_totaltime.minute),
                                                        dep=1)
                                                                
                 prev_roadlink = None

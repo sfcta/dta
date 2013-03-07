@@ -91,7 +91,8 @@ if __name__ == "__main__":
     scenario.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX) 
     net = dta.DynameqNetwork(scenario)
     net.read(INPUT_DYNAMEQ_NET_DIR, INPUT_DYNAMEQ_NET_PREFIX)
-    
+    scenario_totaltime = scenario.endTime - scenario.startTime
+
     # read the fasttrips file
     tripstop_to_dwell = readFastTripsOutput(INPUT_FASTTRIPS_FILE)
     
@@ -108,6 +109,9 @@ if __name__ == "__main__":
     transit_line_num = 0
     for transitline in dta.TransitLine.read(net, input_transit_filename):
         tripid = str(transitline.id)
+        
+        # update the headway - it was too short
+        transitline.hway = 2*(60*scenario_totaltime.hour + scenario_totaltime.minute)
         
         for transit_seg in transitline.iterSegments():
             # no stop
