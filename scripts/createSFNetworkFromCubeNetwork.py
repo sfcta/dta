@@ -99,8 +99,8 @@ def addTollLink(sanFranciscoCubeNet):
     Adjusts the tollLink field to match the Cube Network VALUETOLL_FLAG field (1 if the link is tolled, otherwise zero)
     """
     for link in sanfranciscoCubeNet.iterRoadLinks():
-         VTF = int(sanfranciscoCubeNet.additionalLinkVariables[(link.getStartNode().getId(),link.getEndNode().getId())]['VALUETOLL_FLAG'])
-         link.setTollLink(VTF)
+        VTF = int(sanfranciscoCubeNet.additionalLinkVariables[(link.getStartNode().getId(),link.getEndNode().getId())]['VALUETOLL_FLAG'])
+        link.setTollLink(VTF)
         
 def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
@@ -130,6 +130,13 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
                     link.addLanePermission(lane_id, allVCG)
             # bush approaching market is special - left side
             elif ab_tuple in [(24679,24672)]: # Bush EB from Sansome to Battery
+                if lane_id == link.getNumLanes()-1:
+                    link.addLanePermission(lane_id, transitVCG)
+                    transit_lane_links.add(link.getId())
+                else:
+                    link.addLanePermission(lane_id, allVCG)
+            # market street - transit lanes are center
+            elif link.getLabel() == "MARKET ST":
                 if lane_id == link.getNumLanes()-1:
                     link.addLanePermission(lane_id, transitVCG)
                     transit_lane_links.add(link.getId())
