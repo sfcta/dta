@@ -152,6 +152,20 @@ class Movement(object):
         Returns the outgoung, a :py:class:`Link` instance
         """
         return self._outgoingLink
+
+    def setIncomingLane(self, lane):
+        """
+        Sets the alignment for the incoming link of this movement.
+        See the description of the *incomingLane* in :py:meth:`Movement.__init__`
+        """
+        self._incomingLane = lane
+        
+    def setOutgoingLane(self, lane):
+        """
+        Sets the alignment for the outgoing link of this movement.
+        See the description of the *outgoingLane* in :py:meth:`Movement.__init__`
+        """
+        self._outgoingLane = lane
         
     def getAtNode(self):
         """

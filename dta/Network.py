@@ -244,7 +244,14 @@ class Network(object):
         If either the incoming link or the outgoing link returns false for :py:meth:`RoadLink.allowsAll`,
         then uses the lane permission from that link instead.
         
+        Additionally, if the incoming link is only one general purpose lane (so the movement is only one lane) and the
+        outgoing link has multiple options and the movement is turning into a non-gp lane, the movement will shift on
+        the outgoing link side in order to turn into a general purpose lane.  This is incomplete; it should be true
+        if the movement is one lane (independent of the lanes in the incoming link) but for the moment that is hard.
+        
         .. todo:: This last bit is somewhat arbitrary, could be refined further.
+        
+        .. todo:: Resolve inconsistency between lane permission lane ids and movement alignment lane ids
          
         """
         
@@ -283,7 +290,37 @@ class Network(object):
                     # if it's a U-Turn and we don't want it, set the movement to prohibited
                     if mov.isUTurn() and not includeUTurns:
                         mov.prohibitAllVehicleClassGroups()
-                
+                        
+                    # if the movement is one lane because the incoming link is one lane but the incoming link has more than one lane
+                    if incomingLink.getNumLanes() == 1 and outgoingLink.getNumLanes() > 1:
+                        inc_perm = incomingLink.getLanePermission(0)  # starts from zero for lane permission
+                        angle = incomingLink.getAngle(outgoingLink)
+                        
+                        # figure out what the incoming link lane is likely going to be assumed
+                        if (inc_perm == None or inc_perm.allowsAll()) and angle<0:
+                            perm = outgoingLink.getLanePermission(outgoingLink.getNumLanes()-1)  # starts from zero for lane permission
+                            if perm and not perm.allowsAll():
+                                # I think all three need to be set
+                                mov.setIncomingLane(1)                            # starts from 1 for movement alignment           
+                                mov.setOutgoingLane(outgoingLink.getNumLanes()-1) # starts from 1 for movement alignment
+                                mov.setNumLanes(1)
+                                DtaLogger.warn("addAllMovements: moving left turn into leftmost lane to the next lane for %d-%d-%d %s-%s to %s-%s" % 
+                                               (incomingLink.getStartNode().getId(), node.getId(), outgoingLink.getEndNode().getId(),
+                                                incomingLink.getLabel(), incomingLink.getDirection(),
+                                                outgoingLink.getLabel(), outgoingLink.getDirection()))
+                        if (inc_perm == None or inc_perm.allowsAll()) and angle>0:
+                            # inconsistent lane ids
+                            perm = outgoingLink.getLanePermission(0) # starts from zero for lane permission
+                            if perm and not perm.allowsAll():
+                                # I think all three need to be set
+                                mov.setIncomingLane(1) # starts from 1 for movement alignment
+                                mov.setOutgoingLane(2) # starts from 1 for movement alignment
+                                mov.setNumLanes(1)
+                                DtaLogger.warn("addAllMovements: moving right turn into rightmost lane to the next lane for %d-%d-%d %s-%s to %s-%s" % 
+                                               (incomingLink.getStartNode().getId(), node.getId(), outgoingLink.getEndNode().getId(),
+                                                incomingLink.getLabel(), incomingLink.getDirection(),
+                                                outgoingLink.getLabel(), outgoingLink.getDirection()))
+                    
                     incomingLink.addOutgoingMovement(mov)
                     movements_added += 1
         
