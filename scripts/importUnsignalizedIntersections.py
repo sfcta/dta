@@ -314,7 +314,7 @@ if __name__ == "__main__":
                         elif mov_stop.isRightTurn():
                             critical_gap = 6.2
                         else:
-                            dta.DtaLogger.fatal("I don't recognize the turn type of the stop-sign controled movement %s" % move_stop)
+                            dta.DtaLogger.fatal("I don't recognize the turn type of the stop-sign controled movement %s" % mov_stop)
                         mov_stop.addHigherPriorityMovement(mov_nostop, critical_gap=critical_gap, critical_wait=60)
                                    
     dta.DtaLogger.info("Read %d stop-sign intersections" % len(cnn_to_recordlist))
