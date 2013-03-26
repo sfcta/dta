@@ -931,7 +931,7 @@ class DynameqNetwork(Network):
         inputStream2.close()
 
                                
-    def readSimResults(self, simStartTimeInMin, simEndTimeInMin, simTimeStepInMin):
+    def readSimResults(self, simStartTimeInMin, simEndTimeInMin, simTimeStepInMin, readMovements=True):
         """
         Read the movement and link travel times and flows
         """
