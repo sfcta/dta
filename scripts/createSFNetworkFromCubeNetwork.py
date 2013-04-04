@@ -386,27 +386,35 @@ if __name__ == '__main__':
     # This is where we define the :py:class:`dta.Scenario`
     sanfranciscoScenario = dta.DynameqScenario(dta.Time(14,30), dta.Time(21,30))
 
-    # We will have 4 vehicle classes: Car_NoToll, Car_Toll, Truck_NoToll, Truck_Toll 
+    # We will have 6 vehicle classes: SOV_NoToll, SOV_Toll, HOV_NoToll, HOV_Toll, Truck_NoToll, Truck_Toll 
+    # For now the SOV classes include SOV and HOV2 autos and the HOV classes include HOV3+ autos
     # We will provide demand matrices for each of these classes
-    sanfranciscoScenario.addVehicleClass("Car_NoToll")
-    sanfranciscoScenario.addVehicleClass("Car_Toll")
+    sanfranciscoScenario.addVehicleClass("SOV_NoToll")
+    sanfranciscoScenario.addVehicleClass("SOV_Toll")
+    sanfranciscoScenario.addVehicleClass("HOV_NoToll")
+    sanfranciscoScenario.addVehicleClass("HOV_Toll")    
     sanfranciscoScenario.addVehicleClass("Truck_NoToll")
     sanfranciscoScenario.addVehicleClass("Truck_Toll")
     # Transit is an implicit type
     
     # length is in feet (from above), response time is in seconds, maxSpeed is in mi/hour
-    # We have only 2 vehicle types                      Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_NoToll",   21,       1,       100.0,      100.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",      "Car_Toll",     21,       1,       100.0,      100.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_NoToll", 31.5,  1.25,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",    "Truck_Toll",   31.5,  1.25,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT1",     "Transit",      75,     1.6,        35.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT2",     "Transit",     150,     1.6,        35.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Std",  "Transit",  40,     1.6,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Artic","Transit",  60,     1.6,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Std",    "Transit",  40,     1.6,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Artic",  "Transit",  60,     1.6,        70.0,       90.0))
-    sanfranciscoScenario.addVehicleType(dta.VehicleType("CableCar",     "Transit",  27.5,   1.6,         9.5,       90.0))    
+    # We have only 2 non-tranit vehicle types           Type        VehicleClass    Length  RespTime    MaxSpeed    SpeedRatio
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",          "SOV_NoToll",   21,       1,       100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",          "SOV_Toll",     21,       1,       100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",          "HOV_NoToll",   21,       1,       100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",          "HOV_Toll",     21,       1,       100.0,      100.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",        "Truck_NoToll", 31.5,  1.25,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Truck",        "Truck_Toll",   31.5,  1.25,        70.0,       90.0))
+    # A portion of trips calssified as 'truck' may use car-sized vehicles
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",          "Truck_NoToll", 31.5,  1.25,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Car",          "Truck_Toll",   31.5,  1.25,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT1",         "Transit",      75,     1.6,        35.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("LRT2",         "Transit",     150,     1.6,        35.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Std",  "Transit",      40,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Trolley_Artic","Transit",      60,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Std",    "Transit",      40,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("Motor_Artic",  "Transit",      60,     1.6,        70.0,       90.0))
+    sanfranciscoScenario.addVehicleType(dta.VehicleType("CableCar",     "Transit",      27.5,   1.6,         9.5,       90.0))    
     dta.DtaLogger.info("Maximum vehicle length = %f" % sanfranciscoScenario.maxVehicleLength())
     # Generic is an implicit type
 
