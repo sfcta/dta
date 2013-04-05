@@ -90,19 +90,28 @@ IF ERRORLEVEL 1 goto done
 :: log     output: importUnsignalizedIntersections.{DEBUG,INFO}.log
 
 ::
-:: 4) create the car demand
+:: 5) create demand
 ::
-:createDemand
-python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Car_NoToll demand_Car_NoToll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.22594
+:createSovDemand
+::
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops SOV_NoToll demand_SOV_NoToll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.22594
 IF ERRORLEVEL 1 goto done
-python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Car_Toll demand_Car_Toll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.22594
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops SOV_Toll demand_SOV_Toll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.22594
 IF ERRORLEVEL 1 goto done
-:: primary output: demand_Car_NoToll.dat & demand_Car_Toll.dat
+:: primary output: demand_SOV_NoToll.dat & demand_SOV_Toll.dat
 :: log     output: importCubeDemand.{DEBUG,INFO}.log
-
-:: 5) create the truck demand
 ::
-:createDemand
+:createHovDemand
+::
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops HOV_NoToll demand_HOV_NoToll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.22594
+IF ERRORLEVEL 1 goto done
+python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops HOV_Toll demand_HOV_Toll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.13364 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.22594
+IF ERRORLEVEL 1 goto done
+:: primary output: demand_HOV_NoToll.dat & demand_HOV_Toll.dat
+:: log     output: importCubeDemand.{DEBUG,INFO}.log
+::
+:createTrkDemand
+::
 python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Truck_NoToll demand_Truck_NoToll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.051282 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.039216
 IF ERRORLEVEL 1 goto done
 python %DTA_CODE_DIR%\scripts\importCubeDemand.py -f %DTA_NET_DIR%\demand\DemandProfile.csv . sf_stops Truck_Toll demand_Truck_Toll.dat 14:30 19:30 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_MD.csv 14:30 15:30 01:00 0.051282 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_PM.csv 15:30 18:30 03:00 1.00 %DTA_NET_DIR%\demand\SanFranciscoSubArea_%DEMAND_YEAR%_EV.csv 18:30 19:30 01:00 0.039216
@@ -124,7 +133,7 @@ IF NOT DEFINED COUNTDRACULA_CODE_DIR (
   goto done
 )
 ::
-:: 5) import the counts into userdata files for Dynameq to read
+:: 6) import the counts into userdata files for Dynameq to read
 ::
 :importCounts
 :: unfortunately GeoDjango is python 2.7
