@@ -424,7 +424,9 @@ if __name__ == '__main__':
     sanfranciscoScenario.addVehicleClassGroup(allVCG)
     sanfranciscoScenario.addVehicleClassGroup(transitVCG)
     sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup(dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED, dta.VehicleClassGroup.CLASSDEFINITION_PROHIBITED,   "#ffff00"))
-    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "Car_Toll|Truck_Toll",                              "#0055ff"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("Toll",                           "SOV_Toll|HOV_Toll|Truck_Toll",                              "#ff0000"))
+    sanfranciscoScenario.addVehicleClassGroup(dta.VehicleClassGroup("HOV",                           "HOV_NoToll|HOV_Toll",                              "#0000ff"))
+    
         
     # Generalized cost
     # TODO: Make this better!?!
