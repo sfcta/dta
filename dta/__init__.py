@@ -15,7 +15,7 @@ DTA (Dynamic Traffic Assignment).
 
 """
 
-__copyright__   = "Copyright 2011 SFCTA"
+__copyright__   = "Copyright 2011-2014 SFCTA"
 __license__     = """
     This file is part of DTA.
 
