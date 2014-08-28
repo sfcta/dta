@@ -589,7 +589,7 @@ if __name__ == '__main__':
         # year range
         if suffix.find("recent") >= 0:
             from_year   = 2009
-            to_year     = 2011
+            to_year     = 2014
             
         # weekdays
         if suffix.find("midweek") >= 0:
