@@ -49,7 +49,7 @@ IF ERRORLEVEL 1 goto done
 :: 
 :importTransit
 if %TRANSIT_IMPORT% == CUBE (
-  python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes.py . sf %DTA_NET_DIR%\transit\sfmuni.lin %DTA_NET_DIR%\transit\bus.lin
+  python %DTA_CODE_DIR%\scripts\importTPPlusTransitRoutes_AM.py . sf %DTA_NET_DIR%\transit\sfmuni.lin %DTA_NET_DIR%\transit\bus.lin
   :: primary output: Dynameq files sf_trn_{scen,base,advn,ptrn}.dqt
   :: log     output: importTPPlusTransitRoutes.{DEBUG,INFO}.log
   IF ERRORLEVEL 1 goto done

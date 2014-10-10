@@ -28,7 +28,7 @@ USAGE = r"""
  
  e.g.
  
- python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnspm.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
+ python createSFNetworkFromCubeNetwork.py -n sf_nodes.shp -l sf_links.shp Y:\dta\SanFrancisco\2010\SanFranciscoSubArea_2010.net Y:\dta\SanFrancisco\2010\network\turnsam.pen Q:\GIS\Road\SFCLINES\AttachToCube\stclines.shp
  
  This script reads the San Francisco Cube network and optionally the *cube_attach_shapefile*
  and converts it to a Dynameq network, writing it out to the current directory as sf_*.dqt.
@@ -104,7 +104,7 @@ def addTollLink(sanFranciscoCubeNet):
         
 def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
     """
-    Creates transit-only lanes based on the BUSLANE_PM field.
+    Creates transit-only lanes based on the BUSLANE_AM field.
     """
     transit_lane_links = set()
 
@@ -112,10 +112,10 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
         ab_tuple = (link.getStartNode().getId(), link.getEndNode().getId())
         if ab_tuple not in sanfranciscoCubeNet.additionalLinkVariables: continue
         
-        buslane_pm = int(sanfranciscoCubeNet.additionalLinkVariables[ab_tuple]["BUSLANE_PM"])
+        buslane_am = int(sanfranciscoCubeNet.additionalLinkVariables[ab_tuple]["BUSLANE_AM"])
                 
         # no transit lanes, don't worry about it
-        if buslane_pm == 0: continue
+        if buslane_am == 0: continue
         
         for lane_id in range(link.getNumLanes()):
             # around union square is special - right turn lanes exist to the right of buses
@@ -123,7 +123,7 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
                             (24906,24901),  # Stockton SB, Maiden Lane to Geary St
                             (24901,24903),  # Geary WB, Stockton to Powell
                             (24918,24908)]: # Post EB, Powell to Stockton
-                if lane_id == 1 and (buslane_pm == 1 or buslane_pm == 2): 
+                if lane_id == 1 and (buslane_am == 1 or buslane_am == 2): 
                     link.addLanePermission(lane_id, transitVCG)
                     transit_lane_links.add(link.getId())
                 else:
@@ -136,11 +136,11 @@ def createTransitOnlyLanes(sanfranciscoCubeNet, allVCG, transitVCG):
                 else:
                     link.addLanePermission(lane_id, allVCG)
             # diamond lane or side BRT lane1
-            elif lane_id == 0 and (buslane_pm == 1 or buslane_pm == 2):
+            elif lane_id == 0 and (buslane_am == 1 or buslane_am == 2):
                 link.addLanePermission(lane_id, transitVCG)
                 transit_lane_links.add(link.getId())
             # center BRT lane
-            elif lane_id == link.getNumLanes()-1 and buslane_pm == 3:
+            elif lane_id == link.getNumLanes()-1 and buslane_am == 3:
                 link.addLanePermission(lane_id, transitVCG)
                 transit_lane_links.add(link.getId())
             else:
@@ -539,7 +539,7 @@ if __name__ == '__main__':
        linkFreeflowSpeedEvalStr         = "45.0 if FT=='6' else float(speedLookup['FT'+FT+' AT'+AT])",
        linkEffectiveLengthFactorEvalStr = "float(linkEffectiveLengthFactorLookup['AT'+AT])",
        linkResponseTimeFactorEvalStr    = "1 if FT=='6' else 1 if FT=='1' else 1 if FT=='2' else 1 if FT=='3' else float(responseTimeLookup['UP' if (float(PER_RISE) > 0.05) else ('FLAT' if (float(PER_RISE) > -0.05) else 'DOWN')])",
-       linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_PM) + (1 if int(BUSLANE_PM)>0 else 0))",
+       linkNumLanesEvalStr              = "2 if isConnector else (int(LANE_AM) + (1 if int(BUSLANE_AM)>0 else 0))",
        linkRoundAboutEvalStr            = "False",
        linkLevelEvalStr                 = "None",
        linkLabelEvalStr                 = '(STREETNAME if STREETNAME else "") + (" " if TYPE and STREETNAME else "") + (TYPE if TYPE else "")',
