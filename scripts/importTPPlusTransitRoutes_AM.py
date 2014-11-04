@@ -88,7 +88,7 @@ if __name__ == "__main__":
             if tpplusRoute.getHeadway(1) == 0: continue
             
             dtaTransitLines = tpplusRoute.toTransitLine(net, dtaTransitLineId, MODE_TO_LITYPE, MODE_TO_VTYPE,
-                                                        headwayIndex=1, startTime=dta.Time(9,0), demandDurationInMin=3*60)
+                                                        headwayIndex=1, startTime=dta.Time(6,30), demandDurationInMin=3*60)
 
             for dtaTransitLine in dtaTransitLines:
                 # ignore if no segments for the DTA network
