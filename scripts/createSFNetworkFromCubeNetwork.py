@@ -46,52 +46,77 @@ def addShifts(sanfranciscoCubeNet):
     e.g. some local lanes need to be shifted to be outside the through lanes.
     """
     # geary local
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3, addShapepoints=True)  # Steiner to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3, addShapepoints=True)  # Fillmore to Webster
+    try:
+        sanfranciscoCubeNet.getLinkForNodeIdPair(26594,26590).addShifts(3,3, addShapepoints=True)  # Steiner to Fillmore
+        sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26587).addShifts(3,3, addShapepoints=True)  # Fillmore to Webster
+    except dta.DtaError as e:
+        print e
     
     # geary - lyon 2 baker
-    geary_lyon2baker = sanfranciscoCubeNet.getLinkForNodeIdPair(26835,26811)
-    geary_lyon2baker.addShifts(0,1, addShapepoints=True) # shift access lane  
-    geary_lyon2baker.findOutgoingMovement(26762)._outgoingLane = 1
-    
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3, addShapepoints=True)  # Webster to Fillmore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3, addShapepoints=True)  # Fillmore to Avery
-    sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3, addShapepoints=True)  # Avery to Steiner
-    
-    # broadway tunnel - access links
-    sanfranciscoCubeNet.getLinkForNodeIdPair(25117,25111).addShifts(0,2, addShapepoints=True)  # Mason to Powell
-    
-    # HWY 101 N On-Ramp at Marin / Bayshore
-    sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0, addShapepoints=True)
-    
-    # Stockton SB to Post
-    sanfranciscoCubeNet.getLinkForNodeIdPair(24907,24908).addShifts(0,1, addShapepoints=True)
+    try:
+        geary_lyon2baker = sanfranciscoCubeNet.getLinkForNodeIdPair(26835,26811)
+        geary_lyon2baker.addShifts(0,1, addShapepoints=True) # shift access lane  
+        geary_lyon2baker.findOutgoingMovement(26762)._outgoingLane = 1
+    except dta.DtaError as e:
+        print e
 
+    try:
+        sanfranciscoCubeNet.getLinkForNodeIdPair(26587,26590).addShifts(3,3, addShapepoints=True)  # Webster to Fillmore
+        sanfranciscoCubeNet.getLinkForNodeIdPair(26590,26596).addShifts(3,3, addShapepoints=True)  # Fillmore to Avery
+        sanfranciscoCubeNet.getLinkForNodeIdPair(26596,26594).addShifts(3,3, addShapepoints=True)  # Avery to Steiner
+    except dta.DtaError as e:
+        print e
+        
+    # broadway tunnel - access links
+    try:
+        sanfranciscoCubeNet.getLinkForNodeIdPair(25117,25111).addShifts(0,2, addShapepoints=True)  # Mason to Powell
+    except dta.DtaError as e:
+        print e
+        
+    # HWY 101 N On-Ramp at Marin / Bayshore
+    try:
+        sanfranciscoCubeNet.getLinkForNodeIdPair(33751,33083).addShifts(1,0, addShapepoints=True)
+    except dta.DtaError as e:
+        print e
+        
+    # Stockton SB to Post
+    try:
+        sanfranciscoCubeNet.getLinkForNodeIdPair(24907,24908).addShifts(0,1, addShapepoints=True)
+    except dta.DtaError as e:
+        print e
 def addTurnPockets(sanfranciscoDynameqNet):
     """
     The San Francisco network has a few turn pockets -- add these.
     """
     # Post EB, Powell to Stockton has a block long turn pocket (right turn only)
-    post_ebs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="POST ST", on_direction=dta.RoadLink.DIR_EB,
-                                                           from_street_label="POWELL ST", to_street_label="STOCKTON ST")
-    for post_eb in post_ebs:
-        post_eb.setNumLanes(3)
-    
-    # find the thru movement from post across stockton
-    for mov in post_ebs[-1].iterOutgoingMovements():
-        if mov.isThruTurn: mov.setNumLanes(2)
-    
+    try:
+        post_ebs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="POST ST", on_direction=dta.RoadLink.DIR_EB,
+                                                               from_street_label="POWELL ST", to_street_label="STOCKTON ST")
+        for post_eb in post_ebs:
+            post_eb.setNumLanes(3)
+        
+        # find the thru movement from post across stockton
+        for mov in post_ebs[-1].iterOutgoingMovements():
+            if mov.isThruTurn: mov.setNumLanes(2)
+    except dta.DtaError as e:
+        print e
     # Guerrero NB to Market has a right turn pocket
-    guerrero_nbs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="GUERRERO ST", on_direction=dta.RoadLink.DIR_NB,
-                                                                from_street_label="DUBOCE AVE", to_street_label="MARKET ST")
-    guerrero_nbs[-1].setNumLanes(3)
-    
+
+    try:
+        guerrero_nbs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="GUERRERO ST", on_direction=dta.RoadLink.DIR_NB,
+                                                                    from_street_label="DUBOCE AVE", to_street_label="MARKET ST")
+        guerrero_nbs[-1].setNumLanes(3)
+    except dta.DtaError as e:
+        print e    
 
 def addCustomResFac(sanFranciscoCubeNet):
     """
     Adjusts response time factors for specific links
     """
-    sanfranciscoCubeNet.getLinkForNodeIdPair(52158,52159).setResTimeFac(.8) #NB US-101 between hospital curve and Central Freeway split
+    try:
+        sanfranciscoCubeNet.getLinkForNodeIdPair(52158,52159).setResTimeFac(.8) #NB US-101 between hospital curve and Central Freeway split
+    except dta.DtaError as e:
+        print e
 
 
 def addTollLink(sanFranciscoCubeNet):
@@ -588,9 +613,12 @@ if __name__ == '__main__':
     removeHOVStubs(sanfranciscoDynameqNet)
     
     # Battery between Bush and Market is a parking garage - forcibly split it
-    battery_sbs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="BATTERY ST", on_direction=dta.RoadLink.DIR_SB,
-                                                               from_street_label="BUSH ST", to_street_label="MARKET ST")
-    if len(battery_sbs) == 1: sanfranciscoDynameqNet.splitLink(battery_sbs[0])
+    try:
+        battery_sbs = sanfranciscoDynameqNet.findLinksForRoadLabels(on_street_label="BATTERY ST", on_direction=dta.RoadLink.DIR_SB,
+                                                                   from_street_label="BUSH ST", to_street_label="MARKET ST")
+        if len(battery_sbs) == 1: sanfranciscoDynameqNet.splitLink(battery_sbs[0])
+    except dta.DtaError as e:
+        print e
 
     # Add virtual nodes and links between Centroids and RoadNodes; required by Dynameq        
     sanfranciscoDynameqNet.insertVirtualNodeBetweenCentroidsAndRoadNodes(startVirtualNodeId=9000000, startVirtualLinkId=9000000,
