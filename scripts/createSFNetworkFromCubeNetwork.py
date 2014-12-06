@@ -626,7 +626,7 @@ if __name__ == '__main__':
     
     # Move the centroid connectors from intersection nodes to midblock locations
     # TODO: for dead-end streets, is this necessary?  Or are the midblocks ok?        
-    sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=[], 
+    sanfranciscoDynameqNet.moveCentroidConnectorsFromIntersectionsToMidblocks(splitReverseLinks=True, moveVirtualNodeDist=50, externalNodeIds=boundaryIds, 
                                                                               disallowConnectorEvalStr="True if self.getFacilityType() in [1,8] else False")
 
     # Allow turns from transit lanes -- this needs to be done after the centroid connectors are moved or they interfere connecting

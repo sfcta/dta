@@ -1941,9 +1941,17 @@ if __name__ == "__main__":
                 mov.setFollowup(-1)
                 continue
             if mov.isRightTurn():
-                mov.setFollowup(str(rightTurnFollowupLookup[mov.getFollowup()]))
+                try:
+                    mov.setFollowup(str(rightTurnFollowupLookup[mov.getFollowup()]))
+                except Exception as e:
+                    mov.setFollowup(-1)
+                    dta.DtaLogger.error("mov.isRightTurn issue with node " + str(node.getId()))
             elif mov.isLeftTurn():
-                mov.setFollowup(str(leftTurnFollowupLookup[mov.getFollowup()]))
+                try:
+                    mov.setFollowup(str(leftTurnFollowupLookup[mov.getFollowup()]))
+                except Exception as e:
+                    mov.setFollowup(-1)
+                    dta.DtaLogger.error("mov.isLeftTurn issue with node " + str(node.getId()))
             else:
                 mov.setFollowup(-1)
 
