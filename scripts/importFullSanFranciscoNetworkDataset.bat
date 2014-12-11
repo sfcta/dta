@@ -77,7 +77,7 @@ IF ERRORLEVEL 1 goto done
 :: This step needs to go after import signals because signals win over stop signs; if a node has a signal, we'll leave it alone.
 ::
 :importStopSigns
-python %DTA_CODE_DIR%\scripts\importUnsignalizedIntersections.py . sf_signals Q:\GIS\CityGIS\TrafficControl\StopSigns\stops_signs.shp 
+python %DTA_CODE_DIR%\scripts\importUnsignalizedIntersections.py . sf_signals Q:\GIS\Transportation\Roads\San_Francisco\Traffic_Control\2012\StopSigns\stops_signs.shp 
 IF ERRORLEVEL 1 goto done
 :: primary output: Dynameq files sf_stops_{scen,base,advn,??}.dqt
 :: log     output: importUnsignalizedIntersections.{DEBUG,INFO}.log
