@@ -1,0 +1,40 @@
+# Background #
+
+Bounded on three sides by water, the city of San Francisco is home to just over 800,000 residents.  With a daytime population just shy of 1 million, and expected to grow by over 100,000 residents over the next few decades, the city’s 49-square mile area has been essentially built out with a regular grid street network and dense local and regional transit networks.
+
+San Francisco seeks to guide transportation investments that will allow our city to accommodate and embrace our forecasted levels of economic and demographic growth, while fitting within our “transit first” and greenhouse gas reduction policies. Unfortunately, the typical planning toolkit has significant gaps for analyzing many “non capacity-increasing” mitigations – just at the time when global financial and environmental forces are driving investment toward nontraditional investments.  In some cases, the lack of reliable and proven modeling tools and methods have driven investment away from alternative projects that have potentially significant cost savings and long-term benefits.
+
+For San Francisco to accommodate its projected growth levels within its
+current dense grid network, a major modal shift must occur away from drive-alone autos and into more ‘roadway capacity efficient’ modes such as bus, bicycling, and walking. Examples of policies and investments that will support this conversion include congestion pricing, a bus rapid transit (BRT) network, and road diets in the very densest parts of San Francisco in order to accommodate bicycle and pedestrian
+throughput. As San Francisco is one of the first U.S. cities willing to take the plunge with many innovative and potentially risky policies or investments, there is little empirical data upon which to
+base policy decisions. Rather, the city must be able to appropriately model the behavioral response to such policies, and make predictions robust enough for decision makers to stake political capital.
+
+# Current Practices #
+
+The largest gap in the current planning analysis toolkit exists between the behavioral analysis of mode, destination, and time-of-day choice that typically occurs at the regional-level to analyze large capital investments, and traffic microsimulation at the intersection- and neighborhood-level that analyzes operations. San Francisco’s tour-based travel model, known as “SF-CHAMP”, provides very precise behavioral responses to travel conditions such as pricing, but is crippled in its ability to represent operational improvements due to the limitations of Static User Equilibrium (SUE) traffic assignment which are discussed below. Currently, the city uses traffic microsimulation to analyze
+strategies such as transit signal priority and network geometry changes, but traffic-microsimulation models often utilize demand that fails to appropriately consider diversions to other routes, times of day, or shifts to new destinations. This often yields an overestimation of impacts.
+
+There has been scattered success with linking the macro-behavioral sensitivity of demand models with the car-following behavioral sensitivity of traffic microsimulation models. However, this
+linkage is most practical when there is not expected to be a significant reorganization of traffic routes. Problems with this direct linkage arise for a multitude of reasons:
+
+  1. The demand model predicts unrealistically high demand patterns because the LOS that is used to calculate the demand (SUE) does not represent real capacity constraints that may result in switching to other modes, times of day, destinations, or routes. This often leads to the traffic microsimulation model producing gridlock and demand being reduced in an ad-hoc manner just to get the model to run and produce results.
+  1. The SUE assignment cannot represent operational improvements that will lead to induced demand or the return of latent demand. Thus, the demand fed into the traffic microsimulation model does not increase enough and the benefits of these operational improvements are often over-predicted.
+  1. When analyzing a subarea of the region, the context of the larger trip gets lost. In the case of an auto capacity-reducing project, many of the impacts are felt outside the modeled corridor and in the case of a grid network can be spread across the whole city. Most traffic microsimulation models are only built for the limited corridor where the change occurs, and are not able to quantify the impacts to streets beyond it.
+  1. When reduced down to a subarea, most travel demand models do not produce demand that is reflective of observed count data. Thus, in order to produce traffic microsimulation results that are reflective of observed data, the modeler is forced to make changes to the demand numbers.  While this change is easy to justify for a base year validation, it is difficult if not impossible to determine how these differences and error corrections should propagate out into future years and scenarios.
+
+# Moving to More Useful Tools #
+
+DTA provides a reasonable and replicable bridge between these worlds, and in some cases can answer questions on its own without the regional demand or traffic microsimulation models at all. It provides a reasonable representation of both traffic and transit operations, and considers queuing, bottlenecks, traffic signals, and in many cases weaving and signal priority. It is scalable to the entire city, and is capable of forecasting route diversions and changes between scenarios.
+
+While DTA has been known in research circles for some years now, it is only now breaking into practice as a usable tool for planners. And its applications thus far have not been focused on dense, transit-rich, congested urban locations such as the San Francisco Bay area. This research proposal aims to fully implement dynamic traffic assignment in San Francisco, and use the DTA for analyzing proposed transit improvements, analyzing traffic diversions caused by those transit improvements, and comparing the effectiveness of roadway pricing alternatives. The tools developed will all be open source, and the findings and lessons learned will be publicly available and open for practitioner discussion and research.
+
+# Transformational Advancements #
+
+In addition to being a useful case study for other cities considering DTA implementation (which in its own right is helpful due to the rarity of DTA in current practice), this work creates two transformational
+advancements.
+
+First, a DTA implementation in San Francisco will be unique because of the rich transit network and dense grid pattern of the city. Regional and suburban implementations of DTA have quite different analysis goals, and are suited to answering different types of questions. For example, DTA in San Francisco can illuminate the consequences of transit improvements such as bus lane conversions on existing streets. Furthermore, DTA is well-suited to analyzing shifts in vehicular
+traffic on the dense grid network. These findings can serve to validate and/or modify the way traffic microsimulation analysis is performed in other cities with dense grids. Since those methods frequently use travel forecasting model inputs as a starting point, the inability to predict bottlenecks, queues, and gridlock is a major shortcoming. The findings from this DTA implementation can help inform those methods.
+
+Second, the tools and methods developed here should reduce or possibly eliminate the reliance on modifying demand matrices (“trip tables”) that are input to DTA and traffic microsimulation models. As stated above, there is little methodological justification for transferring these table transformations to future years or scenarios. This presents a major methodological shortcoming in current practice. All scripts and utilities generated as part of this work will be freely available from
+the study team.
